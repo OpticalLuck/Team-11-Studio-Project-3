@@ -327,8 +327,7 @@ void CMap2D::Render(void)
 		{
 			transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
 			transform = glm::translate(transform, glm::vec3(cSettings->ConvertIndexToUVSpace(cSettings->x, uiCol, false, 0),
-															cSettings->ConvertIndexToUVSpace(cSettings->y, uiRow, true, 0),
-															0.0f));
+			cSettings->ConvertIndexToUVSpace(cSettings->y, uiRow, true, 0),0.0f));
 			//transform = glm::rotate(transform, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
 
 			// Update the shaders with the latest transform
