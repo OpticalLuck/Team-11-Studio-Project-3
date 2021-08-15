@@ -26,12 +26,9 @@
     <ClCompile Include="Source\Scene2D\InventoryItem.cpp" />
     <ClCompile Include="Source\Scene2D\InventoryManager.cpp" />
     <ClCompile Include="Source\Scene2D\Map2D.cpp" />
-    <ClCompile Include="Source\Scene2D\Mushroom2D.cpp" />
     <ClCompile Include="Source\Scene2D\Physics2D.cpp" />
-    <ClCompile Include="Source\Scene2D\Pig2D.cpp" />
     <ClCompile Include="Source\Scene2D\Player2D.cpp" />
     <ClCompile Include="Source\Scene2D\Scene2D.cpp" />
-    <ClCompile Include="Source\Scene2D\Snail2D.cpp" />
     <ClCompile Include="Source\SoundController\SoundController.cpp" />
     <ClCompile Include="Source\SoundController\SoundInfo.cpp" />
   </ItemGroup>
@@ -51,12 +48,9 @@
     <ClInclude Include="Source\Scene2D\InventoryItem.h" />
     <ClInclude Include="Source\Scene2D\InventoryManager.h" />
     <ClInclude Include="Source\Scene2D\Map2D.h" />
-    <ClInclude Include="Source\Scene2D\Mushroom2D.h" />
     <ClInclude Include="Source\Scene2D\Physics2D.h" />
-    <ClInclude Include="Source\Scene2D\Pig2D.h" />
     <ClInclude Include="Source\Scene2D\Player2D.h" />
     <ClInclude Include="Source\Scene2D\Scene2D.h" />
-    <ClInclude Include="Source\Scene2D\Snail2D.h" />
     <ClInclude Include="Source\SoundController\SoundController.h" />
     <ClInclude Include="Source\SoundController\SoundInfo.h" />
   </ItemGroup>

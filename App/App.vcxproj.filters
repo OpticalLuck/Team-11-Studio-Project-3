@@ -80,20 +80,11 @@
     <ClCompile Include="Source\Scene2D\InventoryItem.cpp">
       <Filter>Manager2D</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Scene2D\Snail2D.cpp">
-      <Filter>Entity2D</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Scene2D\Pig2D.cpp">
-      <Filter>Entity2D</Filter>
-    </ClCompile>
     <ClCompile Include="Source\GameStateManagement\GameOverState.cpp">
       <Filter>GameStateManagement</Filter>
     </ClCompile>
     <ClCompile Include="Source\GameStateManagement\PauseMenuState.cpp">
       <Filter>GameStateManagement</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Scene2D\Mushroom2D.cpp">
-      <Filter>Entity2D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -151,20 +142,11 @@
     <ClInclude Include="Source\Scene2D\InventoryItem.h">
       <Filter>Manager2D</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Scene2D\Snail2D.h">
-      <Filter>Entity2D</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Scene2D\Pig2D.h">
-      <Filter>Entity2D</Filter>
-    </ClInclude>
     <ClInclude Include="Source\GameStateManagement\GameOverState.h">
       <Filter>GameStateManagement</Filter>
     </ClInclude>
     <ClInclude Include="Source\GameStateManagement\PauseMenuState.h">
       <Filter>GameStateManagement</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Scene2D\Mushroom2D.h">
-      <Filter>Entity2D</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

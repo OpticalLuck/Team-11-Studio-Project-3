@@ -8,9 +8,6 @@ using namespace std;
 #include "System\filesystem.h"
 #include "Math/MyMath.h"
 
-#include "Snail2D.h"
-#include "Pig2D.h"
-#include "Mushroom2D.h"
 /**
  @brief Constructor This constructor has protected access modifier as this class will be a Singleton
  */
@@ -138,12 +135,6 @@ bool CScene2D::Init(void)
 	
 	//300
 	LoadEnemy<CEnemy2D>();
-	//301
-	LoadEnemy<Snail2D>();
-	//302
-	LoadEnemy<Pig2D>();
-	//303
-	LoadEnemy<Mushroom2D>();
 
 	// Setup the shaders
 	CShaderManager::GetInstance()->Add("textShader", "Shader//text.vs", "Shader//text.fs");
@@ -229,12 +220,6 @@ bool CScene2D::Update(const double dElapsedTime)
 
 			//300
 			LoadEnemy<CEnemy2D>();
-			//301
-			LoadEnemy<Snail2D>();
-			//302
-			LoadEnemy<Pig2D>();
-			//303
-			LoadEnemy<Mushroom2D>();
 		}
 		//Last Level
 		else
