@@ -1,0 +1,238 @@
+﻿  Application.cpp
+  GameOverState.cpp
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\GameStateManagement\GameOverState.cpp(114,73): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\GameStateManagement\GameOverState.cpp(113,75): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\GameStateManagement\GameOverState.cpp(115,95): warning C4244: 'argument': conversion from 'unsigned int' to 'float', possible loss of data
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\GameStateManagement\GameOverState.cpp(115,55): warning C4244: 'argument': conversion from 'unsigned int' to 'float', possible loss of data
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\GameStateManagement\GameOverState.cpp(123,44): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\GameStateManagement\GameOverState.cpp(122,75): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\GameStateManagement\GameOverState.cpp(124,95): warning C4244: 'argument': conversion from 'unsigned int' to 'float', possible loss of data
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\GameStateManagement\GameOverState.cpp(124,55): warning C4244: 'argument': conversion from 'unsigned int' to 'float', possible loss of data
+  GameStateManager.cpp
+  IntroState.cpp
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\minwindef.h(130,1): warning C4005: 'APIENTRY': macro redefinition
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\glfw\include\GLFW\glfw3.h(104): message : see previous definition of 'APIENTRY'
+  MenuState.cpp
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\minwindef.h(130,1): warning C4005: 'APIENTRY': macro redefinition
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\glfw\include\GLFW\glfw3.h(104): message : see previous definition of 'APIENTRY'
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\GameStateManagement\MenuState.cpp(199,135): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\GameStateManagement\MenuState.cpp(199,74): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\GameStateManagement\MenuState.cpp(275,54): warning C4244: 'argument': conversion from 'unsigned int' to 'float', possible loss of data
+  PauseMenuState.cpp
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\minwindef.h(130,1): warning C4005: 'APIENTRY': macro redefinition
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\glfw\include\GLFW\glfw3.h(104): message : see previous definition of 'APIENTRY'
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\GameStateManagement\PauseMenuState.cpp(179,43): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\GameStateManagement\PauseMenuState.cpp(178,74): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\GameStateManagement\PauseMenuState.cpp(247,54): warning C4244: 'argument': conversion from 'unsigned int' to 'float', possible loss of data
+  PlayGameState.cpp
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\minwindef.h(130,1): warning C4005: 'APIENTRY': macro redefinition
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\glfw\include\GLFW\glfw3.h(104): message : see previous definition of 'APIENTRY'
+  main.cpp
+  BackgroundEntity.cpp
+  Enemy2D.cpp
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\Scene2D\Enemy2D.cpp(234,39): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=glm::i32
+          ]
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\Scene2D\Enemy2D.cpp(238,38): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=glm::i32
+          ]
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\Scene2D\Enemy2D.cpp(290,80): warning C4244: 'argument': conversion from 'T' to 'const int', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\Scene2D\Enemy2D.cpp(291,80): warning C4244: 'argument': conversion from 'T' to 'const int', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\Scene2D\Enemy2D.cpp(367,23): warning C4244: '=': conversion from 'const int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\Scene2D\Enemy2D.cpp(368,23): warning C4244: '=': conversion from 'const int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\Scene2D\Enemy2D.cpp(460,53): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\Scene2D\Enemy2D.cpp(468,53): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\Scene2D\Enemy2D.cpp(498,51): warning C4244: 'argument': conversion from 'T' to 'const unsigned int', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\Scene2D\Enemy2D.cpp(498,37): warning C4244: 'argument': conversion from 'T' to 'const unsigned int', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\Scene2D\Enemy2D.cpp(507,52): warning C4244: 'argument': conversion from 'T' to 'const unsigned int', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\Scene2D\Enemy2D.cpp(507,38): warning C4244: 'argument': conversion from 'T' to 'const unsigned int', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\Scene2D\Enemy2D.cpp(508,53): warning C4244: 'argument': conversion from 'T' to 'const unsigned int', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\Scene2D\Enemy2D.cpp(508,38): warning C4244: 'argument': conversion from 'T' to 'const unsigned int', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\Scene2D\Enemy2D.cpp(527,54): warning C4244: 'argument': conversion from 'T' to 'const unsigned int', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\Scene2D\Enemy2D.cpp(527,37): warning C4244: 'argument': conversion from 'T' to 'const unsigned int', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\Scene2D\Enemy2D.cpp(536,55): warning C4244: 'argument': conversion from 'T' to 'const unsigned int', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\Scene2D\Enemy2D.cpp(536,38): warning C4244: 'argument': conversion from 'T' to 'const unsigned int', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\Scene2D\Enemy2D.cpp(537,56): warning C4244: 'argument': conversion from 'T' to 'const unsigned int', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\Scene2D\Enemy2D.cpp(537,38): warning C4244: 'argument': conversion from 'T' to 'const unsigned int', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\Scene2D\Enemy2D.cpp(557,55): warning C4244: 'argument': conversion from 'T' to 'const unsigned int', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\Scene2D\Enemy2D.cpp(557,40): warning C4244: 'argument': conversion from 'T' to 'const unsigned int', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\Scene2D\Enemy2D.cpp(566,56): warning C4244: 'argument': conversion from 'T' to 'const unsigned int', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\Scene2D\Enemy2D.cpp(566,41): warning C4244: 'argument': conversion from 'T' to 'const unsigned int', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\Scene2D\Enemy2D.cpp(567,56): warning C4244: 'argument': conversion from 'T' to 'const unsigned int', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\Scene2D\Enemy2D.cpp(567,38): warning C4244: 'argument': conversion from 'T' to 'const unsigned int', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\Scene2D\Enemy2D.cpp(579,51): warning C4244: 'argument': conversion from 'T' to 'const unsigned int', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\Scene2D\Enemy2D.cpp(579,37): warning C4244: 'argument': conversion from 'T' to 'const unsigned int', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\Scene2D\Enemy2D.cpp(588,52): warning C4244: 'argument': conversion from 'T' to 'const unsigned int', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\Scene2D\Enemy2D.cpp(588,38): warning C4244: 'argument': conversion from 'T' to 'const unsigned int', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\Scene2D\Enemy2D.cpp(589,52): warning C4244: 'argument': conversion from 'T' to 'const unsigned int', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\Scene2D\Enemy2D.cpp(589,35): warning C4244: 'argument': conversion from 'T' to 'const unsigned int', possible loss of data
+          with
+          [
+              T=float
+          ]
+  EntityManager.cpp
+  GameManager.cpp
+  GUI_Scene2D.cpp
+  InventoryItem.cpp
+  InventoryManager.cpp
+  Map2D.cpp
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\Scene2D\Map2D.cpp(804,32): warning C4018: '<': signed/unsigned mismatch
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\Scene2D\Map2D.cpp(805,26): warning C4018: '<': signed/unsigned mismatch
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\Scene2D\Map2D.cpp(866,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\Scene2D\Map2D.cpp(875,20): warning C4018: '<': signed/unsigned mismatch
+  Physics2D.cpp
+  Player2D.cpp
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\Scene2D\Player2D.cpp(408,38): warning C4244: '+=': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\Scene2D\Player2D.cpp(412,38): warning C4244: '-=': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\Scene2D\Player2D.cpp(416,38): warning C4244: '+=': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\Scene2D\Player2D.cpp(422,38): warning C4244: '-=': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+  Scene2D.cpp
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\Scene2D\Scene2D.cpp(52,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\Scene2D\Scene2D.cpp(158,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\Scene2D\Scene2D.cpp(166,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\Scene2D\Scene2D.cpp(255,20): warning C4018: '<': signed/unsigned mismatch
+  SoundController.cpp
+  Compiling...
+  SoundInfo.cpp
+  Generating code
+  Previous IPDB not found, fall back to full compilation.
+C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\App\Source\Scene2D\Scene2D.cpp(232): warning C4715: 'CScene2D::Update': not all control paths return a value
+  All 3555 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+  App.vcxproj -> C:\Users\weich\Documents\GitHub\Team-11-Studio-Project-3\Release\App.exe
