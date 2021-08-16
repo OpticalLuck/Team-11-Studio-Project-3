@@ -40,9 +40,11 @@ class CMap2D;
 // Include SoundController
 #include "..\SoundController\SoundController.h"
 
-class CPlayer2D : public CSingletonTemplate<CPlayer2D>, public CEntity2D
+#include <map>
+#include <array>
+
+class CPlayer2D : public CEntity2D
 {
-	friend CSingletonTemplate<CPlayer2D>;
 public:
 	enum STATE
 	{
@@ -57,6 +59,12 @@ public:
 		S_DEATH,
 		S_NUM_STATE
 	};
+
+	// Constructor
+	CPlayer2D(void);
+
+	// Destructor
+	virtual ~CPlayer2D(void);
 
 	// Init
 	bool Init(void);
@@ -89,6 +97,19 @@ protected:
 		DOWN = 3,
 		NUM_DIRECTIONS
 	};
+
+	enum KEYBOARD_INPUTS
+	{
+		W = 0,
+		A,
+		S,
+		D,
+		SPACE,
+		INPUT_TOTAL,
+	};
+
+	int iTempFrameCounter; // move to game manager/scene2D/PlayGameState later
+	vector<array<bool, INPUT_TOTAL>> mKeyboardInputs;
 
 	glm::vec2 vOldTransform;
 
@@ -136,11 +157,6 @@ protected:
 	// Facing direction for rendering and ease of animation
 	DIRECTION facing;
 	STATE state;
-	// Constructor
-	CPlayer2D(void);
-
-	// Destructor
-	virtual ~CPlayer2D(void);
 
 	// Load a texture
 	bool LoadTexture(const char* filename, GLuint& iTextureID);
@@ -150,7 +166,8 @@ protected:
 	// Update the health and lives
 	void UpdateHealthLives(void);
 
-
 	bool InRangeOfTile(unsigned tileID);
+
+	void UpdateKeyboardInputs(void);
 };
 

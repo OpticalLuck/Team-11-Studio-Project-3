@@ -35,6 +35,7 @@ CPlayer2D::CPlayer2D(void)
 	, deathtimer(0)
 	, attacktimer(0)
 	, invulTimer(0)
+	, iTempFrameCounter(0)
 	, bDamaged(false)
 {
 	transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
@@ -146,6 +147,32 @@ bool CPlayer2D::Init(void)
 	// Get the handler to the CSoundController
 	cSoundController = CSoundController::GetInstance();
 
+	//for (int i = 0; i < 120; ++i)
+	//{
+	//	std::array<bool, INPUT_TOTAL> currentFrameInputs;
+
+	//	for (int i = 0; i < INPUT_TOTAL; ++i)
+	//	{
+	//		currentFrameInputs[i] = false;
+	//	}
+
+	//	currentFrameInputs[W] = true;
+	//	mKeyboardInputs.push_back(currentFrameInputs);
+	//}
+
+	//for (int i = 0; i < 300; ++i)
+	//{
+	//	std::array<bool, INPUT_TOTAL> currentFrameInputs;
+
+	//	for (int i = 0; i < INPUT_TOTAL; ++i)
+	//	{
+	//		currentFrameInputs[i] = false;
+	//	}
+
+	//	currentFrameInputs[D] = true;
+	//	mKeyboardInputs.push_back(currentFrameInputs);
+	//}
+
 	return true;
 }
 
@@ -187,6 +214,8 @@ bool CPlayer2D::Reset()
  */
 void CPlayer2D::Update(const double dElapsedTime)
 {
+	UpdateKeyboardInputs();
+
 	runtimer += dElapsedTime;
 	jumptimer += dElapsedTime;
 	// Store the old position
@@ -294,6 +323,8 @@ void CPlayer2D::Update(const double dElapsedTime)
 
 	// Update the UV Coordinates
 	vec2UVCoordinate = cSettings->ConvertIndexToUVSpace(vTransform);
+
+	iTempFrameCounter++;
 }
 
 /**
@@ -403,21 +434,24 @@ void CPlayer2D::MovementUpdate(double dt)
 {
 	state = S_IDLE;
 
-	if (cKeyboardController->IsKeyDown(GLFW_KEY_W))
+	if (iTempFrameCounter >= mKeyboardInputs.size())
+		return;
+
+	if (mKeyboardInputs[iTempFrameCounter][W])
 	{
 		vTransform.y += fMovementSpeed * dt;
 	}
-	else if (cKeyboardController->IsKeyDown(GLFW_KEY_S))
+	else if (mKeyboardInputs[iTempFrameCounter][S])
 	{
 		vTransform.y -= fMovementSpeed * dt;
 	}
-	if (cKeyboardController->IsKeyDown(GLFW_KEY_D))
+	if (mKeyboardInputs[iTempFrameCounter][D])
 	{
 		vTransform.x += fMovementSpeed * dt;
 		state = S_MOVE;
 		facing = RIGHT;
 	}
-	else if (cKeyboardController->IsKeyDown(GLFW_KEY_A))
+	else if (mKeyboardInputs[iTempFrameCounter][A])
 	{
 		vTransform.x -= fMovementSpeed * dt;
 		state = S_MOVE;
@@ -450,6 +484,32 @@ void CPlayer2D::UpdateHealthLives(void)
 			CGameManager::GetInstance()->bPlayerLost = true;
 		}
 	}
+}
+
+void CPlayer2D::UpdateKeyboardInputs(void)
+{
+	std::array<bool, INPUT_TOTAL> currentFrameInputs;
+	for (int i = 0; i < INPUT_TOTAL; ++i)
+	{
+		currentFrameInputs[i] = false;
+	}
+
+	if (cKeyboardController->IsKeyDown(GLFW_KEY_W))
+		currentFrameInputs[W] = true;
+
+	if (cKeyboardController->IsKeyDown(GLFW_KEY_A))
+		currentFrameInputs[A] = true;
+
+	if (cKeyboardController->IsKeyDown(GLFW_KEY_S))
+		currentFrameInputs[S] = true;
+
+	if (cKeyboardController->IsKeyDown(GLFW_KEY_D))
+		currentFrameInputs[D] = true;
+
+	if (cKeyboardController->IsKeyDown(GLFW_KEY_SPACE))
+		currentFrameInputs[SPACE] = true;
+
+	mKeyboardInputs.push_back(currentFrameInputs);
 }
 
 void CPlayer2D::Hit(int health)

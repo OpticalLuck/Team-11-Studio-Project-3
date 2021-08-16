@@ -58,7 +58,7 @@ CScene2D::~CScene2D(void)
 
 	if (cPlayer2D)
 	{
-		cPlayer2D->Destroy();
+		delete cPlayer2D;
 		cPlayer2D = NULL;
 	}
 
@@ -108,7 +108,7 @@ bool CScene2D::Init(void)
 	CShaderManager::GetInstance()->Use("2DColorShader");
 	CShaderManager::GetInstance()->activeShader->setInt("texture1", 0);
 	// Create and initialise the CPlayer2D
-	cPlayer2D = CPlayer2D::GetInstance();
+	cPlayer2D = new CPlayer2D;
 	// Pass shader to cPlayer2D
 	cPlayer2D->SetShader("2DColorShader");
 	// Initialise the instance
