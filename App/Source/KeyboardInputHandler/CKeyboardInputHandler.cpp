@@ -41,7 +41,7 @@ void CKeyboardInputHandler::UpdateCurrentFrameInputs(void)
 	if (cKeyboardController->IsKeyDown(GLFW_KEY_SPACE))
 		currentFrameInputs[SPACE] = true;
 
-	mKeyboardInputs.push_back(currentFrameInputs);
+	m_KeyboardInputs.push_back(currentFrameInputs);
 }
 
 CKeyboardInputHandler::CKeyboardInputHandler()

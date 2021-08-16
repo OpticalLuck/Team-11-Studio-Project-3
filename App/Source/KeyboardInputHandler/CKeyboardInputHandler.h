@@ -19,7 +19,7 @@ public:
 	};
 
 	// Keyboard Inputs stored in a dynamic vector of arrays
-	std::vector<std::array<bool, INPUT_TOTAL>> mKeyboardInputs;
+	std::vector<std::array<bool, INPUT_TOTAL>> m_KeyboardInputs;
 
 	void Init(void);
 	void Update(double dElapsedTime);

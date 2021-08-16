@@ -440,7 +440,7 @@ void CPlayer2D::MovementUpdate(double dt)
 {
 	state = S_IDLE;
 	
-	std::vector<std::array<bool, CKeyboardInputHandler::KEYBOARD_INPUTS::INPUT_TOTAL>> keyboardInputs = (bIsClone) ? mCloneKeyboardInputs : cKeyboardInputHandler->mKeyboardInputs;
+	std::vector<std::array<bool, CKeyboardInputHandler::KEYBOARD_INPUTS::INPUT_TOTAL>> keyboardInputs = (bIsClone) ? m_CloneKeyboardInputs : cKeyboardInputHandler->m_KeyboardInputs;
 	if (iTempFrameCounter >= keyboardInputs.size())
 		return;
 
@@ -538,7 +538,7 @@ bool CPlayer2D::IsClone()
 }
 void CPlayer2D::SetInputs(std::vector<std::array<bool, CKeyboardInputHandler::KEYBOARD_INPUTS::INPUT_TOTAL>> inputs)
 {
-	mCloneKeyboardInputs = inputs;
+	m_CloneKeyboardInputs = inputs;
 }
 //
 //bool CPlayer2D::InRangeOfTile(unsigned tileID)

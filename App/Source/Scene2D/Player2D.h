@@ -110,7 +110,7 @@ protected:
 	};
 
 	CKeyboardInputHandler* cKeyboardInputHandler;
-	std::vector<std::array<bool, CKeyboardInputHandler::KEYBOARD_INPUTS::INPUT_TOTAL>> mCloneKeyboardInputs;
+	std::vector<std::array<bool, CKeyboardInputHandler::KEYBOARD_INPUTS::INPUT_TOTAL>> m_CloneKeyboardInputs;
 
 	int iTempFrameCounter; // move to game manager/scene2D/PlayGameState later
 

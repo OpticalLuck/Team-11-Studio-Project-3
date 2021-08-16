@@ -253,7 +253,7 @@ bool CScene2D::Update(const double dElapsedTime)
 
 		clone->SetShader("2DColorShader");
 		clone->SetClone(true);
-		clone->SetInputs(cKeyboardInputHandler->mKeyboardInputs);
+		clone->SetInputs(cKeyboardInputHandler->m_KeyboardInputs);
 
 		clones.push_back(clone);
 	}
