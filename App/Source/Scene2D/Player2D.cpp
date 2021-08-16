@@ -254,7 +254,7 @@ void CPlayer2D::Update(const double dElapsedTime)
 					vTransform = cSettings->ConvertUVSpaceToIndex(collider2D.position);
 
 					//set y vel to 0
-					cPhysics2D.SetVelocity(glm::vec2(0, cPhysics2D.GetVelocity().y));
+					//cPhysics2D.SetVelocity(glm::vec2(0, cPhysics2D.GetVelocity().y));
 				}
 			}
 		}
@@ -271,13 +271,11 @@ void CPlayer2D::Update(const double dElapsedTime)
  					collider2D.ResolveCollisionY(cMap2D->GetCollider(uiRow, uiCol));
 					// Resolve transform to corrected position in collider
 					vTransform = cSettings->ConvertUVSpaceToIndex(collider2D.position);
-
+					cPhysics2D.SetVelocity(glm::vec2(cPhysics2D.GetVelocity().x, 0));
 				}
 			}
 		}
 	}
-
-	
 
 	// Update the UV Coordinates
 	vec2UVCoordinate = cSettings->ConvertIndexToUVSpace(vTransform);
