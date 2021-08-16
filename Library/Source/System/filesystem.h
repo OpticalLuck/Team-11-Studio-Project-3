@@ -32,7 +32,7 @@ private:
 	static std::string const & getRoot()
 	{
 		char buff[FILENAME_MAX]; //create string buffer to hold path
-		GetCurrentDir(buff, FILENAME_MAX);
+		char* temp = GetCurrentDir(buff, FILENAME_MAX);
 		string current_working_dir(buff);
 
 		static char const * envRoot = current_working_dir.c_str();	// getenv("LOGL_ROOT_PATH");

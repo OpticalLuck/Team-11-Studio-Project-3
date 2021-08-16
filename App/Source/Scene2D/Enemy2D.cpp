@@ -194,33 +194,6 @@ void CEnemy2D::Update(const double dElapsedTime)
 		//animatedSprites->PlayAnimation("move", -1, 1.f);
 		if (cPhysics2D.CalculateDistance(i32vec2Index, cPlayer2D->i32vec2Index) < 4.0f)
 		{
-			auto path = cMap2D->PathFind(	i32vec2Index, 
-											cPlayer2D->i32vec2Index, 
-											heuristic::euclidean, 
-											10);
-			// Calculate new destination
-			bool bFirstPosition = true;
-			for (const auto& coord : path)
-			{
-				if (bFirstPosition == true)
-				{
-					// Set a destination
-					i32vec2Destination = coord;
-					// Calculate the direction between enemy2D and this destination
-					i32vec2Direction = i32vec2Destination - i32vec2Index;
-					bFirstPosition = false;
-				}
-				else
-				{
-					if ((coord - i32vec2Destination) == i32vec2Direction)
-					{
-						// Set a destination
-						i32vec2Destination = coord;
-					}
-					else
-						break;
-				}
-			}
 			UpdatePosition();
 		}
 		else

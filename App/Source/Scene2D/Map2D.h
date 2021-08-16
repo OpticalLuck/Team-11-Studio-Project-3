@@ -30,6 +30,9 @@
 // Include Entity2D
 #include "Primitives/Entity2D.h"
 
+//Include CObject2D
+#include "Object2D.h"
+
 // Include files for AStar
 #include <queue>
 #include <functional>
@@ -123,23 +126,16 @@ public:
 	// Get current level
 	unsigned int GetCurrentLevel(void) const;
 
-	// For AStar PathFinding
-	std::vector<glm::i32vec2> PathFind(	const glm::i32vec2& startPos, 
-										const glm::i32vec2& targetPos, 
-										HeuristicFunction heuristicFunc, 
-										const int weight = 1);
 	// Set if AStar PathFinding will consider diagonal movements
 	void SetDiagonalMovement(const bool bEnable);
-	// Print out details about this class instance in the console window
-	void PrintSelf(void) const;
 
 protected:
 	// The variable containing the rapidcsv::Document
 	// We will load the CSV file's content into this Document
 	rapidcsv::Document doc;
 
-	// A 3-D array which stores the values of the tile map
-	Grid*** arrMapInfo;
+	// Vector array that stores an array of objects level by level
+	std::vector<std::vector<CObject2D>> arrObject;
 
 	// The current level
 	unsigned int uiCurLevel;
@@ -165,17 +161,14 @@ protected:
 	bool LoadTexture(const char* filename, const int iTextureCode);
 
 	// Render a tile
-	void RenderTile(const unsigned int uiRow, const unsigned int uiCol);
+	void RenderTile(const CObject2D Obj);
 
 	// For A-Star PathFinding
 	// Build a path from m_cameFromList after calling PathFind()
 	std::vector<glm::i32vec2> BuildPath() const;
 	// Check if a grid is valid
 	bool isValid(const glm::i32vec2& pos) const;
-	// Check if a grid is blocked
-	bool isBlocked(	const unsigned int uiRow, 
-					const unsigned int uiCol, 
-					const bool bInvert = true) const;
+
 	// Convert a position to a 1D position in the array
 	int ConvertTo1D(const glm::i32vec2& pos) const;
 
