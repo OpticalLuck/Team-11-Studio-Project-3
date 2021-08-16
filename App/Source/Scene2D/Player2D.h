@@ -95,7 +95,7 @@ public:
 
 	bool IsClone();
 
-	void SetInputs(std::vector<std::array<bool, CKeyboardInputHandler::KEYBOARD_INPUTS::INPUT_TOTAL>> inputs);
+	void SetInputs(std::vector<std::array<bool, KEYBOARD_INPUTS::INPUT_TOTAL>> inputs);
 protected:
 
 	bool bIsClone;
@@ -110,7 +110,7 @@ protected:
 	};
 
 	CKeyboardInputHandler* cKeyboardInputHandler;
-	std::vector<std::array<bool, CKeyboardInputHandler::KEYBOARD_INPUTS::INPUT_TOTAL>> m_CloneKeyboardInputs;
+	std::vector<std::array<bool, KEYBOARD_INPUTS::INPUT_TOTAL>> m_CloneKeyboardInputs;
 
 	int iTempFrameCounter; // move to game manager/scene2D/PlayGameState later
 

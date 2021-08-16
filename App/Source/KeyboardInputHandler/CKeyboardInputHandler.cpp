@@ -44,6 +44,16 @@ void CKeyboardInputHandler::UpdateCurrentFrameInputs(void)
 	m_KeyboardInputs.push_back(currentFrameInputs);
 }
 
+bool CKeyboardInputHandler::GetKeyInput(int iCurrentFrame, KEYBOARD_INPUTS eInput)
+{
+	return m_KeyboardInputs[iCurrentFrame][eInput];
+}
+
+std::vector<std::array<bool, INPUT_TOTAL>> CKeyboardInputHandler::GetAllInputs(void)
+{
+	return m_KeyboardInputs;
+}
+
 CKeyboardInputHandler::CKeyboardInputHandler()
 	: cKeyboardController(NULL)
 {

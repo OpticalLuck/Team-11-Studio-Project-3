@@ -440,25 +440,25 @@ void CPlayer2D::MovementUpdate(double dt)
 {
 	state = S_IDLE;
 	
-	std::vector<std::array<bool, CKeyboardInputHandler::KEYBOARD_INPUTS::INPUT_TOTAL>> keyboardInputs = (bIsClone) ? m_CloneKeyboardInputs : cKeyboardInputHandler->m_KeyboardInputs;
+	std::vector<std::array<bool, KEYBOARD_INPUTS::INPUT_TOTAL>> keyboardInputs = (bIsClone) ? m_CloneKeyboardInputs : cKeyboardInputHandler->GetAllInputs();
 	if (iTempFrameCounter >= keyboardInputs.size())
 		return;
 
-	if (keyboardInputs[iTempFrameCounter][CKeyboardInputHandler::KEYBOARD_INPUTS::W])
+	if (keyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::W])
 	{
 		vTransform.y += fMovementSpeed * dt;
 	}
-	else if (keyboardInputs[iTempFrameCounter][CKeyboardInputHandler::KEYBOARD_INPUTS::S])
+	else if (keyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::S])
 	{
 		vTransform.y -= fMovementSpeed * dt;
 	}
-	if (keyboardInputs[iTempFrameCounter][CKeyboardInputHandler::KEYBOARD_INPUTS::D])
+	if (keyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::D])
 	{
 		vTransform.x += fMovementSpeed * dt;
 		state = S_MOVE;
 		facing = RIGHT;
 	}
-	else if (keyboardInputs[iTempFrameCounter][CKeyboardInputHandler::KEYBOARD_INPUTS::A])
+	else if (keyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::A])
 	{
 		vTransform.x -= fMovementSpeed * dt;
 		state = S_MOVE;
@@ -536,7 +536,7 @@ bool CPlayer2D::IsClone()
 {
 	return bIsClone;
 }
-void CPlayer2D::SetInputs(std::vector<std::array<bool, CKeyboardInputHandler::KEYBOARD_INPUTS::INPUT_TOTAL>> inputs)
+void CPlayer2D::SetInputs(std::vector<std::array<bool, KEYBOARD_INPUTS::INPUT_TOTAL>> inputs)
 {
 	m_CloneKeyboardInputs = inputs;
 }
