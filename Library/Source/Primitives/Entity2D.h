@@ -52,11 +52,7 @@ public:
 	virtual void PostRender(void);
 
 	// The i32vec2 which stores the indices of an Entity2D in the Map2D
-	glm::i32vec2 i32vec2Index;
-
-	// The i32vec2 variable which stores The number of microsteps from the tile indices for the Entity2D. 
-	// A tile's width or height is in multiples of these microsteps
-	glm::i32vec2 i32vec2NumMicroSteps;
+	glm::vec2 vTransform;
 
 	// The vec2 variable which stores the UV coordinates to render the Entity2D
 	glm::vec2 vec2UVCoordinate;

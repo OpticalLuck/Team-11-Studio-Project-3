@@ -90,7 +90,7 @@ protected:
 		NUM_DIRECTIONS
 	};
 
-	glm::i32vec2 i32vec2OldIndex;
+	glm::vec2 vOldTransform;
 
 	glm::i32vec2 checkpoint;
 
@@ -116,6 +116,7 @@ protected:
 
 	// Count the number of jumps
 	int jumpCount;
+	float fMovementSpeed;
 
 	// Handler to the CSoundController
 	CSoundController* cSoundController;
@@ -144,20 +145,7 @@ protected:
 	// Load a texture
 	bool LoadTexture(const char* filename, GLuint& iTextureID);
 
-	// Constraint the player's position within a boundary
-	void Constraint(DIRECTION eDirection = LEFT);
-
-	// Check if a position is possible to move into
-	bool CheckPosition(DIRECTION eDirection);
-
-	// Check if the player is in mid-air
-	bool IsMidAir(void);
-
-	// Update Jump or Fall
-	void UpdateJumpFall(const double dElapsedTime = 0.0166666666666667);
-
-	// Let player interact with the map
-	void InteractWithMap(void);
+	void MovementUpdate(double dt);
 
 	// Update the health and lives
 	void UpdateHealthLives(void);

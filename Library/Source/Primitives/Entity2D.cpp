@@ -29,10 +29,7 @@ CEntity2D::CEntity2D(void)
 	transform = glm::mat4(1.0f);	// make sure to initialize matrix to identity matrix first
 
 	// Initialise vecIndex
-	i32vec2Index = glm::i32vec2(0);
-
-	// Initialise vecNumMicroSteps
-	i32vec2NumMicroSteps = glm::i32vec2(0);
+	vTransform = glm::i32vec2(0);
 
 	// Initialise vec2UVCoordinate
 	vec2UVCoordinate = glm::vec2(0.0f);
