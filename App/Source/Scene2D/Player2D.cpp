@@ -448,7 +448,7 @@ void CPlayer2D::MovementUpdate(double dt)
 		facing = LEFT;
 	}
 
-	if (cKeyboardController->IsKeyPressed(GLFW_KEY_SPACE))
+	if (keyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::SPACE])
 	{
 		force.y += fJumpSpeed;
 	}
