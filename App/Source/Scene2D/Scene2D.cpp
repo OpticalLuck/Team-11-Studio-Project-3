@@ -18,6 +18,7 @@ CScene2D::CScene2D(void)
 	, cGUI_Scene2D(NULL)
 	, cGameManager(NULL)
 	, cSoundController(NULL)
+	, cKeyboardInputHandler(NULL)
 	, isCompleted(false)
 {
 }
@@ -47,6 +48,8 @@ CScene2D::~CScene2D(void)
 
 	// We won't delete this since it was created elsewhere
 	cKeyboardController = NULL;
+
+	cKeyboardInputHandler = NULL;
 
 	// Destroy the enemies
 	for (int i = 0; i < enemyVector.size(); i++)
@@ -142,6 +145,9 @@ bool CScene2D::Init(void)
 	// Load the sounds into CSoundController
 	cSoundController = CSoundController::GetInstance();
 	cSoundController->PlaySoundByID(4);
+
+	cKeyboardInputHandler = CKeyboardInputHandler::GetInstance();
+
 	return true;
 }
 
@@ -152,6 +158,11 @@ bool CScene2D::Update(const double dElapsedTime)
 {
 	// Call the cPlayer2D's update method before Map2D as we want to capture the inputs before map2D update
 	cPlayer2D->Update(dElapsedTime);
+
+	for (int i = 0; i < clones.size(); ++i)
+	{
+		clones[i]->Update(dElapsedTime);
+	}
 
 	// Call all the cEnemy2D's update method before Map2D 
 	// as we want to capture the updates before map2D update
@@ -229,6 +240,24 @@ bool CScene2D::Update(const double dElapsedTime)
 		cSoundController->PlaySoundByID(2);
 		return false;
 	}
+
+	if (cKeyboardController->IsKeyPressed(GLFW_KEY_C))
+	{
+		CPlayer2D* clone = new CPlayer2D;
+
+		if (clone->Init() == false)
+		{
+			cout << "Failed to load clone" << endl;
+			return false;
+		}
+
+		clone->SetShader("2DColorShader");
+		clone->SetClone(true);
+		clone->SetInputs(cKeyboardInputHandler->mKeyboardInputs);
+
+		clones.push_back(clone);
+	}
+	return true;
 }
 
 /**
@@ -260,6 +289,13 @@ void CScene2D::Render(void)
 		enemyVector[i]->Render();
 		// Call the CEnemy2D's PostRender()
 		enemyVector[i]->PostRender();
+	}
+
+	for (int i = 0; i < clones.size(); ++i)
+	{
+		clones[i]->PreRender();
+		clones[i]->Render();
+		clones[i]->PostRender();
 	}
 
 	// Call the Map2D's PreRender()
@@ -306,3 +342,5 @@ void CScene2D::DeleteIMGUI()
 		cGUI_Scene2D = NULL;
 	}
 }
+
+

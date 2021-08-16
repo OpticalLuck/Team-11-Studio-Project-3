@@ -27,9 +27,10 @@ using namespace std;
 CPlayer2D::CPlayer2D(void)
 	: cMap2D(NULL)
 	, cKeyboardController(NULL)
-	, cInventoryManager(NULL)
+	// , cInventoryManager(NULL)
 	, cInventoryItem(NULL)
 	, cSoundController(NULL)
+	, cKeyboardInputHandler(NULL)
 	, runtimer(0)
 	, jumptimer(0)
 	, deathtimer(0)
@@ -37,6 +38,7 @@ CPlayer2D::CPlayer2D(void)
 	, invulTimer(0)
 	, iTempFrameCounter(0)
 	, bDamaged(false)
+	, bIsClone(false)
 {
 	transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
 
@@ -56,10 +58,13 @@ CPlayer2D::~CPlayer2D(void)
 	cSoundController = NULL;
 
 	// We won't delete this since it was created elsewhere
-	cInventoryManager = NULL;
+	// cInventoryManager = NULL;
 
 	// We won't delete this since it was created elsewhere
 	cKeyboardController = NULL;
+
+	// We won't delete this since it was created elsewhere
+	cKeyboardInputHandler = NULL;
 
 	// We won't delete this since it was created elsewhere
 	cMap2D = NULL;
@@ -90,7 +95,7 @@ bool CPlayer2D::Init(void)
 		return false;	// Unable to find the start position of the player, so quit this game
 
 	// Erase the value of the player in the arrMapInfo
-	cMap2D->SetMapInfo(uiRow, uiCol, 0);
+	// cMap2D->SetMapInfo(uiRow, uiCol, 1);
 
 	// Set checkpoint position to start position
 	checkpoint = glm::i32vec2(uiCol, uiRow);
@@ -131,14 +136,14 @@ bool CPlayer2D::Init(void)
 	cPhysics2D.SetStatus(CPhysics2D::STATUS::FALL);
 
 	// Get the handler to the CInventoryManager instance
-	cInventoryManager = CInventoryManager::GetInstance();
+    // cInventoryManager = CInventoryManager::GetInstance();
 	// Add a Lives icon as one of the inventory items
-	cInventoryItem = cInventoryManager->Add("Lives", "Image/Collectibles/Scene2D_Lives.tga", 5, 3);
-	cInventoryItem->vec2Size = glm::vec2(25, 25);
+	// cInventoryItem = cInventoryManager->Add("Lives", "Image/Collectibles/Scene2D_Lives.tga", 5, 3);
+	// cInventoryItem->vec2Size = glm::vec2(25, 25);
 
 	// Add a Health icon as one of the inventory items
-	cInventoryItem = cInventoryManager->Add("Health", "Image/Scene2D_Health.tga", 100, 100);
-	cInventoryItem->vec2Size = glm::vec2(25, 25);
+	// cInventoryItem = cInventoryManager->Add("Health", "Image/Scene2D_Health.tga", 100, 100);
+	// cInventoryItem->vec2Size = glm::vec2(25, 25);
 
 	jumpCount = 0;
 
@@ -172,6 +177,8 @@ bool CPlayer2D::Init(void)
 	//	currentFrameInputs[D] = true;
 	//	mKeyboardInputs.push_back(currentFrameInputs);
 	//}
+
+	cKeyboardInputHandler = CKeyboardInputHandler::GetInstance();
 
 	return true;
 }
@@ -214,12 +221,11 @@ bool CPlayer2D::Reset()
  */
 void CPlayer2D::Update(const double dElapsedTime)
 {
-	UpdateKeyboardInputs();
-
 	runtimer += dElapsedTime;
 	jumptimer += dElapsedTime;
 	// Store the old position
 	vOldTransform = vTransform;
+
 	if (bDamaged)
 	{
 		if (invulTimer > 1.f || state == S_DEATH)
@@ -274,7 +280,7 @@ void CPlayer2D::Update(const double dElapsedTime)
 		// InteractWithMap();
 
 		// Update the Health and Lives
-		UpdateHealthLives();
+		// UpdateHealthLives();
 	}
 	else
 	{
@@ -433,25 +439,26 @@ bool CPlayer2D::LoadTexture(const char* filename, GLuint& iTextureID)
 void CPlayer2D::MovementUpdate(double dt)
 {
 	state = S_IDLE;
-
-	if (iTempFrameCounter >= mKeyboardInputs.size())
+	
+	std::vector<std::array<bool, CKeyboardInputHandler::KEYBOARD_INPUTS::INPUT_TOTAL>> keyboardInputs = (bIsClone) ? mCloneKeyboardInputs : cKeyboardInputHandler->mKeyboardInputs;
+	if (iTempFrameCounter >= keyboardInputs.size())
 		return;
 
-	if (mKeyboardInputs[iTempFrameCounter][W])
+	if (keyboardInputs[iTempFrameCounter][CKeyboardInputHandler::KEYBOARD_INPUTS::W])
 	{
 		vTransform.y += fMovementSpeed * dt;
 	}
-	else if (mKeyboardInputs[iTempFrameCounter][S])
+	else if (keyboardInputs[iTempFrameCounter][CKeyboardInputHandler::KEYBOARD_INPUTS::S])
 	{
 		vTransform.y -= fMovementSpeed * dt;
 	}
-	if (mKeyboardInputs[iTempFrameCounter][D])
+	if (keyboardInputs[iTempFrameCounter][CKeyboardInputHandler::KEYBOARD_INPUTS::D])
 	{
 		vTransform.x += fMovementSpeed * dt;
 		state = S_MOVE;
 		facing = RIGHT;
 	}
-	else if (mKeyboardInputs[iTempFrameCounter][A])
+	else if (keyboardInputs[iTempFrameCounter][CKeyboardInputHandler::KEYBOARD_INPUTS::A])
 	{
 		vTransform.x -= fMovementSpeed * dt;
 		state = S_MOVE;
@@ -465,16 +472,16 @@ void CPlayer2D::MovementUpdate(double dt)
 void CPlayer2D::UpdateHealthLives(void)
 {
 	// Update health and lives
-	cInventoryItem = cInventoryManager->GetItem("Health");
+	// cInventoryItem = cInventoryManager->GetItem("Health");
 	// Check if a life is lost
 	if (cInventoryItem->GetCount() <= 0)
 	{
 		state = S_DEATH;
 		// Reset the Health to max value
-		cInventoryItem->iItemCount = cInventoryItem->GetMaxCount();
+		// cInventoryItem->iItemCount = cInventoryItem->GetMaxCount();
 		// But we reduce the lives by 1.
-		cInventoryItem = cInventoryManager->GetItem("Lives");
-		cInventoryItem->Remove(1);
+	// 	cInventoryItem = cInventoryManager->GetItem("Lives");
+	// 	cInventoryItem->Remove(1);
 		cSoundController->PlaySoundByID(9);
 
 		// Check if there is no lives left...
@@ -485,41 +492,53 @@ void CPlayer2D::UpdateHealthLives(void)
 		}
 	}
 }
-
-void CPlayer2D::UpdateKeyboardInputs(void)
-{
-	std::array<bool, INPUT_TOTAL> currentFrameInputs;
-	for (int i = 0; i < INPUT_TOTAL; ++i)
-	{
-		currentFrameInputs[i] = false;
-	}
-
-	if (cKeyboardController->IsKeyDown(GLFW_KEY_W))
-		currentFrameInputs[W] = true;
-
-	if (cKeyboardController->IsKeyDown(GLFW_KEY_A))
-		currentFrameInputs[A] = true;
-
-	if (cKeyboardController->IsKeyDown(GLFW_KEY_S))
-		currentFrameInputs[S] = true;
-
-	if (cKeyboardController->IsKeyDown(GLFW_KEY_D))
-		currentFrameInputs[D] = true;
-
-	if (cKeyboardController->IsKeyDown(GLFW_KEY_SPACE))
-		currentFrameInputs[SPACE] = true;
-
-	mKeyboardInputs.push_back(currentFrameInputs);
-}
+//
+//void CPlayer2D::UpdateKeyboardInputs(void)
+//{
+//	std::array<bool, INPUT_TOTAL> currentFrameInputs;
+//	for (int i = 0; i < INPUT_TOTAL; ++i)
+//	{
+//		currentFrameInputs[i] = false;
+//	}
+//
+//	if (cKeyboardController->IsKeyDown(GLFW_KEY_W))
+//		currentFrameInputs[W] = true;
+//
+//	if (cKeyboardController->IsKeyDown(GLFW_KEY_A))
+//		currentFrameInputs[A] = true;
+//
+//	if (cKeyboardController->IsKeyDown(GLFW_KEY_S))
+//		currentFrameInputs[S] = true;
+//
+//	if (cKeyboardController->IsKeyDown(GLFW_KEY_D))
+//		currentFrameInputs[D] = true;
+//
+//	if (cKeyboardController->IsKeyDown(GLFW_KEY_SPACE))
+//		currentFrameInputs[SPACE] = true;
+//
+//	mKeyboardInputs.push_back(currentFrameInputs);
+//}
 
 void CPlayer2D::Hit(int health)
 {
 	if (!bDamaged && state != S_DEATH)
 	{
-		cInventoryItem = cInventoryManager->GetItem("Health");
-		cInventoryItem->Remove(health);
+		// cInventoryItem = cInventoryManager->GetItem("Health");
+		// cInventoryItem->Remove(health);
 	}
 	bDamaged = true;
+}
+void CPlayer2D::SetClone(bool bIsClone)
+{
+	this->bIsClone = bIsClone;
+}
+bool CPlayer2D::IsClone()
+{
+	return bIsClone;
+}
+void CPlayer2D::SetInputs(std::vector<std::array<bool, CKeyboardInputHandler::KEYBOARD_INPUTS::INPUT_TOTAL>> inputs)
+{
+	mCloneKeyboardInputs = inputs;
 }
 //
 //bool CPlayer2D::InRangeOfTile(unsigned tileID)

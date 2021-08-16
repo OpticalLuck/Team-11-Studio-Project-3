@@ -611,7 +611,7 @@ bool CMap2D::LoadTexture(const char* filename, const int iTextureCode)
  */
 void CMap2D::RenderTile(const unsigned int uiRow, const unsigned int uiCol)
 {
-	if (arrMapInfo[uiCurLevel][uiRow][uiCol].value != 0 && arrMapInfo[uiCurLevel][uiRow][uiCol].bActive)
+	if (arrMapInfo[uiCurLevel][uiRow][uiCol].value != 1 && arrMapInfo[uiCurLevel][uiRow][uiCol].value != 0 && arrMapInfo[uiCurLevel][uiRow][uiCol].bActive)
 	{
 		//if (arrMapInfo[uiCurLevel][uiRow][uiCol].value < 3)
 		glBindTexture(GL_TEXTURE_2D, MapOfTextureIDs.at(arrMapInfo[uiCurLevel][uiRow][uiCol].value));

@@ -40,8 +40,11 @@ class CMap2D;
 // Include SoundController
 #include "..\SoundController\SoundController.h"
 
+#include "../KeyboardInputHandler/CKeyboardInputHandler.h"
+
 #include <map>
 #include <array>
+#include "../KeyboardInputHandler/CKeyboardInputHandler.h"
 
 class CPlayer2D : public CEntity2D
 {
@@ -88,7 +91,15 @@ public:
 
 	void Hit(int health);
 
+	void SetClone(bool bIsClone);
+
+	bool IsClone();
+
+	void SetInputs(std::vector<std::array<bool, CKeyboardInputHandler::KEYBOARD_INPUTS::INPUT_TOTAL>> inputs);
 protected:
+
+	bool bIsClone;
+
 	enum DIRECTION
 	{
 		LEFT = 0,
@@ -98,18 +109,10 @@ protected:
 		NUM_DIRECTIONS
 	};
 
-	enum KEYBOARD_INPUTS
-	{
-		W = 0,
-		A,
-		S,
-		D,
-		SPACE,
-		INPUT_TOTAL,
-	};
+	CKeyboardInputHandler* cKeyboardInputHandler;
+	std::vector<std::array<bool, CKeyboardInputHandler::KEYBOARD_INPUTS::INPUT_TOTAL>> mCloneKeyboardInputs;
 
 	int iTempFrameCounter; // move to game manager/scene2D/PlayGameState later
-	vector<array<bool, INPUT_TOTAL>> mKeyboardInputs;
 
 	glm::vec2 vOldTransform;
 
@@ -131,7 +134,7 @@ protected:
 	glm::vec4 currentColor;
 
 	// InventoryManager
-	CInventoryManager* cInventoryManager;
+	// CInventoryManager* cInventoryManager;
 	// InventoryItem
 	CInventoryItem* cInventoryItem;
 
@@ -167,7 +170,5 @@ protected:
 	void UpdateHealthLives(void);
 
 	bool InRangeOfTile(unsigned tileID);
-
-	void UpdateKeyboardInputs(void);
 };
 
