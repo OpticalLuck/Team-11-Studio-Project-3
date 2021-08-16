@@ -275,7 +275,7 @@ void CPlayer2D::Update(const double dElapsedTime)
 					cPhysics2D.Update();
 
 					// Calculate the new position to the right
-					if (i32vec2Index.x < (int)cSettings->NUM_TILES_XAXIS)
+					if (i32vec2Index.x < cMap2D->GetLevelCol())
 					{
 						i32vec2NumMicroSteps.x++;
 
@@ -478,12 +478,12 @@ void CPlayer2D::Render(void)
 	transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
 	
 	//Get camera transforms and use them instead
-	glm::vec2 offset = glm::i32vec2(cSettings->NUM_TILES_XAXIS / 2, cSettings->NUM_TILES_YAXIS / 2);
+	glm::vec2 offset = glm::i32vec2((cSettings->NUM_TILES_XAXIS / 2) - 1, (cSettings->NUM_TILES_YAXIS / 2) - 1);
 	glm::vec2 cameraPos = camera->getCurrPos();
 
 	glm::vec2 IndexPos = (glm::vec2)i32vec2Index;
-	IndexPos.x += ((float)i32vec2NumMicroSteps.x / cSettings->NUM_STEPS_PER_TILE_XAXIS);
-	IndexPos.y += ((float)i32vec2NumMicroSteps.y / cSettings->NUM_STEPS_PER_TILE_YAXIS);
+	IndexPos.x += ((float)i32vec2NumMicroSteps.x / cSettings->NUM_STEPS_PER_TILE_XAXIS) + 0.5f;
+	IndexPos.y += ((float)i32vec2NumMicroSteps.y / cSettings->NUM_STEPS_PER_TILE_YAXIS) + 0.5f;
 
 	glm::vec2 actualPos = IndexPos - cameraPos + offset;
 	actualPos = cSettings->ConvertIndexToUVSpace(actualPos);
@@ -581,17 +581,17 @@ void CPlayer2D::Constraint(DIRECTION eDirection)
 	}
 	else if (eDirection == RIGHT)
 	{
-		if (i32vec2Index.x >= (int)cSettings->NUM_TILES_XAXIS - 1)
+		if (i32vec2Index.x >= cMap2D->GetLevelCol() - 1)
 		{
-			i32vec2Index.x = ((int)cSettings->NUM_TILES_XAXIS) - 1;
+			i32vec2Index.x = cMap2D->GetLevelCol() - 1;
 			i32vec2NumMicroSteps.x = 0;
 		}
 	}
 	else if (eDirection == UP)
 	{
-		if (i32vec2Index.y >= (int)cSettings->NUM_TILES_YAXIS - 1)
+		if (i32vec2Index.y >= cMap2D->GetLevelRow() - 1)
 		{
-			i32vec2Index.y = ((int)cSettings->NUM_TILES_YAXIS) - 1;
+			i32vec2Index.y = cMap2D->GetLevelRow() - 1;
 			i32vec2NumMicroSteps.y = 0;
 		}
 	}
@@ -647,7 +647,7 @@ bool CPlayer2D::CheckPosition(DIRECTION eDirection)
 	else if (eDirection == RIGHT)
 	{
 		// If the new position is at the top row, then return true
-		if (i32vec2Index.x >= cSettings->NUM_TILES_XAXIS - 1)
+		if (i32vec2Index.x >= cMap2D->GetLevelCol()- 1)
 		{
 			i32vec2NumMicroSteps.x = 0;
 			return true;
@@ -686,7 +686,7 @@ bool CPlayer2D::CheckPosition(DIRECTION eDirection)
 	else if (eDirection == UP)
 	{
 		// If the new position is at the top row, then return true
-		if (i32vec2Index.y >= cSettings->NUM_TILES_YAXIS - 1)
+		if (i32vec2Index.y >= cMap2D->GetLevelRow() - 1)
 		{
 			i32vec2NumMicroSteps.y = 0;
 			return true;
@@ -805,7 +805,7 @@ void CPlayer2D::UpdateJumpFall(const double dElapsedTime)
 		int iIndex_YAxis_OLD = i32vec2Index.y;
 
 		int iDisplacement_MicroSteps = (int)(v2Displacement.y / cSettings->MICRO_STEP_YAXIS); //DIsplacement divide by distance for 1 microstep
-		if (i32vec2Index.y < (int)cSettings->NUM_TILES_YAXIS)
+		if (i32vec2Index.y < cMap2D->GetLevelRow())
 		{
 			i32vec2NumMicroSteps.y += iDisplacement_MicroSteps;
 			if (i32vec2NumMicroSteps.y > cSettings->NUM_STEPS_PER_TILE_YAXIS)

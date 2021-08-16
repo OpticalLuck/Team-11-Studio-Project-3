@@ -135,6 +135,10 @@ public:
 	// Set if AStar PathFinding will consider diagonal movements
 	void SetDiagonalMovement(const bool bEnable);
 
+	//Get current level max rows and cols
+	int GetLevelRow(void);
+	int GetLevelCol(void);
+
 protected:
 	// The variable containing the rapidcsv::Document
 	// We will load the CSV file's content into this Document

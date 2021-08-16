@@ -31,6 +31,8 @@ class Camera2D : public CSingletonTemplate<Camera2D>
 
 		glm::vec2 getCurrPos(void);
 		bool IsFirstTime(void);
+		void ClampCamPos(glm::i32vec2 clampPos);
+
 	private:
 		bool FirstTime;
 		glm::vec2 pos; //Position set to index space for now because worldspace can suck my ching cheng han ji

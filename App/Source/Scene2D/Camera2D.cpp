@@ -38,3 +38,21 @@ bool Camera2D::IsFirstTime(void) {
 glm::vec2 Camera2D::getCurrPos(void) {
 	return pos;
 }
+
+void Camera2D::ClampCamPos(glm::i32vec2 clampPos) {
+	CSettings* cSettings = CSettings::GetInstance();
+	float xOffset = ((float)cSettings->NUM_TILES_XAXIS / 2.f) - 1;
+	float yOffset = ((float)cSettings->NUM_TILES_YAXIS / 2.f) - 1;
+
+	//Clamping of X axis
+	if (pos.x < xOffset)
+		pos.x = xOffset;
+	else if (pos.x > clampPos.x - xOffset - 2)
+		pos.x = clampPos.x - xOffset - 2;
+
+	//Clamping of Y axis
+	if (pos.y < yOffset)
+		pos.y = yOffset;
+	else if (pos.y > clampPos.y - yOffset - 2)
+		pos.y = clampPos.y - yOffset - 2;
+}

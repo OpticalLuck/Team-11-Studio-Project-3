@@ -235,6 +235,7 @@ void CMap2D::Update(const double dElapsedTime)
 
 	camera->UpdateTarget(IndexPos);
 	camera->Update(dElapsedTime);
+	camera->ClampCamPos(arrLevelLimit[uiCurLevel]);
 }
 
 /**
@@ -265,7 +266,7 @@ void CMap2D::Render(void)
 	//Render(MY VERSION)
 
 	//Camera init
-	glm::vec2 offset = glm::i32vec2(cSettings->NUM_TILES_XAXIS / 2, cSettings->NUM_TILES_YAXIS / 2);
+	glm::vec2 offset = glm::vec2(float(cSettings->NUM_TILES_XAXIS / 2) - 0.5f, float(cSettings->NUM_TILES_YAXIS / 2) - 0.5f);
 	glm::vec2 cameraPos = camera->getCurrPos();
 
 	for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++) {
@@ -296,6 +297,14 @@ void CMap2D::PostRender(void)
 {
 	// Disable blending
 	glDisable(GL_BLEND);
+}
+
+int CMap2D::GetLevelCol(void) {
+	return arrLevelLimit[uiCurLevel].x;
+}
+
+int CMap2D::GetLevelRow(void) {
+	return arrLevelLimit[uiCurLevel].y;
 }
 
 // Set the specifications of the map
@@ -467,9 +476,9 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 			currObj.collidable = currCollide;
 
 			//Position of values
-			glm::i32vec2 currIndex;
-			currIndex.x = uiCol;
-			currIndex.y = (int)doc.GetRowCount() - uiRow - 1;
+			glm::vec2 currIndex;
+			currIndex.x = (float)uiCol;
+			currIndex.y = (float)doc.GetRowCount() - (float)uiRow - 1.f;
 
 			currObj.setIndexSpace(currIndex);
 			
