@@ -57,18 +57,6 @@ bool CEntity2D::Init(void)
 	// Get the handler to the CSettings instance
 	cSettings = CSettings::GetInstance();
 
-	/*
-	// set up vertex data (and buffer(s)) and configure vertex attributes
-	float vertices[] = {	// positions          // texture coords
-		(cSettings->TILE_WIDTH / 2.0f), (cSettings->TILE_HEIGHT / 2.0f), 0.0f, 1.0f, 1.0f, // top right
-		(cSettings->TILE_WIDTH / 2.0f), -(cSettings->TILE_HEIGHT / 2.0f), 0.0f, 1.0f, 0.0f, // bottom right
-		-(cSettings->TILE_WIDTH / 2.0f), -(cSettings->TILE_HEIGHT / 2.0f), 0.0f, 0.0f, 0.0f, // bottom left
-		-(cSettings->TILE_WIDTH / 2.0f), (cSettings->TILE_HEIGHT / 2.0f), 0.0f, 0.0f, 1.0f  // top left 
-	};
-	unsigned int indices[] = { 0, 1, 3, // first triangle
-		1, 2, 3  // second triangle
-	};*/
-
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
 	//glGenBuffers(1, &VBO);
@@ -168,6 +156,13 @@ void CEntity2D::PostRender(void)
 {
 	// Disable blending
 	glDisable(GL_BLEND);
+}
+
+void CEntity2D::RenderCollider()
+{
+	collider2D.PreRender();
+	collider2D.Render();
+	collider2D.PostRender();
 }
 
 /**

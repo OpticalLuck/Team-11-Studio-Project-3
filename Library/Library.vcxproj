@@ -23,6 +23,7 @@
     <ClCompile Include="Source\Inputs\KeyboardController.cpp" />
     <ClCompile Include="Source\Inputs\MouseController.cpp" />
     <ClCompile Include="Source\Primitives\Collider.cpp" />
+    <ClCompile Include="Source\Primitives\Collider2D.cpp" />
     <ClCompile Include="Source\Primitives\Entity2D.cpp" />
     <ClCompile Include="Source\Primitives\Entity3D.cpp" />
     <ClCompile Include="Source\Primitives\LevelOfDetails.cpp" />
@@ -52,6 +53,7 @@
     <ClInclude Include="Source\Inputs\MouseController.h" />
     <ClInclude Include="Source\Math\MyMath.h" />
     <ClInclude Include="Source\Primitives\Collider.h" />
+    <ClInclude Include="Source\Primitives\Collider2D.h" />
     <ClInclude Include="Source\Primitives\Entity2D.h" />
     <ClInclude Include="Source\Primitives\Entity3D.h" />
     <ClInclude Include="Source\Primitives\LevelOfDetails.h" />

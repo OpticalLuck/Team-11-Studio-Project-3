@@ -110,6 +110,7 @@ bool CMap2D::Init(const unsigned int uiNumLevels,
 	/// 100 - 200 -> COLLISION
 	/// 300 - 400 -> ENEMY / ENTITY
 	/// </summary>
+	
 	if (LoadTexture("Image/Ground/GroundTile.png", 100) == false)
 	{
 		std::cout << "Failed to load ground tile texture" << std::endl;
@@ -337,6 +338,19 @@ void CMap2D::Render(void)
 			RenderTile(uiRow, uiCol);
 		}
 	}
+
+	for (unsigned int uiRow = 0; uiRow < cSettings->NUM_TILES_YAXIS; uiRow++)
+	{
+		for (unsigned int uiCol = 0; uiCol < cSettings->NUM_TILES_XAXIS; uiCol++)
+		{
+			if (arrMapInfo[uiCurLevel][uiRow][uiCol].value != 0 && arrMapInfo[uiCurLevel][uiRow][uiCol].bActive)
+			{
+				arrMapInfo[uiCurLevel][uiRow][uiCol].collider2D->PreRender();
+				arrMapInfo[uiCurLevel][uiRow][uiCol].collider2D->Render();
+				arrMapInfo[uiCurLevel][uiRow][uiCol].collider2D->PostRender();
+			}
+		}
+	}
 }
 
 /**
@@ -478,6 +492,25 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 		for (unsigned int uiCol = 0; uiCol < cSettings->NUM_TILES_XAXIS; ++uiCol)
 		{
 			arrMapInfo[uiCurLevel][uiRow][uiCol].value = (int)stoi(row[uiCol]);
+
+			if (arrMapInfo[uiCurLevel][uiRow][uiCol].value != 0)
+			{
+				arrMapInfo[uiCurLevel][uiRow][uiCol].collider2D = new Collider2D();
+				arrMapInfo[uiCurLevel][uiRow][uiCol].collider2D->Init();
+				arrMapInfo[uiCurLevel][uiRow][uiCol].collider2D->position = glm::vec3(
+					cSettings->ConvertIndexToUVSpace(cSettings->x, uiCol, false, 0),
+					cSettings->ConvertIndexToUVSpace(cSettings->y, uiRow, true, 0),
+					0.0f);
+
+				if (arrMapInfo[uiCurLevel][uiRow][uiCol].value >= 100 && arrMapInfo[uiCurLevel][uiRow][uiCol].value < 300)
+				{
+					arrMapInfo[uiCurLevel][uiRow][uiCol].collider2D->colliderEnabled = true;
+				}
+				else
+				{
+					arrMapInfo[uiCurLevel][uiRow][uiCol].collider2D->colliderEnabled = false;
+				}
+			}
 
 			if(arrMapInfo[uiCurLevel][uiRow][uiCol].value > 0)
 				arrMapInfo[uiCurLevel][uiRow][uiCol].bActive = true;
@@ -792,6 +825,38 @@ void CMap2D::PrintSelf(void) const
 	cout << "m_closedList: " << m_closedList.size() << endl;
 
 	cout << "===== AStar::PrintSelf() =====" << endl;
+}
+
+bool CMap2D::CollideWithMap(Collider2D& collider, unsigned& uirRow, unsigned int& uirCol, const bool bInvert)
+{
+	for (unsigned uiRow = 0; uiRow < cSettings->NUM_TILES_YAXIS; uiRow++)
+	{
+		for (unsigned uiCol = 0; uiCol < cSettings->NUM_TILES_XAXIS; uiCol++)
+		{
+			if (arrMapInfo[uiCurLevel][uiRow][uiCol].collider2D)
+			{
+				if (collider.CollideWith(arrMapInfo[uiCurLevel][uiRow][uiCol].collider2D))
+				{
+					if (bInvert)
+						uirRow = cSettings->NUM_TILES_YAXIS - uiRow - 1;
+					else
+						uirRow = uiRow;
+					uirCol = uiCol;
+					
+					return true;
+				}
+			}
+		}
+	}
+	return false;
+}
+
+Collider2D* CMap2D::GetCollider(const unsigned int uiRow, const unsigned int uiCol, const bool bInvert)
+{
+	if (bInvert)
+		return arrMapInfo[uiCurLevel][cSettings->NUM_TILES_YAXIS - uiRow - 1][uiCol].collider2D;
+	else
+		return arrMapInfo[uiCurLevel][uiRow][uiCol].collider2D;
 }
 
 /**

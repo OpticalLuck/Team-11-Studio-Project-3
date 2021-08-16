@@ -126,8 +126,8 @@ bool CEnemy2D::Init(void)
 	currentColor = glm::vec4(1.0, 1.0, 1.0, 1.0);
 
 	// Set the Physics to fall status by default
-	cPhysics2D.Init();
-	cPhysics2D.SetStatus(CPhysics2D::STATUS::FALL);
+	//cPhysics2D.Init();
+	//cPhysics2D.SetStatus(CPhysics2D::STATUS::FALL);
 
 	// If this class is initialised properly, then set the bIsActive to true
 	bIsActive = true;
@@ -177,70 +177,15 @@ void CEnemy2D::Update(const double dElapsedTime)
 			iFSMCounter = 0;
 			cout << "Switching to Idle State" << endl;
 		}
-		else if (cPhysics2D.CalculateDistance(vTransform, cPlayer2D->vTransform) < 3.0f)
+		else //if (cPhysics2D.CalculateDistance(vTransform, cPlayer2D->vTransform) < 3.0f)
 		{
 			sCurrentFSM = ATTACK;
 			iFSMCounter = 0;
 		}
-		else
-		{
-			// Patrol around
-			// Update the Enemy2D's position for patrol
-			//UpdatePosition();
-		}
 		iFSMCounter++;
 		break;
 	case ATTACK:
-		//animatedSprites->PlayAnimation("move", -1, 1.f);
-		if (cPhysics2D.CalculateDistance(vTransform, cPlayer2D->vTransform) < 4.0f)
-		{
-			auto path = cMap2D->PathFind(	vTransform, 
-											cPlayer2D->vTransform, 
-											heuristic::euclidean, 
-											10);
-			// Calculate new destination
-			bool bFirstPosition = true;
-			for (const auto& coord : path)
-			{
-				if (bFirstPosition == true)
-				{
-					// Set a destination
-					i32vec2Destination = coord;
-					// Calculate the direction between enemy2D and this destination
-					i32vec2Direction = i32vec2Destination - glm::i32vec2(vTransform);
-					bFirstPosition = false;
-				}
-				else
-				{
-					if ((coord - i32vec2Destination) == i32vec2Direction)
-					{
-						// Set a destination
-						i32vec2Destination = coord;
-					}
-					else
-						break;
-				}
-			}
-			//UpdatePosition();
-		}
-		else
-		{
-			if (iFSMCounter > MaxAttackCounter)
-			{
-				sCurrentFSM = PATROL;
-				iFSMCounter = 0;
-				if (facing == LEFT)
-				{
-					i32vec2Direction = glm::i32vec2(-1.0);
-				}
-				else if (facing == RIGHT)
-				{
-					i32vec2Direction = glm::i32vec2(1.0);
-				}
-				cout << "ATTACK : Reset counter: " << iFSMCounter << endl;
-			}
-			iFSMCounter++;
-		}
+		
 		break;
 	case HIT:
 		if (hittimer > 1.f)

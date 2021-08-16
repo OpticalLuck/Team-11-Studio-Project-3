@@ -33,7 +33,7 @@ CPlayGameState::CPlayGameState(void)
  */
 CPlayGameState::~CPlayGameState(void)
 {
-
+	Destroy();
 }
 
 /**
