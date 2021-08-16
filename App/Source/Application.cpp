@@ -234,6 +234,7 @@ bool Application::Init(void)
 	CShaderManager::GetInstance()->Add("2DColorShader", "Shader//Scene2DColor.vs", 
 										"Shader//Scene2DColor.fs");
 	CShaderManager::GetInstance()->Add("textShader", "Shader//text.vs", "Shader//text.fs");
+	CShaderManager::GetInstance()->Add("LineShader", "Shader//Line2DShader.vs", "Shader//Line2DShader.fs");
 
 	// Initialise the CFPSCounter instance
 	cFPSCounter = CFPSCounter::GetInstance();

@@ -29,7 +29,7 @@
 
 // Include Entity2D
 #include "Primitives/Entity2D.h"
-
+#include "Primitives/Collider2D.h"
 // Include files for AStar
 #include <queue>
 #include <functional>
@@ -46,12 +46,17 @@ struct Grid {
 	unsigned int value;
 
 	Grid() 
-		: value(0), pos(0, 0), parent(-1, -1), f(0), g(0), h(0), bActive(true) {}
+		: value(0), pos(0, 0), parent(-1, -1), f(0), g(0), h(0), bActive(true), collider2D(nullptr){}
 	Grid(	const glm::i32vec2& pos, unsigned int f) 
-		: value(0), pos(pos), parent(-1, 1), f(f), g(0), h(0), bActive(true) {}
+		: value(0), pos(pos), parent(-1, 1), f(f), g(0), h(0), bActive(true), collider2D(nullptr) {}
 	Grid(	const glm::i32vec2& pos, const glm::i32vec2& parent, 
 			unsigned int f, unsigned int g, unsigned int h) 
-		: value(0), pos(pos), parent(parent), f(f), g(g), h(h), bActive(true) {}
+		: value(0), pos(pos), parent(parent), f(f), g(g), h(h), bActive(true), collider2D(nullptr) {}
+
+	~Grid() {
+		if(collider2D)
+			delete collider2D;
+	}
 
 	glm::i32vec2 pos;
 	glm::i32vec2 parent;
@@ -59,6 +64,7 @@ struct Grid {
 	unsigned int g;
 	unsigned int h;
 	bool bActive;
+	Collider2D* collider2D;
 };
 
 using HeuristicFunction = 
@@ -133,6 +139,11 @@ public:
 	// Print out details about this class instance in the console window
 	void PrintSelf(void) const;
 
+
+	//For Collision Detection
+	bool CollideWithMap(Collider2D& collider, unsigned& uirRow, unsigned int& uirCol, const bool bInvert = true);
+
+	Collider2D* GetCollider(const unsigned int uiRow, const unsigned int uiCol, const bool bInvert = true);
 protected:
 	// The variable containing the rapidcsv::Document
 	// We will load the CSV file's content into this Document

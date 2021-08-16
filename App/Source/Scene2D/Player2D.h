@@ -92,6 +92,8 @@ protected:
 
 	glm::vec2 vOldTransform;
 
+	CPhysics2D cPhysics2D;
+
 	glm::i32vec2 checkpoint;
 
 	// Handler to the CMap2D instance
@@ -99,9 +101,6 @@ protected:
 
 	// Keyboard Controller singleton instance
 	CKeyboardController* cKeyboardController;
-
-	// Physics
-	CPhysics2D cPhysics2D;
 
 	//CS: Animated Sprite
 	CSpriteAnimation* animatedSprites;
@@ -117,22 +116,11 @@ protected:
 	// Count the number of jumps
 	int jumpCount;
 	float fMovementSpeed;
+	float fJumpSpeed;
 
 	// Handler to the CSoundController
 	CSoundController* cSoundController;
 
-	// Timer for Running
-	double runtimer;
-	// Timer for Jumping
-	double jumptimer;
-	// Timer for death
-	double deathtimer;
-	// Timer for attacking
-	double attacktimer;
-	// Timer for Invulnerbility
-	double invulTimer;
-	bool bDamaged;
-	
 	// Facing direction for rendering and ease of animation
 	DIRECTION facing;
 	STATE state;
@@ -149,7 +137,6 @@ protected:
 
 	// Update the health and lives
 	void UpdateHealthLives(void);
-
 
 	bool InRangeOfTile(unsigned tileID);
 };

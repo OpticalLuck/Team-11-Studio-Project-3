@@ -30,12 +30,6 @@ CPlayer2D::CPlayer2D(void)
 	, cInventoryManager(NULL)
 	, cInventoryItem(NULL)
 	, cSoundController(NULL)
-	, runtimer(0)
-	, jumptimer(0)
-	, deathtimer(0)
-	, attacktimer(0)
-	, invulTimer(0)
-	, bDamaged(false)
 {
 	transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
 
@@ -95,11 +89,10 @@ bool CPlayer2D::Init(void)
 	checkpoint = glm::i32vec2(uiCol, uiRow);
 	// Set the start position of the Player to iRow and iCol
 	vTransform = glm::i32vec2(uiCol, uiRow);
-	// By default, microsteps should be zero
 
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
-	
+
 	// Load the player texture
 	if (LoadTexture("Image/Cyborg/Cyborg.png", iTextureID) == false)
 	{
@@ -125,10 +118,6 @@ bool CPlayer2D::Init(void)
 	//CS: Init the color to white
 	currentColor = glm::vec4(1.0, 1.0, 1.0, 1.0);
 
-	// Set the Physics to fall status by default
-	cPhysics2D.Init();
-	cPhysics2D.SetStatus(CPhysics2D::STATUS::FALL);
-
 	// Get the handler to the CInventoryManager instance
 	cInventoryManager = CInventoryManager::GetInstance();
 	// Add a Lives icon as one of the inventory items
@@ -141,10 +130,14 @@ bool CPlayer2D::Init(void)
 
 	jumpCount = 0;
 
-	fMovementSpeed = 5.f;
+	fMovementSpeed = 50.f;
+	fJumpSpeed = 1000.f;
 
 	// Get the handler to the CSoundController
 	cSoundController = CSoundController::GetInstance();
+
+	collider2D.Init();
+	cPhysics2D.Init(&vTransform);
 
 	return true;
 }
@@ -167,9 +160,6 @@ bool CPlayer2D::Reset()
 	// Set the start position of the Player to iRow and iCol
 	vTransform = glm::i32vec2(uiCol, uiRow);
 
-	//Set it to fall upon entering new level
-	cPhysics2D.SetStatus(CPhysics2D::STATUS::FALL);
-
 	//CS: Reset double jump
 	jumpCount = 0;
 
@@ -187,43 +177,15 @@ bool CPlayer2D::Reset()
  */
 void CPlayer2D::Update(const double dElapsedTime)
 {
-	runtimer += dElapsedTime;
-	jumptimer += dElapsedTime;
 	// Store the old position
 	vOldTransform = vTransform;
-	if (bDamaged)
-	{
-		if (invulTimer > 1.f || state == S_DEATH)
-		{
-			invulTimer = 0;
-			bDamaged = false;
-			currentColor = glm::vec4(1.0, 1.0, 1.0, 1.0);
-		}
-		else
-		{
-			invulTimer += dElapsedTime;
-			currentColor = glm::vec4(1.f, 0.f, 0.f, 0.8f);
-		}
-	}
 
 	if (state != S_DEATH)
 	{
 		if (state != S_ATTACK)
 		{
-			if (runtimer > 0.01)
-			{
-				runtimer = 0;
-				// Get keyboard updates
-				MovementUpdate(dElapsedTime);
-			}
-		}
-		else
-		{
-			if (attacktimer > 0.4)
-			{
-				attacktimer = 0;
-				state = S_IDLE;
-			}
+			// Get keyboard updates
+			MovementUpdate(dElapsedTime);
 		}
 		if (cKeyboardController->IsKeyPressed(GLFW_KEY_V))
 		{
@@ -234,31 +196,60 @@ void CPlayer2D::Update(const double dElapsedTime)
 			}
 		}
 
-		// Update Jump or Fall
-		//CS: Will cause error when debugging. Set to default elapsed time
-		if (jumptimer > 0.01)
-		{
-			jumptimer = 0;
-			// UpdateJumpFall(dElapsedTime);
-		}
-		// Interact with the Map
-		// InteractWithMap();
-
 		// Update the Health and Lives
 		UpdateHealthLives();
 	}
 	else
 	{
-		if (deathtimer >= 3.f)
+	}
+
+	cPhysics2D.Update(dElapsedTime);
+
+	// Update the UV Coordinates
+	vec2UVCoordinate = cSettings->ConvertIndexToUVSpace(vTransform);
+
+	// Update Collider2D Position
+	collider2D.position = glm::vec3(vec2UVCoordinate, 0.f);
+
+	for (unsigned uiRow = 0; uiRow < cSettings->NUM_TILES_YAXIS; uiRow++)
+	{
+		for (unsigned uiCol = 0; uiCol < cSettings->NUM_TILES_XAXIS; uiCol++)
 		{
-			deathtimer = 0;
-			state = S_IDLE;
-			vTransform = checkpoint;
-			currentColor = glm::vec4(1, 1, 1, 1);
-			cPhysics2D.SetStatus(CPhysics2D::STATUS::FALL);
+			if (cMap2D->GetCollider(uiRow, uiCol))
+			{
+				if (collider2D.CollideWith(cMap2D->GetCollider(uiRow, uiCol)))
+				{
+					collider2D.ResolveCollisionY(cMap2D->GetCollider(uiRow, uiCol));
+					// Resolve transform to corrected position in collider
+					vTransform = cSettings->ConvertUVSpaceToIndex(collider2D.position);
+					// Update the UV Coordinates
+					vec2UVCoordinate = cSettings->ConvertIndexToUVSpace(vTransform);
+				}
+			}
 		}
 	}
 
+	for (unsigned uiRow = 0; uiRow < cSettings->NUM_TILES_YAXIS; uiRow++)
+	{
+		for (unsigned uiCol = 0; uiCol < cSettings->NUM_TILES_XAXIS; uiCol++)
+		{
+			if (cMap2D->GetCollider(uiRow, uiCol))
+			{
+				if (collider2D.CollideWith(cMap2D->GetCollider(uiRow, uiCol)))
+				{
+					//Collider2D::CorrectedAxis axis = collider2D.ResolveCollision(cMap2D->GetCollider(uiRow, uiCol));
+					collider2D.ResolveCollisionX(cMap2D->GetCollider(uiRow, uiCol));
+					// Resolve transform to corrected position in collider
+					vTransform = cSettings->ConvertUVSpaceToIndex(collider2D.position);
+					// Update the UV Coordinates
+					vec2UVCoordinate = cSettings->ConvertIndexToUVSpace(vTransform);
+
+				}
+			}
+		}
+	}
+
+	//animation States
 	switch (state)
 	{
 	case S_IDLE:
@@ -278,22 +269,17 @@ void CPlayer2D::Update(const double dElapsedTime)
 		break;
 	case S_ATTACK:
 		animatedSprites->PlayAnimation("attack", 1, 0.6f);
-		attacktimer += dElapsedTime;
 		break;
 	case S_CLIMB:
 		animatedSprites->PlayAnimation("climb", 1, 1.f);
 		break;
 	case S_DEATH:
 		animatedSprites->PlayAnimation("death", 1, 3.f);
-		deathtimer += dElapsedTime;
 		break;
 	}
 
 	//CS: Update the animated sprite
 	animatedSprites->Update(dElapsedTime);
-
-	// Update the UV Coordinates
-	vec2UVCoordinate = cSettings->ConvertIndexToUVSpace(vTransform);
 }
 
 /**
@@ -403,26 +389,35 @@ void CPlayer2D::MovementUpdate(double dt)
 {
 	state = S_IDLE;
 
+	glm::vec2 force = glm::vec2(0.f);
 	if (cKeyboardController->IsKeyDown(GLFW_KEY_W))
 	{
-		vTransform.y += fMovementSpeed * dt;
+		force.y += fMovementSpeed;
 	}
 	else if (cKeyboardController->IsKeyDown(GLFW_KEY_S))
 	{
-		vTransform.y -= fMovementSpeed * dt;
+		force.y -= fMovementSpeed;
 	}
 	if (cKeyboardController->IsKeyDown(GLFW_KEY_D))
 	{
-		vTransform.x += fMovementSpeed * dt;
+		force.x += fMovementSpeed;
 		state = S_MOVE;
 		facing = RIGHT;
 	}
 	else if (cKeyboardController->IsKeyDown(GLFW_KEY_A))
 	{
-		vTransform.x -= fMovementSpeed * dt;
+		force.x -= fMovementSpeed;
 		state = S_MOVE;
 		facing = LEFT;
 	}
+
+	if (cKeyboardController->IsKeyPressed(GLFW_KEY_SPACE))
+	{
+		//force.y += fJumpSpeed;
+		cPhysics2D.SetVelocity(glm::vec2(cPhysics2D.GetVelocity().x, 10));
+	}
+
+	cPhysics2D.SetForce(force);
 }
 
 /**
@@ -454,24 +449,9 @@ void CPlayer2D::UpdateHealthLives(void)
 
 void CPlayer2D::Hit(int health)
 {
-	if (!bDamaged && state != S_DEATH)
+	if (state != S_DEATH)
 	{
 		cInventoryItem = cInventoryManager->GetItem("Health");
 		cInventoryItem->Remove(health);
 	}
-	bDamaged = true;
 }
-//
-//bool CPlayer2D::InRangeOfTile(unsigned tileID)
-//{
-//	if ((i32vec2NumMicroSteps.x > 0 && cMap2D->GetMapInfo(vTransform.y, vTransform.x + 1) == tileID))
-//	{
-//		return true;
-//	}
-//	else if (cMap2D->GetMapInfo(vTransform.y, vTransform.x) == tileID)
-//	{
-//		return true;
-//	}
-//
-//	return false;
-//}

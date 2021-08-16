@@ -67,9 +67,6 @@ CScene2D::~CScene2D(void)
 		cMap2D->Destroy();
 		cMap2D = NULL;
 	}
-
-	// Clear out all the shaders
-	//CShaderManager::GetInstance()->Destroy();
 }
 
 /**
@@ -94,7 +91,7 @@ bool CScene2D::Init(void)
 		return false;
 	}
 	// Load the map into an array
-	if (cMap2D->LoadMap("Maps/DM2213_Map_Level_01.csv") == false)
+	if (cMap2D->LoadMap("Maps/DM2213_Map_Level_Test.csv") == false)
 	{
 		// The loading of a map has failed. Return false
 		return false;
@@ -275,6 +272,8 @@ void CScene2D::Render(void)
 	cPlayer2D->Render();
 	// Call the CPlayer2D's PostRender()
 	cPlayer2D->PostRender();
+
+	cPlayer2D->RenderCollider();
 
 	// Call the cGUI_Scene2D's PreRender()
 	cGUI_Scene2D->PreRender();
