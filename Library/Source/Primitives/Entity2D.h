@@ -22,13 +22,27 @@
 
 //CS: Include Mesh.h to use to draw (include vertex and index buffers)
 #include "Mesh.h"
+#include <vector>
 using namespace std;
 
 class CEntity2D
 {
 public:
+	enum ENTITY_TYPE
+	{
+		NONE = 0,
+		PLAYER,
+		CLONE,
+		ENEMY,
+		INTERACTABLES,
+		TOTAL,
+	};
+	ENTITY_TYPE type;
+
+	CEntity2D(ENTITY_TYPE type = NONE);
+
 	// Constructor
-	CEntity2D(void);
+	//CEntity2D(void);
 
 	// Destructor
 	virtual ~CEntity2D(void);
@@ -57,9 +71,16 @@ public:
 	// The vec2 variable which stores the UV coordinates to render the Entity2D
 	glm::vec2 vec2UVCoordinate;
 
+	//bool isCollidable();
+
+	bool collidable;
+
 protected:
 	// Name of Shader Program instance
 	std::string sShaderName;
+
+	//all of entity list
+	//std::vector<CEntity2D*> entity_list;
 
 	//CS: The mesh that is used to draw objects
 	CMesh* mesh;
@@ -75,6 +96,7 @@ protected:
 
 	// Load a texture
 	virtual bool LoadTexture(const char* filename);
+
 
 	// Settings
 	CSettings* cSettings;

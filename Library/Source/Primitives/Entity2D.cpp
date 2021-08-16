@@ -15,16 +15,18 @@
 #include <iostream>
 using namespace std;
 
+
 /**
  @brief Constructor This constructor has protected access modifier as this class will be a Singleton
  */
-CEntity2D::CEntity2D(void)
+CEntity2D::CEntity2D(ENTITY_TYPE type)
 	: VAO(0)
 	, VBO(0)
 	, EBO(0)
 	, iTextureID(0)
 	, cSettings(NULL)
 	, mesh(NULL)
+	, collidable(false)
 {
 	transform = glm::mat4(1.0f);	// make sure to initialize matrix to identity matrix first
 
@@ -34,6 +36,11 @@ CEntity2D::CEntity2D(void)
 	// Initialise vec2UVCoordinate
 	vec2UVCoordinate = glm::vec2(0.0f);
 }
+
+//CEntity2D::CEntity2D(ENTITY_TYPE type)
+//{
+//}
+
 
 /**
  @brief Destructor This destructor has protected access modifier as this class will be a Singleton
@@ -169,7 +176,6 @@ void CEntity2D::PostRender(void)
 	// Disable blending
 	glDisable(GL_BLEND);
 }
-
 /**
 @brief Load a texture, assign it a code and store it in MapOfTextureIDs.
 @param filename A const char* variable which contains the file name of the texture
@@ -211,3 +217,28 @@ bool CEntity2D::LoadTexture(const char* filename)
 
 	return true;
 }
+
+//bool CEntity2D::isCollidable()
+//{
+//	for (std::vector<CEntity2D*>::iterator it = entity_list.begin(); it != entity_list.end(); ++it)
+//	{
+//		CEntity2D* entity = (CEntity2D*)*it;
+//		if (entity->type == CEntity2D::PLAYER)
+//		{
+//			entity->collidable = true;
+//			return true;
+//		}
+//		else if (entity->type == CEntity2D::ENEMY)
+//		{
+//			entity->collidable = true;
+//			return true;
+//		}
+//		else if (entity->type == CEntity2D::CLONE)
+//		{
+//			entity->collidable = false;
+//			return false;
+//		}
+//		else
+//			return false;
+//	}
+//}

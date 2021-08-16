@@ -74,6 +74,9 @@ bool CGUI_Scene2D::Init(void)
 	cInventoryItem = cInventoryManager->Add("Shuriken", "Image/Collectibles/shuriken.png", 999, 0);
 	cInventoryItem->vec2Size = glm::vec2(25, 25);
 
+	interval = 0;
+	timer = 0;
+
 
 	return true;
 }
@@ -86,6 +89,8 @@ void CGUI_Scene2D::Update(const double dElapsedTime)
 	// Calculate the relative scale to our default windows width
 	const float relativeScale_x = cSettings->iWindowWidth / 800.0f;
 	const float relativeScale_y = cSettings->iWindowHeight / 600.0f;
+	interval++;
+	timer = interval / 120;
 
 	// Start the Dear ImGui frame
 	ImGui_ImplOpenGL3_NewFrame();
@@ -99,7 +104,8 @@ void CGUI_Scene2D::Update(const double dElapsedTime)
 	ImGui::SetWindowFontScale(1.5f * relativeScale_y);
 
 	// Display the FPS
-	ImGui::TextColored(ImVec4(1, 1, 0, 1), "FPS: %d", cFPSCounter->GetFrameRate());
+	/*ImGui::TextColored(ImVec4(1, 1, 0, 1), "FPS: %d", cFPSCounter->GetFrameRate());*/
+	ImGui::TextColored(ImVec4(1, 1, 0, 1),"Timer : %d",timer);
 
 	//// Render a progress bar
 	//m_fProgressBar += 0.001f;
