@@ -220,63 +220,7 @@ bool CMap2D::Init(const unsigned int uiNumLevels,
 */
 void CMap2D::Update(const double dElapsedTime)
 {
-	unsigned xCoord = 0, yCoord = 0;
-	
-	//Switch Off 1
-	if(FindValue(11, true, yCoord, xCoord))
-	{
-		//Toggling Off all the Bricks?
-		xCoord = 0;
-		yCoord = 0;
-		while (FindValue(101, false, yCoord, xCoord))
-		{
-			ToggleMapInfo(yCoord, xCoord, true);
-		}
-	}
-	//Switch On 1
-	if (FindValue(12, true, yCoord, xCoord))
-	{
-		//Toggling On all the Bricks?
-		xCoord = 0;
-		yCoord = 0;
-		while (FindValue(101, true, yCoord, xCoord))
-		{
-			ToggleMapInfo(yCoord, xCoord, false);
-		}
-	}
-	//Switch Off 2
-	if (FindValue(13, true, yCoord, xCoord))
-	{
-		//Toggling Off all the Bricks?
-		xCoord = 0;
-		yCoord = 0;
-		while (FindValue(102, false, yCoord, xCoord))
-		{
-			ToggleMapInfo(yCoord, xCoord, true);
-		}
-	}
-	//Switch On 2
-	if (FindValue(14, true, yCoord, xCoord))
-	{
-		//Toggling On all the Bricks?
-		xCoord = 0;
-		yCoord = 0;
-		while (FindValue(102, true, yCoord, xCoord))
-		{
-			ToggleMapInfo(yCoord, xCoord, false);
-		}
-	}
-
-	if (!FindValue(2, true, yCoord, xCoord))
-	{
-		if(FindValue(18, true, yCoord, xCoord))
-			SetMapInfo(yCoord, xCoord, 17);
-	}
-	else
-	{
-		if(FindValue(17, true, yCoord, xCoord))
-			SetMapInfo(yCoord, xCoord, 18);
-	}
+	//Do nothing for now
 }
 
 /**

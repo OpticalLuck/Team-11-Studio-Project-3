@@ -89,6 +89,9 @@
     <ClCompile Include="Source\Scene2D\Object2D.cpp">
       <Filter>Entity2D</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Scene2D\Camera2D.cpp">
+      <Filter>Entity2D</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h">
@@ -152,6 +155,9 @@
       <Filter>GameStateManagement</Filter>
     </ClInclude>
     <ClInclude Include="Source\Scene2D\Object2D.h">
+      <Filter>Entity2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene2D\Camera2D.h">
       <Filter>Entity2D</Filter>
     </ClInclude>
   </ItemGroup>

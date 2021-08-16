@@ -24,6 +24,8 @@
 
 // Include the Map2D as we will use it to check the player's movements and actions
 #include "Map2D.h"
+//Camera
+#include "Camera2D.h"
 // Include CPlayer2D
 #include "Player2D.h"
 // Include CEnemy2D
