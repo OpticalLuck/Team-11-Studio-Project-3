@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\KeyboardInputHandler\CKeyboardInputHandler.cpp" />
     <ClCompile Include="Source\Application.cpp" />
     <ClCompile Include="Source\GameStateManagement\GameOverState.cpp" />
     <ClCompile Include="Source\GameStateManagement\GameStateManager.cpp" />
@@ -33,6 +34,7 @@
     <ClCompile Include="Source\SoundController\SoundInfo.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\KeyboardInputHandler\CKeyboardInputHandler.h" />
     <ClInclude Include="Source\Application.h" />
     <ClInclude Include="Source\GameStateManagement\GameOverState.h" />
     <ClInclude Include="Source\GameStateManagement\GameStateBase.h" />

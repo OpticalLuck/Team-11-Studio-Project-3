@@ -40,9 +40,14 @@ class CMap2D;
 // Include SoundController
 #include "..\SoundController\SoundController.h"
 
-class CPlayer2D : public CSingletonTemplate<CPlayer2D>, public CEntity2D
+#include "../KeyboardInputHandler/CKeyboardInputHandler.h"
+
+#include <map>
+#include <array>
+#include "../KeyboardInputHandler/CKeyboardInputHandler.h"
+
+class CPlayer2D : public CEntity2D
 {
-	friend CSingletonTemplate<CPlayer2D>;
 public:
 	enum STATE
 	{
@@ -57,6 +62,12 @@ public:
 		S_DEATH,
 		S_NUM_STATE
 	};
+
+	// Constructor
+	CPlayer2D(void);
+
+	// Destructor
+	virtual ~CPlayer2D(void);
 
 	// Init
 	bool Init(void);
@@ -80,7 +91,15 @@ public:
 
 	void Hit(int health);
 
+	void SetClone(bool bIsClone);
+
+	bool IsClone();
+
+	void SetInputs(std::vector<std::array<bool, CKeyboardInputHandler::KEYBOARD_INPUTS::INPUT_TOTAL>> inputs);
 protected:
+
+	bool bIsClone;
+
 	enum DIRECTION
 	{
 		LEFT = 0,
@@ -90,7 +109,12 @@ protected:
 		NUM_DIRECTIONS
 	};
 
-	glm::i32vec2 i32vec2OldIndex;
+	CKeyboardInputHandler* cKeyboardInputHandler;
+	std::vector<std::array<bool, CKeyboardInputHandler::KEYBOARD_INPUTS::INPUT_TOTAL>> m_CloneKeyboardInputs;
+
+	int iTempFrameCounter; // move to game manager/scene2D/PlayGameState later
+
+	glm::vec2 vOldTransform;
 
 	glm::i32vec2 checkpoint;
 
@@ -110,12 +134,13 @@ protected:
 	glm::vec4 currentColor;
 
 	// InventoryManager
-	CInventoryManager* cInventoryManager;
+	// CInventoryManager* cInventoryManager;
 	// InventoryItem
 	CInventoryItem* cInventoryItem;
 
 	// Count the number of jumps
 	int jumpCount;
+	float fMovementSpeed;
 
 	// Handler to the CSoundController
 	CSoundController* cSoundController;
@@ -135,33 +160,14 @@ protected:
 	// Facing direction for rendering and ease of animation
 	DIRECTION facing;
 	STATE state;
-	// Constructor
-	CPlayer2D(void);
-
-	// Destructor
-	virtual ~CPlayer2D(void);
 
 	// Load a texture
 	bool LoadTexture(const char* filename, GLuint& iTextureID);
 
-	// Constraint the player's position within a boundary
-	void Constraint(DIRECTION eDirection = LEFT);
-
-	// Check if a position is possible to move into
-	bool CheckPosition(DIRECTION eDirection);
-
-	// Check if the player is in mid-air
-	bool IsMidAir(void);
-
-	// Update Jump or Fall
-	void UpdateJumpFall(const double dElapsedTime = 0.0166666666666667);
-
-	// Let player interact with the map
-	void InteractWithMap(void);
+	void MovementUpdate(double dt);
 
 	// Update the health and lives
 	void UpdateHealthLives(void);
-
 
 	bool InRangeOfTile(unsigned tileID);
 };
