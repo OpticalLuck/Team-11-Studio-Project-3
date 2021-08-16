@@ -29,14 +29,12 @@ class CObject2D : public CEntity2D
 		CObject2D(int, bool);
 		~CObject2D(void); //Do nothing for now
 
-		void setIndexSpace(glm::i32vec2);
-		void setWorldSpace(glm::i32vec2);
+		void setIndexSpace(glm::vec2);
 
 	private:
 		int value;
 		bool collidable;
 
-		glm::i32vec2 indexSpace; //TEMP
-		glm::i32vec2 worldSpace;
+		glm::vec2 indexSpace; //LOCATION OF OBJECT IN WORLD SPACE
 };
 

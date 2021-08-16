@@ -33,6 +33,12 @@
 //Include CObject2D
 #include "Object2D.h"
 
+//Include player
+#include "Player2D.h"
+
+//Include camera
+#include "Camera2D.h"
+
 // Include files for AStar
 #include <queue>
 #include <functional>
@@ -137,6 +143,9 @@ protected:
 	// Vector array that stores an array of objects level by level
 	std::vector<std::vector<CObject2D>> arrObject;
 
+	//Vector array that stores limits of each level
+	std::vector<glm::i32vec2> arrLevelLimit;
+
 	// The current level
 	unsigned int uiCurLevel;
 	// The number of levels
@@ -150,6 +159,9 @@ protected:
 
 	//CS: The quadMesh for drawing the tiles
 	CMesh* quadMesh;
+
+	//Camera handler
+	Camera2D* camera;
 
 	// Constructor
 	CMap2D(void);

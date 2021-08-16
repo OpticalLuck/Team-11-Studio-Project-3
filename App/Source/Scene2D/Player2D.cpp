@@ -21,6 +21,8 @@ using namespace std;
 // Include Game Manager
 #include "GameManager.h"
 
+#include "Camera2D.h"
+
 /**
  @brief Constructor This constructor has protected access modifier as this class will be a Singleton
  */
@@ -47,6 +49,11 @@ CPlayer2D::CPlayer2D(void)
 
 	// Initialise vec2UVCoordinate
 	vec2UVCoordinate = glm::vec2(0.0f);
+
+	animatedSprites = nullptr;
+	camera = nullptr;
+	checkpoint = i32vec2OldIndex = glm::i32vec2();
+	currentColor = glm::vec4();
 }
 
 /**
@@ -144,6 +151,8 @@ bool CPlayer2D::Init(void)
 	cInventoryItem->vec2Size = glm::vec2(25, 25);
 
 	jumpCount = 0;
+
+	camera = Camera2D::GetInstance();
 
 	// Get the handler to the CSoundController
 	cSoundController = CSoundController::GetInstance();
@@ -467,9 +476,23 @@ void CPlayer2D::Render(void)
 	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
 
 	transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-	transform = glm::translate(transform, glm::vec3(vec2UVCoordinate.x,
-													vec2UVCoordinate.y,
-													0.0f));
+	
+	//Get camera transforms and use them instead
+	glm::vec2 offset = glm::i32vec2(cSettings->NUM_TILES_XAXIS / 2, cSettings->NUM_TILES_YAXIS / 2);
+	glm::vec2 cameraPos = camera->getCurrPos();
+
+	glm::vec2 IndexPos = (glm::vec2)i32vec2Index;
+	IndexPos.x += ((float)i32vec2NumMicroSteps.x / cSettings->NUM_STEPS_PER_TILE_XAXIS);
+	IndexPos.y += ((float)i32vec2NumMicroSteps.y / cSettings->NUM_STEPS_PER_TILE_YAXIS);
+
+	glm::vec2 actualPos = IndexPos - cameraPos + offset;
+	actualPos = cSettings->ConvertIndexToUVSpace(actualPos);
+
+	transform = glm::translate(transform, glm::vec3(actualPos.x, actualPos.y, 0.f));
+
+	//ORIGINAL TRANSFORM
+	//transform = glm::translate(transform, glm::vec3(vec2UVCoordinate.x, vec2UVCoordinate.y, 0.0f));
+
 	if (facing == LEFT)
 		transform = glm::rotate(transform, glm::radians(180.f), glm::vec3(0.f, 1.f, 0.f));
 	// Update the shaders with the latest transform

@@ -26,13 +26,14 @@ class Camera2D : public CSingletonTemplate<Camera2D>
 		~Camera2D(void);
 
 		void Update(float dElapsedTime);
-		void UpdateTarget(glm::i32vec2 target);
+		void UpdateTarget(glm::vec2 target);
 		void Reset(void);
 
+		glm::vec2 getCurrPos(void);
 		bool IsFirstTime(void);
 	private:
 		bool FirstTime;
-		glm::i32vec2 pos; //Position set to index space for now because worldspace can suck my ching cheng han ji
-		glm::i32vec2 targetPos;
+		glm::vec2 pos; //Position set to index space for now because worldspace can suck my ching cheng han ji
+		glm::vec2 targetPos;
 };
 

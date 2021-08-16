@@ -19,6 +19,7 @@ CScene2D::CScene2D(void)
 	, cGameManager(NULL)
 	, cSoundController(NULL)
 	, isCompleted(false)
+	, cameraHandler(NULL)
 {
 }
 
@@ -66,6 +67,11 @@ CScene2D::~CScene2D(void)
 	{
 		cMap2D->Destroy();
 		cMap2D = NULL;
+	}
+
+	if (cameraHandler) {
+		cameraHandler->Destroy();
+		cameraHandler = NULL;
 	}
 
 	// Clear out all the shaders
@@ -129,6 +135,10 @@ bool CScene2D::Init(void)
 		cout << "Failed to load CPlayer2D" << endl;
 		return false;
 	}
+
+	cameraHandler = Camera2D::GetInstance();
+	cameraHandler->Reset();
+	cameraHandler->UpdateTarget(cPlayer2D->i32vec2Index);
 
 	// Create and initialise the CEnemy2D
 	enemyVector.clear();

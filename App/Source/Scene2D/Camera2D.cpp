@@ -2,7 +2,7 @@
 
 Camera2D::Camera2D(void) {
 	FirstTime = true;
-	pos = targetPos = glm::i32vec2(0, 0);
+	pos = targetPos = glm::vec2(0.f, 0.f);
 }
 
 Camera2D::~Camera2D(void) {
@@ -13,19 +13,17 @@ void Camera2D::Update(float dElapsedTime) {
 	if (FirstTime) {
 		pos = targetPos;
 		FirstTime = false;
+		return;
 	}
 
 	float spd = 5 * dElapsedTime;
-
-	if ((targetPos - pos).length() < spd * 2) //Dont lerp if player alr reached area
-		return;
 
 	//Lerp
 	pos.x = pos.x + spd * (targetPos.x - pos.x);
 	pos.y = pos.y + spd * (targetPos.y - pos.y);
 }
 
-void Camera2D::UpdateTarget(glm::i32vec2 target) {
+void Camera2D::UpdateTarget(glm::vec2 target) {
 	targetPos = target;
 }
 
@@ -35,4 +33,8 @@ void Camera2D::Reset(void) {
 
 bool Camera2D::IsFirstTime(void) {
 	return FirstTime;
+}
+
+glm::vec2 Camera2D::getCurrPos(void) {
+	return pos;
 }

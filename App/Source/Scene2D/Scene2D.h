@@ -30,6 +30,8 @@
 #include "Player2D.h"
 // Include CEnemy2D
 #include "Enemy2D.h"
+//Camera
+#include "Camera2D.h"
 
 // Include vector
 #include <vector>
@@ -93,6 +95,9 @@ protected:
 
 	// Handler to the CSoundController
 	CSoundController* cSoundController;
+
+	//Handler for camera
+	Camera2D* cameraHandler;
 
 	// Constructor
 	CScene2D(void);

@@ -67,6 +67,11 @@ bool CMap2D::Init(const unsigned int uiNumLevels,
 	for (unsigned i = 0; i < uiNumLevels; i++)
 		arrObject.push_back(std::vector<CObject2D>());
 
+	//Initialising limits of map
+	arrLevelLimit.clear();
+	for (unsigned i = 0; i < uiNumLevels; i++)
+		arrLevelLimit.push_back(glm::i32vec2());
+
 	// Store the map sizes in cSettings
 	uiCurLevel = 0;
 	this->uiNumLevels = uiNumLevels;
@@ -195,6 +200,9 @@ bool CMap2D::Init(const unsigned int uiNumLevels,
 		return false;
 	}
 
+	//Camera
+	camera = Camera2D::GetInstance();
+
 	// Initialise the variables for AStar
 	m_weight = 1;
 	m_startPos = glm::i32vec2(0, 0);
@@ -219,8 +227,14 @@ bool CMap2D::Init(const unsigned int uiNumLevels,
 @brief Update Update this instance
 */
 void CMap2D::Update(const double dElapsedTime)
-{
-	//Do nothing for now
+{	
+	//Camera work
+	glm::vec2 IndexPos = CPlayer2D::GetInstance()->i32vec2Index;
+	IndexPos.x += (CPlayer2D::GetInstance()->i32vec2NumMicroSteps.x * (cSettings->TILE_WIDTH / cSettings->NUM_STEPS_PER_TILE_XAXIS));
+	IndexPos.y += (CPlayer2D::GetInstance()->i32vec2NumMicroSteps.y * (cSettings->TILE_HEIGHT / cSettings->NUM_STEPS_PER_TILE_YAXIS));
+
+	camera->UpdateTarget(IndexPos);
+	camera->Update(dElapsedTime);
 }
 
 /**
@@ -248,34 +262,25 @@ void CMap2D::Render(void)
 	unsigned int transformLoc = glGetUniformLocation(CShaderManager::GetInstance()->activeShader->ID, "transform");
 	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
 
-	// Render
-	//for (unsigned int uiRow = 0; uiRow < cSettings->NUM_TILES_YAXIS; uiRow++)
-	//{
-	//	for (unsigned int uiCol = 0; uiCol < cSettings->NUM_TILES_XAXIS; uiCol++)
-	//	{
-	//		transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-	//		transform = glm::translate(transform, glm::vec3(cSettings->ConvertIndexToUVSpace(cSettings->x, uiCol, false, 0), 
-	//		cSettings->ConvertIndexToUVSpace(cSettings->y, uiRow, true, 0),0.0f));
-	//		//transform = glm::rotate(transform, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
-
-	//		// Update the shaders with the latest transform
-	//		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
-
-	//		// Render a tile
-	//		RenderTile(uiRow, uiCol);
-	//	}
-	//}
-
 	//Render(MY VERSION)
+
+	//Camera init
+	glm::vec2 offset = glm::i32vec2(cSettings->NUM_TILES_XAXIS / 2, cSettings->NUM_TILES_YAXIS / 2);
+	glm::vec2 cameraPos = camera->getCurrPos();
+
 	for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++) {
 		const CObject2D& currObj = arrObject[uiCurLevel][i];
+		glm::vec2 objCamPos = currObj.indexSpace - cameraPos + offset;
+
+		glm::vec2 actualPos = cSettings->ConvertIndexToUVSpace(objCamPos);
 
 		transform = glm::mat4(1.f);
-		transform = glm::translate(transform, glm::vec3(
+		transform = glm::translate(transform, glm::vec3(actualPos.x, actualPos.y, 0.f));
+		/*transform = glm::translate(transform, glm::vec3(
 			cSettings->ConvertIndexToUVSpace(cSettings->x, currObj.indexSpace.x, false, 0),
 			cSettings->ConvertIndexToUVSpace(cSettings->y, currObj.indexSpace.y, false),
 			0.f
-		));
+		));*/
 
 		// Update the shaders with the latest transform
 		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
@@ -433,21 +438,23 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 	doc = rapidcsv::Document(FileSystem::getPath(filename).c_str());
 
 	// Check if the sizes of CSV data matches the declared arrMapInfo sizes
-	if ((cSettings->NUM_TILES_XAXIS != (unsigned int)doc.GetColumnCount()) ||
+	/*if ((cSettings->NUM_TILES_XAXIS != (unsigned int)doc.GetColumnCount()) ||
 		(cSettings->NUM_TILES_YAXIS != (unsigned int)doc.GetRowCount()))
 	{
 		cout << "Sizes of CSV map does not match declared arrMapInfo sizes." << endl;
 		return false;
-	}
+	}*/
+
+	arrLevelLimit[uiCurLevel] = glm::i32vec2(doc.GetColumnCount(), doc.GetRowCount());
 
 	// Read the rows and columns of CSV data into arrMapInfo
-	for (unsigned int uiRow = 0; uiRow < cSettings->NUM_TILES_YAXIS; uiRow++)
+	for (unsigned int uiRow = 0; uiRow < (unsigned int)doc.GetRowCount(); uiRow++)
 	{
 		// Read a row from the CSV file
 		std::vector<std::string> row = doc.GetRow<std::string>(uiRow);
 		
 		// Load a particular CSV value into the arrMapInfo
-		for (unsigned int uiCol = 0; uiCol < cSettings->NUM_TILES_XAXIS; ++uiCol)
+		for (unsigned int uiCol = 0; uiCol < (unsigned int)doc.GetColumnCount(); ++uiCol)
 		{
 			//Init of objects values
 			int currVal = (int)stoi(row[uiCol]);
