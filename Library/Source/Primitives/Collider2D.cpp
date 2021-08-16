@@ -50,7 +50,7 @@ bool Collider2D::Init()
 	glEnableVertexAttribArray(1);
 	
 	glLineWidth(fLineWidth);
-
+	 
 	return true;
 }
 

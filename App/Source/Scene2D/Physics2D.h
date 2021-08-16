@@ -14,7 +14,7 @@ class CPhysics2D
 private:
 	glm::vec2 CalculateAcceleration();
 	glm::vec2 CalculateFriction(float coefficient);
-public:
+public:	
 	enum STATUS
 	{
 		IDLE = 0,
@@ -43,7 +43,7 @@ public:
 	glm::vec2 GetVelocity() const;
 protected:
 	const glm::vec2 v2Gravity = glm::vec2(0.f, -10.f);
-	const float MAX_SPEED = 5.f;
+	const float MAX_SPEED = 10.f;
 	const float FRICTONAL_COEFFICIENT = 0.8f;
 	glm::vec2 *position;
 	glm::vec2 velocity;
