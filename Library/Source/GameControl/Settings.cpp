@@ -21,6 +21,9 @@ CSettings::CSettings(void)
 	, MICRO_STEP_XAXIS(0.015625f)
 	, MICRO_STEP_YAXIS(0.0208325f)
 {
+	iWindowWidth = 800;
+	iWindowHeight = 600;
+
 	switch (screenSize)
 	{
 	case SSIZE_800x600:
@@ -81,8 +84,8 @@ glm::vec2 CSettings::ConvertIndexToUVSpace(const glm::vec2 pos)
 	glm::vec2 output = pos;
 
 	//ORIGINAL ONE
-	output.x = (output.x - (0.5 * NUM_TILES_XAXIS)) / (0.5 * NUM_TILES_XAXIS);
-	output.y = (output.y - (0.5 * NUM_TILES_YAXIS)) / (0.5 * NUM_TILES_YAXIS);
+	output.x = ((float)output.x - (0.5f * NUM_TILES_XAXIS)) / (0.5f * NUM_TILES_XAXIS);
+	output.y = ((float)output.y - (0.5f * NUM_TILES_YAXIS)) / (0.5f * NUM_TILES_YAXIS);
 
 	//NEW ONE
 	//output.x = (((pos.x + 0.5) / NUM_TILES_XAXIS) * 2) - 1;
@@ -94,8 +97,8 @@ glm::vec2 CSettings::ConvertIndexToUVSpace(const glm::vec2 pos)
 glm::vec2 CSettings::ConvertUVSpaceToIndex(const glm::vec2 pos)
 {
 	glm::vec2 output = pos;
-	output.x = output.x * (0.5 * NUM_TILES_XAXIS) + (0.5 * NUM_TILES_XAXIS);
-	output.y = output.y * (0.5 * NUM_TILES_YAXIS) + (0.5 * NUM_TILES_YAXIS);
+	output.x = (float)output.x * (0.5f * NUM_TILES_XAXIS) + (0.5f * NUM_TILES_XAXIS);
+	output.y = (float)output.y * (0.5f * NUM_TILES_YAXIS) + (0.5f * NUM_TILES_YAXIS);
 
 	return output;
 }

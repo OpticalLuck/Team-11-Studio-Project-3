@@ -2,6 +2,7 @@
 
 // Include GLEW
 #ifndef GLEW_STATIC
+#include <Windows.h>
 #include <GL/glew.h>
 #define GLEW_STATIC
 #endif

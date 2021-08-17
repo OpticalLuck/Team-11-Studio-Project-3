@@ -53,6 +53,10 @@ CPlayer2D::CPlayer2D(void)
 	currentColor = glm::vec4();
 }
 
+CPlayer2D::CPlayer2D(string cloneName) : CEntity2D() {
+	
+}
+
 /**
  @brief Destructor This destructor has protected access modifier as this class will be a Singleton
  */

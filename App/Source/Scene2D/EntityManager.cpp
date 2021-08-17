@@ -6,6 +6,8 @@ CEntityManager::CEntityManager()
 	, cEnemy2D(NULL)
 	, cMap2D(NULL)
 	, cCloneTemplate(NULL)
+	, cKeyboardController(NULL)
+	, cKeyboardInputHandler(NULL)
 {
 }
 
@@ -131,7 +133,7 @@ CPlayer2D* CEntityManager::GetPlayer()
 
 void CEntityManager::RenderEnemy(void)
 {
-	for (int i = 0; i < m_enemyList.size(); i++)
+	for (unsigned i = 0; i < m_enemyList.size(); i++)
 	{
 		m_enemyList[i]->PreRender();
 		m_enemyList[i]->Render();
@@ -141,7 +143,7 @@ void CEntityManager::RenderEnemy(void)
 
 void CEntityManager::RenderClone(void)
 {
-	for (int i = 0; i < m_cloneList.size(); ++i)
+	for (unsigned i = 0; i < m_cloneList.size(); ++i)
 	{
 		m_cloneList[i]->PreRender();
 		m_cloneList[i]->Render();
@@ -166,14 +168,14 @@ void CEntityManager::Update(const double dElapsedTime)
 	// Call the cPlayer2D's update method before Map2D as we want to capture the inputs before map2D update
 	cPlayer2D->Update(dElapsedTime);
 
-	for (int i = 0; i < m_cloneList.size(); ++i)
+	for (unsigned i = 0; i < m_cloneList.size(); ++i)
 	{
 		m_cloneList[i]->Update(dElapsedTime);
 	}
 
 	// Call all the cEnemy2D's update method before Map2D 
 	// as we want to capture the updates before map2D update
-	for (int i = 0; i < m_enemyList.size(); i++)
+	for (unsigned i = 0; i < m_enemyList.size(); i++)
 	{
 		if (static_cast<CEnemy2D*>(m_enemyList[i])->GetHealth() < 0)
 		{
@@ -181,7 +183,7 @@ void CEntityManager::Update(const double dElapsedTime)
 			m_enemyList.erase(m_enemyList.begin() + i);
 		}
 	}
-	for (int i = 0; i < m_enemyList.size(); i++)
+	for (unsigned i = 0; i < m_enemyList.size(); i++)
 	{
 		m_enemyList[i]->Update(dElapsedTime);
 	}

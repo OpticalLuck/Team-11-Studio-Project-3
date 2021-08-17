@@ -55,7 +55,7 @@ CScene2D::~CScene2D(void)
 	cKeyboardInputHandler = NULL;
 
 	// Destroy the enemies
-	for (int i = 0; i < enemyVector.size(); i++)
+	for (unsigned i = 0; i < enemyVector.size(); i++)
 	{
 		delete enemyVector[i];
 		enemyVector[i] = NULL;

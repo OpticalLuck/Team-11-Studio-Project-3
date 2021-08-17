@@ -312,8 +312,8 @@ void CEnemy2D::PostRender(void)
 */
 void CEnemy2D::SetTransform(const int iIndex_XAxis, const int iIndex_YAxis)
 {
-	this->vTransform.x = iIndex_XAxis;
-	this->vTransform.y = iIndex_YAxis;
+	this->vTransform.x = (float)iIndex_XAxis;
+	this->vTransform.y = (float)iIndex_YAxis;
 }
 
 /**
@@ -405,7 +405,7 @@ void CEnemy2D::Constraint(DIRECTION eDirection)
 	{
 		if (vTransform.x >= (int)cSettings->NUM_TILES_XAXIS - 1)
 		{
-			vTransform.x = ((int)cSettings->NUM_TILES_XAXIS) - 1;
+			vTransform.x = ((float)cSettings->NUM_TILES_XAXIS) - 1.f;
 			i32vec2NumMicroSteps.x = 0;
 		}
 	}
@@ -413,7 +413,7 @@ void CEnemy2D::Constraint(DIRECTION eDirection)
 	{
 		if (vTransform.y >= (int)cSettings->NUM_TILES_YAXIS - 1)
 		{
-			vTransform.y = ((int)cSettings->NUM_TILES_YAXIS) - 1;
+			vTransform.y = ((float)cSettings->NUM_TILES_YAXIS) - 1.f;
 			i32vec2NumMicroSteps.y = 0;
 		}
 	}
