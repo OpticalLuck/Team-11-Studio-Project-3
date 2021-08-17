@@ -223,36 +223,29 @@ void CPlayer2D::Update(const double dElapsedTime)
 	// Update Collider2D Position
 	collider2D.position = glm::vec3(vTransform, 0.f);
 
-	for (unsigned uiRow = 0; uiRow < cSettings->NUM_TILES_YAXIS; uiRow++)
+	for (auto object : cMap2D->GetMap())
 	{
-		for (unsigned uiCol = 0; uiCol < cSettings->NUM_TILES_XAXIS; uiCol++)
+		if (collider2D.CollideWith(&object.getCollider()))
 		{
-			if (cMap2D->GetCollider(uiRow, uiCol))
-			{
-				if (collider2D.CollideWith(cMap2D->GetCollider(uiRow, uiCol)))
-				{
-					//Collider2D::CorrectedAxis axis = collider2D.ResolveCollision(cMap2D->GetCollider(uiRow, uiCol));
-					collider2D.ResolveCollisionX(cMap2D->GetCollider(uiRow, uiCol));
-					// Resolve transform to corrected position in collider
-					vTransform = collider2D.position;
-				}
-			}
+			//Collider2D::CorrectedAxis axis = collider2D.ResolveCollision(cMap2D->GetCollider(uiRow, uiCol));
+			collider2D.ResolveCollisionX(&object.getCollider());
+			// Resolve transform to corrected position in collider
+			vTransform = collider2D.position;
 		}
 	}
+			
 
-	for (unsigned uiRow = 0; uiRow < cSettings->NUM_TILES_YAXIS; uiRow++)
+	for (auto object : cMap2D->GetMap())
 	{
-		for (unsigned uiCol = 0; uiCol < cSettings->NUM_TILES_XAXIS; uiCol++)
+		if (collider2D.CollideWith(&object.getCollider()))
 		{
-			if (cMap2D->GetCollider(uiRow, uiCol))
+			if (collider2D.CollideWith(&object.getCollider()))
 			{
-				if (collider2D.CollideWith(cMap2D->GetCollider(uiRow, uiCol)))
-				{
-					cPhysics2D.SetVelocity(glm::vec2(cPhysics2D.GetVelocity().x, 0));
- 					collider2D.ResolveCollisionY(cMap2D->GetCollider(uiRow, uiCol));
-					// Resolve transform to corrected position in collider
-					vTransform = collider2D.position;
-				}
+				cPhysics2D.SetVelocity(glm::vec2(cPhysics2D.GetVelocity().x, 0));
+
+				collider2D.ResolveCollisionY(&object.getCollider());
+				// Resolve transform to corrected position in collider
+				vTransform = collider2D.position;
 			}
 		}
 	}
