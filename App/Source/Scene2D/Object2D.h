@@ -35,6 +35,9 @@ class CObject2D : public CEntity2D
 		int value;
 		bool collidable;
 
+		float width;
+		float height;
+
 		glm::vec2 indexSpace; //LOCATION OF OBJECT IN WORLD SPACE
 };
 

@@ -4,6 +4,8 @@ CObject2D::CObject2D(void) {
 	value = 0;
 	collidable = true;
 	indexSpace = glm::vec2();
+
+	width = height = 1.f; //Default value is 1 x 1
 }
 
 CObject2D::CObject2D(int value, bool collidable) {
