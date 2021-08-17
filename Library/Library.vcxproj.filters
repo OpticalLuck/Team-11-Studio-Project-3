@@ -122,9 +122,6 @@
     <ClCompile Include="Source\GUI\backends\imgui_impl_opengl3.cpp">
       <Filter>GUI</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Primitives\Collider2D.cpp">
-      <Filter>Primitives</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\TimeControl\FPSCounter.h">
@@ -216,9 +213,6 @@
     </ClInclude>
     <ClInclude Include="Source\Math\MyMath.h">
       <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Primitives\Collider2D.h">
-      <Filter>Primitives</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

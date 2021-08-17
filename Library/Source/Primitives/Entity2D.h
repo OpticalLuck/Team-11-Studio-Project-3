@@ -25,7 +25,7 @@
 #include <vector>
 
 //Collision Detection and Resolution
-#include "Collider2D.h"
+#include "../App/Source/Scene2D/Collider2D.h"
 
 using namespace std;
 

@@ -96,12 +96,12 @@
       <Filter>Entity2D</Filter>
     </ClCompile>
     <ClCompile Include="Source\Scene2D\Camera2D.cpp">
-	<Filter>Entity2D</Filter>
+      <Filter>Entity2D</Filter>
     </ClCompile>
     <ClCompile Include="Source\Scene2D\EntityManager.cpp">
       <Filter>Entity2D</Filter>
     </ClCompile>
-	<ClCompile Include="Source\Scene2D\Interactables.cpp">
+    <ClCompile Include="Source\Scene2D\Interactables.cpp">
       <Filter>Entity2D</Filter>
     </ClCompile>
     <ClCompile Include="Source\KeyboardInputHandler\CKeyboardInputHandler.cpp">
@@ -109,6 +109,9 @@
     </ClCompile>
     <ClCompile Include="Source\Command\Command.cpp">
       <Filter>Command</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene2D\Collider2D.cpp">
+      <Filter>Entity2D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -176,7 +179,7 @@
       <Filter>Entity2D</Filter>
     </ClInclude>
     <ClInclude Include="Source\Scene2D\Camera2D.h">
-	<Filter>Entity2D</Filter>
+      <Filter>Entity2D</Filter>
     </ClInclude>
     <ClInclude Include="Source\Scene2D\EntityManager.h">
       <Filter>Entity2D</Filter>
@@ -188,6 +191,9 @@
       <Filter>Command</Filter>
     </ClInclude>
     <ClInclude Include="Source\Scene2D\Interactables.h">
+      <Filter>Entity2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene2D\Collider2D.h">
       <Filter>Entity2D</Filter>
     </ClInclude>
   </ItemGroup>

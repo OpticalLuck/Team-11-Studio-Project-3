@@ -269,7 +269,9 @@ void CMap2D::Render(void)
 
 		glm::vec2 actualPos = cSettings->ConvertIndexToUVSpace(objCamPos);
 
-		if (actualPos.x <= -1.01 || actualPos.x >= 1.01f || actualPos.y <= -1.01f || actualPos.y >= 1.01f)
+		float clampX = 1.01f;
+		float clampY = 1.01f;
+		if (actualPos.x <= -clampX || actualPos.x >= clampX || actualPos.y <= -clampY || actualPos.y >= clampY)
 			continue;
 
 		transform = glm::mat4(1.f);

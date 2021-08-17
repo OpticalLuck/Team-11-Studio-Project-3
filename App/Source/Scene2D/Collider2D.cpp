@@ -1,10 +1,13 @@
 #include "Collider2D.h"
 
 // Include Shader Manager
-#include "..\RenderControl\ShaderManager.h"
+#include "RenderControl\ShaderManager.h"
 
 #include <GLFW/glfw3.h>
-#include "../GameControl/Settings.h"
+#include "GameControl/Settings.h"
+#include "Camera2D.h"
+
+//#include "DesignPatterns/SingletonTemplate.h"
 
 Collider2D::Collider2D()
 	: vec2Dimensions(glm::vec2(0.5f, 0.5f))
@@ -176,14 +179,28 @@ void Collider2D::Render(void)
 	if (!bIsDisplayed)
 		return;
 
-	transform = glm::mat4(1.0f);
-	transform = glm::translate(transform, glm::vec3(CSettings::GetInstance()->ConvertIndexToUVSpace(position), 0.f));
-	transform = glm::scale(transform, glm::vec3(CSettings::GetInstance()->TILE_WIDTH, CSettings::GetInstance()->TILE_HEIGHT, 1.f));
-	CShaderManager::GetInstance()->activeShader->setMat4("transform", transform);
 
-	// render box
-	glBindVertexArray(VAO);
-	glDrawArrays(GL_LINE_LOOP, 0, 6);
+	//Camera init
+	glm::vec2 offset = glm::vec2(float(CSettings::GetInstance()->NUM_TILES_XAXIS / 2.f) - 1.f, float(CSettings::GetInstance()->NUM_TILES_YAXIS / 2.f) - 1.f);
+	glm::vec2 cameraPos = Camera2D::GetInstance()->getCurrPos();
+
+	glm::vec2 objCamPos = position - cameraPos + offset;
+
+	glm::vec2 actualPos = CSettings::GetInstance()->ConvertIndexToUVSpace(objCamPos);
+
+	float clampX = 1.001f;
+	float clampY = 1.001f;
+	if (fabs(actualPos.x) < clampX && fabs(actualPos.y) < clampY)
+	{
+		transform = glm::mat4(1.f);
+		transform = glm::translate(transform, glm::vec3(actualPos.x, actualPos.y, 0.f));
+		transform = glm::scale(transform, glm::vec3(CSettings::GetInstance()->TILE_WIDTH, CSettings::GetInstance()->TILE_HEIGHT, 1.f));
+		CShaderManager::GetInstance()->activeShader->setMat4("transform", transform);
+
+		// render box
+		glBindVertexArray(VAO);
+		glDrawArrays(GL_LINE_LOOP, 0, 6);
+	}
 }
 
 void Collider2D::PostRender(void)
