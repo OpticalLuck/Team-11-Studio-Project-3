@@ -24,9 +24,6 @@
     <Filter Include="Manager2D">
       <UniqueIdentifier>{54f8f5f8-2e6a-42e3-9af7-09b8d09de77d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="KeyboardInputHandler">
-      <UniqueIdentifier>{841053f8-15dc-4891-9335-1ad7a9fe4150}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp">
@@ -91,8 +88,9 @@
     </ClCompile>
     <ClCompile Include="Source\Scene2D\EntityManager.cpp">
       <Filter>Entity2D</Filter>
+    </ClCompile>
     <ClCompile Include="Source\KeyboardInputHandler\CKeyboardInputHandler.cpp">
-      <Filter>KeyboardInputHandler</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -158,8 +156,9 @@
     </ClInclude>
     <ClInclude Include="Source\Scene2D\EntityManager.h">
       <Filter>Entity2D</Filter>
+    </ClInclude>
     <ClInclude Include="Source\KeyboardInputHandler\CKeyboardInputHandler.h">
-      <Filter>KeyboardInputHandler</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
