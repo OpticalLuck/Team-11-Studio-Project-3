@@ -148,7 +148,8 @@ bool CPlayer2D::Init(void)
 
 	cKeyboardInputHandler = CKeyboardInputHandler::GetInstance();
 
-	collider2D.Init();
+	collider2D = new Collider2D();
+	collider2D->Init();
 	cPhysics2D.Init(&vTransform);
 
 	return true;
@@ -212,7 +213,7 @@ void CPlayer2D::Update(const double dElapsedTime)
 	cPhysics2D.Update(dElapsedTime);
 
 	// Update Collider2D Position
-	collider2D.position = glm::vec3(vTransform, 0.f);
+	collider2D->position = glm::vec3(vTransform, 0.f);
 
 	for (unsigned uiRow = 0; uiRow < cSettings->NUM_TILES_YAXIS; uiRow++)
 	{
@@ -220,12 +221,12 @@ void CPlayer2D::Update(const double dElapsedTime)
 		{
 			if (cMap2D->GetCollider(uiRow, uiCol))
 			{
-				if (collider2D.CollideWith(cMap2D->GetCollider(uiRow, uiCol)))
+				if (collider2D->CollideWith(cMap2D->GetCollider(uiRow, uiCol)))
 				{
 					//Collider2D::CorrectedAxis axis = collider2D.ResolveCollision(cMap2D->GetCollider(uiRow, uiCol));
-					collider2D.ResolveCollisionX(cMap2D->GetCollider(uiRow, uiCol));
+					collider2D->ResolveCollisionX(cMap2D->GetCollider(uiRow, uiCol));
 					// Resolve transform to corrected position in collider
-					vTransform = collider2D.position;
+					vTransform = collider2D->position;
 				}
 			}
 		}
@@ -237,12 +238,12 @@ void CPlayer2D::Update(const double dElapsedTime)
 		{
 			if (cMap2D->GetCollider(uiRow, uiCol))
 			{
-				if (collider2D.CollideWith(cMap2D->GetCollider(uiRow, uiCol)))
+				if (collider2D->CollideWith(cMap2D->GetCollider(uiRow, uiCol)))
 				{
 					cPhysics2D.SetVelocity(glm::vec2(cPhysics2D.GetVelocity().x, 0));
- 					collider2D.ResolveCollisionY(cMap2D->GetCollider(uiRow, uiCol));
+ 					collider2D->ResolveCollisionY(cMap2D->GetCollider(uiRow, uiCol));
 					// Resolve transform to corrected position in collider
-					vTransform = collider2D.position;
+					vTransform = collider2D->position;
 				}
 			}
 		}
