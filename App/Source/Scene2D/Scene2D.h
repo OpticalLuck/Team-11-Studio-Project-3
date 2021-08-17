@@ -50,6 +50,8 @@
 // Include SoundController
 #include "..\SoundController\SoundController.h"
 
+#include "../ShadowRaycast/ShadowRaycast2D.h"
+
 class CScene2D : public CSingletonTemplate<CScene2D>
 {
 	friend CSingletonTemplate<CScene2D>;
@@ -76,6 +78,9 @@ public:
 protected:
 	// The handler containing the instance of the 2D Map
 	CMap2D* cMap2D;
+
+	ShadowRaycast2D* cShadowRaycast2D;
+
 	// The handler containing the instance of CPlayer2Ds
 	CPlayer2D* cPlayer2D;
 	std::vector<CPlayer2D*> clones;

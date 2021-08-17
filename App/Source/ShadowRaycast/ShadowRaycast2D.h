@@ -1,10 +1,17 @@
 #pragma once
 #include <vector>
+#include <string>
+#include "DesignPatterns/SingletonTemplate.h"
+
+// Include GLM
+#include <includes/glm.hpp>
+#include <includes/gtc/matrix_transform.hpp>
+#include <includes/gtc/type_ptr.hpp>
 
 struct Edge
 {
-	float fStartX, fStartY;
-	float fEndX, fEndY;
+	float sx, sy;
+	float ex, ey;
 };
 
 struct Cell
@@ -19,24 +26,41 @@ struct Cell
 #define EAST 2
 #define WEST 3
 
-class ShadowRaycast2D
+class ShadowRaycast2D : public CSingletonTemplate<ShadowRaycast2D>
 {
+	friend CSingletonTemplate<ShadowRaycast2D>;
 public:
-	
-	ShadowRaycast2D();
-	~ShadowRaycast2D();
+	glm::mat4 transform;
 
-	bool Init();
+	float fLineWidth;
 
-protected:
+	// Bounding Box colour
+	glm::vec4 vec4Colour;
+
+	std::vector<Edge> vecEdges;
 	Cell* m_WorldArr;
 	int iWorldWidth;
 	int iWorldHeight;
 
-	std::vector<Edge> vecEdges;
+	bool Init();
+
+	// PreRender
+	virtual void PreRender(void);
+	// Render
+	virtual void Render(void);
+	// PostRender
+	virtual void PostRender(void);
+
+protected:
+	std::string sLineShaderName;
+	unsigned int VAO, VBO;
+
+	ShadowRaycast2D(void);
+	~ShadowRaycast2D(void);
+
+	void GenerateLineVAO(glm::vec2 vStart, glm::vec2 vEnd);
 
 	void ConvertTileMapToPolyMap(int iStartX, int iStartY, int w, int h, float fBlockWidth, int pitch);
-
 	void Raycast();
 
 };

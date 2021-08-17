@@ -29,6 +29,7 @@ class CObject2D : public CEntity2D
 		~CObject2D(void); //Do nothing for now
 
 		void setIndexSpace(glm::vec2);
+		glm::vec2 getIndexSpace(void);
 
 	private:
 		int value;

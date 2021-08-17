@@ -22,3 +22,8 @@ CObject2D::~CObject2D(void) {
 void CObject2D::setIndexSpace(glm::vec2 indexSpace) {
 	this->indexSpace = indexSpace;
 }
+
+glm::vec2 CObject2D::getIndexSpace(void)
+{
+	return indexSpace;
+}

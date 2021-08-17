@@ -21,6 +21,7 @@ CScene2D::CScene2D(void)
 	, cKeyboardInputHandler(NULL)
 	, isCompleted(false)
 	, cameraHandler(NULL)
+	, cShadowRaycast2D(NULL)
 {
 }
 
@@ -45,6 +46,12 @@ CScene2D::~CScene2D(void)
 	{
 		cGUI_Scene2D->Destroy();
 		cGUI_Scene2D = NULL;
+	}
+
+	if (cShadowRaycast2D)
+	{
+		cShadowRaycast2D->Destroy();
+		cShadowRaycast2D = NULL;
 	}
 
 	// We won't delete this since it was created elsewhere
@@ -111,6 +118,9 @@ bool CScene2D::Init(void)
 
 	// Activate diagonal movement
 	cMap2D->SetDiagonalMovement(false);
+
+	cShadowRaycast2D = ShadowRaycast2D::GetInstance();
+	cShadowRaycast2D->Init();
 
 	// Load Scene2DColor into ShaderManager
 	CShaderManager::GetInstance()->Add("2DColorShader", "Shader//Scene2DColor.vs", "Shader//Scene2DColor.fs");
@@ -335,6 +345,10 @@ void CScene2D::Render(void)
 	cGUI_Scene2D->Render();
 	// Call the cGUI_Scene2D's PostRender()
 	cGUI_Scene2D->PostRender();
+
+	cShadowRaycast2D->PreRender();
+	cShadowRaycast2D->Render();
+	cShadowRaycast2D->PostRender();
 }
 
 /**

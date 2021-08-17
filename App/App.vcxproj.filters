@@ -30,6 +30,9 @@
     <Filter Include="Command">
       <UniqueIdentifier>{9ec58048-9e19-41d9-8642-8e72a3b90c0e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ShadowRaycast">
+      <UniqueIdentifier>{c6126cff-0b6f-4110-abda-9269ec5723e4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp">
@@ -113,6 +116,9 @@
     <ClCompile Include="Source\Scene2D\Collider2D.cpp">
       <Filter>Entity2D</Filter>
     </ClCompile>
+    <ClCompile Include="Source\ShadowRaycast\ShadowRaycast2D.cpp">
+      <Filter>ShadowRaycast</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h">
@@ -195,6 +201,9 @@
     </ClInclude>
     <ClInclude Include="Source\Scene2D\Collider2D.h">
       <Filter>Entity2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ShadowRaycast\ShadowRaycast2D.h">
+      <Filter>ShadowRaycast</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
