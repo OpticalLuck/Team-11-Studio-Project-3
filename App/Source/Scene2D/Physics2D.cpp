@@ -9,21 +9,30 @@
 using namespace std;
 
 #include "GameControl/Settings.h"
+#include "Math/MyMath.h"
+
 glm::vec2 CPhysics2D::CalculateAcceleration()
 {
 	return force * (1 / mass);
 }
 glm::vec2 CPhysics2D::CalculateFriction(float coefficient)
 {
-	//Dont need to care about the normal that much since tile based so normal mostly going to be y = 1
-	float weight = mass * abs(v2Gravity.y);
+	if (abs(velocity.x) > 0.f)
+	{
+		// f = uN - N = normal force 
+		//Dont need to care about the normal that much since tile based so normal mostly going to be y = 1
+		float NormalForce = mass * abs(v2Gravity.y);
 
-	glm::vec2 direction = glm::vec2(0.f);
-	if(glm::length(velocity) > 0.f && velocity.x != 0)
-		direction = glm::normalize(glm::vec2(velocity.x, 0)) * -1.f;
+		float frictionalforce = coefficient * NormalForce;
 
-	glm::vec2 friction = direction * (coefficient * weight);
-	return friction;
+		glm::vec2 oppositedirection = glm::normalize(velocity * -1.0f);
+
+		//F = MA, A = F/M
+		glm::vec2 friction = oppositedirection * (frictionalforce);
+		return friction;
+	}
+
+	return glm::vec2(0.f, 0.f);
 }
 /**
  @brief Constructor This constructor has protected access modifier as this class will be a Singleton
@@ -55,17 +64,21 @@ bool CPhysics2D::Init(glm::vec2* position)
 void CPhysics2D::Update(double dElapsedTime)
 {
 	glm::vec2 a = CalculateAcceleration();
-	a += CalculateFriction(FRICTONAL_COEFFICIENT);
-	a += v2Gravity;
+	
+	cout << velocity.x << ", " << velocity.y << endl;
+	glm::vec2 friction = CalculateFriction(FRICTONAL_COEFFICIENT);
 
+	a += friction;
+
+	a += v2Gravity;
 	velocity += a * (float)dElapsedTime;
 
-	//Cap Speed
-	if (glm::length(velocity) > MAX_SPEED) 
-	{
-		//std::cout << "SPEED LIMIT" << std::endl;
-		velocity = glm::normalize(velocity) * MAX_SPEED;
-	}
+
+	if (velocity.x < 0.1f && velocity.x > -0.1f)
+		velocity.x = 0;
+
+	velocity.x = Math::Clamp(velocity.x, -MAX_SPEED, MAX_SPEED);
+	velocity.y = Math::Clamp(velocity.y, -MAX_SPEED, MAX_SPEED);
 
 	*position += velocity * (float)dElapsedTime;
 

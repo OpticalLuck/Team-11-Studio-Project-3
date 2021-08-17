@@ -137,8 +137,11 @@ bool CPlayer2D::Init(void)
 
 	jumpCount = 0;
 
-	fMovementSpeed = 20.f;
-	fJumpSpeed = 400.f;
+	//fMovementSpeed = 20.f;
+	//fJumpSpeed = 400.f;
+
+	fMovementSpeed = 5.f;
+	fJumpSpeed = 5.f;
 
 	// Get the handler to the CSoundController
 	cSoundController = CSoundController::GetInstance();
@@ -426,34 +429,35 @@ void CPlayer2D::MovementUpdate(double dt)
 	if (iTempFrameCounter >= keyboardInputs.size())
 		return;
 
-	glm::vec2 force = glm::vec2(0.f);
+	glm::vec2 velocity = cPhysics2D.GetVelocity();
 	if (keyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::W])
 	{
-		force.y += fMovementSpeed;
+		velocity.y = fMovementSpeed;
 	}
 	else if (keyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::S])
 	{
-		force.y -= fMovementSpeed;
+		velocity.y = -fMovementSpeed;
 	}
 	if (keyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::D])
 	{
-		force.x += fMovementSpeed;
+		velocity.x = fMovementSpeed;
 		state = S_MOVE;
 		facing = RIGHT;
 	}
 	else if (keyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::A])
 	{
-		force.x -= fMovementSpeed;
+		velocity.x = -fMovementSpeed;
 		state = S_MOVE;
 		facing = LEFT;
 	}
 
 	if (keyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::SPACE])
 	{
-		force.y += fJumpSpeed;
+		velocity.y = fJumpSpeed;
 	}
 
-	cPhysics2D.SetForce(force);
+	if (glm::length(velocity) > 0.f)
+		cPhysics2D.SetVelocity(velocity);
 }
 
 /**

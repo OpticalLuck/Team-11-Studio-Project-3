@@ -140,9 +140,6 @@ public:
 	void PrintSelf(void) const;
 
 
-	//For Collision Detection
-	bool CollideWithMap(Collider2D& collider, unsigned& uirRow, unsigned int& uirCol, const bool bInvert = true);
-
 	Collider2D* GetCollider(const unsigned int uiRow, const unsigned int uiCol, const bool bInvert = true);
 protected:
 	// The variable containing the rapidcsv::Document
