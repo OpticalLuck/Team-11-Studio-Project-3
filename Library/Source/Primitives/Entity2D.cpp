@@ -167,9 +167,9 @@ void CEntity2D::PostRender(void)
 
 void CEntity2D::RenderCollider()
 {
-	collider2D->PreRender();
-	collider2D->Render();
-	collider2D->PostRender();
+	collider2D.PreRender();
+	collider2D.Render();
+	collider2D.PostRender();
 }
 /**
 @brief Load a texture, assign it a code and store it in MapOfTextureIDs.
