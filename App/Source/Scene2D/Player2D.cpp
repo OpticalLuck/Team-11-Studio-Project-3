@@ -92,7 +92,7 @@ bool CPlayer2D::Init(void)
 		return false;	// Unable to find the start position of the player, so quit this game
 
 	// Erase the value of the player in the arrMapInfo
-	// cMap2D->SetMapInfo(uiRow, uiCol, 1);
+	 cMap2D->SetMapInfo(uiRow, uiCol, 0);
 
 	// Set checkpoint position to start position
 	checkpoint = glm::i32vec2(uiCol, uiRow);
@@ -139,37 +139,14 @@ bool CPlayer2D::Init(void)
 
 	jumpCount = 0;
 
-	fMovementSpeed = 20.f;
-	fJumpSpeed = 400.f;
+	//fMovementSpeed = 20.f;
+	//fJumpSpeed = 400.f;
+
+	fMovementSpeed = 5.f;
+	fJumpSpeed = 5.f;
 
 	// Get the handler to the CSoundController
 	cSoundController = CSoundController::GetInstance();
-
-	//for (int i = 0; i < 120; ++i)
-	//{
-	//	std::array<bool, INPUT_TOTAL> currentFrameInputs;
-
-	//	for (int i = 0; i < INPUT_TOTAL; ++i)
-	//	{
-	//		currentFrameInputs[i] = false;
-	//	}
-
-	//	currentFrameInputs[W] = true;
-	//	mKeyboardInputs.push_back(currentFrameInputs);
-	//}
-
-	//for (int i = 0; i < 300; ++i)
-	//{
-	//	std::array<bool, INPUT_TOTAL> currentFrameInputs;
-
-	//	for (int i = 0; i < INPUT_TOTAL; ++i)
-	//	{
-	//		currentFrameInputs[i] = false;
-	//	}
-
-	//	currentFrameInputs[D] = true;
-	//	mKeyboardInputs.push_back(currentFrameInputs);
-	//}
 
 	cKeyboardInputHandler = CKeyboardInputHandler::GetInstance();
 
@@ -236,11 +213,8 @@ void CPlayer2D::Update(const double dElapsedTime)
 
 	cPhysics2D.Update(dElapsedTime);
 
-	// Update the UV Coordinates
-	vec2UVCoordinate = cSettings->ConvertIndexToUVSpace(vTransform);
-
 	// Update Collider2D Position
-	collider2D.position = glm::vec3(vec2UVCoordinate, 0.f);
+	collider2D.position = glm::vec3(vTransform, 0.f);
 
 	for (unsigned uiRow = 0; uiRow < cSettings->NUM_TILES_YAXIS; uiRow++)
 	{
@@ -253,10 +227,7 @@ void CPlayer2D::Update(const double dElapsedTime)
 					//Collider2D::CorrectedAxis axis = collider2D.ResolveCollision(cMap2D->GetCollider(uiRow, uiCol));
 					collider2D.ResolveCollisionX(cMap2D->GetCollider(uiRow, uiCol));
 					// Resolve transform to corrected position in collider
-					vTransform = cSettings->ConvertUVSpaceToIndex(collider2D.position);
-
-					//set y vel to 0
-					//cPhysics2D.SetVelocity(glm::vec2(0, cPhysics2D.GetVelocity().y));
+					vTransform = collider2D.position;
 				}
 			}
 		}
@@ -270,18 +241,16 @@ void CPlayer2D::Update(const double dElapsedTime)
 			{
 				if (collider2D.CollideWith(cMap2D->GetCollider(uiRow, uiCol)))
 				{
+					cPhysics2D.SetVelocity(glm::vec2(cPhysics2D.GetVelocity().x, 0));
  					collider2D.ResolveCollisionY(cMap2D->GetCollider(uiRow, uiCol));
 					// Resolve transform to corrected position in collider
-					vTransform = cSettings->ConvertUVSpaceToIndex(collider2D.position);
-					cPhysics2D.SetVelocity(glm::vec2(cPhysics2D.GetVelocity().x, 0));
+					vTransform = collider2D.position;
 				}
 			}
 		}
 	}
 
-	// Update the UV Coordinates
-	vec2UVCoordinate = cSettings->ConvertIndexToUVSpace(vTransform);
-
+	
 	//animation States
 	switch (state)
 	{
@@ -313,6 +282,9 @@ void CPlayer2D::Update(const double dElapsedTime)
 
 	//CS: Update the animated sprite
 	animatedSprites->Update(dElapsedTime);
+
+	// Update the UV Coordinates
+	vec2UVCoordinate = cSettings->ConvertIndexToUVSpace(vTransform);
 
 	iTempFrameCounter++;
 }
@@ -428,34 +400,35 @@ void CPlayer2D::MovementUpdate(double dt)
 	if (iTempFrameCounter >= keyboardInputs.size())
 		return;
 
-	glm::vec2 force = glm::vec2(0.f);
+	glm::vec2 velocity = cPhysics2D.GetVelocity();
 	if (keyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::W])
 	{
-		force.y += fMovementSpeed;
+		velocity.y = fMovementSpeed;
 	}
 	else if (keyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::S])
 	{
-		force.y -= fMovementSpeed;
+		velocity.y = -fMovementSpeed;
 	}
 	if (keyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::D])
 	{
-		force.x += fMovementSpeed;
+		velocity.x = fMovementSpeed;
 		state = S_MOVE;
 		facing = RIGHT;
 	}
 	else if (keyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::A])
 	{
-		force.x -= fMovementSpeed;
+		velocity.x = -fMovementSpeed;
 		state = S_MOVE;
 		facing = LEFT;
 	}
 
 	if (keyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::SPACE])
 	{
-		force.y += fJumpSpeed;
+		velocity.y = fJumpSpeed;
 	}
 
-	cPhysics2D.SetForce(force);
+	if (glm::length(velocity) > 0.f)
+		cPhysics2D.SetVelocity(velocity);
 }
 
 /**

@@ -44,7 +44,7 @@ public:
 protected:
 	const glm::vec2 v2Gravity = glm::vec2(0.f, -10.f);
 	const float MAX_SPEED = 10.f;
-	const float FRICTONAL_COEFFICIENT = 0.8f;
+	const float FRICTONAL_COEFFICIENT = 1.f;
 	glm::vec2 *position;
 	glm::vec2 velocity;
 	glm::vec2 force;

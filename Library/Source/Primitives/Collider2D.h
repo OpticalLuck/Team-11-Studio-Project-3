@@ -22,7 +22,7 @@ public:
 		Y
 	};
 	// Attributes of the Shader
-	glm::vec3 position;
+	glm::vec2 position;
 	glm::mat4 transform;
 
 	// Bounding Box specifications
