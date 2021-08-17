@@ -145,7 +145,10 @@ public:
 	int GetLevelRow(void);
 	int GetLevelCol(void);
 
-	Collider2D* GetCollider(const unsigned int uiRow, const unsigned int uiCol, const bool bInvert = true);
+	//Get arrlevellimit
+	glm::i32vec2 GetLevelLimit(void);
+
+	Collider2D* GetCollider(const unsigned int uiRow, const unsigned int uiCol);
 protected:
 	// The variable containing the rapidcsv::Document
 	// We will load the CSV file's content into this Document

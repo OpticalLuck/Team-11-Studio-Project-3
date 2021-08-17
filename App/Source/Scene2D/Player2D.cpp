@@ -47,7 +47,7 @@ CPlayer2D::CPlayer2D(void)
 
 	animatedSprites = nullptr;
 	camera = nullptr;
-	checkpoint = i32vec2OldIndex = glm::i32vec2();
+	checkpoint  = glm::i32vec2();
 	currentColor = glm::vec4();
 }
 
@@ -329,9 +329,7 @@ void CPlayer2D::Render(void)
 	glm::vec2 offset = glm::i32vec2((cSettings->NUM_TILES_XAXIS / 2) - 1, (cSettings->NUM_TILES_YAXIS / 2) - 1);
 	glm::vec2 cameraPos = camera->getCurrPos();
 
-	glm::vec2 IndexPos = (glm::vec2)i32vec2Index;
-	IndexPos.x += ((float)i32vec2NumMicroSteps.x / cSettings->NUM_STEPS_PER_TILE_XAXIS) + 0.5f;
-	IndexPos.y += ((float)i32vec2NumMicroSteps.y / cSettings->NUM_STEPS_PER_TILE_YAXIS) + 0.5f;
+	glm::vec2 IndexPos = vTransform;
 
 	glm::vec2 actualPos = IndexPos - cameraPos + offset;
 	actualPos = cSettings->ConvertIndexToUVSpace(actualPos);

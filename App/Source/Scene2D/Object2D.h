@@ -17,7 +17,6 @@
 // Include CEntity2D
 #include "Primitives/Entity2D.h"
 
-// Include the Map2D as we will use it to check the player's movements and actions
 class CMap2D;
 
 class CObject2D : public CEntity2D

@@ -230,14 +230,6 @@ bool CMap2D::Init(const unsigned int uiNumLevels,
 */
 void CMap2D::Update(const double dElapsedTime)
 {	
-	//Camera work
-	glm::vec2 IndexPos = CPlayer2D::GetInstance()->i32vec2Index;
-	IndexPos.x += (CPlayer2D::GetInstance()->i32vec2NumMicroSteps.x * (cSettings->TILE_WIDTH / cSettings->NUM_STEPS_PER_TILE_XAXIS));
-	IndexPos.y += (CPlayer2D::GetInstance()->i32vec2NumMicroSteps.y * (cSettings->TILE_HEIGHT / cSettings->NUM_STEPS_PER_TILE_YAXIS));
-
-	camera->UpdateTarget(IndexPos);
-	camera->Update(dElapsedTime);
-	camera->ClampCamPos(arrLevelLimit[uiCurLevel]);
 }
 
 /**
@@ -277,6 +269,9 @@ void CMap2D::Render(void)
 
 		glm::vec2 actualPos = cSettings->ConvertIndexToUVSpace(objCamPos);
 
+		if (actualPos.x <= -1.01 || actualPos.x >= 1.01f || actualPos.y <= -1.01f || actualPos.y >= 1.01f)
+			continue;
+
 		transform = glm::mat4(1.f);
 		transform = glm::translate(transform, glm::vec3(actualPos.x, actualPos.y, 0.f));
 		/*transform = glm::translate(transform, glm::vec3(
@@ -290,6 +285,14 @@ void CMap2D::Render(void)
 
 		RenderTile(currObj);
 	}
+
+	/*for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++) {
+		CObject2D& currObj = arrObject[uiCurLevel][i];
+
+		currObj.collider2D.PreRender();
+		currObj.collider2D.Render();
+		currObj.collider2D.PostRender();
+	}*/
 }
 
 /**
@@ -307,6 +310,22 @@ int CMap2D::GetLevelCol(void) {
 
 int CMap2D::GetLevelRow(void) {
 	return arrLevelLimit[uiCurLevel].y;
+}
+
+glm::i32vec2 CMap2D::GetLevelLimit(void) {
+	return arrLevelLimit[uiCurLevel];
+}
+
+Collider2D* CMap2D::GetCollider(const unsigned int uiRow, const unsigned int uiCol)
+{
+	for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++) {
+		CObject2D& obj = arrObject[uiCurLevel][i];
+
+		if (obj.indexSpace.x == uiCol && obj.indexSpace.y == uiRow)
+			return &(obj.collider2D);
+	}
+
+	return nullptr;
 }
 
 // Set the specifications of the map
@@ -483,6 +502,19 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 			currIndex.y = (float)doc.GetRowCount() - (float)uiRow - 1.f;
 
 			currObj.setIndexSpace(currIndex);
+
+			//Collider2D initialisation
+			currObj.collider2D.Init();
+			currObj.collider2D.position = glm::vec3(
+				currIndex.x  + 0.5f,
+				currIndex.y  + 0.5f,
+				0.f
+			);
+
+			if (currVal >= 100 && currVal < 300)
+				currObj.collider2D.colliderEnabled = true;
+			else
+				currObj.collider2D.colliderEnabled = false;
 			
 			if (currVal > 0)
 				arrObject[uiCurLevel].push_back(currObj);

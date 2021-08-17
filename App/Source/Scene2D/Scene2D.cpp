@@ -129,7 +129,7 @@ bool CScene2D::Init(void)
 
 	cameraHandler = Camera2D::GetInstance();
 	cameraHandler->Reset();
-	cameraHandler->UpdateTarget(cPlayer2D->i32vec2Index);
+	cameraHandler->UpdateTarget(cPlayer2D->vTransform);
 
 	// Create and initialise the CEnemy2D
 	enemyVector.clear();
@@ -212,6 +212,11 @@ bool CScene2D::Update(const double dElapsedTime)
 	}
 	// Call the cGUI_Scene2D's update method
 	cGUI_Scene2D->Update(dElapsedTime);
+
+	//Camera work
+	cameraHandler->UpdateTarget(cPlayer2D->vTransform);
+	cameraHandler->Update(dElapsedTime);
+	cameraHandler->ClampCamPos(cMap2D->GetLevelLimit());
 
 	// Check if the game should go to the next level
 	if (cGameManager->bLevelCompleted == true)

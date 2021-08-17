@@ -133,14 +133,3 @@ void CSettings::UpdateWindowSize()
 	}
 	glfwSetWindowSize(pWindow, iWindowWidth, iWindowHeight);
 }
-
-glm::vec2 CSettings::ConvertIndexToUVSpace(const glm::vec2 pos)
-{
-	glm::vec2 output = pos;
-
-	//ORIGINAL ONE
-	output.x = ((float)output.x - (0.5f * NUM_TILES_XAXIS)) / (0.5f * NUM_TILES_XAXIS);
-	output.y = ((float)output.y - (0.5f * NUM_TILES_YAXIS)) / (0.5f * NUM_TILES_YAXIS);
-
-	return output;
-}
