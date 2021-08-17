@@ -64,6 +64,10 @@ bool CEditorSettingsState::Init(void)
 	CShaderManager::GetInstance()->Use("2DShader");
 	CShaderManager::GetInstance()->activeShader->setInt("texture1", 0);
 
+	cLevelEditor = CLevelEditor::GetInstance();
+	cLevelEditor->SetShader("2DShader");
+	cLevelEditor->Init();
+
 	//Create Background Entity
 	background = new CBackgroundEntity("Image/MenuBackground.png");
 	background->SetShader("2DShader");
@@ -118,6 +122,20 @@ bool CEditorSettingsState::Update(const double dElapsedTime)
 	{
 		ImGui::BeginChild("Levels");
 
+		for (int i = 0; i < cLevelEditor->GetLevels().size(); ++i)
+		{
+			if (ImGui::Button(cLevelEditor->GetLevels()[i].LevelName.c_str()))
+			{
+				cLevelEditor->LoadLevel(cLevelEditor->GetLevels()[i].LevelPath.c_str());
+				// Reset the CKeyboardController
+				CKeyboardController::GetInstance()->Reset();
+
+				// Load the menu state
+				cout << "Loading PlayGameState" << endl;
+				CGameStateManager::GetInstance()->SetActiveGameState("LevelEditorState");
+			}
+		}
+
 		ImGui::EndChild();
 
 		ImGui::EndTabItem();
@@ -131,11 +149,11 @@ bool CEditorSettingsState::Update(const double dElapsedTime)
 		{
 			ImGui::TextColored(ImVec4(1, 1, 0, 1), "Please input a reasonable Level size");
 		}
-
-		if (ImGui::Button("Create Level"))
+		else if (ImGui::Button("Create Level"))
 		{
-
+			cLevelEditor->CreateLevel("", iWorldWidth, iWorldHeight);
 		}
+
 
 		ImGui::EndTabItem();
 	}

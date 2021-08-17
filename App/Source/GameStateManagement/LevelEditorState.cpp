@@ -23,6 +23,7 @@ using namespace std;
  */
 CLevelEditorState::CLevelEditorState(void)
 	: cKeyboardInputHandler(NULL)
+	, cLevelEditor(NULL)
 {
 
 }
@@ -42,6 +43,8 @@ bool CLevelEditorState::Init(void)
 {
 	cout << "CLevelEditorState::Init()\n" << endl;
 
+	cLevelEditor = CLevelEditor::GetInstance();
+
 	cKeyboardInputHandler = CKeyboardInputHandler::GetInstance();
 	cKeyboardInputHandler->Init();
 
@@ -53,7 +56,6 @@ bool CLevelEditorState::Init(void)
  */
 bool CLevelEditorState::Update(const double dElapsedTime)
 {
-	cKeyboardInputHandler->Update(dElapsedTime);
 	if (CKeyboardController::GetInstance()->IsKeyReleased(GLFW_KEY_ESCAPE))
 	{
 		// Reset the CKeyboardController
@@ -64,6 +66,22 @@ bool CLevelEditorState::Update(const double dElapsedTime)
 		CGameStateManager::GetInstance()->SetPauseGameState("PauseState");
 		return true;
 	}
+	if (CKeyboardController::GetInstance()->IsKeyDown(GLFW_KEY_W))
+	{
+		Camera2D::GetInstance()->UpdateTarget(glm::vec2(Camera2D::GetInstance()->getCurrPos().x, Camera2D::GetInstance()->getCurrPos().y + 1));
+	}
+	else if (CKeyboardController::GetInstance()->IsKeyDown(GLFW_KEY_S))
+	{
+		Camera2D::GetInstance()->UpdateTarget(glm::vec2(Camera2D::GetInstance()->getCurrPos().x, Camera2D::GetInstance()->getCurrPos().y - 1));
+	}
+	if (CKeyboardController::GetInstance()->IsKeyDown(GLFW_KEY_A))
+	{
+		Camera2D::GetInstance()->UpdateTarget(glm::vec2(Camera2D::GetInstance()->getCurrPos().x - 1, Camera2D::GetInstance()->getCurrPos().y));
+	}
+	else if (CKeyboardController::GetInstance()->IsKeyDown(GLFW_KEY_D))
+	{
+		Camera2D::GetInstance()->UpdateTarget(glm::vec2(Camera2D::GetInstance()->getCurrPos().x + 1, Camera2D::GetInstance()->getCurrPos().y));
+	}
 
 	return true;
 }
@@ -73,6 +91,9 @@ bool CLevelEditorState::Update(const double dElapsedTime)
  */
 void CLevelEditorState::Render(void)
 {
+	cLevelEditor->PreRender();
+	cLevelEditor->Render();
+	cLevelEditor->PostRender();
 }
 
 /**

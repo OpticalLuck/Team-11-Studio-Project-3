@@ -29,7 +29,8 @@ using namespace std;
 
 // Include SoundController
 #include "SoundController/SoundController.h"
-
+// Include TextureManager
+#include "TextureManager/TextureManager.h"
 // Include CGameStateManager
 #include "GameStateManagement/GameStateManager.h"
 // Include CIntroState
@@ -237,6 +238,9 @@ bool Application::Init(void)
 	CShaderManager::GetInstance()->Add("textShader", "Shader//text.vs", "Shader//text.fs");
 	CShaderManager::GetInstance()->Add("LineShader", "Shader//Line2DShader.vs", "Shader//Line2DShader.fs");
 
+	// Initialise the TextureManager Instance
+	CTextureManager::GetInstance()->Init();
+
 	// Initialise the CFPSCounter instance
 	cFPSCounter = CFPSCounter::GetInstance();
 	cFPSCounter->Init();
@@ -318,9 +322,10 @@ void Application::Destroy(void)
 {
 	// Destroy the CGameStateManager
 	CGameStateManager::GetInstance()->Destroy();
-	// Destory the ShaderManager
+	// Destroy the ShaderManager
 	CShaderManager::GetInstance()->Destroy();
-
+	// Destroy the TextureManager
+	CTextureManager::GetInstance()->Destroy();
 	// Destroy the keyboard instance
 	CKeyboardController::GetInstance()->Destroy();
 
