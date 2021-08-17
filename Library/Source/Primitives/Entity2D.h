@@ -88,6 +88,8 @@ protected:
 	std::string sShaderName;
 
 
+
+
 	//all of entity list
 	//std::vector<CEntity2D*> entity_list;
 

@@ -92,7 +92,7 @@ bool CPlayer2D::Init(void)
 		return false;	// Unable to find the start position of the player, so quit this game
 
 	// Erase the value of the player in the arrMapInfo
-	 cMap2D->SetMapInfo(uiRow, uiCol, 0);
+	//cMap2D->SetMapInfo(uiRow, uiCol, 0);
 
 	// Set checkpoint position to start position
 	checkpoint = glm::i32vec2(uiCol, uiRow);
