@@ -20,6 +20,7 @@ CScene2D::CScene2D(void)
 	, cSoundController(NULL)
 	, cKeyboardInputHandler(NULL)
 	, isCompleted(false)
+	, cameraHandler(NULL)
 {
 }
 
@@ -70,6 +71,14 @@ CScene2D::~CScene2D(void)
 		cMap2D->Destroy();
 		cMap2D = NULL;
 	}
+
+	if (cameraHandler) {
+		cameraHandler->Destroy();
+		cameraHandler = NULL;
+	}
+
+	// Clear out all the shaders
+	//CShaderManager::GetInstance()->Destroy();
 }
 
 /**
@@ -94,7 +103,7 @@ bool CScene2D::Init(void)
 		return false;
 	}
 	// Load the map into an array
-	if (cMap2D->LoadMap("Maps/DM2213_Map_Level_Test.csv") == false)
+	if (cMap2D->LoadMap("Maps/DM2213_Map_Level_01.csv") == false)
 	{
 		// The loading of a map has failed. Return false
 		return false;
@@ -117,6 +126,10 @@ bool CScene2D::Init(void)
 		cout << "Failed to load CPlayer2D" << endl;
 		return false;
 	}
+
+	cameraHandler = Camera2D::GetInstance();
+	cameraHandler->Reset();
+	cameraHandler->UpdateTarget(cPlayer2D->vTransform);
 
 	// Create and initialise the CEnemy2D
 	enemyVector.clear();
@@ -199,6 +212,11 @@ bool CScene2D::Update(const double dElapsedTime)
 	}
 	// Call the cGUI_Scene2D's update method
 	cGUI_Scene2D->Update(dElapsedTime);
+
+	//Camera work
+	cameraHandler->UpdateTarget(cPlayer2D->vTransform);
+	cameraHandler->Update(dElapsedTime);
+	cameraHandler->ClampCamPos(cMap2D->GetLevelLimit());
 
 	// Check if the game should go to the next level
 	if (cGameManager->bLevelCompleted == true)

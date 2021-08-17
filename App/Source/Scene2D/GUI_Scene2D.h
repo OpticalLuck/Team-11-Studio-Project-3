@@ -17,6 +17,9 @@
 // Include CInventoryManager
 #include "InventoryManager.h"
 
+//Include math
+#include "Math/MyMath.h"
+
 // Include GLEW
 #ifndef GLEW_STATIC
 #include <GL/glew.h>

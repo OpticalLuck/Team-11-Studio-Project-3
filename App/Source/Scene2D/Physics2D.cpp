@@ -65,7 +65,6 @@ void CPhysics2D::Update(double dElapsedTime)
 {
 	glm::vec2 a = CalculateAcceleration();
 	
-	cout << velocity.x << ", " << velocity.y << endl;
 	glm::vec2 friction = CalculateFriction(FRICTONAL_COEFFICIENT);
 
 	a += friction;
