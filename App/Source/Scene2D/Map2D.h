@@ -139,7 +139,6 @@ public:
 	// Print out details about this class instance in the console window
 	void PrintSelf(void) const;
 
-
 	Collider2D* GetCollider(const unsigned int uiRow, const unsigned int uiCol, const bool bInvert = true);
 protected:
 	// The variable containing the rapidcsv::Document

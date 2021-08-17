@@ -23,7 +23,7 @@ Collider2D::~Collider2D()
 
 bool Collider2D::Init()
 {
-	vec2Dimensions = glm::vec2(CSettings::GetInstance()->TILE_WIDTH, CSettings::GetInstance()->TILE_HEIGHT) * 0.5f;
+	vec2Dimensions = glm::vec2(1, 1) * 0.5f;
 
 	float vertices[] = {
 		-vec2Dimensions.x, -vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
@@ -97,13 +97,13 @@ Collider2D::CorrectedAxis Collider2D::ResolveCollision(Collider2D* object)
 	if (shortestXDist < shortestYDist)
 	{
 		glm::vec2 correctionAxis = glm::normalize(glm::vec2(direction.x * -1, 0.f));
-		position += glm::vec3(shortestXDist, 0, 0) * glm::vec3(correctionAxis, 0);
+		position += glm::vec2(shortestXDist, 0) * correctionAxis;
 		return CorrectedAxis::X;
 	}
 	else
 	{
 		glm::vec2 correctionAxis = glm::normalize(glm::vec2(0.f, direction.y * -1));
-		position += glm::vec3(0, shortestYDist, 0) * glm::vec3(correctionAxis, 0);
+		position += glm::vec2(0, shortestYDist) * correctionAxis;
 		return CorrectedAxis::Y;
 	}
 
@@ -133,7 +133,7 @@ void Collider2D::ResolveCollisionX(Collider2D* object)
 	if (shortestXDist < shortestYDist)
 	{
 		glm::vec2 correctionAxis = glm::normalize(glm::vec2(direction.x * -1, 0.f));
-		position += glm::vec3(shortestXDist, 0, 0) * glm::vec3(correctionAxis, 0);
+		position += glm::vec2(shortestXDist, 0) * correctionAxis;
 	}
 }
 
@@ -161,7 +161,7 @@ void Collider2D::ResolveCollisionY(Collider2D* object)
 	if (shortestXDist > shortestYDist)
 	{
 		glm::vec2 correctionAxis = glm::normalize(glm::vec2(0.f, direction.y * -1));
-		position += glm::vec3(0, shortestYDist, 0) * glm::vec3(correctionAxis, 0);
+		position += glm::vec2(0, shortestYDist) * correctionAxis;
 	}
 }
 
@@ -177,7 +177,8 @@ void Collider2D::Render(void)
 		return;
 
 	transform = glm::mat4(1.0f);
-	transform = glm::translate(transform, position);
+	transform = glm::translate(transform, glm::vec3(CSettings::GetInstance()->ConvertIndexToUVSpace(position), 0.f));
+	transform = glm::scale(transform, glm::vec3(CSettings::GetInstance()->TILE_WIDTH, CSettings::GetInstance()->TILE_HEIGHT, 1.f));
 	CShaderManager::GetInstance()->activeShader->setMat4("transform", transform);
 
 	// render box

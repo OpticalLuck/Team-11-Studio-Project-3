@@ -432,9 +432,23 @@ void CMap2D::SetNumSteps(const CSettings::AXIS sAxis, const unsigned int uiValue
 void CMap2D::SetMapInfo(const unsigned int uiRow, const unsigned int uiCol, const int iValue, const bool bInvert)
 {
 	if (bInvert)
+	{
 		arrMapInfo[uiCurLevel][cSettings->NUM_TILES_YAXIS - uiRow - 1][uiCol].value = iValue;
+		if (iValue == 0)
+		{
+			delete arrMapInfo[uiCurLevel][cSettings->NUM_TILES_YAXIS - uiRow - 1][uiCol].collider2D;
+			arrMapInfo[uiCurLevel][cSettings->NUM_TILES_YAXIS - uiRow - 1][uiCol].collider2D = nullptr;
+		}
+	}
 	else
+	{
 		arrMapInfo[uiCurLevel][uiRow][uiCol].value = iValue;
+		if (iValue == 0)
+		{
+			delete arrMapInfo[uiCurLevel][uiRow][uiCol].collider2D;
+			arrMapInfo[uiCurLevel][uiRow][uiCol].collider2D = nullptr;
+		}
+	}
 }
 
 void CMap2D::ToggleMapInfo(const unsigned int uiRow, const unsigned int uiCol, const bool iValue, const bool bInvert)
@@ -498,10 +512,7 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 			{
 				arrMapInfo[uiCurLevel][uiRow][uiCol].collider2D = new Collider2D();
 				arrMapInfo[uiCurLevel][uiRow][uiCol].collider2D->Init();
-				arrMapInfo[uiCurLevel][uiRow][uiCol].collider2D->position = glm::vec3(
-					cSettings->ConvertIndexToUVSpace(cSettings->x, uiCol, false, 0),
-					cSettings->ConvertIndexToUVSpace(cSettings->y, uiRow, true, 0),
-					0.0f);
+				arrMapInfo[uiCurLevel][uiRow][uiCol].collider2D->position = glm::vec3(uiCol + 0.5f, CSettings::GetInstance()->NUM_TILES_YAXIS - uiRow - 1 + 0.5f, 0.0f);
 
 				if (arrMapInfo[uiCurLevel][uiRow][uiCol].value >= 100 && arrMapInfo[uiCurLevel][uiRow][uiCol].value < 300)
 				{
