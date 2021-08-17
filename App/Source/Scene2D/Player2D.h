@@ -63,15 +63,20 @@ public:
 		S_DEATH,
 		S_NUM_STATE
 	};
+	STATE m_playerState;
 
 	// Constructor
 	CPlayer2D(void);
+
+	CPlayer2D(string cloneName) : CEntity2D() {}
 
 	// Destructor
 	virtual ~CPlayer2D(void);
 
 	// Init
 	bool Init(void);
+
+	bool Init(glm::i32vec2 spawnpoint);
 
 	// Reset
 	bool Reset(void);
@@ -97,6 +102,10 @@ public:
 	bool IsClone();
 
 	void SetInputs(std::vector<std::array<bool, KEYBOARD_INPUTS::INPUT_TOTAL>> inputs);
+
+	CPlayer2D* const Clone();
+
+	glm::i32vec2 GetCheckpoint(void);
 protected:
 
 	bool bIsClone;
@@ -156,11 +165,11 @@ protected:
 	// Load a texture
 	bool LoadTexture(const char* filename, GLuint& iTextureID);
 
-	void MovementUpdate(double dt);
-
 	// Update the health and lives
 	void UpdateHealthLives(void);
 
 	bool InRangeOfTile(unsigned tileID);
+
+	void MovementUpdate(double dt);
 };
 

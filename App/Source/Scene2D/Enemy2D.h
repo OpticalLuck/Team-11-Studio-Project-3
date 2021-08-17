@@ -30,6 +30,8 @@ class CMap2D;
 
 #include "Math/MyMath.h"
 
+//#include "EntityManager.h"
+
 
 class CEnemy2D : public CEntity2D
 {

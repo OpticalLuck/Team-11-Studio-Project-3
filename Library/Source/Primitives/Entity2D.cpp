@@ -54,6 +54,7 @@ CEntity2D::~CEntity2D(void)
 	//CS: Delete the mesh
 	if(mesh)
 		delete mesh;
+
 }
 
 /**

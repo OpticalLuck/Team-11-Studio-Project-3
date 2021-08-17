@@ -23,21 +23,20 @@
 #include "RenderControl\ShaderManager.h"
 
 // Include the Map2D as we will use it to check the player's movements and actions
+
+//#include "Map2D.h"
+
 #include "Map2D.h"
 //Camera
 #include "Camera2D.h"
-// Include CPlayer2D
-#include "Player2D.h"
-// Include CEnemy2D
+
 #include "Enemy2D.h"
-//Camera
-#include "Camera2D.h"
 
 // Include vector
-#include <vector>
+//#include <vector>
 
 // Include Keyboard controller
-#include "Inputs\KeyboardController.h"
+//#include "Inputs\KeyboardController.h"
 
 // GUI
 //#include "GUI/GUI.h"
@@ -49,6 +48,8 @@
 
 // Include SoundController
 #include "..\SoundController\SoundController.h"
+
+#include "EntityManager.h"
 
 class CScene2D : public CSingletonTemplate<CScene2D>
 {
@@ -96,6 +97,8 @@ protected:
 
 	// Game Manager
 	CGameManager* cGameManager;
+
+	CEntityManager* cEntityManager;
 
 	// Handler to the CSoundController
 	CSoundController* cSoundController;

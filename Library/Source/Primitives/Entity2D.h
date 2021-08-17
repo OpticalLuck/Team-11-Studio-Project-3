@@ -29,7 +29,7 @@
 
 using namespace std;
 
-class CEntity2D
+class CEntity2D 
 {
 public:
 	enum ENTITY_TYPE
@@ -44,6 +44,8 @@ public:
 	ENTITY_TYPE type;
 
 	CEntity2D(ENTITY_TYPE type = NONE);
+
+	CEntity2D(string entity_toClone) {}
 
 	// Constructor
 	//CEntity2D(void);
@@ -86,6 +88,9 @@ public:
 protected:
 	// Name of Shader Program instance
 	std::string sShaderName;
+
+
+
 
 	//all of entity list
 	//std::vector<CEntity2D*> entity_list;

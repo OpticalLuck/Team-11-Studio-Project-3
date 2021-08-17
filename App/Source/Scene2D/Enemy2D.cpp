@@ -56,6 +56,9 @@ CEnemy2D::CEnemy2D(void)
 	vec2UVCoordinate = glm::vec2(0.0f);
 
 	i32vec2Destination = glm::i32vec2(0, 0);	// Initialise the iDestination
+
+	type = ENEMY;
+
 	int chance = Math::RandIntMinMax(0, 100);
 	if (chance >= 50)
 	{
