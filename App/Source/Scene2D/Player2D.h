@@ -24,6 +24,7 @@
 
 // Include the Map2D as we will use it to check the player's movements and actions
 class CMap2D;
+class Camera2D;
 
 // Include Keyboard controller
 #include "Inputs\KeyboardController.h"
@@ -127,6 +128,9 @@ protected:
 
 	// Handler to the CMap2D instance
 	CMap2D* cMap2D;
+
+	//Handler to the camera instance
+	Camera2D* camera;
 
 	// Keyboard Controller singleton instance
 	CKeyboardController* cKeyboardController;

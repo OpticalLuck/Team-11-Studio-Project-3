@@ -21,6 +21,8 @@ using namespace std;
 // Include Game Manager
 #include "GameManager.h"
 
+#include "Camera2D.h"
+
 /**
  @brief Constructor This constructor has protected access modifier as this class will be a Singleton
  */
@@ -44,6 +46,11 @@ CPlayer2D::CPlayer2D(void)
 	vec2UVCoordinate = glm::vec2(0.0f);
 
 	type = PLAYER;
+
+	animatedSprites = nullptr;
+	camera = nullptr;
+	checkpoint  = glm::i32vec2();
+	currentColor = glm::vec4();
 }
 
 /**
@@ -139,6 +146,8 @@ bool CPlayer2D::Init(void)
 
 	jumpCount = 0;
 
+	camera = Camera2D::GetInstance();
+
 	//fMovementSpeed = 20.f;
 	//fJumpSpeed = 400.f;
 
@@ -216,36 +225,29 @@ void CPlayer2D::Update(const double dElapsedTime)
 	// Update Collider2D Position
 	collider2D.position = glm::vec3(vTransform, 0.f);
 
-	for (unsigned uiRow = 0; uiRow < cSettings->NUM_TILES_YAXIS; uiRow++)
+	for (auto object : cMap2D->GetMap())
 	{
-		for (unsigned uiCol = 0; uiCol < cSettings->NUM_TILES_XAXIS; uiCol++)
+		if (collider2D.CollideWith(&object.getCollider()))
 		{
-			if (cMap2D->GetCollider(uiRow, uiCol))
-			{
-				if (collider2D.CollideWith(cMap2D->GetCollider(uiRow, uiCol)))
-				{
-					//Collider2D::CorrectedAxis axis = collider2D.ResolveCollision(cMap2D->GetCollider(uiRow, uiCol));
-					collider2D.ResolveCollisionX(cMap2D->GetCollider(uiRow, uiCol));
-					// Resolve transform to corrected position in collider
-					vTransform = collider2D.position;
-				}
-			}
+			//Collider2D::CorrectedAxis axis = collider2D.ResolveCollision(cMap2D->GetCollider(uiRow, uiCol));
+			collider2D.ResolveCollisionX(&object.getCollider());
+			// Resolve transform to corrected position in collider
+			vTransform = collider2D.position;
 		}
 	}
+			
 
-	for (unsigned uiRow = 0; uiRow < cSettings->NUM_TILES_YAXIS; uiRow++)
+	for (auto object : cMap2D->GetMap())
 	{
-		for (unsigned uiCol = 0; uiCol < cSettings->NUM_TILES_XAXIS; uiCol++)
+		if (collider2D.CollideWith(&object.getCollider()))
 		{
-			if (cMap2D->GetCollider(uiRow, uiCol))
+			if (collider2D.CollideWith(&object.getCollider()))
 			{
-				if (collider2D.CollideWith(cMap2D->GetCollider(uiRow, uiCol)))
-				{
-					cPhysics2D.SetVelocity(glm::vec2(cPhysics2D.GetVelocity().x, 0));
- 					collider2D.ResolveCollisionY(cMap2D->GetCollider(uiRow, uiCol));
-					// Resolve transform to corrected position in collider
-					vTransform = collider2D.position;
-				}
+				cPhysics2D.SetVelocity(glm::vec2(cPhysics2D.GetVelocity().x, 0));
+
+				collider2D.ResolveCollisionY(&object.getCollider());
+				// Resolve transform to corrected position in collider
+				vTransform = collider2D.position;
 			}
 		}
 	}
@@ -317,9 +319,18 @@ void CPlayer2D::Render(void)
 	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
 
 	transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-	transform = glm::translate(transform, glm::vec3(vec2UVCoordinate.x,
-													vec2UVCoordinate.y,
-													0.0f));
+	
+	//Get camera transforms and use them instead
+	glm::vec2 offset = glm::i32vec2((cSettings->NUM_TILES_XAXIS / 2) - 1, (cSettings->NUM_TILES_YAXIS / 2) - 1);
+	glm::vec2 cameraPos = camera->getCurrPos();
+
+	glm::vec2 IndexPos = vTransform;
+
+	glm::vec2 actualPos = IndexPos - cameraPos + offset;
+	actualPos = cSettings->ConvertIndexToUVSpace(actualPos);
+
+	transform = glm::translate(transform, glm::vec3(actualPos.x, actualPos.y, 0.f));
+
 	if (facing == LEFT)
 		transform = glm::rotate(transform, glm::radians(180.f), glm::vec3(0.f, 1.f, 0.f));
 	// Update the shaders with the latest transform
@@ -364,8 +375,10 @@ bool CPlayer2D::LoadTexture(const char* filename, GLuint& iTextureID)
 	glGenTextures(1, &iTextureID);
 	glBindTexture(GL_TEXTURE_2D, iTextureID);
 	// set the texture wrapping parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 	// set texture filtering parameters
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

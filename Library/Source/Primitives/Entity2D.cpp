@@ -54,6 +54,7 @@ CEntity2D::~CEntity2D(void)
 	//CS: Delete the mesh
 	if(mesh)
 		delete mesh;
+
 }
 
 /**
@@ -171,6 +172,12 @@ void CEntity2D::RenderCollider()
 	collider2D.Render();
 	collider2D.PostRender();
 }
+
+Collider2D CEntity2D::getCollider()
+{
+	return collider2D;
+}
+
 /**
 @brief Load a texture, assign it a code and store it in MapOfTextureIDs.
 @param filename A const char* variable which contains the file name of the texture

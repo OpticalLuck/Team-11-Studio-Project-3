@@ -25,7 +25,7 @@
 #include <vector>
 
 //Collision Detection and Resolution
-#include "Collider2D.h"
+#include "../App/Source/Scene2D/Collider2D.h"
 
 using namespace std;
 
@@ -72,6 +72,8 @@ public:
 	virtual void PostRender(void);
 
 	virtual void RenderCollider();
+
+	Collider2D getCollider();
 
 	// The i32vec2 which stores the indices of an Entity2D in the Map2D
 	glm::vec2 vTransform;

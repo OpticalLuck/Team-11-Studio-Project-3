@@ -23,7 +23,6 @@
 #include <includes/gtc/matrix_transform.hpp>
 #include <includes/gtc/type_ptr.hpp>
 
-
 class CSettings : public CSingletonTemplate<CSettings>
 {
 	friend CSingletonTemplate<CSettings>;

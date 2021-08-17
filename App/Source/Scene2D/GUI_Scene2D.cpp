@@ -87,10 +87,11 @@ bool CGUI_Scene2D::Init(void)
 void CGUI_Scene2D::Update(const double dElapsedTime)
 {
 	// Calculate the relative scale to our default windows width
-	const float relativeScale_x = cSettings->iWindowWidth / 800.0f;
-	const float relativeScale_y = cSettings->iWindowHeight / 600.0f;
-	interval++;
-	timer = interval / 120;
+	float relativeScale_x = cSettings->iWindowWidth / 800.0f;
+	float relativeScale_y = cSettings->iWindowHeight / 600.0f;
+	
+	relativeScale_x = Math::Max(1.f, relativeScale_x);
+	relativeScale_y = Math::Max(1.f, relativeScale_y);
 
 	// Start the Dear ImGui frame
 	ImGui_ImplOpenGL3_NewFrame();
