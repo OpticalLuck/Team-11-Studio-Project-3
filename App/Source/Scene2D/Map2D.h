@@ -118,6 +118,8 @@ public:
 	// Toggle Active at certain indices in the arrMapInfo
 	void ToggleMapInfo(const unsigned int uiRow, const unsigned int uiCol, const bool iValue, const bool bInvert = true);
 
+	std::vector<CObject2D> GetMap();
+
 	// Get the value at certain indices in the arrMapInfo
 	int GetMapInfo(const unsigned int uiRow, const unsigned int uiCol, const bool bInvert = true) const;
 

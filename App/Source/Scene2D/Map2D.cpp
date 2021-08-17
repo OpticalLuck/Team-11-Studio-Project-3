@@ -285,14 +285,6 @@ void CMap2D::Render(void)
 
 		RenderTile(currObj);
 	}
-
-	/*for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++) {
-		CObject2D& currObj = arrObject[uiCurLevel][i];
-
-		currObj.collider2D.PreRender();
-		currObj.collider2D.Render();
-		currObj.collider2D.PostRender();
-	}*/
 }
 
 /**
@@ -302,6 +294,15 @@ void CMap2D::PostRender(void)
 {
 	// Disable blending
 	glDisable(GL_BLEND);
+
+	for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++)
+	{
+		CObject2D& currObj = arrObject[uiCurLevel][i];
+
+		currObj.collider2D.PreRender();
+		currObj.collider2D.Render();
+		currObj.collider2D.PostRender();
+	}
 }
 
 int CMap2D::GetLevelCol(void) {
@@ -423,6 +424,11 @@ void CMap2D::SetMapInfo(const unsigned int uiRow, const unsigned int uiCol, cons
 void CMap2D::ToggleMapInfo(const unsigned int uiRow, const unsigned int uiCol, const bool iValue, const bool bInvert)
 {
 	//Do nothing for now
+}
+
+std::vector<CObject2D> CMap2D::GetMap()
+{
+	return arrObject[uiCurLevel];
 }
 
 /**

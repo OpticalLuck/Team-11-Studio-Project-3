@@ -71,6 +71,8 @@ public:
 
 	virtual void RenderCollider();
 
+	Collider2D getCollider();
+
 	// The i32vec2 which stores the indices of an Entity2D in the Map2D
 	glm::vec2 vTransform;
 
