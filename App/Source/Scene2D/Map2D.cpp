@@ -286,13 +286,13 @@ void CMap2D::Render(void)
 		RenderTile(currObj);
 	}
 
-	/*for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++) {
+	for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++) {
 		CObject2D& currObj = arrObject[uiCurLevel][i];
 
 		currObj.collider2D.PreRender();
 		currObj.collider2D.Render();
 		currObj.collider2D.PostRender();
-	}*/
+	}
 }
 
 /**
