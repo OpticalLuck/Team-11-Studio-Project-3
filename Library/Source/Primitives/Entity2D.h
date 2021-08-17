@@ -100,7 +100,7 @@ protected:
 	// A transformation matrix for controlling where to render the entities
 	glm::mat4 transform;
 
-	Collider2D collider2D;
+	Collider2D* collider2D;
 
 	// Load a texture
 	virtual bool LoadTexture(const char* filename);
