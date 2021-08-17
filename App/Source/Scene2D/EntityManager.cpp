@@ -13,7 +13,7 @@ void EntityManager::playerInit()
 {
 	unsigned int uiRow = -1;
 	unsigned int uiCol = -1;
-	if (cMap2D->FindValue(1, true, uiRow, uiCol) == true)
+	if (cMap2D->FindValue(1, uiRow, uiCol) == true)
 	{
 		player = new CEntity2D(CEntity2D::PLAYER);
 		player->collidable = true;
@@ -26,7 +26,7 @@ void EntityManager::enemyInit()
 {
 	unsigned int uiRow = -1;
 	unsigned int uiCol = -1;
-	if (cMap2D->FindValue(300, true, uiRow, uiCol) == true)
+	if (cMap2D->FindValue(300, uiRow, uiCol) == true)
 	{
 		enemy = new CEntity2D(CEntity2D::ENEMY);
 		enemy->collidable = true;

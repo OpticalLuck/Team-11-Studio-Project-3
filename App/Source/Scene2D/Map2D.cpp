@@ -27,6 +27,7 @@ using namespace std::placeholders;
  */
 CMap2D::CMap2D(void)
 	: uiCurLevel(0)
+	, camera(NULL)
 {
 	arrMapSizes = nullptr;
 	m_nrOfDirections = 0;
@@ -63,15 +64,16 @@ bool CMap2D::Init(const unsigned int uiNumLevels,
 	// Get the handler to the CSettings instance
 	cSettings = CSettings::GetInstance();
 
-	//Initialising objects
-	arrObject.clear();
-	for (unsigned i = 0; i < uiNumLevels; i++)
-		arrObject.push_back(std::vector<CObject2D>());
-
-	//Initialising limits of map
+	//Initialising arrays and stuff
 	arrLevelLimit.clear();
-	for (unsigned i = 0; i < uiNumLevels; i++)
+	arrGrid.clear();
+	arrObject.clear();
+	for (unsigned i = 0; i < uiNumLevels; i++) {
 		arrLevelLimit.push_back(glm::i32vec2());
+		arrObject.push_back(std::vector<CObject2D*>());
+		arrGrid.push_back(std::vector<std::vector<CObject2D*>>());
+	}
+
 
 	// Store the map sizes in cSettings
 	uiCurLevel = 0;
@@ -264,8 +266,8 @@ void CMap2D::Render(void)
 	glm::vec2 cameraPos = camera->getCurrPos();
 
 	for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++) {
-		const CObject2D& currObj = arrObject[uiCurLevel][i];
-		glm::vec2 objCamPos = currObj.indexSpace - cameraPos + offset;
+		const CObject2D* currObj = arrObject[uiCurLevel][i];
+		glm::vec2 objCamPos = currObj->indexSpace - cameraPos + offset;
 
 		glm::vec2 actualPos = cSettings->ConvertIndexToUVSpace(objCamPos);
 
@@ -299,11 +301,11 @@ void CMap2D::PostRender(void)
 
 	for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++)
 	{
-		CObject2D& currObj = arrObject[uiCurLevel][i];
+		CObject2D* currObj = arrObject[uiCurLevel][i];
 
-		currObj.collider2D.PreRender();
-		currObj.collider2D.Render();
-		currObj.collider2D.PostRender();
+		currObj->collider2D.PreRender();
+		currObj->collider2D.Render();
+		currObj->collider2D.PostRender();
 	}
 }
 
@@ -321,14 +323,10 @@ glm::i32vec2 CMap2D::GetLevelLimit(void) {
 
 Collider2D* CMap2D::GetCollider(const unsigned int uiRow, const unsigned int uiCol)
 {
-	for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++) {
-		CObject2D& obj = arrObject[uiCurLevel][i];
-
-		if (obj.indexSpace.x == uiCol && obj.indexSpace.y == uiRow)
-			return &(obj.collider2D);
-	}
-
-	return nullptr;
+	if (arrGrid[uiCurLevel][uiRow][uiCol])
+		return &(arrGrid[uiCurLevel][uiRow][uiCol]->collider2D);
+	else
+		return nullptr;
 }
 
 // Set the specifications of the map
@@ -400,15 +398,17 @@ void CMap2D::SetNumSteps(const CSettings::AXIS sAxis, const unsigned int uiValue
 void CMap2D::SetMapInfo(const unsigned int uiRow, const unsigned int uiCol, const int iValue, const bool bInvert)
 {
 	for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++) {
-		CObject2D& obj = arrObject[uiCurLevel][i];
+		CObject2D* obj = arrObject[uiCurLevel][i];
 
-		if (obj.indexSpace.x == uiCol && obj.indexSpace.y == uiRow) {
+		if (obj->indexSpace.x == uiCol && obj->indexSpace.y == uiRow) {
 			if (iValue == 0) {
+				delete obj;
+				arrObject[uiCurLevel][i] = nullptr;
 				arrObject[uiCurLevel].erase(arrObject[uiCurLevel].begin() + i);
 				return;
 			}
 
-			obj.value = iValue;
+			obj->value = iValue;
 			return;
 		}
 	}
@@ -416,9 +416,9 @@ void CMap2D::SetMapInfo(const unsigned int uiRow, const unsigned int uiCol, cons
 	if (iValue == 0)
 		return;
 
-	CObject2D newObj;
-	newObj.setIndexSpace(glm::i32vec2(uiCol, uiRow));
-	newObj.value = iValue;
+	CObject2D* newObj = new CObject2D;
+	newObj->setIndexSpace(glm::i32vec2(uiCol, uiRow));
+	newObj->value = iValue;
 
 	arrObject[uiCurLevel].push_back(newObj);
 }
@@ -428,7 +428,7 @@ void CMap2D::ToggleMapInfo(const unsigned int uiRow, const unsigned int uiCol, c
 	//Do nothing for now
 }
 
-std::vector<CObject2D> CMap2D::GetMap()
+std::vector<CObject2D*> CMap2D::GetMap()
 {
 	return arrObject[uiCurLevel];
 }
@@ -443,10 +443,10 @@ int CMap2D::GetMapInfo(const unsigned int uiRow, const unsigned int uiCol, const
 {
 	//Check if theres object on tile
 	for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++) {
-		const CObject2D obj = arrObject[uiCurLevel][i];
+		const CObject2D* obj = arrObject[uiCurLevel][i];
 
-		if (obj.indexSpace.x == uiCol && obj.indexSpace.y == uiRow)
-			return obj.value;
+		if (obj->indexSpace.x == uiCol && obj->indexSpace.y == uiRow)
+			return obj->value;
 	}
 
 	//Return false if theres nothing on the tile
@@ -457,9 +457,9 @@ bool CMap2D::GetMapActive(const unsigned int uiRow, const unsigned int uiCol, co
 {
 	//Check if theres object on tile
 	for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++) {
-		const CObject2D obj = arrObject[uiCurLevel][i];
+		const CObject2D* obj = arrObject[uiCurLevel][i];
 
-		if (obj.indexSpace.x == uiCol && obj.indexSpace.y == uiRow)
+		if (obj->indexSpace.x == uiCol && obj->indexSpace.y == uiRow)
 			return true;
 	}
 
@@ -490,6 +490,8 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 	{
 		// Read a row from the CSV file
 		std::vector<std::string> row = doc.GetRow<std::string>(uiRow);
+
+		arrGrid[uiCurLevel].push_back(std::vector<CObject2D*>());
 		
 		// Load a particular CSV value into the arrMapInfo
 		for (unsigned int uiCol = 0; uiCol < (unsigned int)doc.GetColumnCount(); ++uiCol)
@@ -498,34 +500,40 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 			int currVal = (int)stoi(row[uiCol]);
 			bool currCollide = false;
 
-			CObject2D currObj;
-			currObj.value = currVal;
+			CObject2D* currObj = new CObject2D();
+			currObj->value = currVal;
 			if (currVal >= 100)
 				currCollide = true;
-			currObj.collidable = currCollide;
+			currObj->collidable = currCollide;
 
 			//Position of values
 			glm::vec2 currIndex;
 			currIndex.x = (float)uiCol;
 			currIndex.y = (float)doc.GetRowCount() - (float)uiRow - 1.f;
 
-			currObj.setIndexSpace(currIndex);
+			currObj->setIndexSpace(currIndex);
 
 			//Collider2D initialisation
-			currObj.collider2D.Init();
-			currObj.collider2D.position = glm::vec3(
+			currObj->collider2D.Init();
+			currObj->collider2D.position = glm::vec3(
 				currIndex.x  + 0.5f,
 				currIndex.y  + 0.5f,
 				0.f
 			);
 
 			if (currVal >= 100 && currVal < 300)
-				currObj.collider2D.colliderEnabled = true;
+				currObj->collider2D.colliderEnabled = true;
 			else
-				currObj.collider2D.colliderEnabled = false;
+				currObj->collider2D.colliderEnabled = false;
 			
-			if (currVal > 0)
+			arrGrid[uiCurLevel][uiRow].push_back(nullptr);
+
+			if (currVal > 0) {
 				arrObject[uiCurLevel].push_back(currObj);
+
+				//Add in new CObj pointer if available
+				arrGrid[uiCurLevel][uiRow][uiCol] = currObj;
+			}
 		}
 	}
 
@@ -551,9 +559,9 @@ bool CMap2D::SaveMap(string filename, const unsigned int uiCurLevel)
 	}
 
 	for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++) {
-		CObject2D& obj = arrObject[uiCurLevel][i];
+		CObject2D* obj = arrObject[uiCurLevel][i];
 
-		doc.SetCell(obj.indexSpace.x, cSettings->NUM_TILES_YAXIS - 1 - obj.indexSpace.y, obj.value);
+		doc.SetCell(obj->indexSpace.x, cSettings->NUM_TILES_YAXIS - 1 - obj->indexSpace.y, obj->value);
 	}
 
 	// Save the rapidcsv::Document to a file
@@ -569,17 +577,14 @@ bool CMap2D::SaveMap(string filename, const unsigned int uiCurLevel)
 @param iCol A const int variable containing the column index of the found element
 @param bInvert A const bool variable which indicates if the row information is inverted
 */
-bool CMap2D::FindValue(const int iValue, const bool bActive, unsigned int& uirRow, unsigned int& uirCol, const bool bInvert)
+bool CMap2D::FindValue(const int iValue, unsigned int& uirRow, unsigned int& uirCol)
 {
 	for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++) {
-		CObject2D& obj = arrObject[uiCurLevel][i];
+		CObject2D* obj = arrObject[uiCurLevel][i];
 
-		if (obj.value == iValue) {
-			uirCol = obj.indexSpace.x;
-			if (bInvert)
-				uirRow = obj.indexSpace.y;
-			else
-				uirRow = obj.indexSpace.y; //For now keep the same
+		if (obj->value == iValue) {
+			uirCol = obj->indexSpace.x;
+			uirRow = obj->indexSpace.y; //For now keep the same
 
 			return true;
 		}
@@ -657,8 +662,8 @@ bool CMap2D::LoadTexture(const char* filename, const int iTextureCode)
 	return true;
 }
 
-void CMap2D::RenderTile(const CObject2D obj) {
-	glBindTexture(GL_TEXTURE_2D, MapOfTextureIDs.at(obj.value));
+void CMap2D::RenderTile(const CObject2D* obj) {
+	glBindTexture(GL_TEXTURE_2D, MapOfTextureIDs.at(obj->value));
 
 	glBindVertexArray(VAO);
 	//CS: Render the tile

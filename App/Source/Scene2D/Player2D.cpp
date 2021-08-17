@@ -93,7 +93,7 @@ bool CPlayer2D::Init(void)
 	// Find the indices for the player in arrMapInfo, and assign it to cPlayer2D
 	unsigned int uiRow = -1;
 	unsigned int uiCol = -1;
-	if (cMap2D->FindValue(1, true, uiRow, uiCol) == false)
+	if (cMap2D->FindValue(1, uiRow, uiCol) == false)
 		return false;	// Unable to find the start position of the player, so quit this game
 
 	// Erase the value of the player in the arrMapInfo
@@ -170,7 +170,7 @@ bool CPlayer2D::Reset()
 {
 	unsigned int uiRow = -1;
 	unsigned int uiCol = -1;
-	if (cMap2D->FindValue(1, true, uiRow, uiCol) == false)
+	if (cMap2D->FindValue(1, uiRow, uiCol) == false)
 		return false;	// Unable to find the start position of the player, so quit this game
 
 	// Erase the value of the player in the arrMapInfo
@@ -225,10 +225,10 @@ void CPlayer2D::Update(const double dElapsedTime)
 
 	for (auto object : cMap2D->GetMap())
 	{
-		if (collider2D.CollideWith(&object.getCollider()))
+		if (collider2D.CollideWith(&object->getCollider()))
 		{
 			//Collider2D::CorrectedAxis axis = collider2D.ResolveCollision(cMap2D->GetCollider(uiRow, uiCol));
-			collider2D.ResolveCollisionX(&object.getCollider());
+			collider2D.ResolveCollisionX(&object->getCollider());
 			// Resolve transform to corrected position in collider
 			vTransform = collider2D.position;
 		}
@@ -237,13 +237,13 @@ void CPlayer2D::Update(const double dElapsedTime)
 
 	for (auto object : cMap2D->GetMap())
 	{
-		if (collider2D.CollideWith(&object.getCollider()))
+		if (collider2D.CollideWith(&object->getCollider()))
 		{
-			if (collider2D.CollideWith(&object.getCollider()))
+			if (collider2D.CollideWith(&object->getCollider()))
 			{
 				cPhysics2D.SetVelocity(glm::vec2(cPhysics2D.GetVelocity().x, 0));
 
-				collider2D.ResolveCollisionY(&object.getCollider());
+				collider2D.ResolveCollisionY(&object->getCollider());
 				// Resolve transform to corrected position in collider
 				vTransform = collider2D.position;
 			}

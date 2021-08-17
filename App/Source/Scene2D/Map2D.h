@@ -118,7 +118,7 @@ public:
 	// Toggle Active at certain indices in the arrMapInfo
 	void ToggleMapInfo(const unsigned int uiRow, const unsigned int uiCol, const bool iValue, const bool bInvert = true);
 
-	std::vector<CObject2D> GetMap();
+	std::vector<CObject2D*> GetMap();
 
 	// Get the value at certain indices in the arrMapInfo
 	int GetMapInfo(const unsigned int uiRow, const unsigned int uiCol, const bool bInvert = true) const;
@@ -133,7 +133,7 @@ public:
 	bool SaveMap(string filename, const unsigned int uiLevel = 0);
 
 	// Find the indices of a certain value in arrMapInfo
-	bool FindValue(const int iValue, const bool bActive, unsigned int& uirRow, unsigned int& uirCol, const bool bInvert = true);
+	bool FindValue(const int iValue, unsigned int& uirRow, unsigned int& uirCol);
 
 	// Set current level
 	void SetCurrentLevel(unsigned int uiCurLevel);
@@ -157,7 +157,10 @@ protected:
 	rapidcsv::Document doc;
 
 	// Vector array that stores an array of objects level by level
-	std::vector<std::vector<CObject2D>> arrObject;
+	std::vector<std::vector<CObject2D*>> arrObject;
+
+	//2D array
+	std::vector<std::vector<std::vector<CObject2D*>>>  arrGrid; //Y, X
 
 	//Vector array that stores limits of each level
 	std::vector<glm::i32vec2> arrLevelLimit;
@@ -189,7 +192,7 @@ protected:
 	bool LoadTexture(const char* filename, const int iTextureCode);
 
 	// Render a tile
-	void RenderTile(const CObject2D Obj);
+	void RenderTile(const CObject2D* Obj);
 
 	// For A-Star PathFinding
 	// Build a path from m_cameFromList after calling PathFind()

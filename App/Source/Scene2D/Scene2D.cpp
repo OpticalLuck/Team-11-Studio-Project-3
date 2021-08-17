@@ -263,7 +263,7 @@ bool CScene2D::Update(const double dElapsedTime)
 		if (clone->Init() == false)
 		{
 			cout << "Failed to load clone" << endl;
-			return false;
+			//return false;
 		}
 
 		clone->SetShader("2DColorShader");
