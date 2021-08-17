@@ -27,7 +27,7 @@ public:
 	bool CheckCollision(CEntity2D* type1, CEntity2D* type2);
 	void RemoveEntity(string type, int amount);
 
-
+	CPlayer2D* GetPlayer();
 
 protected:
 	CKeyboardInputHandler* cKeyboardInputHandler;

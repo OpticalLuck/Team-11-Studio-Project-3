@@ -76,6 +76,8 @@ public:
 	// Init
 	bool Init(void);
 
+	bool Init(glm::i32vec2 spawnpoint);
+
 	// Reset
 	bool Reset(void);
 
@@ -102,6 +104,8 @@ public:
 	void SetInputs(std::vector<std::array<bool, KEYBOARD_INPUTS::INPUT_TOTAL>> inputs);
 
 	CPlayer2D* const Clone();
+
+	glm::i32vec2 GetCheckpoint(void);
 protected:
 
 	bool bIsClone;

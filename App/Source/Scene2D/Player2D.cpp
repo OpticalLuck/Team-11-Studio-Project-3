@@ -95,11 +95,11 @@ bool CPlayer2D::Init(void)
 	// Find the indices for the player in arrMapInfo, and assign it to cPlayer2D
 	unsigned int uiRow = -1;
 	unsigned int uiCol = -1;
-	if (cMap2D->FindValue(1, true, uiRow, uiCol) == false)
+	if (cMap2D->FindValue(1, uiRow, uiCol) == false)
 		return false;	// Unable to find the start position of the player, so quit this game
 
 	// Erase the value of the player in the arrMapInfo
-	//cMap2D->SetMapInfo(uiRow, uiCol, 0);
+	cMap2D->SetMapInfo(uiRow, uiCol, 0);
 
 	// Set checkpoint position to start position
 	checkpoint = glm::i32vec2(uiCol, uiRow);
@@ -165,6 +165,77 @@ bool CPlayer2D::Init(void)
 	return true;
 }
 
+bool CPlayer2D::Init(glm::i32vec2 spawnpoint)
+{
+	// Store the keyboard controller singleton instance here
+	cKeyboardController = CKeyboardController::GetInstance();
+	// Reset all keys since we are starting a new game
+	cKeyboardController->Reset();
+
+	// Get the handler to the CSettings instance
+	cSettings = CSettings::GetInstance();
+
+	// Get the handler to the CMap2D instance
+	cMap2D = CMap2D::GetInstance();
+
+	// Erase the value of the player in the arrMapInfo
+	//cMap2D->SetMapInfo(uiRow, uiCol, 0);
+
+	// Set checkpoint position to start position
+	checkpoint = spawnpoint;
+	// Set the start position of the Player to iRow and iCol
+	vTransform = spawnpoint;
+
+	glGenVertexArrays(1, &VAO);
+	glBindVertexArray(VAO);
+
+	// Load the player texture
+	if (LoadTexture("Image/Cyborg/Cyborg.png", iTextureID) == false)
+	{
+		std::cout << "Failed to load player tile texture" << std::endl;
+		return false;
+	}
+
+	state = S_IDLE;
+	facing = RIGHT;
+	//CS: Create the animated sprite and setup the animation 
+	animatedSprites = CMeshBuilder::GenerateSpriteAnimation(10, 6, cSettings->TILE_WIDTH, cSettings->TILE_HEIGHT);
+	animatedSprites->AddAnimation("run", 0, 6);
+	animatedSprites->AddAnimation("idle", 6, 10);
+	animatedSprites->AddAnimation("jump", 12, 16);
+	animatedSprites->AddAnimation("double_jump", 18, 24);
+	animatedSprites->AddAnimation("death", 24, 30);
+	animatedSprites->AddAnimation("attack", 36, 42);
+	animatedSprites->AddAnimation("climb", 48, 54);
+	animatedSprites->AddAnimation("hit", 54, 56);
+	//CS: Play the "idle" animation as default
+	animatedSprites->PlayAnimation("idle", -1, 1.0f);
+
+	//CS: Init the color to white
+	currentColor = glm::vec4(1.0, 1.0, 1.0, 1.0);
+
+	jumpCount = 0;
+
+	camera = Camera2D::GetInstance();
+
+	fMovementSpeed = 5.f;
+	fJumpSpeed = 5.f;
+
+	// Get the handler to the CSoundController
+	cSoundController = CSoundController::GetInstance();
+
+	cKeyboardInputHandler = CKeyboardInputHandler::GetInstance();
+
+	collider2D.Init();
+	cPhysics2D.Init(&vTransform);
+
+	return true;
+}
+
+glm::i32vec2 CPlayer2D::GetCheckpoint(void) {
+	return checkpoint;
+}
+
 /**
  @brief Reset this instance
  */
@@ -172,7 +243,7 @@ bool CPlayer2D::Reset()
 {
 	unsigned int uiRow = -1;
 	unsigned int uiCol = -1;
-	if (cMap2D->FindValue(1, true, uiRow, uiCol) == false)
+	if (cMap2D->FindValue(1, uiRow, uiCol) == false)
 		return false;	// Unable to find the start position of the player, so quit this game
 
 	// Erase the value of the player in the arrMapInfo

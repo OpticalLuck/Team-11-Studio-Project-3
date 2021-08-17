@@ -133,7 +133,7 @@ public:
 	bool SaveMap(string filename, const unsigned int uiLevel = 0);
 
 	// Find the indices of a certain value in arrMapInfo
-	bool FindValue(const int iValue, const bool bActive, unsigned int& uirRow, unsigned int& uirCol, const bool bInvert = true);
+	bool FindValue(const int iValue, unsigned int& uirRow, unsigned int& uirCol);
 
 	// Set current level
 	void SetCurrentLevel(unsigned int uiCurLevel);

@@ -27,7 +27,7 @@ bool CEntityManager::EntityManagerInit(void)
 	unsigned int uiCol = -1;
 
 	//player init
-	if (cMap2D->FindValue(1, true, uiRow, uiCol) == true)
+	if (cMap2D->FindValue(1, uiRow, uiCol) == true)
 	{
 		cPlayer2D = new CPlayer2D;
 		// Pass shader to cPlayer2D
@@ -43,7 +43,7 @@ bool CEntityManager::EntityManagerInit(void)
 	}
 
 	//enemy init
-	if (cMap2D->FindValue(300, true, uiRow, uiCol) == true)
+	if (cMap2D->FindValue(300, uiRow, uiCol) == true)
 	{
 		cEnemy2D = new CEnemy2D;
 		cEnemy2D->collidable = true;
@@ -67,7 +67,7 @@ bool CEntityManager::EntityManagerInit(void)
 	cCloneTemplate->SetClone(true);
 	cCloneTemplate->SetShader("2DColorShader");
 	// find position to spawn in map
-	if (cMap2D->FindValue(1, true, uiRow, uiCol) == true)
+	if (cMap2D->FindValue(1, uiRow, uiCol) == true)
 	{
 		cCloneTemplate->vTransform = glm::vec2(uiCol, uiRow);
 	}
@@ -77,7 +77,9 @@ bool CEntityManager::EntityManagerInit(void)
 bool CEntityManager::Clone(void)
 {
 	CPlayer2D* clone = new CPlayer2D(*cCloneTemplate);
-	if (!clone->Init())
+	clone->SetShader("2DColorShader");
+
+	if (!clone->Init(cPlayer2D->GetCheckpoint()))
 	{
 		std::cout << "Failed to clone Player\n";
 		return false;
@@ -120,6 +122,11 @@ void CEntityManager::RemoveEntity(string type, int amount)
 	}
 	else
 		return;
+}
+
+CPlayer2D* CEntityManager::GetPlayer()
+{
+	return cPlayer2D;
 }
 
 void CEntityManager::RenderEnemy(void)

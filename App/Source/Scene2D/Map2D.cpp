@@ -569,17 +569,14 @@ bool CMap2D::SaveMap(string filename, const unsigned int uiCurLevel)
 @param iCol A const int variable containing the column index of the found element
 @param bInvert A const bool variable which indicates if the row information is inverted
 */
-bool CMap2D::FindValue(const int iValue, const bool bActive, unsigned int& uirRow, unsigned int& uirCol, const bool bInvert)
+bool CMap2D::FindValue(const int iValue, unsigned int& uirRow, unsigned int& uirCol)
 {
 	for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++) {
 		CObject2D& obj = arrObject[uiCurLevel][i];
 
 		if (obj.value == iValue) {
 			uirCol = obj.indexSpace.x;
-			if (bInvert)
-				uirRow = obj.indexSpace.y;
-			else
-				uirRow = obj.indexSpace.y; //For now keep the same
+			uirRow = obj.indexSpace.y; //For now keep the same
 
 			return true;
 		}
