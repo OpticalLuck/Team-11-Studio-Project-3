@@ -42,6 +42,8 @@ CPlayer2D::CPlayer2D(void)
 
 	// Initialise vec2UVCoordinate
 	vec2UVCoordinate = glm::vec2(0.0f);
+
+	type = PLAYER;
 }
 
 /**
@@ -528,4 +530,9 @@ bool CPlayer2D::IsClone()
 void CPlayer2D::SetInputs(std::vector<std::array<bool, KEYBOARD_INPUTS::INPUT_TOTAL>> inputs)
 {
 	m_CloneKeyboardInputs = inputs;
+}
+
+CPlayer2D* const CPlayer2D::Clone()
+{
+	return new CPlayer2D(*this);
 }

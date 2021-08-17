@@ -66,6 +66,8 @@ public:
 	// Constructor
 	CPlayer2D(void);
 
+	CPlayer2D(string cloneName) : CEntity2D() {}
+
 	// Destructor
 	virtual ~CPlayer2D(void);
 
@@ -96,6 +98,8 @@ public:
 	bool IsClone();
 
 	void SetInputs(std::vector<std::array<bool, KEYBOARD_INPUTS::INPUT_TOTAL>> inputs);
+
+	CPlayer2D* const Clone();
 protected:
 
 	bool bIsClone;
