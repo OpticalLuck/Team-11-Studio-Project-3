@@ -40,6 +40,7 @@ using namespace std;
 #include "GameStateManagement/PlayGameState.h"
 #include "GameStateManagement/GameOverState.h"
 #include "GameStateManagement/PauseMenuState.h"
+#include "GameStateManagement/EditorSettingsState.h"
 
 /**
  @brief Define an error callback
@@ -246,6 +247,7 @@ bool Application::Init(void)
 	CGameStateManager::GetInstance()->AddGameState("PlayGameState", new CPlayGameState());
 	CGameStateManager::GetInstance()->AddGameState("GameOverState", new GameOverState());
 	CGameStateManager::GetInstance()->AddGameState("PauseState", new PauseMenuState());
+	CGameStateManager::GetInstance()->AddGameState("EditorSettingsState", new CEditorSettingsState());
 
 	// Set the active scene
 	CGameStateManager::GetInstance()->SetActiveGameState("IntroState");
