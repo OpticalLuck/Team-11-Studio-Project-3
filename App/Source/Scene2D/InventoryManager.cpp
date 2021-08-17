@@ -82,7 +82,7 @@ bool CInventoryManager::Remove(const std::string& _name)
 	return true;
 }
 
-/**
+/**	
 @brief Check if a item exists in this Inventory Manager
 */
 bool CInventoryManager::Check(const std::string& _name)
