@@ -298,10 +298,10 @@ void CPlayer2D::Update(const double dElapsedTime)
 
 	for (auto object : cMap2D->GetMap())
 	{
-		if (collider2D.CollideWith(&object.getCollider()))
+		if (collider2D.CollideWith(&object->getCollider()))
 		{
 			//Collider2D::CorrectedAxis axis = collider2D.ResolveCollision(cMap2D->GetCollider(uiRow, uiCol));
-			collider2D.ResolveCollisionX(&object.getCollider());
+			collider2D.ResolveCollisionX(&object->getCollider());
 			// Resolve transform to corrected position in collider
 			vTransform = collider2D.position;
 		}
@@ -310,13 +310,13 @@ void CPlayer2D::Update(const double dElapsedTime)
 
 	for (auto object : cMap2D->GetMap())
 	{
-		if (collider2D.CollideWith(&object.getCollider()))
+		if (collider2D.CollideWith(&object->getCollider()))
 		{
-			if (collider2D.CollideWith(&object.getCollider()))
+			if (collider2D.CollideWith(&object->getCollider()))
 			{
 				cPhysics2D.SetVelocity(glm::vec2(cPhysics2D.GetVelocity().x, 0));
 
-				collider2D.ResolveCollisionY(&object.getCollider());
+				collider2D.ResolveCollisionY(&object->getCollider());
 				// Resolve transform to corrected position in collider
 				vTransform = collider2D.position;
 			}
