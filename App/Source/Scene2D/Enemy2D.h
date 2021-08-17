@@ -136,7 +136,7 @@ protected:
 	CSettings* cSettings;
 
 	// Physics
-	CPhysics2D cPhysics2D;
+	//CPhysics2D cPhysics2D;
 
 	// Current color
 	glm::vec4 currentColor;

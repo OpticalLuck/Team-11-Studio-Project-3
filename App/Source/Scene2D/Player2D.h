@@ -40,9 +40,14 @@ class CMap2D;
 // Include SoundController
 #include "..\SoundController\SoundController.h"
 
-class CPlayer2D : public CSingletonTemplate<CPlayer2D>, public CEntity2D
+#include "../KeyboardInputHandler/CKeyboardInputHandler.h"
+
+#include <map>
+#include <array>
+#include "../KeyboardInputHandler/CKeyboardInputHandler.h"
+
+class CPlayer2D : public CEntity2D
 {
-	friend CSingletonTemplate<CPlayer2D>;
 public:
 	enum STATE
 	{
@@ -57,6 +62,12 @@ public:
 		S_DEATH,
 		S_NUM_STATE
 	};
+
+	// Constructor
+	CPlayer2D(void);
+
+	// Destructor
+	virtual ~CPlayer2D(void);
 
 	// Init
 	bool Init(void);
@@ -80,7 +91,15 @@ public:
 
 	void Hit(int health);
 
+	void SetClone(bool bIsClone);
+
+	bool IsClone();
+
+	void SetInputs(std::vector<std::array<bool, KEYBOARD_INPUTS::INPUT_TOTAL>> inputs);
 protected:
+
+	bool bIsClone;
+
 	enum DIRECTION
 	{
 		LEFT = 0,
@@ -90,7 +109,14 @@ protected:
 		NUM_DIRECTIONS
 	};
 
+	CKeyboardInputHandler* cKeyboardInputHandler;
+	std::vector<std::array<bool, KEYBOARD_INPUTS::INPUT_TOTAL>> m_CloneKeyboardInputs;
+
+	int iTempFrameCounter; // move to game manager/scene2D/PlayGameState later
+
 	glm::vec2 vOldTransform;
+
+	CPhysics2D cPhysics2D;
 
 	glm::i32vec2 checkpoint;
 
@@ -100,9 +126,6 @@ protected:
 	// Keyboard Controller singleton instance
 	CKeyboardController* cKeyboardController;
 
-	// Physics
-	CPhysics2D cPhysics2D;
-
 	//CS: Animated Sprite
 	CSpriteAnimation* animatedSprites;
 
@@ -110,37 +133,21 @@ protected:
 	glm::vec4 currentColor;
 
 	// InventoryManager
-	CInventoryManager* cInventoryManager;
+	// CInventoryManager* cInventoryManager;
 	// InventoryItem
 	CInventoryItem* cInventoryItem;
 
 	// Count the number of jumps
 	int jumpCount;
 	float fMovementSpeed;
+	float fJumpSpeed;
 
 	// Handler to the CSoundController
 	CSoundController* cSoundController;
 
-	// Timer for Running
-	double runtimer;
-	// Timer for Jumping
-	double jumptimer;
-	// Timer for death
-	double deathtimer;
-	// Timer for attacking
-	double attacktimer;
-	// Timer for Invulnerbility
-	double invulTimer;
-	bool bDamaged;
-	
 	// Facing direction for rendering and ease of animation
 	DIRECTION facing;
 	STATE state;
-	// Constructor
-	CPlayer2D(void);
-
-	// Destructor
-	virtual ~CPlayer2D(void);
 
 	// Load a texture
 	bool LoadTexture(const char* filename, GLuint& iTextureID);
@@ -149,7 +156,6 @@ protected:
 
 	// Update the health and lives
 	void UpdateHealthLives(void);
-
 
 	bool InRangeOfTile(unsigned tileID);
 };

@@ -23,6 +23,10 @@
 //CS: Include Mesh.h to use to draw (include vertex and index buffers)
 #include "Mesh.h"
 #include <vector>
+
+//Collision Detection and Resolution
+#include "Collider2D.h"
+
 using namespace std;
 
 class CEntity2D
@@ -65,6 +69,8 @@ public:
 	// PostRender
 	virtual void PostRender(void);
 
+	virtual void RenderCollider();
+
 	// The i32vec2 which stores the indices of an Entity2D in the Map2D
 	glm::vec2 vTransform;
 
@@ -93,6 +99,8 @@ protected:
 
 	// A transformation matrix for controlling where to render the entities
 	glm::mat4 transform;
+
+	Collider2D collider2D;
 
 	// Load a texture
 	virtual bool LoadTexture(const char* filename);
