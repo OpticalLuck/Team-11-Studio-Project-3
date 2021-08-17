@@ -93,6 +93,9 @@ void CGUI_Scene2D::Update(const double dElapsedTime)
 	relativeScale_x = Math::Max(1.f, relativeScale_x);
 	relativeScale_y = Math::Max(1.f, relativeScale_y);
 
+	interval++;
+	timer = interval / 60;
+
 	// Start the Dear ImGui frame
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
