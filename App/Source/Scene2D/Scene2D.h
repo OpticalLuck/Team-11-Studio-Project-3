@@ -33,7 +33,7 @@
 //#include <vector>
 
 // Include Keyboard controller
-#include "Inputs\KeyboardController.h"
+//#include "Inputs\KeyboardController.h"
 
 // GUI
 //#include "GUI/GUI.h"
@@ -94,6 +94,8 @@ protected:
 
 	// Game Manager
 	CGameManager* cGameManager;
+
+	CEntityManager* cEntityManager;
 
 	// Handler to the CSoundController
 	CSoundController* cSoundController;

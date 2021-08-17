@@ -62,6 +62,7 @@ public:
 		S_DEATH,
 		S_NUM_STATE
 	};
+	STATE m_playerState;
 
 	// Constructor
 	CPlayer2D(void);
@@ -156,11 +157,11 @@ protected:
 	// Load a texture
 	bool LoadTexture(const char* filename, GLuint& iTextureID);
 
-	void MovementUpdate(double dt);
-
 	// Update the health and lives
 	void UpdateHealthLives(void);
 
 	bool InRangeOfTile(unsigned tileID);
+
+	void MovementUpdate(double dt);
 };
 

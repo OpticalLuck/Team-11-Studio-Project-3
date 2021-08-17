@@ -20,6 +20,7 @@ CScene2D::CScene2D(void)
 	, cSoundController(NULL)
 	, cKeyboardInputHandler(NULL)
 	, isCompleted(false)
+	, cEntityManager(NULL)
 {
 }
 
@@ -107,22 +108,14 @@ bool CScene2D::Init(void)
 	CShaderManager::GetInstance()->Add("2DColorShader", "Shader//Scene2DColor.vs", "Shader//Scene2DColor.fs");
 	CShaderManager::GetInstance()->Use("2DColorShader");
 	CShaderManager::GetInstance()->activeShader->setInt("texture1", 0);
-	// Create and initialise the CPlayer2D
-	cPlayer2D = new CPlayer2D;
-	// Pass shader to cPlayer2D
-	cPlayer2D->SetShader("2DColorShader");
-	// Initialise the instance
-	if (cPlayer2D->Init() == false)
-	{
-		cout << "Failed to load CPlayer2D" << endl;
-		return false;
-	}
+	cEntityManager = CEntityManager::GetInstance();
+	cEntityManager->EntityManagerInit();
 
-	// Create and initialise the CEnemy2D
-	enemyVector.clear();
-	
-	//300
-	LoadEnemy<CEnemy2D>();
+	//// Create and initialise the CEnemy2D
+	//enemyVector.clear();
+	//
+	////300
+	//LoadEnemy<CEnemy2D>();
 
 	// Setup the shaders
 	CShaderManager::GetInstance()->Add("textShader", "Shader//text.vs", "Shader//text.fs");
@@ -153,29 +146,8 @@ bool CScene2D::Init(void)
 */
 bool CScene2D::Update(const double dElapsedTime)
 {
-	// Call the cPlayer2D's update method before Map2D as we want to capture the inputs before map2D update
-	cPlayer2D->Update(dElapsedTime);
+	cEntityManager->Update(dElapsedTime);
 
-	for (int i = 0; i < clones.size(); ++i)
-	{
-		clones[i]->Update(dElapsedTime);
-	}
-
-	// Call all the cEnemy2D's update method before Map2D 
-	// as we want to capture the updates before map2D update
-	for (int i = 0; i < enemyVector.size(); i++)
-	{
-		if (static_cast<CEnemy2D*>(enemyVector[i])->GetHealth() < 0)
-		{
-			delete enemyVector[i];
-			enemyVector.erase(enemyVector.begin() + i);
-		}
-	}
-	for (int i = 0; i < enemyVector.size(); i++)
-	{
-		enemyVector[i]->Update(dElapsedTime);
-	}
-	 
 	// Call the Map2D's update method
 	cMap2D->Update(dElapsedTime);
 
@@ -238,22 +210,7 @@ bool CScene2D::Update(const double dElapsedTime)
 		return false;
 	}
 
-	if (cKeyboardController->IsKeyPressed(GLFW_KEY_C))
-	{
-		CPlayer2D* clone = new CPlayer2D;
 
-		if (clone->Init() == false)
-		{
-			cout << "Failed to load clone" << endl;
-			return false;
-		}
-
-		clone->SetShader("2DColorShader");
-		clone->SetClone(true);
-		clone->SetInputs(cKeyboardInputHandler->GetAllInputs());
-
-		clones.push_back(clone);
-	}
 	return true;
 }
 
@@ -278,22 +235,9 @@ void CScene2D::PreRender(void)
  */
 void CScene2D::Render(void)
 {
-	for (int i = 0; i < enemyVector.size(); i++)
-	{
-		// Call the CEnemy2D's PreRender()
-		enemyVector[i]->PreRender();
-		// Call the CEnemy2D's Render()
-		enemyVector[i]->Render();
-		// Call the CEnemy2D's PostRender()
-		enemyVector[i]->PostRender();
-	}
-
-	for (int i = 0; i < clones.size(); ++i)
-	{
-		clones[i]->PreRender();
-		clones[i]->Render();
-		clones[i]->PostRender();
-	}
+	cEntityManager->RenderEnemy();
+	cEntityManager->RenderClone();
+	cEntityManager->RenderPlayer();
 
 	// Call the Map2D's PreRender()
 	cMap2D->PreRender();
@@ -302,14 +246,6 @@ void CScene2D::Render(void)
 	// Call the Map2D's PostRender()
 	cMap2D->PostRender();
 
-	// Call the CPlayer2D's PreRender()
-	cPlayer2D->PreRender();
-	// Call the CPlayer2D's Render()
-	cPlayer2D->Render();
-	// Call the CPlayer2D's PostRender()
-	cPlayer2D->PostRender();
-
-	cPlayer2D->RenderCollider();
 
 	// Call the cGUI_Scene2D's PreRender()
 	cGUI_Scene2D->PreRender();
