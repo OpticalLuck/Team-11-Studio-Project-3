@@ -18,6 +18,7 @@ CScene2D::CScene2D(void)
 	, cGUI_Scene2D(NULL)
 	, cGameManager(NULL)
 	, cSoundController(NULL)
+	, cKeyboardInputHandler(NULL)
 	, isCompleted(false)
 	, cameraHandler(NULL)
 {
@@ -49,6 +50,8 @@ CScene2D::~CScene2D(void)
 	// We won't delete this since it was created elsewhere
 	cKeyboardController = NULL;
 
+	cKeyboardInputHandler = NULL;
+
 	// Destroy the enemies
 	for (int i = 0; i < enemyVector.size(); i++)
 	{
@@ -59,7 +62,7 @@ CScene2D::~CScene2D(void)
 
 	if (cPlayer2D)
 	{
-		cPlayer2D->Destroy();
+		delete cPlayer2D;
 		cPlayer2D = NULL;
 	}
 
@@ -100,19 +103,7 @@ bool CScene2D::Init(void)
 		return false;
 	}
 	// Load the map into an array
-	if (cMap2D->LoadMap("Maps/DM2213_Map_Level_01.csv") == false)
-	{
-		// The loading of a map has failed. Return false
-		return false;
-	}
-	// Load the map into an array
-	if (cMap2D->LoadMap("Maps/DM2213_Map_Level_02.csv", 1) == false)
-	{
-		// The loading of a map has failed. Return false
-		return false;
-	}
-	// Load the map into an array
-	if (cMap2D->LoadMap("Maps/DM2213_Map_Level_03.csv", 2) == false)
+	if (cMap2D->LoadMap("Maps/DM2213_Map_Level_Test.csv") == false)
 	{
 		// The loading of a map has failed. Return false
 		return false;
@@ -126,7 +117,7 @@ bool CScene2D::Init(void)
 	CShaderManager::GetInstance()->Use("2DColorShader");
 	CShaderManager::GetInstance()->activeShader->setInt("texture1", 0);
 	// Create and initialise the CPlayer2D
-	cPlayer2D = CPlayer2D::GetInstance();
+	cPlayer2D = new CPlayer2D;
 	// Pass shader to cPlayer2D
 	cPlayer2D->SetShader("2DColorShader");
 	// Initialise the instance
@@ -164,6 +155,9 @@ bool CScene2D::Init(void)
 	// Load the sounds into CSoundController
 	cSoundController = CSoundController::GetInstance();
 	cSoundController->PlaySoundByID(4);
+
+	cKeyboardInputHandler = CKeyboardInputHandler::GetInstance();
+
 	return true;
 }
 
@@ -174,6 +168,11 @@ bool CScene2D::Update(const double dElapsedTime)
 {
 	// Call the cPlayer2D's update method before Map2D as we want to capture the inputs before map2D update
 	cPlayer2D->Update(dElapsedTime);
+
+	for (int i = 0; i < clones.size(); ++i)
+	{
+		clones[i]->Update(dElapsedTime);
+	}
 
 	// Call all the cEnemy2D's update method before Map2D 
 	// as we want to capture the updates before map2D update
@@ -251,6 +250,24 @@ bool CScene2D::Update(const double dElapsedTime)
 		cSoundController->PlaySoundByID(2);
 		return false;
 	}
+
+	if (cKeyboardController->IsKeyPressed(GLFW_KEY_C))
+	{
+		CPlayer2D* clone = new CPlayer2D;
+
+		if (clone->Init() == false)
+		{
+			cout << "Failed to load clone" << endl;
+			return false;
+		}
+
+		clone->SetShader("2DColorShader");
+		clone->SetClone(true);
+		clone->SetInputs(cKeyboardInputHandler->GetAllInputs());
+
+		clones.push_back(clone);
+	}
+	return true;
 }
 
 /**
@@ -284,6 +301,13 @@ void CScene2D::Render(void)
 		enemyVector[i]->PostRender();
 	}
 
+	for (int i = 0; i < clones.size(); ++i)
+	{
+		clones[i]->PreRender();
+		clones[i]->Render();
+		clones[i]->PostRender();
+	}
+
 	// Call the Map2D's PreRender()
 	cMap2D->PreRender();
 	// Call the Map2D's Render()
@@ -297,6 +321,8 @@ void CScene2D::Render(void)
 	cPlayer2D->Render();
 	// Call the CPlayer2D's PostRender()
 	cPlayer2D->PostRender();
+
+	cPlayer2D->RenderCollider();
 
 	// Call the cGUI_Scene2D's PreRender()
 	cGUI_Scene2D->PreRender();
@@ -328,3 +354,5 @@ void CScene2D::DeleteIMGUI()
 		cGUI_Scene2D = NULL;
 	}
 }
+
+

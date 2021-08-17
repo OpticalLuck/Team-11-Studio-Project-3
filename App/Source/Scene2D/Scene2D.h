@@ -78,11 +78,15 @@ protected:
 	CMap2D* cMap2D;
 	// The handler containing the instance of CPlayer2Ds
 	CPlayer2D* cPlayer2D;
+	std::vector<CPlayer2D*> clones;
+
 	// A vector containing the instance of CEnemy2Ds
 	vector<CEntity2D*> enemyVector;
 
 	// Keyboard Controller singleton instance
 	CKeyboardController* cKeyboardController;
+
+	CKeyboardInputHandler* cKeyboardInputHandler;
 
 	// A transformation matrix for controlling where to render the entities
 	glm::mat4 transform;

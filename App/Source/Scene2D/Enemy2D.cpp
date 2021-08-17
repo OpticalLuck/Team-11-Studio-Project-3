@@ -47,7 +47,7 @@ CEnemy2D::CEnemy2D(void)
 	transform = glm::mat4(1.0f);	// make sure to initialize matrix to identity matrix first
 
 	// Initialise vecIndex
-	i32vec2Index = glm::i32vec2(0);
+	vTransform = glm::i32vec2(0);
 
 	// Initialise vecNumMicroSteps
 	i32vec2NumMicroSteps = glm::i32vec2(0);
@@ -105,7 +105,7 @@ bool CEnemy2D::Init(void)
 	cMap2D->SetMapInfo(uiRow, uiCol, 0);
 
 	// Set the start position of the Player to iRow and iCol
-	i32vec2Index = glm::i32vec2(uiCol, uiRow);
+	vTransform = glm::i32vec2(uiCol, uiRow);
 	// By default, microsteps should be zero
 	i32vec2NumMicroSteps = glm::i32vec2(0, 0);
 
@@ -126,8 +126,8 @@ bool CEnemy2D::Init(void)
 	currentColor = glm::vec4(1.0, 1.0, 1.0, 1.0);
 
 	// Set the Physics to fall status by default
-	cPhysics2D.Init();
-	cPhysics2D.SetStatus(CPhysics2D::STATUS::FALL);
+	//cPhysics2D.Init();
+	//cPhysics2D.SetStatus(CPhysics2D::STATUS::FALL);
 
 	// If this class is initialised properly, then set the bIsActive to true
 	bIsActive = true;
@@ -146,16 +146,16 @@ void CEnemy2D::Update(const double dElapsedTime)
 	runtimer += dElapsedTime;
 	jumptimer += dElapsedTime;
 
-	//hit
-	if (cPhysics2D.CalculateMicroSteps(i32vec2Index, i32vec2NumMicroSteps, cPlayer2D->i32vec2Index, cPlayer2D->i32vec2NumMicroSteps) < 12.0f)
-	{
-		if (cPlayer2D->Getstate() == CPlayer2D::STATE::S_ATTACK && health > 0)
-		{
-			sCurrentFSM = HIT;
-			iFSMCounter = 0;
-			CSoundController::GetInstance()->PlaySoundByID(5);
-		}
-	}
+	////hit
+	//if (cPhysics2D.CalculateMicroSteps(vTransform, i32vec2NumMicroSteps, cPlayer2D->vTransform, cPlayer2D->i32vec2NumMicroSteps) < 12.0f)
+	//{
+	//	if (cPlayer2D->Getstate() == CPlayer2D::STATE::S_ATTACK && health > 0)
+	//	{
+	//		sCurrentFSM = HIT;
+	//		iFSMCounter = 0;
+	//		CSoundController::GetInstance()->PlaySoundByID(5);
+	//	}
+	//}
 
  	switch (sCurrentFSM)
 	{
@@ -177,43 +177,15 @@ void CEnemy2D::Update(const double dElapsedTime)
 			iFSMCounter = 0;
 			cout << "Switching to Idle State" << endl;
 		}
-		else if (cPhysics2D.CalculateDistance(i32vec2Index, cPlayer2D->i32vec2Index) < 3.0f)
+		else //if (cPhysics2D.CalculateDistance(vTransform, cPlayer2D->vTransform) < 3.0f)
 		{
 			sCurrentFSM = ATTACK;
 			iFSMCounter = 0;
 		}
-		else
-		{
-			// Patrol around
-			// Update the Enemy2D's position for patrol
-			UpdatePosition();
-		}
 		iFSMCounter++;
 		break;
 	case ATTACK:
-		//animatedSprites->PlayAnimation("move", -1, 1.f);
-		if (cPhysics2D.CalculateDistance(i32vec2Index, cPlayer2D->i32vec2Index) < 4.0f)
-		{
-			UpdatePosition();
-		}
-		else
-		{
-			if (iFSMCounter > MaxAttackCounter)
-			{
-				sCurrentFSM = PATROL;
-				iFSMCounter = 0;
-				if (facing == LEFT)
-				{
-					i32vec2Direction = glm::i32vec2(-1.0);
-				}
-				else if (facing == RIGHT)
-				{
-					i32vec2Direction = glm::i32vec2(1.0);
-				}
-				cout << "ATTACK : Reset counter: " << iFSMCounter << endl;
-			}
-			iFSMCounter++;
-		}
+		
 		break;
 	case HIT:
 		if (hittimer > 1.f)
@@ -231,7 +203,7 @@ void CEnemy2D::Update(const double dElapsedTime)
 				iFSMCounter = 0;
 			}
 			hittimer += dElapsedTime;
-			KnockBack();
+			//KnockBack();
 			//animatedSprites->PlayAnimation("hit", -1, 1.f);
 		}
 		break;
@@ -254,14 +226,14 @@ void CEnemy2D::Update(const double dElapsedTime)
 	{
 		jumptimer = 0;
 		// Update Jump or Fall
-		UpdateJumpFall(dElapsedTime);
+		//UpdateJumpFall(dElapsedTime);
 	}
 	//CS: Update the animated sprite
 	//animatedSprites->Update(dElapsedTime);
 
 	// Update the UV Coordinates
-	vec2UVCoordinate.x = cSettings->ConvertIndexToUVSpace(cSettings->x, i32vec2Index.x, false, i32vec2NumMicroSteps.x*cSettings->MICRO_STEP_XAXIS);
-	vec2UVCoordinate.y = cSettings->ConvertIndexToUVSpace(cSettings->y, i32vec2Index.y, false, i32vec2NumMicroSteps.y*cSettings->MICRO_STEP_YAXIS);
+	vec2UVCoordinate.x = cSettings->ConvertIndexToUVSpace(cSettings->x, vTransform.x, false, i32vec2NumMicroSteps.x*cSettings->MICRO_STEP_XAXIS);
+	vec2UVCoordinate.y = cSettings->ConvertIndexToUVSpace(cSettings->y, vTransform.y, false, i32vec2NumMicroSteps.y*cSettings->MICRO_STEP_YAXIS);
 }
 
 /**
@@ -335,10 +307,10 @@ void CEnemy2D::PostRender(void)
 @param iIndex_XAxis A const int variable which stores the index in the x-axis
 @param iIndex_YAxis A const int variable which stores the index in the y-axis
 */
-void CEnemy2D::Seti32vec2Index(const int iIndex_XAxis, const int iIndex_YAxis)
+void CEnemy2D::SetTransform(const int iIndex_XAxis, const int iIndex_YAxis)
 {
-	this->i32vec2Index.x = iIndex_XAxis;
-	this->i32vec2Index.y = iIndex_YAxis;
+	this->vTransform.x = iIndex_XAxis;
+	this->vTransform.y = iIndex_YAxis;
 }
 
 /**
@@ -420,33 +392,33 @@ void CEnemy2D::Constraint(DIRECTION eDirection)
 {
 	if (eDirection == LEFT)
 	{
-		if (i32vec2Index.x < 0)
+		if (vTransform.x < 0)
 		{
-			i32vec2Index.x = 0;
+			vTransform.x = 0;
 			i32vec2NumMicroSteps.x = 0;
 		}
 	}
 	else if (eDirection == RIGHT)
 	{
-		if (i32vec2Index.x >= (int)cSettings->NUM_TILES_XAXIS - 1)
+		if (vTransform.x >= (int)cSettings->NUM_TILES_XAXIS - 1)
 		{
-			i32vec2Index.x = ((int)cSettings->NUM_TILES_XAXIS) - 1;
+			vTransform.x = ((int)cSettings->NUM_TILES_XAXIS) - 1;
 			i32vec2NumMicroSteps.x = 0;
 		}
 	}
 	else if (eDirection == UP)
 	{
-		if (i32vec2Index.y >= (int)cSettings->NUM_TILES_YAXIS - 1)
+		if (vTransform.y >= (int)cSettings->NUM_TILES_YAXIS - 1)
 		{
-			i32vec2Index.y = ((int)cSettings->NUM_TILES_YAXIS) - 1;
+			vTransform.y = ((int)cSettings->NUM_TILES_YAXIS) - 1;
 			i32vec2NumMicroSteps.y = 0;
 		}
 	}
 	else if (eDirection == DOWN)
 	{
-		if (i32vec2Index.y < 0)
+		if (vTransform.y < 0)
 		{
-			i32vec2Index.y = 0;
+			vTransform.y = 0;
 			i32vec2NumMicroSteps.y = 0;
 		}
 	}
@@ -468,7 +440,7 @@ bool CEnemy2D::CheckPosition(DIRECTION eDirection)
 		if (i32vec2NumMicroSteps.y == 0)
 		{
 			// If the grid is not accessible, then return false
-			if (cMap2D->GetMapInfo(i32vec2Index.y, i32vec2Index.x) >= 100)
+			if (cMap2D->GetMapInfo(vTransform.y, vTransform.x) >= 100)
 			{
 				return false;
 			}
@@ -477,8 +449,8 @@ bool CEnemy2D::CheckPosition(DIRECTION eDirection)
 		else if (i32vec2NumMicroSteps.y != 0)
 		{
 			// If the 2 grids are not accessible, then return false
-			if ((cMap2D->GetMapInfo(i32vec2Index.y, i32vec2Index.x) >= 100) ||
-				(cMap2D->GetMapInfo(i32vec2Index.y + 1, i32vec2Index.x) >= 100))
+			if ((cMap2D->GetMapInfo(vTransform.y, vTransform.x) >= 100) ||
+				(cMap2D->GetMapInfo(vTransform.y + 1, vTransform.x) >= 100))
 			{
 				return false;
 			}
@@ -487,7 +459,7 @@ bool CEnemy2D::CheckPosition(DIRECTION eDirection)
 	else if (eDirection == RIGHT)
 	{
 		// If the new position is at the top row, then return true
-		if (i32vec2Index.x >= cSettings->NUM_TILES_XAXIS - 1)
+		if (vTransform.x >= cSettings->NUM_TILES_XAXIS - 1)
 		{
 			i32vec2NumMicroSteps.x = 0;
 			return true;
@@ -497,7 +469,7 @@ bool CEnemy2D::CheckPosition(DIRECTION eDirection)
 		if (i32vec2NumMicroSteps.y == 0)
 		{
 			// If the grid is not accessible, then return false
-			if (cMap2D->GetMapInfo(i32vec2Index.y, i32vec2Index.x + 1) >= 100)
+			if (cMap2D->GetMapInfo(vTransform.y, vTransform.x + 1) >= 100)
 			{
 				return false;
 			}
@@ -506,8 +478,8 @@ bool CEnemy2D::CheckPosition(DIRECTION eDirection)
 		else if (i32vec2NumMicroSteps.y != 0)
 		{
 			// If the 2 grids are not accessible, then return false
-			if ((cMap2D->GetMapInfo(i32vec2Index.y, i32vec2Index.x + 1) >= 100) ||
-				(cMap2D->GetMapInfo(i32vec2Index.y + 1, i32vec2Index.x + 1) >= 100))
+			if ((cMap2D->GetMapInfo(vTransform.y, vTransform.x + 1) >= 100) ||
+				(cMap2D->GetMapInfo(vTransform.y + 1, vTransform.x + 1) >= 100))
 			{
 				return false;
 			}
@@ -517,7 +489,7 @@ bool CEnemy2D::CheckPosition(DIRECTION eDirection)
 	else if (eDirection == UP)
 	{
 		// If the new position is at the top row, then return true
-		if (i32vec2Index.y >= cSettings->NUM_TILES_YAXIS - 1)
+		if (vTransform.y >= cSettings->NUM_TILES_YAXIS - 1)
 		{
 			i32vec2NumMicroSteps.y = 0;
 			return true;
@@ -527,7 +499,7 @@ bool CEnemy2D::CheckPosition(DIRECTION eDirection)
 		if (i32vec2NumMicroSteps.x == 0)
 		{
 			// If the grid is not accessible, then return false
-			if (cMap2D->GetMapInfo(i32vec2Index.y + 1, i32vec2Index.x) >= 100)
+			if (cMap2D->GetMapInfo(vTransform.y + 1, vTransform.x) >= 100)
 			{
 				return false;
 			}
@@ -536,8 +508,8 @@ bool CEnemy2D::CheckPosition(DIRECTION eDirection)
 		else if (i32vec2NumMicroSteps.x != 0)
 		{
 			// If the 2 grids are not accessible, then return false
-			if ((cMap2D->GetMapInfo(i32vec2Index.y + 1, i32vec2Index.x) >= 100) ||
-				(cMap2D->GetMapInfo(i32vec2Index.y + 1, i32vec2Index.x + 1) >= 100))
+			if ((cMap2D->GetMapInfo(vTransform.y + 1, vTransform.x) >= 100) ||
+				(cMap2D->GetMapInfo(vTransform.y + 1, vTransform.x + 1) >= 100))
 			{
 				return false;
 			}
@@ -549,7 +521,7 @@ bool CEnemy2D::CheckPosition(DIRECTION eDirection)
 		if (i32vec2NumMicroSteps.x == 0)
 		{
 			// If the grid is not accessible, then return false
-			if (cMap2D->GetMapInfo(i32vec2Index.y, i32vec2Index.x) >= 100)
+			if (cMap2D->GetMapInfo(vTransform.y, vTransform.x) >= 100)
 			{
 				return false;
 			}
@@ -558,8 +530,8 @@ bool CEnemy2D::CheckPosition(DIRECTION eDirection)
 		else if (i32vec2NumMicroSteps.x != 0)
 		{
 			// If the 2 grids are not accessible, then return false
-			if ((cMap2D->GetMapInfo(i32vec2Index.y, i32vec2Index.x) >= 100) ||
-				(cMap2D->GetMapInfo(i32vec2Index.y, i32vec2Index.x + 1) >= 100))
+			if ((cMap2D->GetMapInfo(vTransform.y, vTransform.x) >= 100) ||
+				(cMap2D->GetMapInfo(vTransform.y, vTransform.x + 1) >= 100))
 			{
 				return false;
 			}
@@ -573,332 +545,27 @@ bool CEnemy2D::CheckPosition(DIRECTION eDirection)
 	return true;
 }
 
-// Check if the enemy2D is in mid-air
-bool CEnemy2D::IsMidAir(void)
-{
-	// if the player is at the bottom row, then he is not in mid-air for sure
-	if (i32vec2Index.y == 0)
-		return false;
-
-	// Check if the tile below the player's current position is empty
-	if (i32vec2NumMicroSteps.x > 0)
-	{
-		if ((cMap2D->GetMapInfo(i32vec2Index.y - 1, i32vec2Index.x + 1) == 0))
-		{
-			return true;
-		}
-		if (cMap2D->GetMapInfo(i32vec2Index.y - 1, i32vec2Index.x + 1) < 100)
-		{
-			return true;
-		}
-	}
-	else
-	{
-		if ((cMap2D->GetMapInfo(i32vec2Index.y - 1, i32vec2Index.x) == 0))
-		{
-			return true;
-		}
-		if (cMap2D->GetMapInfo(i32vec2Index.y - 1, i32vec2Index.x) < 100)
-		{
-			return true;
-		}
-	}
-
-	return false;
-}
-
-// Update Jump or Fall
-void CEnemy2D::UpdateJumpFall(const double dElapsedTime)
-{
-	if (cPhysics2D.GetStatus() == CPhysics2D::STATUS::JUMP)
-	{
-		// Update the elapsed time to the physics engine
-		cPhysics2D.AddElapsedTime((float)dElapsedTime);
-		// Call the physics engine update method to calculate the final velocity and displacement
-		cPhysics2D.Update();
-		// Get the displacement from the physics engine
-		glm::vec2 v2Displacement = cPhysics2D.GetDeltaDisplacement();
-
-		// Store the current i32vec2Index.y
-		int iIndex_YAxis_OLD = i32vec2Index.y;
-
-		int iDisplacement_MicroSteps = (int)(v2Displacement.y / cSettings->MICRO_STEP_YAXIS); //DIsplacement divide by distance for 1 microstep
-		if (i32vec2Index.y < (int)cSettings->NUM_TILES_YAXIS)
-		{
-			i32vec2NumMicroSteps.y += iDisplacement_MicroSteps;
-			if (i32vec2NumMicroSteps.y > cSettings->NUM_STEPS_PER_TILE_YAXIS)
-			{
-				i32vec2NumMicroSteps.y -= cSettings->NUM_STEPS_PER_TILE_YAXIS;
-				if (i32vec2NumMicroSteps.y < 0)
-					i32vec2NumMicroSteps.y = 0;
-				i32vec2Index.y++;
-			}
-		}
-
-		// Constraint the player's position within the screen boundary
-		Constraint(UP);
-
-		// Iterate through all rows until the proposed row
-		// Check if the player will hit a tile; stop jump if so.
-		int iIndex_YAxis_Proposed = i32vec2Index.y;
-		for (int i = iIndex_YAxis_OLD; i <= iIndex_YAxis_Proposed; i++)
-		{
-			// Change the player's index to the current i value
-			i32vec2Index.y = i;
-			// If the new position is not feasible, then revert to old position
-			if (CheckPosition(UP) == false)
-			{
-				// Align with the row
-				i32vec2NumMicroSteps.y = 0;
-				// Set the Physics to fall status
-				cPhysics2D.SetStatus(CPhysics2D::STATUS::FALL);
-				break;
-			}
-		}
-
-		// If the player is still jumping and the initial velocity has reached zero or below zero, 
-		// then it has reach the peak of its jump
-		if ((cPhysics2D.GetStatus() == CPhysics2D::STATUS::JUMP) && (cPhysics2D.GetDeltaDisplacement().y <= 0.0f))
-		{
-			// Set status to fall
-			cPhysics2D.SetStatus(CPhysics2D::STATUS::FALL);
-		}
-	}
-	else if (cPhysics2D.GetStatus() == CPhysics2D::STATUS::FALL)
-		{
-			// Update the elapsed time to the physics engine
-			cPhysics2D.AddElapsedTime((float)dElapsedTime);
-			// Call the physics engine update method to calculate the final velocity and displacement
-			cPhysics2D.Update();
-			// Get the displacement from the physics engine
-			glm::vec2 v2Displacement = cPhysics2D.GetDeltaDisplacement();
-
-			// Store the current i32vec2Index.y
-			int iIndex_YAxis_OLD = i32vec2Index.y;
-
-			// Translate the displacement from pixels to indices
-			int iDisplacement_MicroSteps = (int)(v2Displacement.y / cSettings->MICRO_STEP_YAXIS);
-
-			if (i32vec2Index.y >= 0)
-			{
-				i32vec2NumMicroSteps.y -= fabs(iDisplacement_MicroSteps);
-				if (i32vec2NumMicroSteps.y < 0)
-				{
-					i32vec2NumMicroSteps.y = ((int)cSettings->NUM_STEPS_PER_TILE_YAXIS) - 1;
-					i32vec2Index.y--;
-				}
-			}
-
-			// Constraint the player's position within the screen boundary
-			Constraint(DOWN);
-
-			// Iterate through all rows until the proposed row
-			// Check if the player will hit a tile; stop fall if so.
-			int iIndex_YAxis_Proposed = i32vec2Index.y;
-			for (int i = iIndex_YAxis_OLD; i >= iIndex_YAxis_Proposed; i--)
-			{
-				// Change the player's index to the current i value
-				i32vec2Index.y = i;
-				// If the new position is not feasible, then revert to old position
-				if (CheckPosition(DOWN) == false)
-				{
-					// Revert to the previous position
-					if (i != iIndex_YAxis_OLD)
-						i32vec2Index.y = i + 1;
-					// Set the Physics to idle status
-					cPhysics2D.SetStatus(CPhysics2D::STATUS::IDLE);
-					i32vec2NumMicroSteps.y = 0;
-					break;
-				}
-			}
-		}
-}
-
 /**
  @brief Let enemy2D interact with the player.
  */
 bool CEnemy2D::InteractWithPlayer(void)
 {
-	glm::i32vec2 i32vec2PlayerPos = cPlayer2D->i32vec2Index;
-	glm::i32vec2 i32vec2PlayerMicroSteps = cPlayer2D->i32vec2NumMicroSteps;
-	//cout << i32vec2PlayerPos.x << ", " << i32vec2Index.x << endl;
-	float distance = cPhysics2D.CalculateMicroSteps(i32vec2Index, i32vec2NumMicroSteps, i32vec2PlayerPos, i32vec2PlayerMicroSteps);
-	// Check if the enemy2D is within 1.5 indices of the player2D
-	if (distance <= 8.f
-		&& 
-		(abs(i32vec2Index.y - i32vec2PlayerPos.y) <= 1.f))
-	{
-		cPlayer2D->Hit(20);
-		// Since the player has been caught, then reset the FSM
-		sCurrentFSM = IDLE;
-		iFSMCounter = 0;
-		return true;
-	}
+	//glm::i32vec2 i32vec2PlayerPos = cPlayer2D->vTransform;
+	//glm::i32vec2 i32vec2PlayerMicroSteps = cPlayer2D->i32vec2NumMicroSteps;
+	////cout << i32vec2PlayerPos.x << ", " << vTransform.x << endl;
+	//float distance = cPhysics2D.CalculateMicroSteps(vTransform, i32vec2NumMicroSteps, i32vec2PlayerPos, i32vec2PlayerMicroSteps);
+	//// Check if the enemy2D is within 1.5 indices of the player2D
+	//if (distance <= 8.f
+	//	&& 
+	//	(abs(vTransform.y - i32vec2PlayerPos.y) <= 1.f))
+	//{
+	//	cPlayer2D->Hit(20);
+	//	// Since the player has been caught, then reset the FSM
+	//	sCurrentFSM = IDLE;
+	//	iFSMCounter = 0;
+	//	return true;
+	//}
 	return false;
-}
-
-bool CEnemy2D::LedgeDetection()
-{
-	// Check if the tile below the player's current position is empty
-	if (i32vec2NumMicroSteps.x > 0)
-	{
-		if ((cMap2D->GetMapInfo(i32vec2Index.y - 1, i32vec2Index.x + 1) == 0))
-		{
-			return true;
-		}
-		if (cMap2D->GetMapInfo(i32vec2Index.y - 1, i32vec2Index.x + 1) < 100)
-		{
-			return true;
-		}
-
-		if ((cMap2D->GetMapInfo(i32vec2Index.y - 1, i32vec2Index.x) == 0))
-		{
-			return true;
-		}
-		if (cMap2D->GetMapInfo(i32vec2Index.y - 1, i32vec2Index.x) < 100)
-		{
-			return true;
-		}
-		if (cMap2D->GetMapActive(i32vec2Index.y - 1, i32vec2Index.x + 1) == false ||
-			cMap2D->GetMapActive(i32vec2Index.y - 1, i32vec2Index.x) == false)
-		{
-			return true;
-		}
-	}
-	else
-	{
-		if ((cMap2D->GetMapInfo(i32vec2Index.y - 1, i32vec2Index.x) == 0))
-		{
-			return true;
-		}
-		if (cMap2D->GetMapInfo(i32vec2Index.y - 1, i32vec2Index.x) < 100)
-		{
-			return true;
-		}
-
-		if ((cMap2D->GetMapInfo(i32vec2Index.y - 1, i32vec2Index.x - 1) == 0))
-		{
-			return true;
-		}
-		if (cMap2D->GetMapInfo(i32vec2Index.y - 1, i32vec2Index.x - 1) < 100)
-		{
-			return true;
-		}
-
-		if (cMap2D->GetMapActive(i32vec2Index.y - 1, i32vec2Index.x - 1) == false ||
-			cMap2D->GetMapActive(i32vec2Index.y - 1, i32vec2Index.x) == false)
-		{
-			return true;
-		}
-	}
-	return false;
-}
-
-/**
- @brief Update the enemy's direction.
- */
-void CEnemy2D::UpdateDirection(void)
-{
-	// Set the destination to the player
-	i32vec2Destination = cPlayer2D->i32vec2Index;
-
-	// Calculate the direction between enemy2D and player2D
-	i32vec2Direction = i32vec2Destination - i32vec2Index;
-
-	// Calculate the distance between enemy2D and player2D
-	float fDistance = cPhysics2D.CalculateDistance(i32vec2Index, i32vec2Destination);
-	if (fDistance >= 0.01f)
-	{
-		// Calculate direction vector.
-		// We need to round the numbers as it is easier to work with whole numbers for movements
-		i32vec2Direction.x = (int)round(i32vec2Direction.x / fDistance);
-		i32vec2Direction.y = (int)round(i32vec2Direction.y / fDistance);
-	}
-	else
-	{
-		// Since we are not going anywhere, set this to 0.
-		i32vec2Direction = glm::i32vec2(0);
-	}
-}
-
-void CEnemy2D::KnockBack()
-{
-	glm::vec2 DirVec = cPlayer2D->i32vec2Index - i32vec2Index;
-	glm::vec2 MicroDirVec = cPlayer2D->i32vec2NumMicroSteps - i32vec2NumMicroSteps;
-	if (runtimer > 0.3)
-	{
-		runtimer = 0;
-		if (DirVec.x > 0 || (DirVec.x == 0 && MicroDirVec.x > 0)) //To the right of enemy
-		{
-			facing = RIGHT;
-			// Move left
-			const int iOldIndex = i32vec2Index.x;
-			if (i32vec2Index.x >= 0)
-			{
-				i32vec2NumMicroSteps.x--;
-				if (i32vec2NumMicroSteps.x < 0)
-				{
-					i32vec2NumMicroSteps.x = ((int)cSettings->NUM_STEPS_PER_TILE_XAXIS) - 1;
-					i32vec2Index.x--;
-				}
-			}
-
-			// Constraint the enemy2D's position within the screen boundary
-			Constraint(LEFT);
-
-			// Find a feasible position for the enemy2D's current position
-			if (CheckPosition(LEFT) == false)
-			{
-				FlipHorizontalDirection();
-				i32vec2Index = i32vec2OldIndex;
-				i32vec2NumMicroSteps.x = 0;
-			}
-
-			// Check if enemy2D is in mid-air, such as walking off a platform
-			if (IsMidAir() == true)
-			{
-				cPhysics2D.SetStatus(CPhysics2D::STATUS::FALL);
-			}
-
-			// Interact with the Player
-			InteractWithPlayer();
-		}
-		else if (DirVec.x < 0 || (DirVec.x == 0 && MicroDirVec.x < 0))
-		{
-			facing = LEFT;
-			// Move right
-			const int iOldIndex = i32vec2Index.x;
-			if (i32vec2Index.x < (int)cSettings->NUM_TILES_XAXIS)
-			{
-				i32vec2NumMicroSteps.x++;
-
-				if (i32vec2NumMicroSteps.x >= cSettings->NUM_STEPS_PER_TILE_XAXIS)
-				{
-					i32vec2NumMicroSteps.x = 0;
-					i32vec2Index.x++;
-				}
-			}
-
-			// Constraint the enemy2D's position within the screen boundary
-			Constraint(RIGHT);
-
-			// Find a feasible position for the enemy2D's current position
-			if (CheckPosition(RIGHT) == false)
-			{
-				FlipHorizontalDirection();
-				//i32vec2Index = i32vec2OldIndex;
-				i32vec2NumMicroSteps.x = 0;
-			}
-			// Check if enemy2D is in mid-air, such as walking off a platform
-			if (IsMidAir() == true)
-			{
-				cPhysics2D.SetStatus(CPhysics2D::STATUS::FALL);
-			}
-
-			// Interact with the Player
-			InteractWithPlayer();
-		}
-	}
 }
 
 /**
@@ -907,104 +574,4 @@ void CEnemy2D::KnockBack()
 void CEnemy2D::FlipHorizontalDirection(void)
 {
 	i32vec2Direction.x *= -1;
-}
-
-/**
-@brief Update position.
-*/
-void CEnemy2D::UpdatePosition(void)
-{
-	// Store the old position
-	i32vec2OldIndex = i32vec2Index;
-
-	if (runtimer > 0.04)
-	{
-		runtimer = 0;
-		// if the player is to the left or right of the enemy2D, then jump to attack
-		if (i32vec2Direction.x < 0)
-		{
-			facing = LEFT;
-			// Move left
-			const int iOldIndex = i32vec2Index.x;
-			if (i32vec2Index.x >= 0)
-			{
-				i32vec2NumMicroSteps.x--;
-				if (i32vec2NumMicroSteps.x < 0)
-				{
-					i32vec2NumMicroSteps.x = ((int)cSettings->NUM_STEPS_PER_TILE_XAXIS) - 1;
-					i32vec2Index.x--;
-				}
-			}
-
-			// Constraint the enemy2D's position within the screen boundary
-			Constraint(LEFT);
-
-			// Find a feasible position for the enemy2D's current position
-			if (CheckPosition(LEFT) == false)
-			{
-				FlipHorizontalDirection();
-				i32vec2Index = i32vec2OldIndex;
-				i32vec2NumMicroSteps.x = 0;
-			}
-
-			// Check if enemy2D is in mid-air, such as walking off a platform
-			if (LedgeDetection() == true)
-			{
-				FlipHorizontalDirection();
-				i32vec2Index = i32vec2OldIndex;
-				i32vec2NumMicroSteps.x = 0;
-				cPhysics2D.SetStatus(CPhysics2D::STATUS::FALL);
-			}
-
-			// Interact with the Player
-			InteractWithPlayer();
-		}
-		else if (i32vec2Direction.x > 0)
-		{
-			facing = RIGHT;
-			// Move right
-			const int iOldIndex = i32vec2Index.x;
-			if (i32vec2Index.x < (int)cSettings->NUM_TILES_XAXIS)
-			{
-				i32vec2NumMicroSteps.x++;
-
-				if (i32vec2NumMicroSteps.x >= cSettings->NUM_STEPS_PER_TILE_XAXIS)
-				{
-					i32vec2NumMicroSteps.x = 0;
-					i32vec2Index.x++;
-				}
-			}
-
-			// Constraint the enemy2D's position within the screen boundary
-			Constraint(RIGHT);
-
-			// Find a feasible position for the enemy2D's current position
-			if (CheckPosition(RIGHT) == false)
-			{
-				FlipHorizontalDirection();
-				//i32vec2Index = i32vec2OldIndex;
-				i32vec2NumMicroSteps.x = 0;
-			}
-			// Check if enemy2D is in mid-air, such as walking off a platform
-			if (LedgeDetection() == true)
-			{
-				FlipHorizontalDirection();
-				i32vec2NumMicroSteps.x = 0;
-				cPhysics2D.SetStatus(CPhysics2D::STATUS::FALL);
-			}
-
-			// Interact with the Player
-			InteractWithPlayer();
-		}
-	}
-
-	// if the player is above the enemy2D, then jump to attack
-	if (i32vec2Direction.y > 0)
-	{
-		if (cPhysics2D.GetStatus() == CPhysics2D::STATUS::IDLE)
-		{
-			cPhysics2D.SetStatus(CPhysics2D::STATUS::JUMP);
-			cPhysics2D.SetInitialVelocity(glm::vec2(0.0f, 1.8f));
-		}
-	}
 }

@@ -9,17 +9,40 @@
 using namespace std;
 
 #include "GameControl/Settings.h"
+#include "Math/MyMath.h"
+
+glm::vec2 CPhysics2D::CalculateAcceleration()
+{
+	return force * (1 / mass);
+}
+glm::vec2 CPhysics2D::CalculateFriction(float coefficient)
+{
+	if (abs(velocity.x) > 0.f)
+	{
+		// f = uN - N = normal force 
+		//Dont need to care about the normal that much since tile based so normal mostly going to be y = 1
+		float NormalForce = mass * abs(v2Gravity.y);
+
+		float frictionalforce = coefficient * NormalForce;
+
+		glm::vec2 oppositedirection = glm::normalize(velocity * -1.0f);
+
+		//F = MA, A = F/M
+		glm::vec2 friction = oppositedirection * (frictionalforce);
+		return friction;
+	}
+
+	return glm::vec2(0.f, 0.f);
+}
 /**
  @brief Constructor This constructor has protected access modifier as this class will be a Singleton
  */
 CPhysics2D::CPhysics2D(void)
-	: v2InitialVelocity(glm::vec2(0.0f))
-	, v2FinalVelocity(glm::vec2(0.0f))
-	, v2Acceleration(glm::vec2(0.0f))
-	, v2Displacement(glm::vec2(0.0f))
-	, v2PrevDisplacement(glm::vec2(0.0f))
-	, fTime(0.0f)
-{
+	: position(NULL)
+	, velocity(glm::vec2(0.f))
+	, force(glm::vec2(0.f))
+	, mass(1)
+{ 
 }
 
 /**
@@ -32,164 +55,52 @@ CPhysics2D::~CPhysics2D(void)
 /**
 @brief Init Initialise this instance
 */ 
-bool CPhysics2D::Init(void)
+bool CPhysics2D::Init(glm::vec2* position)
 {
-	// Reset these variables
-	v2InitialVelocity = glm::vec2(0.0f);
-	v2FinalVelocity = glm::vec2(0.0f);
-	//v2Acceleration = glm::vec2(0.0f);		// Acceleration does not need to be reset here.
-	v2Displacement = glm::vec2(0.0f);
-	v2PrevDisplacement = glm::vec2(0.0f);
-	fTime = 0.0f;
+	this->position = position;
 	return true;
 }
 
-// Set methods
-// Set Initial velocity
-void CPhysics2D::SetInitialVelocity(const glm::vec2 v2InitialVelocity)
+void CPhysics2D::Update(double dElapsedTime)
 {
-	this->v2InitialVelocity = v2InitialVelocity;	// Initial velocity
+	glm::vec2 a = CalculateAcceleration();
+	
+	cout << velocity.x << ", " << velocity.y << endl;
+	glm::vec2 friction = CalculateFriction(FRICTONAL_COEFFICIENT);
+
+	a += friction;
+
+	a += v2Gravity;
+	velocity += a * (float)dElapsedTime;
+
+
+	if (velocity.x < 0.1f && velocity.x > -0.1f)
+		velocity.x = 0;
+
+	velocity.x = Math::Clamp(velocity.x, -MAX_SPEED, MAX_SPEED);
+	velocity.y = Math::Clamp(velocity.y, -MAX_SPEED, MAX_SPEED);
+
+	*position += velocity * (float)dElapsedTime;
+
+	force = glm::vec2(0.f);
 }
 
-// Set Final velocity
-void CPhysics2D::SetFinalVelocity(const glm::vec2 v2FinalVelocity)
+void CPhysics2D::SetForce(const glm::vec2 force)
 {
-	this->v2FinalVelocity = v2FinalVelocity;		// Final velocity
+	this->force = force;
 }
 
-// Set Acceleration
-void CPhysics2D::SetAcceleration(const glm::vec2 v2Acceleration)
+void CPhysics2D::SetMass(const float mass)
 {
-	this->v2Acceleration = v2Acceleration;		// Acceleration
+	this->mass = mass;
 }
 
-// Set Displacement
-void CPhysics2D::SetDisplacement(const glm::vec2 v2Displacement)
+void CPhysics2D::SetVelocity(const glm::vec2 velocity)
 {
-	this->v2Displacement = v2Displacement;		// Displacement
+	this->velocity = velocity;
 }
 
-// Set Time
-void CPhysics2D::SetTime(const float fTime)
+glm::vec2 CPhysics2D::GetVelocity() const
 {
-	this->fTime = fTime;					// Time
-}
-
-// Set Status
-void CPhysics2D::SetStatus(const STATUS sStatus)
-{
-	// If there is a change in status, then reset to default values
-	if (sCurrentStatus != sStatus)
-	{
-		// Reset to default values
-		Init();
-
-		// Store the new status
-		sCurrentStatus = sStatus;
-	}
-}
-
-// Get methods
-// Get Initial velocity
-glm::vec2 CPhysics2D::GetInitialVelocity(void) const
-{
-	return v2InitialVelocity;	// Initial velocity
-}
-
-// Get Final velocity
-glm::vec2 CPhysics2D::GetFinalVelocity(void) const
-{
-	return v2FinalVelocity;		// Final velocity
-}
-
-// Get Acceleration
-glm::vec2 CPhysics2D::GetAcceleration(void) const
-{
-	return v2Acceleration;		// Acceleration
-}
-
-// Get Displacement
-glm::vec2 CPhysics2D::GetDisplacement(void) const
-{
-	return v2Displacement;		// Displacement
-}
-
-// Get Delta Displacement
-glm::vec2 CPhysics2D::GetDeltaDisplacement(void) const
-{
-	return v2Displacement - v2PrevDisplacement;		// Delta Displacement
-}
-
-// Get Time
-float CPhysics2D::GetTime(void) const
-{
-	return fTime;					// Time
-}
-
-// Get Status
-CPhysics2D::STATUS CPhysics2D::GetStatus(void) const
-{
-	return sCurrentStatus;
-}
-
-// Update
-void CPhysics2D::Update(void)
-{
-	// Store the previous displacement values
-	v2PrevDisplacement = v2Displacement;
-	// Calculate the final velocity
-	//v2FinalVelocity = v2InitialVelocity + v2Gravity * fTime;
-	// Calculate the displacement
-	v2Displacement = v2InitialVelocity * fTime + 0.5f * v2Gravity * fTime * fTime;
-	// Update v2InitialVelocity
-	//v2InitialVelocity = v2FinalVelocity;
-}
-
-// Add elapsed time
-void CPhysics2D::AddElapsedTime(const float fElapseTime)
-{
-	fTime += fElapseTime;
-}
-
-void CPhysics2D::AddInitialVelocity(const glm::vec2 v2InitialVelocity)
-{
-	this->v2InitialVelocity += v2InitialVelocity;
-}
-
-// Calculate the distance between two vec2 varables
-float CPhysics2D::CalculateDistance(glm::vec2 source, glm::vec2 destination)
-{
-	return glm::length(destination - source);
-}
-
-float CPhysics2D::CalculateMicroSteps(glm::vec2 source, glm::vec2 sourcemicro, glm::vec2 destination, glm::vec2 destinationmicro)
-{
-	glm::vec2 DirVec = destination - source;
-	float microsteps_x_axis = CSettings::GetInstance()->NUM_STEPS_PER_TILE_XAXIS;
-	float totalmicrosteps = glm::length(destination - source) * microsteps_x_axis;
-	float microstepsdiff;
-	if (DirVec.x < 0)
-	{
-		totalmicrosteps -= microsteps_x_axis;
-		microstepsdiff = microsteps_x_axis - (destinationmicro.x - sourcemicro.x);
-	}
-	else if (DirVec.x > 0)
-		microstepsdiff = destinationmicro.x - sourcemicro.x;
-	else
-	{
-		microstepsdiff = abs(destinationmicro.x - sourcemicro.x);
-	}
-	totalmicrosteps += microstepsdiff;
-	return totalmicrosteps;
-}
-
-// PrintSelf
-void CPhysics2D::PrintSelf(void)
-{
-	cout << "CPhysics2D::PrintSelf()" << endl;
-	cout << "v2InitialVelocity\t=\t" << v2InitialVelocity.x << ", " << v2InitialVelocity.y << endl;
-	cout << "v2FinalVelocity\t=\t" << v2FinalVelocity.x << ", " << v2FinalVelocity.y << endl;
-	cout << "v2Acceleration\t=\t" << v2Acceleration.x << ", " << v2Acceleration.y << endl;
-	cout << "v2Displacement\t=\t" << v2Displacement.x << ", " << v2Displacement.y << endl;
-	cout << "fTime\t=\t" << fTime << endl;
+	return velocity;
 }

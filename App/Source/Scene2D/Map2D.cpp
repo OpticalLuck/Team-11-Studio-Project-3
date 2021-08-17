@@ -16,6 +16,7 @@
 
 #include <iostream>
 #include <vector>
+
 using namespace std;
 
 // For AStar PathFinding
@@ -99,6 +100,7 @@ bool CMap2D::Init(const unsigned int uiNumLevels,
 	/// 100 - 200 -> COLLISION
 	/// 300 - 400 -> ENEMY / ENTITY
 	/// </summary>
+	
 	if (LoadTexture("Image/Ground/GroundTile.png", 100) == false)
 	{
 		std::cout << "Failed to load ground tile texture" << std::endl;

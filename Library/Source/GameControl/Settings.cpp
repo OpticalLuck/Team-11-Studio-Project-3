@@ -16,8 +16,8 @@ CSettings::CSettings(void)
 	, NUM_TILES_YAXIS(24)
 	, TILE_WIDTH(0.0625f)
 	, TILE_HEIGHT(0.08333f)
-	, NUM_STEPS_PER_TILE_XAXIS(8.0f)
-	, NUM_STEPS_PER_TILE_YAXIS(8.0f)
+	, NUM_STEPS_PER_TILE_XAXIS(16.0f)
+	, NUM_STEPS_PER_TILE_YAXIS(16.0f)
 	, MICRO_STEP_XAXIS(0.015625f)
 	, MICRO_STEP_YAXIS(0.0208325f)
 {
@@ -74,6 +74,30 @@ float CSettings::ConvertIndexToUVSpace(const AXIS sAxis, const int iIndex, const
 		cout << "Unknown axis" << endl;
 	}
 	return fResult;
+}
+
+glm::vec2 CSettings::ConvertIndexToUVSpace(const glm::vec2 pos)
+{
+	glm::vec2 output = pos;
+
+	//ORIGINAL ONE
+	output.x = (output.x - (0.5 * NUM_TILES_XAXIS)) / (0.5 * NUM_TILES_XAXIS);
+	output.y = (output.y - (0.5 * NUM_TILES_YAXIS)) / (0.5 * NUM_TILES_YAXIS);
+
+	//NEW ONE
+	//output.x = (((pos.x + 0.5) / NUM_TILES_XAXIS) * 2) - 1;
+	//output.y = (((pos.y + 0.5)/ NUM_TILES_YAXIS) * 2) - 1;
+
+	return output;
+}
+
+glm::vec2 CSettings::ConvertUVSpaceToIndex(const glm::vec2 pos)
+{
+	glm::vec2 output = pos;
+	output.x = output.x * (0.5 * NUM_TILES_XAXIS) + (0.5 * NUM_TILES_XAXIS);
+	output.y = output.y * (0.5 * NUM_TILES_YAXIS) + (0.5 * NUM_TILES_YAXIS);
+
+	return output;
 }
 
 // Update the specifications of the map

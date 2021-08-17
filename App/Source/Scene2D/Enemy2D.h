@@ -56,7 +56,7 @@ public:
 	void PostRender(void);
 
 	// Set the indices of the enemy2D
-	void Seti32vec2Index(const int iIndex_XAxis, const int iIndex_YAxis);
+	void SetTransform(const int iIndex_XAxis, const int iIndex_YAxis);
 
 	// Set the number of microsteps of the enemy2D
 	void Seti32vec2NumMicroSteps(const int iNumMicroSteps_XAxis, const int iNumMicroSteps_YAxis);
@@ -136,7 +136,7 @@ protected:
 	CSettings* cSettings;
 
 	// Physics
-	CPhysics2D cPhysics2D;
+	//CPhysics2D cPhysics2D;
 
 	// Current color
 	glm::vec4 currentColor;
@@ -177,25 +177,10 @@ protected:
 	// Check if a position is possible to move into
 	bool CheckPosition(DIRECTION eDirection);
 
-	// Check if the enemy2D is in mid-air
-	bool IsMidAir(void);
-
-	bool LedgeDetection();
-
-	// Update Jump or Fall
-	void UpdateJumpFall(const double dElapsedTime = 0.0166666666666667);
-
 	// Let enemy2D interact with the player
 	bool InteractWithPlayer(void);
 
-	// Update direction
-	void UpdateDirection(void);
-
-	void KnockBack();
 	// Flip horizontal direction. For patrol use only
 	void FlipHorizontalDirection(void);
-
-	// Update position
-	void UpdatePosition(void);
 };
 

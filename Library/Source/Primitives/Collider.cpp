@@ -31,11 +31,17 @@ bool CCollider::Init(void)
 {
 	// set up vertex data (and buffer(s)) and configure vertex attributes
 	float vertices[] = {
+		//-0.5f,-0.5f
 		vec3BottomLeft.x, vec3BottomLeft.y, vec3BottomLeft.z, vec4Colour.x, vec4Colour.y, vec4Colour.z,
+		//0.5f,-0.5f
 		vec3TopRight.x, vec3BottomLeft.y, vec3BottomLeft.z, vec4Colour.x, vec4Colour.y, vec4Colour.z,
+		//0.5f,0.5f
 		vec3TopRight.x, vec3TopRight.y, vec3BottomLeft.z, vec4Colour.x, vec4Colour.y, vec4Colour.z,
+		//0.5f,0.5f
 		vec3TopRight.x, vec3TopRight.y, vec3BottomLeft.z, vec4Colour.x, vec4Colour.y, vec4Colour.z,
+		//-0.5f,0.5f
 		vec3BottomLeft.x, vec3TopRight.y, vec3BottomLeft.z, vec4Colour.x, vec4Colour.y, vec4Colour.z,
+		//-0.5f,-0.5f
 		vec3BottomLeft.x, vec3BottomLeft.y, vec3BottomLeft.z, vec4Colour.x, vec4Colour.y, vec4Colour.z,
 
 		vec3BottomLeft.x, vec3BottomLeft.y, vec3TopRight.z, vec4Colour.x, vec4Colour.y, vec4Colour.z,

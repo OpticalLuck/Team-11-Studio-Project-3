@@ -81,6 +81,9 @@ protected:
 	ImGuiWindowFlags window_flags;
 	float m_fProgressBar;
 
+	float interval;
+	int timer;
+
 	CSettings* cSettings;
 
 	// The handler containing the instance of CInventoryManager

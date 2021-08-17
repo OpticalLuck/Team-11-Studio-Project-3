@@ -95,6 +95,7 @@ public:
 	// Convert an index number of a tile to a coordinate in UV Space
 	float ConvertIndexToUVSpace(const AXIS sAxis, const int iIndex, const bool bInvert, const float fOffset = 0.0f);
 	glm::vec2 ConvertIndexToUVSpace(const glm::vec2 pos);
+	glm::vec2 ConvertUVSpaceToIndex(const glm::vec2 pos);
 
 protected:
 	// Constructor

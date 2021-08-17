@@ -24,6 +24,12 @@
     <Filter Include="Manager2D">
       <UniqueIdentifier>{54f8f5f8-2e6a-42e3-9af7-09b8d09de77d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="KeyboardInputHandler">
+      <UniqueIdentifier>{a64d880b-e813-4454-ab71-ba91fdb27dff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Command">
+      <UniqueIdentifier>{9ec58048-9e19-41d9-8642-8e72a3b90c0e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp">
@@ -90,7 +96,19 @@
       <Filter>Entity2D</Filter>
     </ClCompile>
     <ClCompile Include="Source\Scene2D\Camera2D.cpp">
+	<Filter>Entity2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene2D\EntityManager.cpp">
       <Filter>Entity2D</Filter>
+    </ClCompile>
+	<ClCompile Include="Source\Scene2D\Interactables.cpp">
+      <Filter>Entity2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\KeyboardInputHandler\CKeyboardInputHandler.cpp">
+      <Filter>KeyboardInputHandler</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Command\Command.cpp">
+      <Filter>Command</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -158,6 +176,18 @@
       <Filter>Entity2D</Filter>
     </ClInclude>
     <ClInclude Include="Source\Scene2D\Camera2D.h">
+	<Filter>Entity2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene2D\EntityManager.h">
+      <Filter>Entity2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\KeyboardInputHandler\CKeyboardInputHandler.h">
+      <Filter>KeyboardInputHandler</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Command\Command.h">
+      <Filter>Command</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene2D\Interactables.h">
       <Filter>Entity2D</Filter>
     </ClInclude>
   </ItemGroup>

@@ -11,7 +11,10 @@
 
 class CPhysics2D
 {
-public:
+private:
+	glm::vec2 CalculateAcceleration();
+	glm::vec2 CalculateFriction(float coefficient);
+public:	
 	enum STATUS
 	{
 		IDLE = 0,
@@ -28,51 +31,24 @@ public:
 	virtual ~CPhysics2D(void);
 
 	// Init
-	bool Init(void);
-
-	// Set methods
-	void SetInitialVelocity(const glm::vec2 v2InitialVelocity);	// Set Initial velocity
-	void SetFinalVelocity(const glm::vec2 v2FinalVelocity);		// Set Final velocity
-	void SetAcceleration(const glm::vec2 v2Acceleration);		// Set Acceleration
-	void SetDisplacement(const glm::vec2 v2Displacement);		// Set Displacement
-	void SetTime(const float fTime);							// Set Time
-	void SetStatus(const STATUS sStatus);						// Set Status
-
-	// Get methods
-	glm::vec2 GetInitialVelocity(void) const;	// Get Initial velocity
-	glm::vec2 GetFinalVelocity(void) const;		// Get Final velocity
-	glm::vec2 GetAcceleration(void) const;		// Get Acceleration
-	glm::vec2 GetDisplacement(void) const;		// Get Displacement
-	glm::vec2 GetDeltaDisplacement(void) const;	// Get Delta Displacement
-	float GetTime(void) const;					// Get Time
-	STATUS GetStatus(void) const;				// Get Status
+	bool Init(glm::vec2* position);
 
 	// Update
-	void Update(void);
+	void Update(double dElapsedTime);
 
-	// Add elapsed time
-	void AddElapsedTime(const float fElapseTime);
+	void SetForce(const glm::vec2 force);
+	void SetMass(const float mass);
+	void SetVelocity(const glm::vec2 velocity);
 
-	void AddInitialVelocity(const glm::vec2 v2InitialVelocity);
-
-	// Calculate the distance between two vec2 varables
-	float CalculateDistance(glm::vec2 source, glm::vec2 destination);
-
-	float CalculateMicroSteps(glm::vec2 source, glm::vec2 sourcemicro, glm::vec2 destination, glm::vec2 destinationmicro);
-	// PrintSelf
-	void PrintSelf(void);
-
+	glm::vec2 GetVelocity() const;
 protected:
-	// Variables for SUVAT calculations
-	glm::vec2 v2InitialVelocity;	// Initial velocity
-	glm::vec2 v2FinalVelocity;		// Final velocity
-	glm::vec2 v2Acceleration;		// Acceleration
-	glm::vec2 v2Displacement;		// Displacement
-	glm::vec2 v2PrevDisplacement;	// Previous Displacement
-	float fTime;					// Time
-
-	const glm::vec2 v2Gravity = glm::vec2( 0.0f, -10.0f);		// Gravity constant
-
+	const glm::vec2 v2Gravity = glm::vec2(0.f, -10.f);
+	const float MAX_SPEED = 10.f;
+	const float FRICTONAL_COEFFICIENT = 1.f;
+	glm::vec2 *position;
+	glm::vec2 velocity;
+	glm::vec2 force;
+	float mass;
 	STATUS sCurrentStatus;
 };
 

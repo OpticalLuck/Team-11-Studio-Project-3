@@ -22,13 +22,31 @@
 
 //CS: Include Mesh.h to use to draw (include vertex and index buffers)
 #include "Mesh.h"
+#include <vector>
+
+//Collision Detection and Resolution
+#include "Collider2D.h"
+
 using namespace std;
 
 class CEntity2D
 {
 public:
+	enum ENTITY_TYPE
+	{
+		NONE = 0,
+		PLAYER,
+		CLONE,
+		ENEMY,
+		INTERACTABLES,
+		TOTAL,
+	};
+	ENTITY_TYPE type;
+
+	CEntity2D(ENTITY_TYPE type = NONE);
+
 	// Constructor
-	CEntity2D(void);
+	//CEntity2D(void);
 
 	// Destructor
 	virtual ~CEntity2D(void);
@@ -51,19 +69,24 @@ public:
 	// PostRender
 	virtual void PostRender(void);
 
-	// The i32vec2 which stores the indices of an Entity2D in the Map2D
-	glm::i32vec2 i32vec2Index;
+	virtual void RenderCollider();
 
-	// The i32vec2 variable which stores The number of microsteps from the tile indices for the Entity2D. 
-	// A tile's width or height is in multiples of these microsteps
-	glm::i32vec2 i32vec2NumMicroSteps;
+	// The i32vec2 which stores the indices of an Entity2D in the Map2D
+	glm::vec2 vTransform;
 
 	// The vec2 variable which stores the UV coordinates to render the Entity2D
 	glm::vec2 vec2UVCoordinate;
 
+	//bool isCollidable();
+
+	bool collidable;
+
 protected:
 	// Name of Shader Program instance
 	std::string sShaderName;
+
+	//all of entity list
+	//std::vector<CEntity2D*> entity_list;
 
 	//CS: The mesh that is used to draw objects
 	CMesh* mesh;
@@ -77,8 +100,11 @@ protected:
 	// A transformation matrix for controlling where to render the entities
 	glm::mat4 transform;
 
+	Collider2D collider2D;
+
 	// Load a texture
 	virtual bool LoadTexture(const char* filename);
+
 
 	// Settings
 	CSettings* cSettings;

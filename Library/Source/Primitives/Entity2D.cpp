@@ -15,28 +15,32 @@
 #include <iostream>
 using namespace std;
 
+
 /**
  @brief Constructor This constructor has protected access modifier as this class will be a Singleton
  */
-CEntity2D::CEntity2D(void)
+CEntity2D::CEntity2D(ENTITY_TYPE type)
 	: VAO(0)
 	, VBO(0)
 	, EBO(0)
 	, iTextureID(0)
 	, cSettings(NULL)
 	, mesh(NULL)
+	, collidable(false)
 {
 	transform = glm::mat4(1.0f);	// make sure to initialize matrix to identity matrix first
 
 	// Initialise vecIndex
-	i32vec2Index = glm::i32vec2(0);
-
-	// Initialise vecNumMicroSteps
-	i32vec2NumMicroSteps = glm::i32vec2(0);
+	vTransform = glm::i32vec2(0);
 
 	// Initialise vec2UVCoordinate
 	vec2UVCoordinate = glm::vec2(0.0f);
 }
+
+//CEntity2D::CEntity2D(ENTITY_TYPE type)
+//{
+//}
+
 
 /**
  @brief Destructor This destructor has protected access modifier as this class will be a Singleton
@@ -59,18 +63,6 @@ bool CEntity2D::Init(void)
 {
 	// Get the handler to the CSettings instance
 	cSettings = CSettings::GetInstance();
-
-	/*
-	// set up vertex data (and buffer(s)) and configure vertex attributes
-	float vertices[] = {	// positions          // texture coords
-		(cSettings->TILE_WIDTH / 2.0f), (cSettings->TILE_HEIGHT / 2.0f), 0.0f, 1.0f, 1.0f, // top right
-		(cSettings->TILE_WIDTH / 2.0f), -(cSettings->TILE_HEIGHT / 2.0f), 0.0f, 1.0f, 0.0f, // bottom right
-		-(cSettings->TILE_WIDTH / 2.0f), -(cSettings->TILE_HEIGHT / 2.0f), 0.0f, 0.0f, 0.0f, // bottom left
-		-(cSettings->TILE_WIDTH / 2.0f), (cSettings->TILE_HEIGHT / 2.0f), 0.0f, 0.0f, 1.0f  // top left 
-	};
-	unsigned int indices[] = { 0, 1, 3, // first triangle
-		1, 2, 3  // second triangle
-	};*/
 
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
@@ -173,6 +165,12 @@ void CEntity2D::PostRender(void)
 	glDisable(GL_BLEND);
 }
 
+void CEntity2D::RenderCollider()
+{
+	collider2D.PreRender();
+	collider2D.Render();
+	collider2D.PostRender();
+}
 /**
 @brief Load a texture, assign it a code and store it in MapOfTextureIDs.
 @param filename A const char* variable which contains the file name of the texture
@@ -214,3 +212,28 @@ bool CEntity2D::LoadTexture(const char* filename)
 
 	return true;
 }
+
+//bool CEntity2D::isCollidable()
+//{
+//	for (std::vector<CEntity2D*>::iterator it = entity_list.begin(); it != entity_list.end(); ++it)
+//	{
+//		CEntity2D* entity = (CEntity2D*)*it;
+//		if (entity->type == CEntity2D::PLAYER)
+//		{
+//			entity->collidable = true;
+//			return true;
+//		}
+//		else if (entity->type == CEntity2D::ENEMY)
+//		{
+//			entity->collidable = true;
+//			return true;
+//		}
+//		else if (entity->type == CEntity2D::CLONE)
+//		{
+//			entity->collidable = false;
+//			return false;
+//		}
+//		else
+//			return false;
+//	}
+//}
