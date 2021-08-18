@@ -39,6 +39,8 @@
 //Include camera
 #include "Camera2D.h"
 
+#include "../TextureManager/TextureManager.h"
+
 // Include files for AStar
 #include <queue>
 #include <functional>
@@ -111,13 +113,12 @@ protected:
 	//Vector array that stores limits of each level
 	std::vector<glm::i32vec2> arrLevelLimit;
 
+	CTextureManager* cTextureManager;
+
 	// The current level
 	unsigned int uiCurLevel;
 	// The number of levels
 	unsigned int uiNumLevels;
-
-	// Map containing texture IDs
-	map<int, int> MapOfTextureIDs;
 
 	//CS: The quadMesh for drawing the tiles
 	CMesh* quadMesh;
@@ -131,11 +132,8 @@ protected:
 	// Destructor
 	virtual ~CMap2D(void);
 
-	// Load a texture
-	bool LoadTexture(const char* filename, const int iTextureCode);
-
 	// Render a tile
-	void RenderTile(const CObject2D* Obj);
+	void RenderTile(const CObject2D obj);
 
 };
 

@@ -251,6 +251,16 @@ bool CMenuState::UpdateMenu(ImGuiWindowFlags window_flags)
 		CGameStateManager::GetInstance()->SetActiveGameState("PlayGameState");
 		return true;
 	}
+	if (CKeyboardController::GetInstance()->IsKeyReleased(GLFW_KEY_E))
+	{
+		// Reset the CKeyboardController
+		CKeyboardController::GetInstance()->Reset();
+
+		// Load the menu state
+		cout << "Loading EditorSettingsState" << endl;
+		CGameStateManager::GetInstance()->SetActiveGameState("EditorSettingsState");
+		return true;
+	}
 	else if (CKeyboardController::GetInstance()->IsKeyReleased(GLFW_KEY_ESCAPE))
 	{
 		// Reset the CKeyboardController

@@ -214,5 +214,8 @@
     <ClInclude Include="Source\Math\MyMath.h">
       <Filter>Math</Filter>
     </ClInclude>
+    <ClInclude Include="Source\System\Debug.h">
+      <Filter>System</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

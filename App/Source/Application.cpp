@@ -29,7 +29,8 @@ using namespace std;
 
 // Include SoundController
 #include "SoundController/SoundController.h"
-
+// Include TextureManager
+#include "TextureManager/TextureManager.h"
 // Include CGameStateManager
 #include "GameStateManagement/GameStateManager.h"
 // Include CIntroState
@@ -40,6 +41,8 @@ using namespace std;
 #include "GameStateManagement/PlayGameState.h"
 #include "GameStateManagement/GameOverState.h"
 #include "GameStateManagement/PauseMenuState.h"
+#include "GameStateManagement/EditorSettingsState.h"
+#include "GameStateManagement/LevelEditorState.h"
 
 /**
  @brief Define an error callback
@@ -236,6 +239,9 @@ bool Application::Init(void)
 	CShaderManager::GetInstance()->Add("textShader", "Shader//text.vs", "Shader//text.fs");
 	CShaderManager::GetInstance()->Add("LineShader", "Shader//Line2DShader.vs", "Shader//Line2DShader.fs");
 
+	// Initialise the TextureManager Instance
+	CTextureManager::GetInstance()->Init();
+
 	// Initialise the CFPSCounter instance
 	cFPSCounter = CFPSCounter::GetInstance();
 	cFPSCounter->Init();
@@ -246,6 +252,8 @@ bool Application::Init(void)
 	CGameStateManager::GetInstance()->AddGameState("PlayGameState", new CPlayGameState());
 	CGameStateManager::GetInstance()->AddGameState("GameOverState", new GameOverState());
 	CGameStateManager::GetInstance()->AddGameState("PauseState", new PauseMenuState());
+	CGameStateManager::GetInstance()->AddGameState("EditorSettingsState", new CEditorSettingsState());
+	CGameStateManager::GetInstance()->AddGameState("LevelEditorState", new CLevelEditorState());
 
 	// Set the active scene
 	CGameStateManager::GetInstance()->SetActiveGameState("IntroState");
@@ -316,9 +324,10 @@ void Application::Destroy(void)
 {
 	// Destroy the CGameStateManager
 	CGameStateManager::GetInstance()->Destroy();
-	// Destory the ShaderManager
+	// Destroy the ShaderManager
 	CShaderManager::GetInstance()->Destroy();
-
+	// Destroy the TextureManager
+	CTextureManager::GetInstance()->Destroy();
 	// Destroy the keyboard instance
 	CKeyboardController::GetInstance()->Destroy();
 
@@ -383,4 +392,5 @@ void Application::UpdateInputDevices(void)
 void Application::PostUpdateInputDevices(void)
 {
 	CKeyboardController::GetInstance()->PostUpdate();
+	CMouseController::GetInstance()->PostUpdate();
 }
