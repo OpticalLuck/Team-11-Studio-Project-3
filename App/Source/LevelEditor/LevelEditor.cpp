@@ -13,7 +13,6 @@
 
 #include "System/Debug.h"
 
-
 CLevelEditor::CLevelEditor()
     : iWorldWidth(32)
     , iWorldHeight(24)
