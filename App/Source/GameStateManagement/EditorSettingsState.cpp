@@ -152,13 +152,47 @@ bool CEditorSettingsState::Update(const double dElapsedTime)
 		{
 			ImGui::TextColored(ImVec4(1, 1, 0, 1), "Please input a reasonable Level size");
 		}
-		else if (ImGui::Button("Create Level"))
+		else
 		{
 			std::string name = LevelName;
 			if (cLevelEditor->LevelExists(name.c_str()))
-				DEBUG_MSG("File Exists");
+			{
+				ImGui::PushTextWrapPos();
+				ImGui::TextColored(ImVec4(1, 1, 0, 1), "This level already exists.\nWould you like to edit it or overwrite it?");
+				ImGui::PopTextWrapPos();
+				if (ImGui::Button("Overwrite"))
+				{
+					cLevelEditor->CreateLevel(name, iWorldWidth, iWorldHeight);
+					// Reset the CKeyboardController
+					CKeyboardController::GetInstance()->Reset();
 
-			// cLevelEditor->CreateLevel("", iWorldWidth, iWorldHeight);
+					// Load the menu state
+					cout << "Loading LevelEditorState" << endl;
+					CGameStateManager::GetInstance()->SetActiveGameState("LevelEditorState");
+					
+				}
+				ImGui::SameLine();
+				if (ImGui::Button("Edit"))
+				{
+					cLevelEditor->LoadLevelByName(name);
+					// Reset the CKeyboardController
+					CKeyboardController::GetInstance()->Reset();
+
+					// Load the menu state
+					cout << "Loading LevelEditorState" << endl;
+					CGameStateManager::GetInstance()->SetActiveGameState("LevelEditorState");
+				}
+			}
+			else if (ImGui::Button("Create Level"))
+			{
+				cLevelEditor->CreateLevel(name, iWorldWidth, iWorldHeight);
+				// Reset the CKeyboardController
+				CKeyboardController::GetInstance()->Reset();
+
+				// Load the menu state
+				cout << "Loading LevelEditorState" << endl;
+				CGameStateManager::GetInstance()->SetActiveGameState("LevelEditorState");
+			}
 		}
 
 

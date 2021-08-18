@@ -53,6 +53,7 @@ public:
 
     void CreateLevel(std::string levelName, unsigned int iWorldWidth = 32, unsigned int iWorldHeight = 24);
     void LoadLevel(const char* filePath);
+    void LoadLevelByName(std::string levelName);
     void LoadExistingLevels(void);
     bool LevelExists(std::string levelName);
     std::vector<Level> GetLevels(void);

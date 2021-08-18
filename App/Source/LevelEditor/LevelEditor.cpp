@@ -140,6 +140,8 @@ void CLevelEditor::CreateLevel(std::string levelName, unsigned int iWorldWidth, 
         }
     }
 
+    currentLevel.LevelName = levelName;
+
     DEBUG_MSG("Created New Level: " << levelName);
 }
 
@@ -173,6 +175,14 @@ void CLevelEditor::LoadLevel(const char* filePath)
     std::reverse(m_CurrentLevel.begin(), m_CurrentLevel.end());
 
     DEBUG_MSG("Opened " << filePath);
+}
+
+/**
+@brief Loads the level by name
+*/
+void CLevelEditor::LoadLevelByName(std::string levelName)
+{
+    LoadLevel((levelFolderPath + levelName + ".csv").c_str());
 }
 
 /**
