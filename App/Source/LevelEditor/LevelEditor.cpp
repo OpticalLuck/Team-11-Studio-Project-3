@@ -10,6 +10,8 @@
 
 #include "System/Debug.h"
 
+namespace fs = std::experimental::filesystem;
+
 CLevelEditor::CLevelEditor()
     : iWorldWidth(32)
     , iWorldHeight(24)
@@ -222,15 +224,86 @@ std::vector<Level> CLevelEditor::GetLevels(void)
 */
 void CLevelEditor::LoadExistingLevels(void)
 {
-    for (const auto& file : std::experimental::filesystem::directory_iterator(levelFolderPath))
+    for (const auto& file : fs::directory_iterator(levelFolderPath))
     {
         Level level;
         level.LevelName = file.path().filename().generic_string();
         level.LevelPath = file.path().generic_string();
         m_Levels.push_back(level);
 
+        DEBUG_MSG("Loading: " << file.path());
         DEBUG_MSG("Loaded " << file.path().filename());
     }
+}
+
+bool CLevelEditor::LevelExists(std::string levelName)
+{
+    for (const auto& file : fs::directory_iterator(levelFolderPath))
+        if (levelName + ".csv" == file.path().filename().generic_string())
+            return true;
+
+    return false;
+}
+
+bool CLevelEditor::IncreaseXSize()
+{
+    ++iWorldWidth;
+ 
+    sCell cell;
+    for (int i = 0; i < iWorldHeight; ++i)
+    {
+        m_CurrentLevel[i].push_back(cell);
+    }
+    return true;
+}
+
+bool CLevelEditor::DecreaseYSize(void)
+{
+    if (iWorldHeight == 24)
+        return false;
+
+    for (int i = 0; i < iWorldWidth; ++i)
+    {
+        if (m_CurrentLevel.back()[i].iTileID > 0)
+            return false;
+    }
+
+    --iWorldHeight;
+    m_CurrentLevel.pop_back();
+    return true;
+}
+
+bool CLevelEditor::DecreaseXSize()
+{
+    if (iWorldWidth == 32)
+        return false;
+
+    for (int i = 0; i < iWorldHeight; ++i)
+    {
+        if (m_CurrentLevel[i].back().iTileID > 0)
+            return false;
+    }
+
+    --iWorldWidth;
+    for (int i = 0; i < iWorldHeight; ++i)
+    {
+        m_CurrentLevel[i].pop_back();
+    }
+    return true;
+}
+
+bool CLevelEditor::IncreaseYSize(void)
+{
+    ++iWorldHeight;
+
+    sCell cell;
+    std::vector<sCell> newRow;
+    for (int i = 0; i < iWorldWidth; ++i)
+    {
+        newRow.push_back(cell);
+    }
+    m_CurrentLevel.push_back(newRow);
+    return true;
 }
 
 /**

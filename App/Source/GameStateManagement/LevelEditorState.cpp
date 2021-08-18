@@ -32,7 +32,6 @@ CLevelEditorState::CLevelEditorState(void)
 	, cSettings(NULL)
 	, cLevelGrid(NULL)
 {
-
 }
 
 /**
@@ -111,6 +110,28 @@ bool CLevelEditorState::Update(const double dElapsedTime)
 	{
 		Camera2D::GetInstance()->UpdateTarget(glm::vec2(Camera2D::GetInstance()->getTarget().x + 0.2, Camera2D::GetInstance()->getTarget().y));
 	}
+
+	if (CKeyboardController::GetInstance()->IsKeyPressed(GLFW_KEY_RIGHT))
+	{
+		if(cLevelEditor->IncreaseXSize())
+			cLevelGrid->iWorldWidth++;
+	}
+	if (CKeyboardController::GetInstance()->IsKeyPressed(GLFW_KEY_LEFT))
+	{
+		if(cLevelEditor->DecreaseXSize())
+			cLevelGrid->iWorldWidth--;
+	}
+	if (CKeyboardController::GetInstance()->IsKeyPressed(GLFW_KEY_UP))
+	{
+		if(cLevelEditor->IncreaseYSize())
+			cLevelGrid->iWorldHeight++;
+	}
+	if (CKeyboardController::GetInstance()->IsKeyPressed(GLFW_KEY_DOWN))
+	{
+		if(cLevelEditor->DecreaseYSize())
+			cLevelGrid->iWorldHeight--;
+	}
+
 
 	glm::vec2 vMousePosInWindow = glm::vec2(cMouseController->GetMousePositionX(), cSettings->iWindowHeight - cMouseController->GetMousePositionY());
 	glm::vec2 vMousePosConvertedRatio = glm::vec2(vMousePosInWindow.x - cSettings->iWindowWidth * 0.5, vMousePosInWindow.y - cSettings->iWindowHeight * 0.5);

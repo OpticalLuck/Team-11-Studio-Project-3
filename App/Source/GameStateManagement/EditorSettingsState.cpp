@@ -35,7 +35,10 @@
 #include "../App/Source/SoundController/SoundController.h"
 
 #include <iostream>
+#include <System/Debug.h>
 using namespace std;
+
+char CEditorSettingsState::LevelName[1000];
 
 /**
  @brief Constructor
@@ -43,7 +46,6 @@ using namespace std;
 CEditorSettingsState::CEditorSettingsState(void)
 	: background(NULL)
 {
-
 }
 
 /**
@@ -144,6 +146,7 @@ bool CEditorSettingsState::Update(const double dElapsedTime)
 	{
 		ImGui::InputInt("Level Width", &iWorldWidth);
 		ImGui::InputInt("Level Height", &iWorldHeight);
+		ImGui::InputText("Level Name", LevelName, 30);
 
 		if (iWorldWidth < 32 || iWorldHeight < 24)
 		{
@@ -151,7 +154,11 @@ bool CEditorSettingsState::Update(const double dElapsedTime)
 		}
 		else if (ImGui::Button("Create Level"))
 		{
-			cLevelEditor->CreateLevel("", iWorldWidth, iWorldHeight);
+			std::string name = LevelName;
+			if (cLevelEditor->LevelExists(name.c_str()))
+				DEBUG_MSG("File Exists");
+
+			// cLevelEditor->CreateLevel("", iWorldWidth, iWorldHeight);
 		}
 
 

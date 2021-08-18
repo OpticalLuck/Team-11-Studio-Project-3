@@ -51,5 +51,7 @@ protected:
 	int iWorldWidth;
 	int iWorldHeight;
 
+	static char LevelName[1000];
+
 	CBackgroundEntity* background;
 };

@@ -54,11 +54,18 @@ public:
     void CreateLevel(std::string levelName, unsigned int iWorldWidth = 32, unsigned int iWorldHeight = 24);
     void LoadLevel(const char* filePath);
     void LoadExistingLevels(void);
+    bool LevelExists(std::string levelName);
+    std::vector<Level> GetLevels(void);
+
+    bool DecreaseXSize(void);
+    bool IncreaseYSize(void);
+    bool IncreaseXSize(void);
+    bool DecreaseYSize(void);
+
     sCell GetCell(unsigned int x, unsigned int y, bool bInvert = true);
     void UpdateCell(unsigned int x, unsigned int y, int TileID, bool bInvert = true);
-    void SetShader(const std::string& _name);
 
-    std::vector<Level> GetLevels(void);
+    void SetShader(const std::string& _name);
 
 protected:
 
