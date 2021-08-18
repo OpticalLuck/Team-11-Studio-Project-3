@@ -20,10 +20,16 @@ CBoss2D::CBoss2D(void) {
 	isNear = false;
 	quadMesh = nullptr;
 	camera = nullptr;
+
+	arrFSM = nullptr;
+	atkDuration = pauseDuration = 0;
+	fsmIndex = 0;
 }
 
 CBoss2D::~CBoss2D(void) {
-
+	//Delete fsm array
+	delete[] arrFSM;
+	arrFSM = nullptr;
 
 	// optional: de-allocate all resources once they've outlived their purpose:
 	glDeleteVertexArrays(1, &VAO);
@@ -74,7 +80,23 @@ bool CBoss2D::Init(void) {
 	health = 100;
 	isNear = false;
 
+	//Array of vectors
+	arrFSM = new std::vector<FSM>[5];
+	fsmIndex = 0;
+
+	ResetTimer(atkDuration);
+	pauseDuration = 0;
+
 	return true;
+}
+
+void CBoss2D::ResetTimer(float& timer) {
+	if (&timer == &atkDuration)
+		timer = Math::RandFloatMinMax(3, 7.5f);
+	else if (&timer == &pauseDuration)
+		timer = Math::RandFloatMinMax(1.5f, 5);
+	else
+		std::cout << "NOTICE: RESETTIMER HAS FAILED DUE TO INVALID TIMER VAL, PLEASE USE THE ACTUAL VARIABLE OR A REFERENCE TOWARDS IT.\n";
 }
 
 bool CBoss2D::LoadTexture(const char* filename, GLuint& iTextureID) {
@@ -117,6 +139,18 @@ bool CBoss2D::LoadTexture(const char* filename, GLuint& iTextureID) {
 void CBoss2D::Update(const double dElapsedTime) {
 	if (!bIsActive)
 		return; //Return if boss is not active
+
+	if (isNear) {
+		UpdateAttack(dElapsedTime);
+	}
+	else {
+		//Check if player is near and enable boss fight
+
+	}
+}
+
+void CBoss2D::UpdateAttack(float dElapsedTime) {
+
 }
 
 void CBoss2D::PreRender(void) {

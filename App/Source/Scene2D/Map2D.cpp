@@ -132,6 +132,10 @@ bool CMap2D::Init(const unsigned int uiNumLevels,
 		std::cout << "Failed to load RightGrassTile tile texture" << std::endl;
 		return false;
 	}
+	if (LoadTexture("Image/Ground/TopRightGroundTile.png", 106) == false) {
+		std::cout << "Failed to load TopRightGroundTile tile texture\n";
+		return false;
+	}
 
 
 	if (LoadTexture("Image/Walls/wall_1.png", 101) == false)

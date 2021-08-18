@@ -84,6 +84,8 @@ bool CEntityManager::EntityManagerInit(void)
 	{
 		cCloneTemplate->vTransform = glm::vec2(uiCol, uiRow);
 	}
+
+	currRound = 0;
 }
 
 
