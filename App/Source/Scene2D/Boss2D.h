@@ -9,6 +9,9 @@
 // Include the Map2D as we will use it to check the player's movements and actions
 class CMap2D;
 
+//Include CEntityManager to get curr round
+class CEntityManager;
+
 // Include Settings
 #include "GameControl\Settings.h"
 
@@ -39,7 +42,7 @@ class CBoss2D : public CEntity2D
 		void PostRender(void);
 
 	protected:
-		enum FSM {
+		enum class FSM {
 			A_CIRCLE, //Attacks in a circular pattern.
 			A_ATTACK, //Shoots at the player normally
 			A_TOTAL
@@ -48,8 +51,11 @@ class CBoss2D : public CEntity2D
 		std::vector<FSM>* arrFSM; //Current attack during current round
 		int fsmIndex; //Current index of where its at in the array
 
-		float atkDuration;
-		float pauseDuration;
+		//float atkDuration;
+		//float pauseDuration;
+
+		std::vector<int>* arrAtkDuration;
+		std::vector<int>* arrPauseDuration;
 
 		bool isNear;
 		int health;
@@ -72,8 +78,11 @@ class CBoss2D : public CEntity2D
 		// Load a texture
 		bool LoadTexture(const char* filename, GLuint& iTextureID);
 
-		//Reset timer
-		void ResetTimer(float& timer);
+		//Randomise timer
+		float RandomiseTimer(bool atk);
+
+		//Randomise attacks
+		FSM RandomiseAttack(void);
 
 		//Update attacks
 		void UpdateAttack(float dElapsedTime);

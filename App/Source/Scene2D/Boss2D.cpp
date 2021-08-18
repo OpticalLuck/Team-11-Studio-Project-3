@@ -10,6 +10,8 @@
 #include "Math/MyMath.h"
 //Include shader manager
 #include "RenderControl/ShaderManager.h"
+//Include CEntityManager
+#include "EntityManager.h"
 
 CBoss2D::CBoss2D(void) {
 	bIsActive = false;
@@ -22,7 +24,8 @@ CBoss2D::CBoss2D(void) {
 	camera = nullptr;
 
 	arrFSM = nullptr;
-	atkDuration = pauseDuration = 0;
+	arrAtkDuration = arrPauseDuration = nullptr;
+
 	fsmIndex = 0;
 }
 
@@ -56,7 +59,8 @@ bool CBoss2D::Init(void) {
 	glBindVertexArray(VAO);
 
 	//CS: Create the Quad Mesh using the mesh builder
-	quadMesh = CMeshBuilder::GenerateQuad(glm::vec4(1, 1, 1, 1), cSettings->TILE_WIDTH, cSettings->TILE_HEIGHT);
+	if (!quadMesh)
+		quadMesh = CMeshBuilder::GenerateQuad(glm::vec4(1, 1, 1, 1), cSettings->TILE_WIDTH, cSettings->TILE_HEIGHT);
 
 	// Load the enemy2D texture
 	if (LoadTexture("Image/Scene2D_EnemyTile.tga", iTextureID) == false)
@@ -81,22 +85,38 @@ bool CBoss2D::Init(void) {
 	isNear = false;
 
 	//Array of vectors
-	arrFSM = new std::vector<FSM>[5];
 	fsmIndex = 0;
+	if (!arrFSM) {
+		arrFSM = new std::vector<FSM>[5];
+		arrFSM[0].push_back((FSM)RandomiseAttack());
+	}
 
-	ResetTimer(atkDuration);
-	pauseDuration = 0;
+	if (!arrAtkDuration) {
+		arrAtkDuration = new std::vector<int>[5];
+		arrAtkDuration[0].push_back(RandomiseTimer(true));
+	}
+
+	if (!arrPauseDuration) {
+		arrPauseDuration = new std::vector<int>[5];
+		arrPauseDuration[0].push_back(RandomiseTimer(false));
+	}
 
 	return true;
 }
 
-void CBoss2D::ResetTimer(float& timer) {
-	if (&timer == &atkDuration)
-		timer = Math::RandFloatMinMax(3, 7.5f);
-	else if (&timer == &pauseDuration)
-		timer = Math::RandFloatMinMax(1.5f, 5);
+CBoss2D::FSM CBoss2D::RandomiseAttack(void) {
+	return FSM(Math::RandIntMinMax(0, (int)FSM::A_TOTAL - 1));
+}
+
+float CBoss2D::RandomiseTimer(bool atk) {
+	float value = 0; //In terms of seconds first
+
+	if (atk)
+		value = Math::RandFloatMinMax(3, 7.5f);
 	else
-		std::cout << "NOTICE: RESETTIMER HAS FAILED DUE TO INVALID TIMER VAL, PLEASE USE THE ACTUAL VARIABLE OR A REFERENCE TOWARDS IT.\n";
+		value = Math::RandFloatMinMax(1.5f, 4);
+
+	return int(value * (float)cSettings->FPS); //Convert to in terms of frames
 }
 
 bool CBoss2D::LoadTexture(const char* filename, GLuint& iTextureID) {
