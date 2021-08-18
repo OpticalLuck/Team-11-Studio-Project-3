@@ -73,9 +73,14 @@ bool CGUI_Scene2D::Init(void)
 	// Add a Tree as one of the inventory items
 	cInventoryItem = cInventoryManager->Add("Shuriken", "Image/Collectibles/shuriken.png", 999, 0);
 	cInventoryItem->vec2Size = glm::vec2(25, 25);
+	cInventoryItem = cInventoryManager->Add("Potion", "Image/items/potion.png", 2, 0);
+	cInventoryItem->vec2Size = glm::vec2(25, 25);
+	cInventoryItem = cInventoryManager->Add("Hook", "Image/items/grappling_hook.png", 2, 0);
+	cInventoryItem->vec2Size = glm::vec2(25, 25);
 
-	interval = 0;
-	timer = 0;
+	fInterval = 0;
+	iMinutes = 0;
+	iSeconds = 0;
 
 
 	return true;
@@ -93,8 +98,16 @@ void CGUI_Scene2D::Update(const double dElapsedTime)
 	relativeScale_x = Math::Max(1.f, relativeScale_x);
 	relativeScale_y = Math::Max(1.f, relativeScale_y);
 
-	interval++;
-	timer = interval / 60;
+	if (iSeconds == 60)
+	{
+		iMinutes += 1;
+		iSeconds = 0;
+		fInterval = 0;
+	}
+
+	fInterval++;
+	iSeconds = fInterval / 110;
+
 
 	// Start the Dear ImGui frame
 	ImGui_ImplOpenGL3_NewFrame();
@@ -109,7 +122,7 @@ void CGUI_Scene2D::Update(const double dElapsedTime)
 
 	// Display the FPS
 	/*ImGui::TextColored(ImVec4(1, 1, 0, 1), "FPS: %d", cFPSCounter->GetFrameRate());*/
-	ImGui::TextColored(ImVec4(1, 1, 1, 1),"Timer : %d",timer);
+	ImGui::TextColored(ImVec4(1, 1, 1, 1),"Timer = %d : %d",iMinutes,iSeconds);
 
 	// Render the inventory items
 	cInventoryItem = cInventoryManager->GetItem("Shuriken");
@@ -120,9 +133,8 @@ void CGUI_Scene2D::Update(const double dElapsedTime)
 		ImGuiWindowFlags_NoResize |
 		ImGuiWindowFlags_NoCollapse |
 		ImGuiWindowFlags_NoScrollbar;
-	//if selected
 	ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1.f,0.f,0.f,1.f));
-	ImGui::Begin("Image0", NULL, inventoryWindowFlags);
+	ImGui::Begin("Shuriken", NULL, inventoryWindowFlags);
 	ImGui::SetWindowPos(ImVec2(cSettings->iWindowWidth * 0.03f, cSettings->iWindowHeight * 0.92f));
 	ImGui::SetWindowSize(ImVec2(200.0f * relativeScale_x, 25.0f * relativeScale_y));
 	ImGui::Image((void*)(intptr_t)cInventoryItem->GetTextureID(),
@@ -135,17 +147,52 @@ void CGUI_Scene2D::Update(const double dElapsedTime)
 	ImGui::PopStyleColor(2);
 
 
-	//if selected
-	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 1.0f, 1.0f));
-	ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1.f, 0.f, 0.f, 1.f));
-	ImGui::Begin("Image1", NULL, inventoryWindowFlags);
-	ImGui::SetWindowPos(ImVec2(cSettings->iWindowWidth * 0.53f, cSettings->iWindowHeight * 0.92f));
-	ImGui::SetWindowSize(ImVec2(200.0f * relativeScale_x, 25.0f * relativeScale_y));
-	ImGui::SameLine();
-	ImGui::SetWindowFontScale(1.5f * relativeScale_y);
-	ImGui::TextColored(ImVec4(1, 1, 0, 1), "Shuriken: %d", cInventoryItem->GetCount());
-	ImGui::End();
-	ImGui::PopStyleColor(2);
+	//potion 1
+	{
+		////if selected
+		cInventoryItem = cInventoryManager->GetItem("Potion");
+		ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 1.0f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1.f, 0.f, 0.f, 1.f));
+		//ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1.f, 0.f, 0.f, 1.f));
+		//if (cInventoryManager->GetItemIndex() == 1)
+		//{
+		//	ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1.f, 0.f, 0.f, 1.f));
+		//}
+		ImGui::Begin("Testing : ", NULL, inventoryWindowFlags);
+		ImGui::SetWindowPos(ImVec2(cSettings->iWindowWidth * 0.01f, cSettings->iWindowHeight * 0.065f));
+		ImGui::SetWindowSize(ImVec2(200.0f * relativeScale_x, 25.0f * relativeScale_y));
+		ImGui::Image((void*)(intptr_t)cInventoryItem->GetTextureID(),
+			ImVec2(cInventoryItem->vec2Size.x * relativeScale_x, cInventoryItem->vec2Size.y * relativeScale_y),
+			ImVec2(0, 1), ImVec2(1, 0));
+		ImGui::SameLine();
+		ImGui::SetWindowFontScale(1.5f * relativeScale_y);
+		ImGui::TextColored(ImVec4(1, 1, 0, 1), "Potion: %d",cInventoryItem->GetCount());
+		ImGui::End();
+		ImGui::PopStyleColor(2);
+
+	}
+
+	//hook
+	{
+		cInventoryItem = cInventoryManager->GetItem("Hook");
+		ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 1.0f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1.f, 0.f, 0.f, 1.f));
+		//if (cInventoryManager->GetItemIndex() == 2)
+		//{
+		//	ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1.f, 0.f, 0.f, 1.f));
+		//}
+		ImGui::Begin("Testing2 : ", NULL, inventoryWindowFlags);
+		ImGui::SetWindowPos(ImVec2(cSettings->iWindowWidth * 0.01f, cSettings->iWindowHeight * 0.140f));
+		ImGui::SetWindowSize(ImVec2(200.0f * relativeScale_x, 60.0f * relativeScale_y));
+		ImGui::Image((void*)(intptr_t)cInventoryItem->GetTextureID(),
+			ImVec2(cInventoryItem->vec2Size.x * relativeScale_x, cInventoryItem->vec2Size.y * relativeScale_y),
+			ImVec2(0, 1), ImVec2(1, 0));
+		ImGui::SameLine();
+		ImGui::SetWindowFontScale(1.9f * relativeScale_y);
+		ImGui::TextColored(ImVec4(1, 1, 0, 1), "Hook: %d", cInventoryItem->GetCount());
+		ImGui::End();
+		ImGui::PopStyleColor(2);
+	}
 
 	ImGui::End();
 }

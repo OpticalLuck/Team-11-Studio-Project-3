@@ -32,6 +32,7 @@ public:
 	// Get the texture ID
 	unsigned int GetTextureID(void) const;
 
+
 	// Name of the inventory item
 	std::string sName;
 	// The size of the image to render in the GUI

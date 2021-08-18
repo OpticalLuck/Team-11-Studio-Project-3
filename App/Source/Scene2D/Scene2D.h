@@ -103,6 +103,8 @@ protected:
 	// Handler to the CSoundController
 	CSoundController* cSoundController;
 
+	CInventoryManager* cInventoryManager;
+
 	//Handler for camera
 	Camera2D* cameraHandler;
 
