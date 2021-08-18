@@ -341,7 +341,8 @@ void CPlayer2D::Update(const double dElapsedTime)
 							if (static_cast<Interactables*>(obj)->interactableType == Interactables::INTERACTABLE_TYPE::BOULDER)
 							{
 								glm::vec2 direction = glm::normalize(obj->vTransform - vTransform);
-								//static_cast<Boulder2D*>(obj)->GetPhysics().SetForce(glm::vec2(120.f, 0) * direction);
+								static_cast<Boulder2D*>(obj)->GetPhysics().SetForce(glm::vec2(120.f, 0) * direction);
+								cPhysics2D.SetVelocity(glm::vec2(0.f));
 							}
 						}
 					}
