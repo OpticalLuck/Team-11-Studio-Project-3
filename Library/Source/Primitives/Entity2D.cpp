@@ -37,9 +37,7 @@ CEntity2D::CEntity2D(ENTITY_TYPE type)
 	vec2UVCoordinate = glm::vec2(0.0f);
 }
 
-//CEntity2D::CEntity2D(ENTITY_TYPE type)
-//{
-//}
+
 
 
 /**

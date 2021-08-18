@@ -45,8 +45,6 @@ public:
 
 	CEntity2D(ENTITY_TYPE type = NONE);
 
-	CEntity2D(string entity_toClone) {}
-
 	// Constructor
 	//CEntity2D(void);
 
