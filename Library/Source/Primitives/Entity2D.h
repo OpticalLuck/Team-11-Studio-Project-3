@@ -89,9 +89,6 @@ protected:
 	// Name of Shader Program instance
 	std::string sShaderName;
 
-
-
-
 	//all of entity list
 	//std::vector<CEntity2D*> entity_list;
 
@@ -111,7 +108,6 @@ protected:
 
 	// Load a texture
 	virtual bool LoadTexture(const char* filename);
-
 
 	// Settings
 	CSettings* cSettings;

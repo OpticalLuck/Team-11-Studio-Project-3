@@ -58,7 +58,7 @@ bool CEntityManager::EntityManagerInit(void)
 
 	//clone init
 	cCloneTemplate = new CPlayer2D();
-	if (cCloneTemplate->Init() == false)
+	if (cCloneTemplate->Init(cPlayer2D->GetCheckpoint()) == false)
 	{
 		cout << "Failed to load clone" << endl;
 		return false;

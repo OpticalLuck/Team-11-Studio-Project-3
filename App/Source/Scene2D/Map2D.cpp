@@ -27,12 +27,8 @@ using namespace std::placeholders;
  */
 CMap2D::CMap2D(void)
 	: uiCurLevel(0)
+	, camera(NULL)
 {
-	arrMapSizes = nullptr;
-	m_nrOfDirections = 0;
-	m_startPos = m_targetPos = glm::i32vec2();
-	m_weight = 0;
-	quadMesh = nullptr;
 	uiNumLevels = 0;
 }
 
@@ -41,9 +37,6 @@ CMap2D::CMap2D(void)
  */
 CMap2D::~CMap2D(void)
 {
-	// Delete AStar lists
-	DeleteAStarLists();
-
 	// optional: de-allocate all resources once they've outlived their purpose:
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
@@ -73,8 +66,14 @@ bool CMap2D::Init(const unsigned int uiNumLevels,
 
 	//Initialising limits of map
 	arrLevelLimit.clear();
-	for (unsigned i = 0; i < uiNumLevels; i++)
+	arrGrid.clear();
+	arrObject.clear();
+	for (unsigned i = 0; i < uiNumLevels; i++) {
 		arrLevelLimit.push_back(glm::i32vec2());
+		arrObject.push_back(std::vector<CObject2D*>());
+		arrGrid.push_back(std::vector<std::vector<CObject2D*>>());
+	}
+
 
 	// Store the map sizes in cSettings
 	uiCurLevel = 0;
@@ -107,23 +106,6 @@ bool CMap2D::Init(const unsigned int uiNumLevels,
 
 	//Camera
 	camera = Camera2D::GetInstance();
-
-	// Initialise the variables for AStar
-	m_weight = 1;
-	m_startPos = glm::i32vec2(0, 0);
-	m_targetPos = glm::i32vec2(0, 0);
-	//m_size = cSettings->NUM_TILES_YAXIS* cSettings->NUM_TILES_XAXIS;
-
-	m_nrOfDirections = 4;
-	m_directions = { { -1, 0 }, { 1, 0 }, { 0, 1 }, { 0, -1 },
-						{ -1, -1 }, { 1, 1 }, { -1, 1 }, { 1, -1 } };
-
-	// Resize these 2 lists
-	m_cameFromList.resize(cSettings->NUM_TILES_YAXIS * cSettings->NUM_TILES_XAXIS);
-	m_closedList.resize(cSettings->NUM_TILES_YAXIS * cSettings->NUM_TILES_XAXIS, false);
-
-	//// Clear AStar memory
-	//ClearAStar();
 
 	return true;
 }
@@ -167,8 +149,8 @@ void CMap2D::Render(void)
 	glm::vec2 cameraPos = camera->getCurrPos();
 
 	for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++) {
-		const CObject2D& currObj = arrObject[uiCurLevel][i];
-		glm::vec2 objCamPos = currObj.indexSpace - cameraPos + offset;
+		const CObject2D* currObj = arrObject[uiCurLevel][i];
+		glm::vec2 objCamPos = currObj->indexSpace - cameraPos + offset;
 
 		glm::vec2 actualPos = cSettings->ConvertIndexToUVSpace(objCamPos);
 
@@ -202,11 +184,11 @@ void CMap2D::PostRender(void)
 
 	for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++)
 	{
-		CObject2D& currObj = arrObject[uiCurLevel][i];
+		CObject2D* currObj = arrObject[uiCurLevel][i];
 
-		currObj.collider2D.PreRender();
-		currObj.collider2D.Render();
-		currObj.collider2D.PostRender();
+		currObj->collider2D.PreRender();
+		currObj->collider2D.Render();
+		currObj->collider2D.PostRender();
 	}
 }
 
@@ -222,78 +204,6 @@ glm::i32vec2 CMap2D::GetLevelLimit(void) {
 	return arrLevelLimit[uiCurLevel];
 }
 
-Collider2D* CMap2D::GetCollider(const unsigned int uiRow, const unsigned int uiCol)
-{
-	for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++) {
-		CObject2D& obj = arrObject[uiCurLevel][i];
-
-		if (obj.indexSpace.x == uiCol && obj.indexSpace.y == uiRow)
-			return &(obj.collider2D);
-	}
-
-	return nullptr;
-}
-
-// Set the specifications of the map
-void CMap2D::SetNumTiles(const CSettings::AXIS sAxis, const unsigned int uiValue)
-{
-	// Check if the value is valid
-	if (uiValue <= 0)
-	{
-		cout << "CMap2D::SetNumTiles() : value must be more than 0" << endl;
-		return;
-	}
-
-	if (sAxis == CSettings::x)
-	{
-		cSettings->NUM_TILES_XAXIS = uiValue;
-		cSettings->UpdateSpecifications();
-	}
-	else if (sAxis == CSettings::y)
-	{
-		cSettings->NUM_TILES_YAXIS = uiValue;
-		cSettings->UpdateSpecifications();
-	}
-	else if (sAxis == CSettings::z)
-	{
-		// Not used in here
-	}
-	else
-	{
-		cout << "Unknown axis" << endl;
-	}
-}
-
-// Set the specifications of the map
-void CMap2D::SetNumSteps(const CSettings::AXIS sAxis, const unsigned int uiValue)
-{
-	// Check if the value is valid
-	if (uiValue <= 0)
-	{
-		cout << "CMap2D::SetNumSteps() : value must be more than 0" << endl;
-		return;
-	}
-
-	if (sAxis == CSettings::x)
-	{
-		cSettings->NUM_STEPS_PER_TILE_XAXIS = (float)uiValue;
-		cSettings->UpdateSpecifications();
-	}
-	else if (sAxis == CSettings::y)
-	{
-		cSettings->NUM_STEPS_PER_TILE_YAXIS = (float)uiValue;
-		cSettings->UpdateSpecifications();
-	}
-	else if (sAxis == CSettings::z)
-	{
-		// Not used in here
-	}
-	else
-	{
-		cout << "Unknown axis" << endl;
-	}
-}
-
 /**
  @brief Set the value at certain indices in the arrMapInfo
  @param iRow A const int variable containing the row index of the element to set to
@@ -303,15 +213,21 @@ void CMap2D::SetNumSteps(const CSettings::AXIS sAxis, const unsigned int uiValue
 void CMap2D::SetMapInfo(const unsigned int uiRow, const unsigned int uiCol, const int iValue, const bool bInvert)
 {
 	for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++) {
-		CObject2D& obj = arrObject[uiCurLevel][i];
+		CObject2D* obj = arrObject[uiCurLevel][i];
 
-		if (obj.indexSpace.x == uiCol && obj.indexSpace.y == uiRow) {
+		if (obj->indexSpace.x == uiCol && obj->indexSpace.y == uiRow) {
 			if (iValue == 0) {
+				arrGrid[uiCurLevel][GetLevelRow() - obj->indexSpace.y - 1][obj->indexSpace.x] = nullptr;
+
+				delete obj;
+				arrObject[uiCurLevel][i] = nullptr;
 				arrObject[uiCurLevel].erase(arrObject[uiCurLevel].begin() + i);
+
+
 				return;
 			}
 
-			obj.value = iValue;
+			obj->value = iValue;
 			return;
 		}
 	}
@@ -319,21 +235,24 @@ void CMap2D::SetMapInfo(const unsigned int uiRow, const unsigned int uiCol, cons
 	if (iValue == 0)
 		return;
 
-	CObject2D newObj;
-	newObj.setIndexSpace(glm::i32vec2(uiCol, uiRow));
-	newObj.value = iValue;
+	CObject2D* newObj = new CObject2D;
+	newObj->setIndexSpace(glm::i32vec2(uiCol, uiRow));
+	newObj->value = iValue;
 
 	arrObject[uiCurLevel].push_back(newObj);
 }
 
-void CMap2D::ToggleMapInfo(const unsigned int uiRow, const unsigned int uiCol, const bool iValue, const bool bInvert)
-{
-	//Do nothing for now
-}
-
-std::vector<CObject2D> CMap2D::GetMap()
+std::vector<CObject2D*> CMap2D::GetObjectArr()
 {
 	return arrObject[uiCurLevel];
+}
+
+CObject2D* CMap2D::GetCObject(const unsigned int uiCol, const unsigned int uiRow, const bool bInvert)
+{
+	if(bInvert)
+		return arrGrid[uiCurLevel][GetLevelRow() - uiRow - 1][uiCol];
+	else
+		return arrGrid[uiCurLevel][uiRow][uiCol];
 }
 
 /**
@@ -346,28 +265,14 @@ int CMap2D::GetMapInfo(const unsigned int uiRow, const unsigned int uiCol, const
 {
 	//Check if theres object on tile
 	for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++) {
-		const CObject2D obj = arrObject[uiCurLevel][i];
+		const CObject2D* obj = arrObject[uiCurLevel][i];
 
-		if (obj.indexSpace.x == uiCol && obj.indexSpace.y == uiRow)
-			return obj.value;
+		if (obj->indexSpace.x == uiCol && obj->indexSpace.y == uiRow)
+			return obj->value;
 	}
 
 	//Return false if theres nothing on the tile
 	return 0;
-}
-
-bool CMap2D::GetMapActive(const unsigned int uiRow, const unsigned int uiCol, const bool bInvert) const
-{
-	//Check if theres object on tile
-	for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++) {
-		const CObject2D obj = arrObject[uiCurLevel][i];
-
-		if (obj.indexSpace.x == uiCol && obj.indexSpace.y == uiRow)
-			return true;
-	}
-
-	//Return false if theres nothing on the tile
-	return false;
 }
 
 
@@ -393,6 +298,8 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 	{
 		// Read a row from the CSV file
 		std::vector<std::string> row = doc.GetRow<std::string>(uiRow);
+
+		arrGrid[uiCurLevel].push_back(std::vector<CObject2D*>());
 		
 		// Load a particular CSV value into the arrMapInfo
 		for (unsigned int uiCol = 0; uiCol < (unsigned int)doc.GetColumnCount(); ++uiCol)
@@ -401,34 +308,40 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 			int currVal = (int)stoi(row[uiCol]);
 			bool currCollide = false;
 
-			CObject2D currObj;
-			currObj.value = currVal;
+			CObject2D* currObj = new CObject2D();
+			currObj->value = currVal;
 			if (currVal >= 100)
 				currCollide = true;
-			currObj.collidable = currCollide;
+			currObj->collidable = currCollide;
 
 			//Position of values
 			glm::vec2 currIndex;
 			currIndex.x = (float)uiCol;
 			currIndex.y = (float)doc.GetRowCount() - (float)uiRow - 1.f;
 
-			currObj.setIndexSpace(currIndex);
+			currObj->setIndexSpace(currIndex);
 
 			//Collider2D initialisation
-			currObj.collider2D.Init();
-			currObj.collider2D.position = glm::vec3(
+			currObj->collider2D.Init();
+			currObj->collider2D.position = glm::vec3(
 				currIndex.x  + 0.5f,
 				currIndex.y  + 0.5f,
 				0.f
 			);
 
 			if (currVal >= 100 && currVal < 300)
-				currObj.collider2D.colliderEnabled = true;
+				currObj->collider2D.colliderEnabled = true;
 			else
-				currObj.collider2D.colliderEnabled = false;
+				currObj->collider2D.colliderEnabled = false;
 			
-			if (currVal > 0)
+			arrGrid[uiCurLevel][uiRow].push_back(nullptr);
+
+			if (currVal > 0) {
 				arrObject[uiCurLevel].push_back(currObj);
+
+				//Add in new CObj pointer if available
+				arrGrid[uiCurLevel][uiRow][uiCol] = currObj;
+			}
 		}
 	}
 
@@ -454,9 +367,9 @@ bool CMap2D::SaveMap(string filename, const unsigned int uiCurLevel)
 	}
 
 	for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++) {
-		CObject2D& obj = arrObject[uiCurLevel][i];
+		CObject2D* obj = arrObject[uiCurLevel][i];
 
-		doc.SetCell(obj.indexSpace.x, cSettings->NUM_TILES_YAXIS - 1 - obj.indexSpace.y, obj.value);
+		doc.SetCell(obj->indexSpace.x, cSettings->NUM_TILES_YAXIS - 1 - obj->indexSpace.y, obj->value);
 	}
 
 	// Save the rapidcsv::Document to a file
@@ -475,11 +388,11 @@ bool CMap2D::SaveMap(string filename, const unsigned int uiCurLevel)
 bool CMap2D::FindValue(const int iValue, unsigned int& uirRow, unsigned int& uirCol)
 {
 	for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++) {
-		CObject2D& obj = arrObject[uiCurLevel][i];
+		CObject2D* obj = arrObject[uiCurLevel][i];
 
-		if (obj.value == iValue) {
-			uirCol = obj.indexSpace.x;
-			uirRow = obj.indexSpace.y; //For now keep the same
+		if (obj->value == iValue) {
+			uirCol = obj->indexSpace.x;
+			uirRow = obj->indexSpace.y; //For now keep the same
 
 			return true;
 		}
@@ -513,133 +426,4 @@ void CMap2D::RenderTile(const CObject2D obj) {
 	//CS: Render the tile
 	quadMesh->Render();
 	glBindVertexArray(0);
-}
-
-/**
- @brief Build a path
- */
-std::vector<glm::i32vec2> CMap2D::BuildPath() const
-{
-	std::vector<glm::i32vec2> path;
-	auto currentPos = m_targetPos;
-	auto currentIndex = ConvertTo1D(currentPos);
-
-	while (!(m_cameFromList[currentIndex].parent == currentPos))
-	{
-		path.push_back(currentPos);
-		currentPos = m_cameFromList[currentIndex].parent;
-		currentIndex = ConvertTo1D(currentPos);
-	}
-
-	// If the path has only 1 entry, then it is the the target position
-	if (path.size() == 1)
-	{
-		// if m_startPos is next to m_targetPos, then having 1 path point is OK
-		if (m_nrOfDirections == 4)
-		{
-			if (abs(m_targetPos.y - m_startPos.y) + abs(m_targetPos.x - m_startPos.x) > 1)
-				path.clear();
-		}
-		else
-		{
-			if (abs(m_targetPos.y - m_startPos.y) + abs(m_targetPos.x - m_startPos.x) > 2)
-				path.clear();
-			else if (abs(m_targetPos.y - m_startPos.y) + abs(m_targetPos.x - m_startPos.x) > 1)
-				path.clear();
-		}
-	}
-	else
-		std::reverse(path.begin(), path.end());
-
-	return path;
-}
-
-/**
- @brief Toggle the checks for diagonal movements
- */
-void CMap2D::SetDiagonalMovement(const bool bEnable)
-{
-	m_nrOfDirections = (bEnable) ? 8 : 4;
-}
-
-/**
- @brief Check if a position is valid
- */
-bool CMap2D::isValid(const glm::i32vec2& pos) const
-{
-	//return (pos.x >= 0) && (pos.x < m_dimensions.x) &&
-	//	(pos.y >= 0) && (pos.y < m_dimensions.y);
-	return ((unsigned)pos.x >= 0) && ((unsigned)pos.x < cSettings->NUM_TILES_XAXIS) &&
-		((unsigned)pos.y >= 0) && ((unsigned)pos.y < cSettings->NUM_TILES_YAXIS);
-}
-
-/**
- @brief Returns a 1D index based on a 2D coordinate using row-major layout
- */
-int CMap2D::ConvertTo1D(const glm::i32vec2& pos) const
-{
-	//return (pos.y * m_dimensions.x) + pos.x;
-	return (pos.y * cSettings->NUM_TILES_XAXIS) + pos.x;
-}
-
-/**
- @brief Delete AStar lists
- */
-bool CMap2D::DeleteAStarLists(void)
-{
-	// Delete m_openList
-	while (m_openList.size() != 0)
-		m_openList.pop();
-	// Delete m_cameFromList
-	m_cameFromList.clear();
-	// Delete m_closedList
-	m_closedList.clear();
-
-	return true;
-}
-
-
-/**
- @brief Reset AStar lists
- */
-bool CMap2D::ResetAStarLists(void)
-{
-	// Delete m_openList
-	while (m_openList.size() != 0)
-		m_openList.pop();
-	// Reset m_cameFromList
-	for (unsigned i = 0; i < m_cameFromList.size(); i++)
-	{
-		m_cameFromList[i].pos = glm::i32vec2(0,0);
-		m_cameFromList[i].parent = glm::i32vec2(0, 0);
-		m_cameFromList[i].f = 0;
-		m_cameFromList[i].g = 0;
-		m_cameFromList[i].h = 0;
-	}
-	// Reset m_closedList
-	for (unsigned i = 0; i < m_closedList.size(); i++)
-	{
-		m_closedList[i] = false;
-	}
-
-	return true;
-}
-
-
-/**
- @brief manhattan calculation method for calculation of h
- */
-unsigned int heuristic::manhattan(const glm::i32vec2& v1, const glm::i32vec2& v2, int weight)
-{
-	glm::i32vec2 delta = v2 - v1;
-	return static_cast<unsigned int>(weight * (delta.x + delta.y));
-}
-
-/**
- @brief euclidean calculation method for calculation of h
- */
-unsigned int heuristic::euclidean(const glm::i32vec2& v1, const glm::i32vec2& v2, int weight)
-{
-	glm::i32vec2 delta = v2 - v1;
-	return static_cast<unsigned int>(weight * sqrt((delta.x * delta.x) + (delta.y * delta.y)));
 }
