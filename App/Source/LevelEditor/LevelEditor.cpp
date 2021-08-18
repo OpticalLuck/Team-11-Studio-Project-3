@@ -191,27 +191,6 @@ bool CLevelEditor::LoadLevelByName(std::string levelName)
     return LoadLevel((levelFolderPath + levelName + ".csv").c_str());
 }
 
-/**
-@brief Returns the Cell of the index specified
-*/
-sCell CLevelEditor::GetCell(unsigned int x, unsigned int y, bool bInvert)
-{
-    if (bInvert)
-        return m_CurrentLevel[iWorldHeight - y - 1][x];
-    else
-        return m_CurrentLevel[y][x];
-}
-
-/**
-@brief Updates the Cell in the level editor given an x and y index
-*/
-void CLevelEditor::UpdateCell(unsigned int x, unsigned int y, int TileID, bool bInvert)
-{
-    if (bInvert)
-        m_CurrentLevel[iWorldHeight - y - 1][x].iTileID = TileID;
-    else
-        m_CurrentLevel[y][x].iTileID = TileID;
-}
 
 void CLevelEditor::SetShader(const std::string& _name)
 {
@@ -256,7 +235,7 @@ bool CLevelEditor::LevelExists(std::string levelName)
 }
 
 /**
-@brief Saves the map
+@brief Saves the map into the csv file
 */
 bool CLevelEditor::SaveMap()
 {
@@ -344,4 +323,26 @@ bool CLevelEditor::IncreaseYSize(void)
     }
     m_CurrentLevel.push_back(newRow);
     return true;
+}
+
+/**
+@brief Returns the Cell of the index specified
+*/
+sCell CLevelEditor::GetCell(unsigned int x, unsigned int y, bool bInvert)
+{
+    if (bInvert)
+        return m_CurrentLevel[iWorldHeight - y - 1][x];
+    else
+        return m_CurrentLevel[y][x];
+}
+
+/**
+@brief Updates the Cell in the level editor given an x and y index
+*/
+void CLevelEditor::UpdateCell(unsigned int x, unsigned int y, int TileID, bool bInvert)
+{
+    if (bInvert)
+        m_CurrentLevel[iWorldHeight - y - 1][x].iTileID = TileID;
+    else
+        m_CurrentLevel[y][x].iTileID = TileID;
 }

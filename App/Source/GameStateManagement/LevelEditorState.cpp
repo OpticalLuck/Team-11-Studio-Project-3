@@ -74,6 +74,8 @@ bool CLevelEditorState::Init(void)
 	cKeyboardInputHandler = CKeyboardInputHandler::GetInstance();
 	cKeyboardInputHandler->Init();
 
+	CreateIMGUI();
+
 	return true;
 }
 
@@ -82,6 +84,13 @@ bool CLevelEditorState::Init(void)
  */
 bool CLevelEditorState::Update(const double dElapsedTime)
 {
+	// Start the Dear ImGui frame
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplGlfw_NewFrame();
+	ImGui::NewFrame();
+
+	ImGui::ShowDemoWindow();
+
 	Camera2D::GetInstance()->Update(dElapsedTime);
 
 	if (CKeyboardController::GetInstance()->IsKeyReleased(GLFW_KEY_ESCAPE))
@@ -123,6 +132,11 @@ void CLevelEditorState::Render(void)
 	cLevelGrid->Render();
 	cLevelGrid->PostRender();
 
+	// Rendering
+	ImGui::Render();
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+
 }
 
 /**
@@ -135,12 +149,30 @@ void CLevelEditorState::Destroy(void)
 
 bool CLevelEditorState::CreateIMGUI()
 {
-	return false;
-}
+	// Setup Dear ImGui context
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
 
+	// Setup Dear ImGui style
+	ImGui::StyleColorsDark();
+	//ImGui::StyleColorsClassic();
+
+	// Setup Platform/Renderer bindings
+	ImGui_ImplGlfw_InitForOpenGL(CSettings::GetInstance()->pWindow, true);
+	const char* glsl_version = "#version 330";
+	ImGui_ImplOpenGL3_Init(glsl_version);
+
+	return true;
+}
 bool CLevelEditorState::DeleteIMGUI()
 {
-	return false;
+	// Cleanup
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
+
+	return true;
 }
 
 void CLevelEditorState::MoveCamera(void)

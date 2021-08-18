@@ -13,6 +13,13 @@
 #include "../LevelEditor/LevelGrid.h"
 #include "Inputs/MouseController.h"
 
+#ifndef IMGUI_ACTIVE
+#include "GUI\imgui.h"
+#include "GUI\backends\imgui_impl_glfw.h"
+#include "GUI\backends\imgui_impl_opengl3.h"
+#define IMGUI_ACTIVE
+#endif
+
 class CLevelEditorState : public CGameStateBase
 {
 public:
