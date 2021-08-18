@@ -518,7 +518,7 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 			CBackgroundEntity* bgEntity = new CBackgroundEntity(dir);
 			bgEntity->SetShader("2DShader");
 
-			if (!bgEntity->Init(3.6,3.6))  //If initialisation fails, delete value
+			if (!bgEntity->Init(2.5,2.5))  //If initialisation fails, delete value
 				delete bgEntity;
 			else
 				arrBackground[uiCurLevel] = bgEntity; //Else put background into array
@@ -602,7 +602,7 @@ void CMap2D::RenderBackground(void) {
 		uvSpaceX -= allowance.x / 2.f;
 		uvSpaceY -= allowance.y / 2.f;
 
-		glm::vec2 uvSpace = glm::vec2(uvSpaceX, uvSpaceY);
+		glm::vec2 uvSpace = -glm::vec2(uvSpaceX, uvSpaceY);
 
 		arrBackground[uiCurLevel]->vec2UVCoordinate = uvSpace;
 
