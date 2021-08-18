@@ -123,18 +123,6 @@ bool CMenuState::Update(const double dElapsedTime)
 		break;
 	}
 
-
-	if (CKeyboardController::GetInstance()->IsKeyReleased(GLFW_KEY_E))
-	{
-		// Reset the CKeyboardController
-		CKeyboardController::GetInstance()->Reset();
-
-		// Load the menu state
-		cout << "Loading EditorSettingsState" << endl;
-		CGameStateManager::GetInstance()->SetPauseGameState("EditorSettingsState");
-		return true;
-	}
-
 	return true;
 }
 
