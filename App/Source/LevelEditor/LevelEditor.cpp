@@ -90,8 +90,8 @@ void CLevelEditor::Render()
             glm::vec2 objCamPos = glm::vec2(uiCol, uiRow) - cameraPos + offset;
             glm::vec2 actualPos = cSettings->ConvertIndexToUVSpace(objCamPos) * camera->getZoom();
 
-            float clampX = 1.01f;
-            float clampY = 1.01f;
+            float clampX = 1.05f;
+            float clampY = 1.05f;
             if (actualPos.x <= -clampX || actualPos.x >= clampX || actualPos.y <= -clampY || actualPos.y >= clampY)
                 continue;
 

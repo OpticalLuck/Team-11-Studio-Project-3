@@ -31,6 +31,7 @@ void Camera2D::Update(float dElapsedTime) {
 
 	fZoom = Math::Lerp(fZoom, fTargetZoom, spd);
 	fZoom = Math::Clamp(fZoom, 0.7f, 2.f);
+	fTargetZoom = Math::Clamp(fTargetZoom, 0.7f, 2.f);
 
 	// DEBUG_MSG(fZoom);
 }
