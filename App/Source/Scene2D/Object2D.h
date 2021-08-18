@@ -23,19 +23,17 @@ class CObject2D : public CEntity2D
 		CObject2D(void);
 		CObject2D(int);
 		~CObject2D(void); //Do nothing for now
-
-		glm::vec2 GetIndexSpace();
-		void SetIndexSpace(glm::vec2 indexSpace);
+		
+		bool Init() override;
+		void Update(const double dElapsedTime) override;
 
 		int Getvalue() const;
 		void SetValue(int value);
 
-	private:
+	protected:
 		int value;
 
 		float width;
 		float height;
-
-		glm::vec2 indexSpace; //LOCATION OF OBJECT IN WORLD SPACE
 };
 

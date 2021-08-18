@@ -33,9 +33,6 @@ CEntity2D::CEntity2D(ENTITY_TYPE type)
 	// Initialise vecIndex
 	vTransform = glm::i32vec2(0);
 
-	// Initialise vec2UVCoordinate
-	vec2UVCoordinate = glm::vec2(0.0f);
-
 	collider2D = new Collider2D();
 }
 
@@ -141,9 +138,8 @@ void CEntity2D::Render(void)
 	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
 
 	transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-	transform = glm::translate(transform, glm::vec3(vec2UVCoordinate.x,
-													vec2UVCoordinate.y,
-													0.0f));
+	transform = glm::translate(transform, glm::vec3(glm::vec2(vTransform.x, vTransform.y),
+		0.0f));
 	// Update the shaders with the latest transform
 	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
 
@@ -222,27 +218,3 @@ bool CEntity2D::LoadTexture(const char* filename)
 	return true;
 }
 
-//bool CEntity2D::isCollidable()
-//{
-//	for (std::vector<CEntity2D*>::iterator it = entity_list.begin(); it != entity_list.end(); ++it)
-//	{
-//		CEntity2D* entity = (CEntity2D*)*it;
-//		if (entity->type == CEntity2D::PLAYER)
-//		{
-//			entity->collidable = true;
-//			return true;
-//		}
-//		else if (entity->type == CEntity2D::ENEMY)
-//		{
-//			entity->collidable = true;
-//			return true;
-//		}
-//		else if (entity->type == CEntity2D::CLONE)
-//		{
-//			entity->collidable = false;
-//			return false;
-//		}
-//		else
-//			return false;
-//	}
-//}

@@ -25,6 +25,7 @@ using namespace std;
 
 #include "Math/MyMath.h"
 
+#include "Boulder2D.h"
 /**
  @brief Constructor This constructor has protected access modifier as this class will be a Singleton
  */
@@ -43,9 +44,6 @@ CPlayer2D::CPlayer2D(void)
 
 	// Initialise vecIndex
 	vTransform = glm::i32vec2(0);
-
-	// Initialise vec2UVCoordinate
-	vec2UVCoordinate = glm::vec2(0.0f);
 
 	type = PLAYER;
 
@@ -164,7 +162,6 @@ bool CPlayer2D::Init(void)
 	collider2D->vec2Dimensions = glm::vec2(0.20000f,0.50000f);
 	collider2D->Init();
 	cPhysics2D.Init(&vTransform);
-
 	return true;
 }
 
@@ -297,9 +294,9 @@ void CPlayer2D::Update(const double dElapsedTime)
 	cPhysics2D.Update(dElapsedTime);
 
 	// Update Collider2D Position
-	collider2D->position = glm::vec3(vTransform, 0.f);
+	collider2D->position = vTransform;
 
-	int range = 2;
+	int range = 3;
 
 	//COLLISION RESOLUTION ON Y_AXIS
 	//y
@@ -316,12 +313,24 @@ void CPlayer2D::Update(const double dElapsedTime)
 
 			if (cMap2D->GetCObject(colCheck, rowCheck))
 			{
+				CObject2D* obj = cMap2D->GetCObject(colCheck, rowCheck);;
   				if (collider2D->CollideWith(cMap2D->GetCObject(colCheck, rowCheck)->GetCollider()))
 				{
 					//Collider2D::CorrectedAxis axis = collider2D.ResolveCollision(cMap2D->GetCollider(uiRow, uiCol));
-					collider2D->ResolveCollisionX(cMap2D->GetCObject(colCheck, rowCheck)->GetCollider());
+					collider2D->ResolveCollisionX(obj->GetCollider());
 					// Resolve transform to corrected position in collider
 					vTransform = collider2D->position;
+
+
+					//if (obj->Getvalue() == 150)
+					if (obj->type == CObject2D::ENTITY_TYPE::INTERACTABLES)
+					{
+						if (static_cast<Interactables*>(obj)->interactableType == Interactables::INTERACTABLE_TYPE::BOULDER)
+						{
+							glm::vec2 direction = glm::normalize(obj->vTransform - vTransform);
+							static_cast<Boulder2D*>(obj)->GetPhysics().SetForce(glm::vec2(120.f, 0) * direction);
+						}
+					}
 				}
 			}
 		}
@@ -382,9 +391,6 @@ void CPlayer2D::Update(const double dElapsedTime)
 
 	//CS: Update the animated sprite
 	animatedSprites->Update(dElapsedTime);
-
-	// Update the UV Coordinates
-	vec2UVCoordinate = cSettings->ConvertIndexToUVSpace(vTransform);
 
 	iTempFrameCounter++;
 }

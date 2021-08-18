@@ -78,15 +78,9 @@ public:
 	// The i32vec2 which stores the indices of an Entity2D in the Map2D
 	glm::vec2 vTransform;
 
-	// The vec2 variable which stores the UV coordinates to render the Entity2D
-	glm::vec2 vec2UVCoordinate;
-
 protected:
 	// Name of Shader Program instance
 	std::string sShaderName;
-
-	//all of entity list
-	//std::vector<CEntity2D*> entity_list;
 
 	//CS: The mesh that is used to draw objects
 	CMesh* mesh;

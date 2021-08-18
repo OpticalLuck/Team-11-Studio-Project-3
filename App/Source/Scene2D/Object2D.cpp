@@ -2,7 +2,7 @@
 
 CObject2D::CObject2D(void) {
 	value = 0;
-	indexSpace = glm::vec2();
+	vTransform = glm::vec2();
 
 	width = height = 1.f; //Default value is 1 x 1
 }
@@ -10,20 +10,29 @@ CObject2D::CObject2D(void) {
 CObject2D::CObject2D(int value) {
 	this->value = value;
 
-	indexSpace = glm::i32vec2();
+	vTransform = glm::i32vec2();
 }
 
 CObject2D::~CObject2D(void) {
 	//Do nothing for now
 }
 
-glm::vec2 CObject2D::GetIndexSpace()
+bool CObject2D::Init()
 {
-	return indexSpace;
+	//Collider2D initialisation
+	collider2D->Init();
+	collider2D->SetPosition(vTransform);
+
+	if (value >= 100 && value < 300)
+		collider2D->SetbEnabled(true);
+	else
+		collider2D->SetbEnabled(false);
+
+	return true;
 }
 
-void CObject2D::SetIndexSpace(glm::vec2 indexSpace) {
-	this->indexSpace = indexSpace;
+void CObject2D::Update(const double dElapsedTime)
+{
 }
 
 int CObject2D::Getvalue() const

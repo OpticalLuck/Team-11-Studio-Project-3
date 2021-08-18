@@ -31,7 +31,7 @@
 #include "Primitives/Entity2D.h"
 
 //Include CObject2D
-#include "Object2D.h"
+#include "../Factory/ObjectFactory.h"
 
 //Include player
 #include "Player2D.h"
@@ -99,6 +99,8 @@ protected:
 	// The variable containing the rapidcsv::Document
 	// We will load the CSV file's content into this Document
 	rapidcsv::Document doc;
+
+	ObjectFactory objFactory;
 
 	// Vector array that stores an array of objects level by level
 	std::vector<std::vector<CObject2D*>> arrObject;
