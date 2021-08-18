@@ -40,4 +40,8 @@ protected:
 	CMouseController*			cMouseController;
 	CLevelEditor*				cLevelEditor;
 	CLevelGrid*					cLevelGrid;
+
+	void MoveCamera(void);
+	void ScaleMap(void);
+	void MouseInput(void);
 };
