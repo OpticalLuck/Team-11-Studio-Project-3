@@ -29,6 +29,9 @@ public:
 	void RemoveEntity(string type, int amount);
 
 	CPlayer2D* GetPlayer();
+	int GetCurrRound(void);
+
+	std::vector<CPlayer2D*> GetAllPlayers(void);
 
 protected:
 	CKeyboardInputHandler* cKeyboardInputHandler;

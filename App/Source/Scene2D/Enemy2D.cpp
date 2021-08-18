@@ -13,6 +13,9 @@ using namespace std;
 // Include Mesh Builder
 #include "Primitives/MeshBuilder.h"
 
+//Include entity manager
+#include "EntityManager.h"
+
 // Include GLEW
 #include <GL/glew.h>
 
@@ -34,40 +37,19 @@ CEnemy2D::CEnemy2D(void)
 	, cPlayer2D(NULL)
 	, quadMesh(nullptr)
 	, sCurrentFSM(FSM::IDLE)
-	, iFSMCounter(0)
-	, runtimer(0)
-	, jumptimer(0)
-	, hittimer(0)
-	, health(100)
-	, MaxIdleCounter(20)
-	, MaxPatrolCounter(160)
-	, MaxAttackCounter(100)
-	, DirFlipTimer(0)
+	,dir(DIRECTION::LEFT)
 {
 	transform = glm::mat4(1.0f);	// make sure to initialize matrix to identity matrix first
 
 	// Initialise vecIndex
 	vTransform = glm::i32vec2(0);
 
-	// Initialise vecNumMicroSteps
-	i32vec2NumMicroSteps = glm::i32vec2(0);
-
 	// Initialise vec2UVCoordinate
 	vec2UVCoordinate = glm::vec2(0.0f);
 
-	i32vec2Destination = glm::i32vec2(0, 0);	// Initialise the iDestination
-
-	type = ENEMY;
+	//type = ENEMY;
 
 	int chance = Math::RandIntMinMax(0, 100);
-	if (chance >= 50)
-	{
-		i32vec2Direction = glm::i32vec2(1, 0);		// Initialise the iDirection
-	}
-	else
-	{
-		i32vec2Direction = glm::i32vec2(-1, 0);		// Initialise the iDirection
-	}
 }
 
 /**
@@ -109,8 +91,8 @@ bool CEnemy2D::Init(void)
 
 	// Set the start position of the Player to iRow and iCol
 	vTransform = glm::i32vec2(uiCol, uiRow);
-	// By default, microsteps should be zero
-	i32vec2NumMicroSteps = glm::i32vec2(0, 0);
+	
+	dir = DIRECTION::LEFT;
 
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
@@ -128,6 +110,10 @@ bool CEnemy2D::Init(void)
 	//CS: Init the color to white
 	currentColor = glm::vec4(1.0, 1.0, 1.0, 1.0);
 
+	//Get handlers to all player objects
+	currTarget = nullptr;
+	arrPlayer = CEntityManager::GetInstance()->GetAllPlayers();
+
 	// Set the Physics to fall status by default
 	//cPhysics2D.Init();
 	//cPhysics2D.SetStatus(CPhysics2D::STATUS::FALL);
@@ -138,94 +124,32 @@ bool CEnemy2D::Init(void)
 	return true;
 }
 
+CPlayer2D* CEnemy2D::GetNearestTarget(void) {
+	float indexDist = (float)cSettings->NUM_TILES_XAXIS * 0.8f; //Approx distance the target has to be within to be counted on
+	float minDist = indexDist;
+
+	CPlayer2D* nearest = nullptr;
+
+	for (unsigned i = 0; i < arrPlayer.size(); i++) {
+		CPlayer2D* currPlayer = arrPlayer[i];
+
+		float currDist = (currPlayer->vTransform - vTransform).length();
+
+		if (currDist <= indexDist && currDist <= minDist) {
+			minDist = currDist;
+			nearest = currPlayer;
+		}
+	}
+
+	return nearest;
+}
+
 /**
  @brief Update this instance
  */
 void CEnemy2D::Update(const double dElapsedTime)
 {
-	if (!bIsActive)
-		return;
-
-	runtimer += dElapsedTime;
-	jumptimer += dElapsedTime;
-
- 	switch (sCurrentFSM)
-	{
-	case IDLE:
-		if (iFSMCounter > MaxIdleCounter)
-		{
-			sCurrentFSM = PATROL;
-			iFSMCounter = 0;
-			cout << "Switching to Patrol State" << endl;
-		}
-		//animatedSprites->PlayAnimation("idle", -1, 1.f);
-		iFSMCounter++;
-		break;
-	case PATROL:
-		//animatedSprites->PlayAnimation("move", -1, 1.f);
-		if (iFSMCounter > MaxPatrolCounter)
-		{
-			sCurrentFSM = IDLE;
-			iFSMCounter = 0;
-			cout << "Switching to Idle State" << endl;
-		}
-		else //if (cPhysics2D.CalculateDistance(vTransform, cPlayer2D->vTransform) < 3.0f)
-		{
-			sCurrentFSM = ATTACK;
-			iFSMCounter = 0;
-		}
-		iFSMCounter++;
-		break;
-	case ATTACK:
-		
-		break;
-	case HIT:
-		if (hittimer > 1.f)
-		{
-			hittimer = 0;
-			sCurrentFSM = IDLE;
-		}
-		else
-		{
-			if (hittimer == 0)
-				health -= 20;
-			else if (health <= 0)
-			{
-				sCurrentFSM = DEATH;
-				iFSMCounter = 0;
-			}
-			hittimer += dElapsedTime;
-			//KnockBack();
-			//animatedSprites->PlayAnimation("hit", -1, 1.f);
-		}
-		break;
-	case DEATH:
-		//animatedSprites->PlayAnimation("dead", 1, 1.f);
-		if (hittimer > 1.f)
-		{
-			health -= 20;
-		}
-		else
-		{
-			hittimer += dElapsedTime;
-		}
-		break;
-	default:
-		break;
-	}
 	
-	if (jumptimer > 0.01)
-	{
-		jumptimer = 0;
-		// Update Jump or Fall
-		//UpdateJumpFall(dElapsedTime);
-	}
-	//CS: Update the animated sprite
-	//animatedSprites->Update(dElapsedTime);
-
-	// Update the UV Coordinates
-	vec2UVCoordinate.x = cSettings->ConvertIndexToUVSpace(cSettings->x, vTransform.x, false, i32vec2NumMicroSteps.x*cSettings->MICRO_STEP_XAXIS);
-	vec2UVCoordinate.y = cSettings->ConvertIndexToUVSpace(cSettings->y, vTransform.y, false, i32vec2NumMicroSteps.y*cSettings->MICRO_STEP_YAXIS);
 }
 
 /**
@@ -265,8 +189,8 @@ void CEnemy2D::Render(void)
 	transform = glm::translate(transform, glm::vec3(vec2UVCoordinate.x,
 													vec2UVCoordinate.y,
 													0.0f));
-	if (facing == LEFT)
-		transform = glm::rotate(transform, glm::radians(180.f), glm::vec3(0.f, 1.f, 0.f));
+	/*if (facing == LEFT)
+		transform = glm::rotate(transform, glm::radians(180.f), glm::vec3(0.f, 1.f, 0.f));*/
 	// Update the shaders with the latest transform
 	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
 	glUniform4fv(colorLoc, 1, glm::value_ptr(currentColor));
@@ -303,17 +227,6 @@ void CEnemy2D::SetTransform(const int iIndex_XAxis, const int iIndex_YAxis)
 {
 	this->vTransform.x = (float)iIndex_XAxis;
 	this->vTransform.y = (float)iIndex_YAxis;
-}
-
-/**
-@brief Set the number of microsteps of the enemy2D
-@param iNumMicroSteps_XAxis A const int variable storing the current microsteps in the X-axis
-@param iNumMicroSteps_YAxis A const int variable storing the current microsteps in the Y-axis
-*/
-void CEnemy2D::Seti32vec2NumMicroSteps(const int iNumMicroSteps_XAxis, const int iNumMicroSteps_YAxis)
-{
-	this->i32vec2NumMicroSteps.x = iNumMicroSteps_XAxis;
-	this->i32vec2NumMicroSteps.y = iNumMicroSteps_YAxis;
 }
 
 /**
@@ -376,194 +289,3 @@ bool CEnemy2D::LoadTexture(const char* filename, GLuint& iTextureID)
 	return true;
 }
 
-/**
- @brief Constraint the enemy2D's position within a boundary
- @param eDirection A DIRECTION enumerated data type which indicates the direction to check
- */
-void CEnemy2D::Constraint(DIRECTION eDirection)
-{
-	if (eDirection == LEFT)
-	{
-		if (vTransform.x < 0)
-		{
-			vTransform.x = 0;
-			i32vec2NumMicroSteps.x = 0;
-		}
-	}
-	else if (eDirection == RIGHT)
-	{
-		if (vTransform.x >= (int)cSettings->NUM_TILES_XAXIS - 1)
-		{
-			vTransform.x = ((float)cSettings->NUM_TILES_XAXIS) - 1.f;
-			i32vec2NumMicroSteps.x = 0;
-		}
-	}
-	else if (eDirection == UP)
-	{
-		if (vTransform.y >= (int)cSettings->NUM_TILES_YAXIS - 1)
-		{
-			vTransform.y = ((float)cSettings->NUM_TILES_YAXIS) - 1.f;
-			i32vec2NumMicroSteps.y = 0;
-		}
-	}
-	else if (eDirection == DOWN)
-	{
-		if (vTransform.y < 0)
-		{
-			vTransform.y = 0;
-			i32vec2NumMicroSteps.y = 0;
-		}
-	}
-	else
-	{
-		cout << "CEnemy2D::Constraint: Unknown direction." << endl;
-	}
-}
-
-/**
- @brief Check if a position is possible to move into
- @param eDirection A DIRECTION enumerated data type which indicates the direction to check
- */
-bool CEnemy2D::CheckPosition(DIRECTION eDirection)
-{
-	if (eDirection == LEFT)
-	{
-		// If the new position is fully within a row, then check this row only
-		if (i32vec2NumMicroSteps.y == 0)
-		{
-			// If the grid is not accessible, then return false
-			if (cMap2D->GetMapInfo(vTransform.y, vTransform.x) >= 100)
-			{
-				return false;
-			}
-		}
-		// If the new position is between 2 rows, then check both rows as well
-		else if (i32vec2NumMicroSteps.y != 0)
-		{
-			// If the 2 grids are not accessible, then return false
-			if ((cMap2D->GetMapInfo(vTransform.y, vTransform.x) >= 100) ||
-				(cMap2D->GetMapInfo(vTransform.y + 1, vTransform.x) >= 100))
-			{
-				return false;
-			}
-		}
-	}
-	else if (eDirection == RIGHT)
-	{
-		// If the new position is at the top row, then return true
-		if (vTransform.x >= cSettings->NUM_TILES_XAXIS - 1)
-		{
-			i32vec2NumMicroSteps.x = 0;
-			return true;
-		}
-
-		// If the new position is fully within a row, then check this row only
-		if (i32vec2NumMicroSteps.y == 0)
-		{
-			// If the grid is not accessible, then return false
-			if (cMap2D->GetMapInfo(vTransform.y, vTransform.x + 1) >= 100)
-			{
-				return false;
-			}
-		}
-		// If the new position is between 2 rows, then check both rows as well
-		else if (i32vec2NumMicroSteps.y != 0)
-		{
-			// If the 2 grids are not accessible, then return false
-			if ((cMap2D->GetMapInfo(vTransform.y, vTransform.x + 1) >= 100) ||
-				(cMap2D->GetMapInfo(vTransform.y + 1, vTransform.x + 1) >= 100))
-			{
-				return false;
-			}
-		}
-
-	}
-	else if (eDirection == UP)
-	{
-		// If the new position is at the top row, then return true
-		if (vTransform.y >= cSettings->NUM_TILES_YAXIS - 1)
-		{
-			i32vec2NumMicroSteps.y = 0;
-			return true;
-		}
-
-		// If the new position is fully within a column, then check this column only
-		if (i32vec2NumMicroSteps.x == 0)
-		{
-			// If the grid is not accessible, then return false
-			if (cMap2D->GetMapInfo(vTransform.y + 1, vTransform.x) >= 100)
-			{
-				return false;
-			}
-		}
-		// If the new position is between 2 columns, then check both columns as well
-		else if (i32vec2NumMicroSteps.x != 0)
-		{
-			// If the 2 grids are not accessible, then return false
-			if ((cMap2D->GetMapInfo(vTransform.y + 1, vTransform.x) >= 100) ||
-				(cMap2D->GetMapInfo(vTransform.y + 1, vTransform.x + 1) >= 100))
-			{
-				return false;
-			}
-		}
-	}
-	else if (eDirection == DOWN)
-	{
-		// If the new position is fully within a column, then check this column only
-		if (i32vec2NumMicroSteps.x == 0)
-		{
-			// If the grid is not accessible, then return false
-			if (cMap2D->GetMapInfo(vTransform.y, vTransform.x) >= 100)
-			{
-				return false;
-			}
-		}
-		// If the new position is between 2 columns, then check both columns as well
-		else if (i32vec2NumMicroSteps.x != 0)
-		{
-			// If the 2 grids are not accessible, then return false
-			if ((cMap2D->GetMapInfo(vTransform.y, vTransform.x) >= 100) ||
-				(cMap2D->GetMapInfo(vTransform.y, vTransform.x + 1) >= 100))
-			{
-				return false;
-			}
-		}
-	}
-	else
-	{
-		cout << "CEnemy2D::CheckPosition: Unknown direction." << endl;
-	}
-
-	return true;
-}
-
-/**
- @brief Let enemy2D interact with the player.
- */
-bool CEnemy2D::InteractWithPlayer(void)
-{
-	//glm::i32vec2 i32vec2PlayerPos = cPlayer2D->vTransform;
-	//glm::i32vec2 i32vec2PlayerMicroSteps = cPlayer2D->i32vec2NumMicroSteps;
-	////cout << i32vec2PlayerPos.x << ", " << vTransform.x << endl;
-	//float distance = cPhysics2D.CalculateMicroSteps(vTransform, i32vec2NumMicroSteps, i32vec2PlayerPos, i32vec2PlayerMicroSteps);
-	//// Check if the enemy2D is within 1.5 indices of the player2D
-	//if (distance <= 8.f
-	//	&& 
-	//	(abs(vTransform.y - i32vec2PlayerPos.y) <= 1.f))
-	//{
-	//	cPlayer2D->Hit(20);
-	//	// Since the player has been caught, then reset the FSM
-	//	sCurrentFSM = IDLE;
-	//	iFSMCounter = 0;
-	//	return true;
-	//}
-	return false;
-}
-
-/**
- @brief Flip horizontal direction. For patrol use only
- */
-void CEnemy2D::FlipHorizontalDirection(void)
-{
-	i32vec2Direction.x *= -1;
-}

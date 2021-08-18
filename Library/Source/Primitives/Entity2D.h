@@ -76,6 +76,9 @@ public:
 	// The i32vec2 which stores the indices of an Entity2D in the Map2D
 	glm::vec2 vTransform;
 
+	//For rotation purposes (Anti clockwise)
+	float vRotate;
+
 	// The vec2 variable which stores the UV coordinates to render the Entity2D
 	glm::vec2 vec2UVCoordinate;
 

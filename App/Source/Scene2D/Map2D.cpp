@@ -504,7 +504,7 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 	doc = rapidcsv::Document(FileSystem::getPath(filename).c_str());
 
 	// Check if the sizes of CSV data matches the declared arrMapInfo sizes
-	arrLevelLimit[uiCurLevel] = glm::i32vec2(doc.GetColumnCount(), doc.GetRowCount());
+	arrLevelLimit[uiCurLevel] = glm::i32vec2(doc.GetColumnCount() - 1, doc.GetRowCount());
 
 	// Read the rows and columns of CSV data into arrMapInfo
 	for (unsigned int uiRow = 0; uiRow < (unsigned int)doc.GetRowCount(); uiRow++)
@@ -583,7 +583,7 @@ void CMap2D::RenderBackground(void) {
 
 		//Scaling of allowance. 0.f to 1.f
 		float allowanceScaleX = 1.f;
-		float allowanceScaleY = 0.5f;
+		float allowanceScaleY = 1.f;
 
 		allowance.x *= allowanceScaleX;
 		allowance.y *= allowanceScaleY;

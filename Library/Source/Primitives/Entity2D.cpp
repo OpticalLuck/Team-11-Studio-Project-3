@@ -35,6 +35,8 @@ CEntity2D::CEntity2D(ENTITY_TYPE type)
 
 	// Initialise vec2UVCoordinate
 	vec2UVCoordinate = glm::vec2(0.0f);
+
+	vRotate = 0.f;
 }
 
 
@@ -70,6 +72,9 @@ bool CEntity2D::Init(void)
 
 	//Draw a quad for a default entity2D
 	mesh = CMeshBuilder::GenerateQuad(glm::vec4(1, 1, 1, 1), 1.0f);
+
+	vRotate = 0.f;
+
 	/*
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);

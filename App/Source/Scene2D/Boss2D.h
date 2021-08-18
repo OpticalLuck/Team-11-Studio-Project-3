@@ -3,14 +3,17 @@
 // Include shader
 #include "RenderControl\shader.h"
 
-//CEntity2D
-#include "../Library/Source/Primitives/Entity2D.h"
+//CEnemy2D
+#include "Enemy2D.h"
 
 // Include the Map2D as we will use it to check the player's movements and actions
 class CMap2D;
 
 //Include CEntityManager to get curr round
 class CEntityManager;
+
+//Include Player2D
+class CPlayer2D;
 
 // Include Settings
 #include "GameControl\Settings.h"
@@ -21,7 +24,7 @@ class CEntityManager;
 //Camera
 #include "Camera2D.h"
 
-class CBoss2D : public CEntity2D
+class CBoss2D : public CEnemy2D
 {
 	public :
 		CBoss2D(void);
@@ -42,23 +45,21 @@ class CBoss2D : public CEntity2D
 		void PostRender(void);
 
 	protected:
-		enum class FSM {
+		enum class ATK {
 			A_CIRCLE, //Attacks in a circular pattern.
 			A_ATTACK, //Shoots at the player normally
 			A_TOTAL
 		};
 
-		std::vector<FSM>* arrFSM; //Current attack during current round
+		std::vector<ATK>* arrFSM; //Current attack during current round
 		int fsmIndex; //Current index of where its at in the array
+		int roundIndex; //Current round
 
 		//float atkDuration;
 		//float pauseDuration;
 
 		std::vector<int>* arrAtkDuration;
 		std::vector<int>* arrPauseDuration;
-
-		bool isNear;
-		int health;
 
 		float bulletAng; //Angle of which where the bullet will come from
 
@@ -73,16 +74,17 @@ class CBoss2D : public CEntity2D
 		//Handlers
 		CMap2D* cMap2D;
 		Camera2D* camera;
+		CEntityManager* cEntityManager;
 
 		//Functions
 		// Load a texture
 		bool LoadTexture(const char* filename, GLuint& iTextureID);
 
 		//Randomise timer
-		float RandomiseTimer(bool atk);
+		int RandomiseTimer(bool atk);
 
 		//Randomise attacks
-		FSM RandomiseAttack(void);
+		ATK RandomiseAttack(void);
 
 		//Update attacks
 		void UpdateAttack(float dElapsedTime);

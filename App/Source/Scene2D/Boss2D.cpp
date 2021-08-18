@@ -19,14 +19,15 @@ CBoss2D::CBoss2D(void) {
 	cMap2D = nullptr;
 	currentColor = glm::vec4();
 	health = 0;
-	isNear = false;
+	currTarget = nullptr;
 	quadMesh = nullptr;
 	camera = nullptr;
 
 	arrFSM = nullptr;
 	arrAtkDuration = arrPauseDuration = nullptr;
+	cEntityManager = nullptr;
 
-	fsmIndex = 0;
+	fsmIndex = roundIndex = 0;
 }
 
 CBoss2D::~CBoss2D(void) {
@@ -44,6 +45,9 @@ bool CBoss2D::Init(void) {
 	cSettings = CSettings::GetInstance();
 	cMap2D = CMap2D::GetInstance();
 	camera = Camera2D::GetInstance();
+	cEntityManager = CEntityManager::GetInstance();
+
+	arrPlayer = cEntityManager->GetAllPlayers();
 
 	unsigned int uiRow = -1;
 	unsigned int uiCol = -1;
@@ -82,33 +86,35 @@ bool CBoss2D::Init(void) {
 	//Initialisation of variables
 	bulletAng = (float)Math::RandIntMinMax(0, 359);
 	health = 100;
-	isNear = false;
+	currTarget = nullptr;
 
 	//Array of vectors
 	fsmIndex = 0;
+	roundIndex = 0;
+
 	if (!arrFSM) {
-		arrFSM = new std::vector<FSM>[5];
-		arrFSM[0].push_back((FSM)RandomiseAttack());
+		arrFSM = new std::vector<ATK>[5];
+		arrFSM[roundIndex].push_back((ATK)RandomiseAttack());
 	}
 
 	if (!arrAtkDuration) {
 		arrAtkDuration = new std::vector<int>[5];
-		arrAtkDuration[0].push_back(RandomiseTimer(true));
+		arrAtkDuration[roundIndex].push_back(RandomiseTimer(true));
 	}
 
 	if (!arrPauseDuration) {
 		arrPauseDuration = new std::vector<int>[5];
-		arrPauseDuration[0].push_back(RandomiseTimer(false));
+		arrPauseDuration[roundIndex].push_back(RandomiseTimer(false));
 	}
 
 	return true;
 }
 
-CBoss2D::FSM CBoss2D::RandomiseAttack(void) {
-	return FSM(Math::RandIntMinMax(0, (int)FSM::A_TOTAL - 1));
+CBoss2D::ATK CBoss2D::RandomiseAttack(void) {
+	return ATK(Math::RandIntMinMax(0, (int)ATK::A_TOTAL - 1));
 }
 
-float CBoss2D::RandomiseTimer(bool atk) {
+int CBoss2D::RandomiseTimer(bool atk) {
 	float value = 0; //In terms of seconds first
 
 	if (atk)
@@ -160,12 +166,12 @@ void CBoss2D::Update(const double dElapsedTime) {
 	if (!bIsActive)
 		return; //Return if boss is not active
 
-	if (isNear) {
-		UpdateAttack(dElapsedTime);
+	if (currTarget) {
+		UpdateAttack((float)dElapsedTime);
 	}
 	else {
 		//Check if player is near and enable boss fight
-
+		currTarget = GetNearestTarget();
 	}
 }
 
