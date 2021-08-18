@@ -85,12 +85,6 @@ void CLevelEditor::Render()
         for (unsigned int uiCol = 0; uiCol < iWorldWidth; ++uiCol)
         {
 
-            if (uiRow == 20)
-            {
-                int a;
-                a = 1;
-            }
-
             glm::vec2 objCamPos = glm::vec2(uiCol, uiRow) - cameraPos + offset;
             glm::vec2 actualPos = cSettings->ConvertIndexToUVSpace(objCamPos);
 
@@ -101,11 +95,6 @@ void CLevelEditor::Render()
 
             transform = glm::mat4(1.f);
             transform = glm::translate(transform, glm::vec3(actualPos.x, actualPos.y, 0.f));
-            /*transform = glm::translate(transform, glm::vec3(
-                cSettings->ConvertIndexToUVSpace(cSettings->x, currObj.indexSpace.x, false, 0),
-                cSettings->ConvertIndexToUVSpace(cSettings->y, currObj.indexSpace.y, false),
-                0.f
-            ));*/
 
             // Update the shaders with the latest transform
             glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));

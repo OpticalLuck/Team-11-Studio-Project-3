@@ -30,6 +30,7 @@ CLevelEditorState::CLevelEditorState(void)
 	, cLevelEditor(NULL)
 	, cMouseController(NULL)
 	, cSettings(NULL)
+	, cLevelGrid(NULL)
 {
 
 }
@@ -44,6 +45,12 @@ CLevelEditorState::~CLevelEditorState(void)
 	cMouseController = NULL;
 	cSettings = NULL;
 
+	if (cLevelGrid)
+	{ 
+		cLevelGrid->Destroy();
+		cLevelGrid = NULL;
+	}
+
 	Destroy();
 }
 
@@ -57,6 +64,8 @@ bool CLevelEditorState::Init(void)
 	cSettings = CSettings::GetInstance();
 
 	cLevelEditor = CLevelEditor::GetInstance();
+	cLevelGrid = CLevelGrid::GetInstance();
+	cLevelGrid->Init(cLevelEditor->iWorldWidth, cLevelEditor->iWorldHeight);
 
 	Camera2D::GetInstance()->Reset();
 	Camera2D::GetInstance()->UpdateTarget(glm::vec2(cSettings->NUM_TILES_XAXIS * 0.5, cSettings->NUM_TILES_YAXIS * 0.5));
@@ -143,11 +152,16 @@ bool CLevelEditorState::Update(const double dElapsedTime)
 void CLevelEditorState::Render(void)
 {
 	glClear(GL_COLOR_BUFFER_BIT);
-	glClearColor(1.00f, 1.00f, 1.00f, 1.00f);
+	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
 	cLevelEditor->PreRender();
 	cLevelEditor->Render();
 	cLevelEditor->PostRender();
+
+	cLevelGrid->PreRender();
+	cLevelGrid->Render();
+	cLevelGrid->PostRender();
+
 }
 
 /**

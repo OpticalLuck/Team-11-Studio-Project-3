@@ -10,6 +10,7 @@
 #include "GameStateBase.h"
 #include "../KeyboardInputHandler/CKeyboardInputHandler.h"
 #include "../LevelEditor/LevelEditor.h"
+#include "../LevelEditor/LevelGrid.h"
 #include "Inputs/MouseController.h"
 
 class CLevelEditorState : public CGameStateBase
@@ -38,4 +39,5 @@ protected:
 	CKeyboardInputHandler*		cKeyboardInputHandler;
 	CMouseController*			cMouseController;
 	CLevelEditor*				cLevelEditor;
+	CLevelGrid*					cLevelGrid;
 };

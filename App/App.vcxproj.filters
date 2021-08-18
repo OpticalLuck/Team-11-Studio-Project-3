@@ -131,6 +131,9 @@
     <ClCompile Include="Source\GameStateManagement\LevelEditorState.cpp">
       <Filter>GameStateManagement</Filter>
     </ClCompile>
+    <ClCompile Include="Source\LevelEditor\LevelGrid.cpp">
+      <Filter>LevelEditor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h">
@@ -225,6 +228,9 @@
     </ClInclude>
     <ClInclude Include="Source\GameStateManagement\LevelEditorState.h">
       <Filter>GameStateManagement</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\LevelEditor\LevelGrid.h">
+      <Filter>LevelEditor</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
