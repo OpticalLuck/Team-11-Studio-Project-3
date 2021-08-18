@@ -29,8 +29,6 @@ CMap2D::CMap2D(void)
 	: uiCurLevel(0)
 	, camera(NULL)
 {
-	arrMapSizes = nullptr;
-	quadMesh = nullptr;
 	uiNumLevels = 0;
 }
 
@@ -298,66 +296,6 @@ glm::i32vec2 CMap2D::GetLevelLimit(void) {
 	return arrLevelLimit[uiCurLevel];
 }
 
-// Set the specifications of the map
-void CMap2D::SetNumTiles(const CSettings::AXIS sAxis, const unsigned int uiValue)
-{
-	// Check if the value is valid
-	if (uiValue <= 0)
-	{
-		cout << "CMap2D::SetNumTiles() : value must be more than 0" << endl;
-		return;
-	}
-
-	if (sAxis == CSettings::x)
-	{
-		cSettings->NUM_TILES_XAXIS = uiValue;
-		cSettings->UpdateSpecifications();
-	}
-	else if (sAxis == CSettings::y)
-	{
-		cSettings->NUM_TILES_YAXIS = uiValue;
-		cSettings->UpdateSpecifications();
-	}
-	else if (sAxis == CSettings::z)
-	{
-		// Not used in here
-	}
-	else
-	{
-		cout << "Unknown axis" << endl;
-	}
-}
-
-// Set the specifications of the map
-void CMap2D::SetNumSteps(const CSettings::AXIS sAxis, const unsigned int uiValue)
-{
-	// Check if the value is valid
-	if (uiValue <= 0)
-	{
-		cout << "CMap2D::SetNumSteps() : value must be more than 0" << endl;
-		return;
-	}
-
-	if (sAxis == CSettings::x)
-	{
-		cSettings->NUM_STEPS_PER_TILE_XAXIS = (float)uiValue;
-		cSettings->UpdateSpecifications();
-	}
-	else if (sAxis == CSettings::y)
-	{
-		cSettings->NUM_STEPS_PER_TILE_YAXIS = (float)uiValue;
-		cSettings->UpdateSpecifications();
-	}
-	else if (sAxis == CSettings::z)
-	{
-		// Not used in here
-	}
-	else
-	{
-		cout << "Unknown axis" << endl;
-	}
-}
-
 /**
  @brief Set the value at certain indices in the arrMapInfo
  @param iRow A const int variable containing the row index of the element to set to
@@ -396,11 +334,6 @@ void CMap2D::SetMapInfo(const unsigned int uiRow, const unsigned int uiCol, cons
 	arrObject[uiCurLevel].push_back(newObj);
 }
 
-void CMap2D::ToggleMapInfo(const unsigned int uiRow, const unsigned int uiCol, const bool iValue, const bool bInvert)
-{
-	//Do nothing for now
-}
-
 std::vector<CObject2D*> CMap2D::GetObjectArr()
 {
 	return arrObject[uiCurLevel];
@@ -432,20 +365,6 @@ int CMap2D::GetMapInfo(const unsigned int uiRow, const unsigned int uiCol, const
 
 	//Return false if theres nothing on the tile
 	return 0;
-}
-
-bool CMap2D::GetMapActive(const unsigned int uiRow, const unsigned int uiCol, const bool bInvert) const
-{
-	//Check if theres object on tile
-	for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++) {
-		const CObject2D* obj = arrObject[uiCurLevel][i];
-
-		if (obj->indexSpace.x == uiCol && obj->indexSpace.y == uiRow)
-			return true;
-	}
-
-	//Return false if theres nothing on the tile
-	return false;
 }
 
 

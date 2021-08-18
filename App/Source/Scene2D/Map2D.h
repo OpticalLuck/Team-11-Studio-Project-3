@@ -43,12 +43,6 @@
 #include <queue>
 #include <functional>
 
-// A structure storing information about Map Sizes
-struct MapSize {
-	unsigned int uiRowSize;
-	unsigned int uiColSize;
-};
-
 class CMap2D : public CSingletonTemplate<CMap2D>, public CEntity2D
 {
 	friend CSingletonTemplate<CMap2D>;
@@ -70,15 +64,8 @@ public:
 	// PostRender
 	void PostRender(void);
 
-	// Set the specifications of the map
-	void SetNumTiles(const CSettings::AXIS sAxis, const unsigned int uiValue);
-	void SetNumSteps(const CSettings::AXIS sAxis, const unsigned int uiValue);
-
 	// Set the value at certain indices in the arrMapInfo
 	void SetMapInfo(const unsigned int uiRow, const unsigned int uiCol, const int iValue, const bool bInvert = true);
-
-	// Toggle Active at certain indices in the arrMapInfo
-	void ToggleMapInfo(const unsigned int uiRow, const unsigned int uiCol, const bool iValue, const bool bInvert = true);
 
 	std::vector<CObject2D*> GetObjectArr();
 
@@ -86,9 +73,6 @@ public:
 
 	// Get the value at certain indices in the arrMapInfo
 	int GetMapInfo(const unsigned int uiRow, const unsigned int uiCol, const bool bInvert = true) const;
-
-	// Get the active at certain indices in the arrMapInfo
-	bool GetMapActive(const unsigned int uiRow, const unsigned int uiCol, const bool bInvert = true) const;
 
 	// Load a map
 	bool LoadMap(string filename, const unsigned int uiLevel = 0);
@@ -103,9 +87,6 @@ public:
 	void SetCurrentLevel(unsigned int uiCurLevel);
 	// Get current level
 	unsigned int GetCurrentLevel(void) const;
-
-	// Set if AStar PathFinding will consider diagonal movements
-	void SetDiagonalMovement(const bool bEnable);
 
 	//Get current level max rows and cols
 	int GetLevelRow(void);
@@ -123,7 +104,7 @@ protected:
 	std::vector<std::vector<CObject2D*>> arrObject;
 
 	//2D array
-	std::vector<std::vector<std::vector<CObject2D*>>>  arrGrid; //Y, X
+	std::vector<std::vector<std::vector<CObject2D*>>> arrGrid; //Y, X
 
 	//Vector array that stores limits of each level
 	std::vector<glm::i32vec2> arrLevelLimit;
@@ -132,9 +113,6 @@ protected:
 	unsigned int uiCurLevel;
 	// The number of levels
 	unsigned int uiNumLevels;
-
-	// A 1-D array which stores the map sizes for each level
-	MapSize* arrMapSizes;
 
 	// Map containing texture IDs
 	map<int, int> MapOfTextureIDs;
