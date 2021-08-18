@@ -131,7 +131,7 @@ bool CEditorSettingsState::Update(const double dElapsedTime)
 				CKeyboardController::GetInstance()->Reset();
 
 				// Load the menu state
-				cout << "Loading PlayGameState" << endl;
+				cout << "Loading LevelEditorState" << endl;
 				CGameStateManager::GetInstance()->SetActiveGameState("LevelEditorState");
 			}
 		}

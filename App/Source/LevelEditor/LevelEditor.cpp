@@ -2,13 +2,6 @@
 
 #include "LevelEditor.h"
 
-#ifndef GLEW_STATIC
-    #include <GL/glew.h>
-    #define GLEW_STATIC
-#endif
-
-#include <GLFW/glfw3.h>
-
 #include <iostream>
 #include <experimental/filesystem>
 
@@ -51,10 +44,10 @@ void CLevelEditor::Init()
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
 
+    GenerateQuadVAO();
+
     cSettings = CSettings::GetInstance();
     camera = Camera2D::GetInstance();
-    camera->Reset();
-
     cTextureManager = CTextureManager::GetInstance();
 
     quadMesh = CMeshBuilder::GenerateQuad(glm::vec4(1, 1, 1, 1), cSettings->TILE_WIDTH, cSettings->TILE_HEIGHT);
@@ -91,14 +84,20 @@ void CLevelEditor::Render()
     {
         for (unsigned int uiCol = 0; uiCol < iWorldWidth; ++uiCol)
         {
-            glm::vec2 objCamPos = glm::vec2(uiCol, uiRow) - cameraPos + offset;
 
+            if (uiRow == 20)
+            {
+                int a;
+                a = 1;
+            }
+
+            glm::vec2 objCamPos = glm::vec2(uiCol, uiRow) - cameraPos + offset;
             glm::vec2 actualPos = cSettings->ConvertIndexToUVSpace(objCamPos);
 
             float clampX = 1.01f;
             float clampY = 1.01f;
-            if (actualPos.x <= -clampX || actualPos.x >= clampX || actualPos.y <= -clampY || actualPos.y >= clampY)
-                continue;
+            // if (actualPos.x <= -clampX || actualPos.x >= clampX || actualPos.y <= -clampY || actualPos.y >= clampY)
+                // continue;
 
             transform = glm::mat4(1.f);
             transform = glm::translate(transform, glm::vec3(actualPos.x, actualPos.y, 0.f));
@@ -111,12 +110,25 @@ void CLevelEditor::Render()
             // Update the shaders with the latest transform
             glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
 
-            glBindTexture(GL_TEXTURE_2D, cTextureManager->MapOfTextureIDs.at(m_CurrentLevel[uiRow][uiCol].iTileID));
+            if (m_CurrentLevel[uiRow][uiCol].iTileID > 1)
+            {
+                glBindTexture(GL_TEXTURE_2D, cTextureManager->MapOfTextureIDs.at(m_CurrentLevel[uiRow][uiCol].iTileID));
 
-            glBindVertexArray(VAO);
-            //CS: Render the tile
-            quadMesh->Render();
-            glBindVertexArray(0);
+                glBindVertexArray(VAO);
+                //CS: Render the tile
+                quadMesh->Render();
+                glBindVertexArray(0);
+            }
+
+            //transform = glm::scale(transform, glm::vec3(CSettings::GetInstance()->TILE_WIDTH, CSettings::GetInstance()->TILE_HEIGHT, 1.f));
+
+            //CShaderManager::GetInstance()->Use("LineShader");
+            //CShaderManager::GetInstance()->activeShader->setMat4("transform", transform);
+
+            //glBindVertexArray(quadVAO);
+            //glDrawArrays(GL_LINE_LOOP, 0, 6);
+            //glBindVertexArray(0);
+
         }
     }
 }
@@ -173,6 +185,8 @@ void CLevelEditor::LoadLevel(const char* filePath)
         }
     }
 
+    std::reverse(m_CurrentLevel.begin(), m_CurrentLevel.end());
+
     DEBUG_MSG("Opened " << filePath);
 }
 
@@ -211,4 +225,36 @@ void CLevelEditor::LoadExistingLevels(void)
 
         DEBUG_MSG("Loaded " << file.path().filename());
     }
+}
+
+void CLevelEditor::GenerateQuadVAO(void)
+{
+    glm::vec2 vec2Dimensions = glm::vec2(1, 1) * 0.5f;
+    glm::vec4 vec4Colour = glm::vec4(0, 0, 0, 0.3);
+
+    float vertices[] = {
+        -vec2Dimensions.x, -vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
+        vec2Dimensions.x, -vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
+        vec2Dimensions.x, vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
+        vec2Dimensions.x, vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
+        -vec2Dimensions.x, vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
+        -vec2Dimensions.x, -vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
+    };
+
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+
+    glBindVertexArray(VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    // position attribute
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    // texture coord attribute
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(2 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+    glLineWidth(1.f);
 }

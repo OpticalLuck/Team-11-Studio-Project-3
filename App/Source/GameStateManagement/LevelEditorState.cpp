@@ -45,6 +45,9 @@ bool CLevelEditorState::Init(void)
 
 	cLevelEditor = CLevelEditor::GetInstance();
 
+	Camera2D::GetInstance()->Reset();
+	Camera2D::GetInstance()->UpdateTarget(glm::vec2(CSettings::GetInstance()->NUM_TILES_XAXIS * 0.5, CSettings::GetInstance()->NUM_TILES_YAXIS * 0.5));
+
 	cKeyboardInputHandler = CKeyboardInputHandler::GetInstance();
 	cKeyboardInputHandler->Init();
 
@@ -56,6 +59,8 @@ bool CLevelEditorState::Init(void)
  */
 bool CLevelEditorState::Update(const double dElapsedTime)
 {
+	Camera2D::GetInstance()->Update(dElapsedTime);
+
 	if (CKeyboardController::GetInstance()->IsKeyReleased(GLFW_KEY_ESCAPE))
 	{
 		// Reset the CKeyboardController
@@ -68,19 +73,19 @@ bool CLevelEditorState::Update(const double dElapsedTime)
 	}
 	if (CKeyboardController::GetInstance()->IsKeyDown(GLFW_KEY_W))
 	{
-		Camera2D::GetInstance()->UpdateTarget(glm::vec2(Camera2D::GetInstance()->getCurrPos().x, Camera2D::GetInstance()->getCurrPos().y + 1));
+		Camera2D::GetInstance()->UpdateTarget(glm::vec2(Camera2D::GetInstance()->getTarget().x, Camera2D::GetInstance()->getTarget().y + 0.2));
 	}
-	else if (CKeyboardController::GetInstance()->IsKeyDown(GLFW_KEY_S))
+	if (CKeyboardController::GetInstance()->IsKeyDown(GLFW_KEY_S))
 	{
-		Camera2D::GetInstance()->UpdateTarget(glm::vec2(Camera2D::GetInstance()->getCurrPos().x, Camera2D::GetInstance()->getCurrPos().y - 1));
+		Camera2D::GetInstance()->UpdateTarget(glm::vec2(Camera2D::GetInstance()->getTarget().x, Camera2D::GetInstance()->getTarget().y - 0.2));
 	}
 	if (CKeyboardController::GetInstance()->IsKeyDown(GLFW_KEY_A))
 	{
-		Camera2D::GetInstance()->UpdateTarget(glm::vec2(Camera2D::GetInstance()->getCurrPos().x - 1, Camera2D::GetInstance()->getCurrPos().y));
+		Camera2D::GetInstance()->UpdateTarget(glm::vec2(Camera2D::GetInstance()->getTarget().x - 0.2, Camera2D::GetInstance()->getTarget().y));
 	}
-	else if (CKeyboardController::GetInstance()->IsKeyDown(GLFW_KEY_D))
+	if (CKeyboardController::GetInstance()->IsKeyDown(GLFW_KEY_D))
 	{
-		Camera2D::GetInstance()->UpdateTarget(glm::vec2(Camera2D::GetInstance()->getCurrPos().x + 1, Camera2D::GetInstance()->getCurrPos().y));
+		Camera2D::GetInstance()->UpdateTarget(glm::vec2(Camera2D::GetInstance()->getTarget().x + 0.2, Camera2D::GetInstance()->getTarget().y));
 	}
 
 	return true;
@@ -91,6 +96,9 @@ bool CLevelEditorState::Update(const double dElapsedTime)
  */
 void CLevelEditorState::Render(void)
 {
+	glClear(GL_COLOR_BUFFER_BIT);
+	glClearColor(1.00f, 1.00f, 1.00f, 1.00f);
+
 	cLevelEditor->PreRender();
 	cLevelEditor->Render();
 	cLevelEditor->PostRender();

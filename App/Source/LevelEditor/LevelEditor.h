@@ -3,6 +3,13 @@
 // Include Singleton Pattern
 #include "DesignPatterns/SingletonTemplate.h"
 
+#ifndef GLEW_STATIC
+#include <GL/glew.h>
+#define GLEW_STATIC
+#endif
+
+#include <GLFW/glfw3.h>
+
 // Include the RapidCSV
 #include "System/rapidcsv.h"
 
@@ -59,6 +66,7 @@ protected:
     CSettings* cSettings;
 
     unsigned int VAO, VBO, EBO;
+    unsigned int quadVAO, quadVBO, quadEBO;
 
     // The texture ID in OpenGL
     unsigned int iTextureID;
@@ -92,5 +100,7 @@ protected:
 
     CLevelEditor();
     ~CLevelEditor();
+
+    void GenerateQuadVAO(void);
 
 };

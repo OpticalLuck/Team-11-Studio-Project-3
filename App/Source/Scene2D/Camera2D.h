@@ -27,9 +27,11 @@ class Camera2D : public CSingletonTemplate<Camera2D>
 
 		void Update(float dElapsedTime);
 		void UpdateTarget(glm::vec2 target);
+		void UpdatePos(glm::vec2 pos);
 		void Reset(void);
 
 		glm::vec2 getCurrPos(void);
+		glm::vec2 getTarget(void);
 		bool IsFirstTime(void);
 		void ClampCamPos(glm::i32vec2 clampPos);
 

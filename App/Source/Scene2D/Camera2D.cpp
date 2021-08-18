@@ -27,6 +27,11 @@ void Camera2D::UpdateTarget(glm::vec2 target) {
 	targetPos = target;
 }
 
+void Camera2D::UpdatePos(glm::vec2 pos)
+{
+	this->pos = pos;
+}
+
 void Camera2D::Reset(void) {
 	FirstTime = true;
 }
@@ -37,6 +42,11 @@ bool Camera2D::IsFirstTime(void) {
 
 glm::vec2 Camera2D::getCurrPos(void) {
 	return pos;
+}
+
+glm::vec2 Camera2D::getTarget(void)
+{
+	return targetPos;
 }
 
 void Camera2D::ClampCamPos(glm::i32vec2 clampPos) {
