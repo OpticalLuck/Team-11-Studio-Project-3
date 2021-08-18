@@ -321,14 +321,6 @@ glm::i32vec2 CMap2D::GetLevelLimit(void) {
 	return arrLevelLimit[uiCurLevel];
 }
 
-Collider2D* CMap2D::GetCollider(const unsigned int uiRow, const unsigned int uiCol)
-{
-	if (arrGrid[uiCurLevel][uiRow][uiCol])
-		return &(arrGrid[uiCurLevel][uiRow][uiCol]->collider2D);
-	else
-		return nullptr;
-}
-
 // Set the specifications of the map
 void CMap2D::SetNumTiles(const CSettings::AXIS sAxis, const unsigned int uiValue)
 {
@@ -402,9 +394,13 @@ void CMap2D::SetMapInfo(const unsigned int uiRow, const unsigned int uiCol, cons
 
 		if (obj->indexSpace.x == uiCol && obj->indexSpace.y == uiRow) {
 			if (iValue == 0) {
+				arrGrid[uiCurLevel][GetLevelRow() - obj->indexSpace.y - 1][obj->indexSpace.x] = nullptr;
+
 				delete obj;
 				arrObject[uiCurLevel][i] = nullptr;
 				arrObject[uiCurLevel].erase(arrObject[uiCurLevel].begin() + i);
+
+
 				return;
 			}
 
@@ -428,9 +424,17 @@ void CMap2D::ToggleMapInfo(const unsigned int uiRow, const unsigned int uiCol, c
 	//Do nothing for now
 }
 
-std::vector<CObject2D*> CMap2D::GetMap()
+std::vector<CObject2D*> CMap2D::GetObjectArr()
 {
 	return arrObject[uiCurLevel];
+}
+
+CObject2D* CMap2D::GetCObject(const unsigned int uiCol, const unsigned int uiRow, const bool bInvert)
+{
+	if(bInvert)
+		return arrGrid[uiCurLevel][GetLevelRow() - uiRow - 1][uiCol];
+	else
+		return arrGrid[uiCurLevel][uiRow][uiCol];
 }
 
 /**

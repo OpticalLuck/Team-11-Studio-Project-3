@@ -23,6 +23,8 @@ using namespace std;
 
 #include "Camera2D.h"
 
+#include "Math/MyMath.h"
+
 /**
  @brief Constructor This constructor has protected access modifier as this class will be a Singleton
  */
@@ -296,33 +298,57 @@ void CPlayer2D::Update(const double dElapsedTime)
 	// Update Collider2D Position
 	collider2D.position = glm::vec3(vTransform, 0.f);
 
-	for (auto object : cMap2D->GetMap())
-	{
-		if (collider2D.CollideWith(&object->getCollider()))
-		{
-			//Collider2D::CorrectedAxis axis = collider2D.ResolveCollision(cMap2D->GetCollider(uiRow, uiCol));
-			collider2D.ResolveCollisionX(&object->getCollider());
-			// Resolve transform to corrected position in collider
-			vTransform = collider2D.position;
-		}
-	}
-			
+	int range = 2;
 
-	for (auto object : cMap2D->GetMap())
+	//COLLISION RESOLUTION ON Y_AXIS
+	//y
+	for (int row = -range; row <= range; row++)
 	{
-		if (collider2D.CollideWith(&object->getCollider()))
+		//x
+		for (int col = -range; col <= range; col++)
 		{
-			if (collider2D.CollideWith(&object->getCollider()))
+			int rowCheck = vTransform.y + row;
+			int colCheck = vTransform.x + col;
+
+			if (rowCheck < 0 || colCheck < 0 || rowCheck > cMap2D->GetLevelRow() - 1 || colCheck > cMap2D->GetLevelCol() -1)
+				continue;
+
+			if (cMap2D->GetCObject(colCheck, rowCheck))
 			{
-				cPhysics2D.SetVelocity(glm::vec2(cPhysics2D.GetVelocity().x, 0));
-
-				collider2D.ResolveCollisionY(&object->getCollider());
-				// Resolve transform to corrected position in collider
-				vTransform = collider2D.position;
+  				if (collider2D.CollideWith(&cMap2D->GetCObject(colCheck, rowCheck)->getCollider()))
+				{
+					//Collider2D::CorrectedAxis axis = collider2D.ResolveCollision(cMap2D->GetCollider(uiRow, uiCol));
+					collider2D.ResolveCollisionX(&cMap2D->GetCObject(colCheck, rowCheck)->getCollider());
+					// Resolve transform to corrected position in collider
+					vTransform = collider2D.position;
+				}
 			}
 		}
 	}
 
+	//COLLISION RESOLUTION ON X_AXIS
+	for (int row = -range; row <= range; row++)
+	{
+		for (int col = -range; col <= range; col++)
+		{
+			int rowCheck = vTransform.y + row;
+			int colCheck = vTransform.x + col;
+
+			if (rowCheck < 0 || colCheck < 0 || rowCheck > cMap2D->GetLevelRow() - 1 || colCheck > cMap2D->GetLevelCol() - 1)
+				continue;
+
+			if (cMap2D->GetCObject(colCheck, rowCheck))
+			{
+				if (collider2D.CollideWith(&cMap2D->GetCObject(colCheck, rowCheck)->getCollider()))
+				{
+					cPhysics2D.SetVelocity(glm::vec2(cPhysics2D.GetVelocity().x, 0));
+					collider2D.ResolveCollisionY(&cMap2D->GetCObject(colCheck, rowCheck)->getCollider());
+					// Resolve transform to corrected position in collider
+					vTransform = collider2D.position;
+				}
+			}
+		}
+	}
 	
 	//animation States
 	switch (state)

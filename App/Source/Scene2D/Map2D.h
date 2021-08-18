@@ -118,7 +118,9 @@ public:
 	// Toggle Active at certain indices in the arrMapInfo
 	void ToggleMapInfo(const unsigned int uiRow, const unsigned int uiCol, const bool iValue, const bool bInvert = true);
 
-	std::vector<CObject2D*> GetMap();
+	std::vector<CObject2D*> GetObjectArr();
+
+	CObject2D* GetCObject(const unsigned int uiCol, const unsigned int uiRow, const bool bInvert = true);
 
 	// Get the value at certain indices in the arrMapInfo
 	int GetMapInfo(const unsigned int uiRow, const unsigned int uiCol, const bool bInvert = true) const;
@@ -150,7 +152,6 @@ public:
 	//Get arrlevellimit
 	glm::i32vec2 GetLevelLimit(void);
 
-	Collider2D* GetCollider(const unsigned int uiRow, const unsigned int uiCol);
 protected:
 	// The variable containing the rapidcsv::Document
 	// We will load the CSV file's content into this Document
