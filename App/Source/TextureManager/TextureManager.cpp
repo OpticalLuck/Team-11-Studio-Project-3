@@ -1,5 +1,11 @@
-#include "TextureManager.h"
+#ifndef GLEW_STATIC
 #include <GL/glew.h>
+#define GLEW_STATIC
+#endif
+
+#include <GLFW/glfw3.h>
+
+#include "TextureManager.h"
 #include "System/ImageLoader.h"
 
 #include <iostream>

@@ -2,11 +2,15 @@
 
 #include "LevelEditor.h"
 
-#include <iostream>
-#include <experimental/filesystem>
+#ifndef GLEW_STATIC
+    #include <GL/glew.h>
+    #define GLEW_STATIC
+#endif
 
 #include <GLFW/glfw3.h>
-#include <GL/glew.h>
+
+#include <iostream>
+#include <experimental/filesystem>
 
 // Include Filesystem
 #include "System\filesystem.h"
