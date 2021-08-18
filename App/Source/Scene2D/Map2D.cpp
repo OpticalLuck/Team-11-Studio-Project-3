@@ -420,6 +420,10 @@ unsigned int CMap2D::GetCurrentLevel(void) const
 }
 
 void CMap2D::RenderTile(const CObject2D obj) {
+
+	if (obj.value == 1)
+		return;
+
 	glBindTexture(GL_TEXTURE_2D, cTextureManager->MapOfTextureIDs.at(obj.value));
 
 	glBindVertexArray(VAO);

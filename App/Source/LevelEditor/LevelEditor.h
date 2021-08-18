@@ -51,21 +51,26 @@ public:
     void Render();
     void PostRender();
 
-    void CreateLevel(std::string levelName, unsigned int iWorldWidth = 32, unsigned int iWorldHeight = 24);
-    void LoadLevel(const char* filePath);
-    void LoadLevelByName(std::string levelName);
-    void LoadExistingLevels(void);
-    bool LevelExists(std::string levelName);
-    std::vector<Level> GetLevels(void);
+    // Loading and Creating Functions
+    void CreateLevel(std::string levelName, unsigned int iWorldWidth = 32, unsigned int iWorldHeight = 24);  
+    bool LoadLevel(const char* filePath);                                                                    
+    bool LoadLevelByName(std::string levelName);                                                             
+    void LoadExistingLevels(void);                                                                           
+    bool LevelExists(std::string levelName);                                                                 
+    std::vector<Level> GetLevels(void);                                                                      
+    bool SaveMap();                                                                                          
 
+    // Resize Map
     bool DecreaseXSize(void);
     bool IncreaseYSize(void);
     bool IncreaseXSize(void);
     bool DecreaseYSize(void);
 
-    sCell GetCell(unsigned int x, unsigned int y, bool bInvert = true);
-    void UpdateCell(unsigned int x, unsigned int y, int TileID, bool bInvert = true);
+    // Update Map
+    sCell GetCell(unsigned int x, unsigned int y, bool bInvert = true);                
+    void UpdateCell(unsigned int x, unsigned int y, int TileID, bool bInvert = true);  
 
+    // Render Control
     void SetShader(const std::string& _name);
 
 protected:
@@ -98,7 +103,4 @@ protected:
 
     CLevelEditor();
     ~CLevelEditor();
-
-    void GenerateQuadVAO(void);
-
 };

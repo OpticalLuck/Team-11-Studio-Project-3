@@ -95,6 +95,11 @@ bool CLevelEditorState::Update(const double dElapsedTime)
 		return true;
 	}
 
+	if (CKeyboardController::GetInstance()->IsKeyReleased(GLFW_KEY_P))
+	{
+		cLevelEditor->SaveMap();
+	}
+
 	MoveCamera();
 	ScaleMap();
 	MouseInput();

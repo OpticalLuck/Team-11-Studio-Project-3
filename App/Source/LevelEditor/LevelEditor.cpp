@@ -9,6 +9,7 @@
 #include "System\filesystem.h"
 
 #include "System/Debug.h"
+#include <fstream>
 
 namespace fs = std::experimental::filesystem;
 
@@ -45,8 +46,6 @@ void CLevelEditor::Init()
 {
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
-
-    GenerateQuadVAO();
 
     cSettings = CSettings::GetInstance();
     camera = Camera2D::GetInstance();
@@ -141,6 +140,7 @@ void CLevelEditor::CreateLevel(std::string levelName, unsigned int iWorldWidth, 
     }
 
     currentLevel.LevelName = levelName;
+    currentLevel.LevelPath = levelFolderPath + levelName + ".csv";
 
     DEBUG_MSG("Created New Level: " << levelName);
 }
@@ -148,7 +148,7 @@ void CLevelEditor::CreateLevel(std::string levelName, unsigned int iWorldWidth, 
 /**
 @brief Loads an existing CSV into the level editor
 */
-void CLevelEditor::LoadLevel(const char* filePath)
+bool CLevelEditor::LoadLevel(const char* filePath)
 {
     // Load the Level CSV
     doc = rapidcsv::Document(FileSystem::getPath(filePath).c_str());
@@ -156,6 +156,11 @@ void CLevelEditor::LoadLevel(const char* filePath)
     // Set World Width and Height
     iWorldWidth = doc.GetColumnCount();
     iWorldHeight = doc.GetRowCount();
+
+    fs::path p = filePath;
+    currentLevel.LevelName = p.filename().generic_string();
+    currentLevel.LevelName = currentLevel.LevelName.substr(0, currentLevel.LevelName.size() - 4); // remove ".csv"
+    currentLevel.LevelPath = filePath;
 
     // Iterate through the Level Editor Map and set the values of the corresponding indexes
     for (int iRow = 0; iRow < iWorldHeight; ++iRow)
@@ -175,14 +180,15 @@ void CLevelEditor::LoadLevel(const char* filePath)
     std::reverse(m_CurrentLevel.begin(), m_CurrentLevel.end());
 
     DEBUG_MSG("Opened " << filePath);
+    return true;
 }
 
 /**
 @brief Loads the level by name
 */
-void CLevelEditor::LoadLevelByName(std::string levelName)
+bool CLevelEditor::LoadLevelByName(std::string levelName)
 {
-    LoadLevel((levelFolderPath + levelName + ".csv").c_str());
+    return LoadLevel((levelFolderPath + levelName + ".csv").c_str());
 }
 
 /**
@@ -237,6 +243,9 @@ void CLevelEditor::LoadExistingLevels(void)
     }
 }
 
+/**
+@brief Checks if the level already exists
+*/
 bool CLevelEditor::LevelExists(std::string levelName)
 {
     for (const auto& file : fs::directory_iterator(levelFolderPath))
@@ -244,6 +253,36 @@ bool CLevelEditor::LevelExists(std::string levelName)
             return true;
 
     return false;
+}
+
+/**
+@brief Saves the map
+*/
+bool CLevelEditor::SaveMap()
+{
+    // Check if the level already exists
+    if (!LevelExists(currentLevel.LevelName))
+    {
+        std::ofstream file;
+        file.open(currentLevel.LevelPath, std::ios::out | std::ios::app);
+
+        if (!file)
+            return false;
+    }         
+
+    doc = rapidcsv::Document(FileSystem::getPath(currentLevel.LevelPath).c_str());
+    for (unsigned int uiRow = 0; uiRow < cSettings->NUM_TILES_YAXIS; uiRow++)
+    {
+        for (unsigned int uiCol = 0; uiCol < cSettings->NUM_TILES_XAXIS; uiCol++)
+        {
+            doc.SetCell(uiCol, iWorldHeight - uiRow - 1, m_CurrentLevel[uiRow][uiCol].iTileID);
+        }
+    }
+
+    // Save the rapidcsv::Document to a file
+    doc.Save(FileSystem::getPath(currentLevel.LevelPath).c_str());
+    DEBUG_MSG("Saved " << currentLevel.LevelName);
+    return true;
 }
 
 bool CLevelEditor::IncreaseXSize()
@@ -305,39 +344,4 @@ bool CLevelEditor::IncreaseYSize(void)
     }
     m_CurrentLevel.push_back(newRow);
     return true;
-}
-
-/**
-@brief Generates the VAO for the grid quad
-*/
-void CLevelEditor::GenerateQuadVAO(void)
-{
-    glm::vec2 vec2Dimensions = glm::vec2(1, 1) * 0.5f;
-    glm::vec4 vec4Colour = glm::vec4(0, 0, 0, 0.3);
-
-    float vertices[] = {
-        -vec2Dimensions.x, -vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
-        vec2Dimensions.x, -vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
-        vec2Dimensions.x, vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
-        vec2Dimensions.x, vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
-        -vec2Dimensions.x, vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
-        -vec2Dimensions.x, -vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
-    };
-
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-
-    glBindVertexArray(VAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    // position attribute
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    // texture coord attribute
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(2 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-
-    glLineWidth(1.f);
 }
