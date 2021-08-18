@@ -85,6 +85,7 @@ void CPhysics2D::Update(double dElapsedTime)
 	*position += velocity * (float)dElapsedTime;
 
 	force = glm::vec2(0.f);
+	velocity = glm::vec2(0.f);
 }
 
 void CPhysics2D::SetForce(const glm::vec2 force)

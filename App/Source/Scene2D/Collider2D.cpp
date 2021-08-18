@@ -9,6 +9,36 @@
 
 //#include "DesignPatterns/SingletonTemplate.h"
 
+bool Collider2D::CheckAABBCollision(Collider2D* obj, Collider2D* target)
+{
+	float threshold = 0.01f;
+	//vec2Dimensions is half width and half height	
+	bool collisionX = abs(obj->position.x - target->position.x) <= obj->vec2Dimensions.x + target->vec2Dimensions.x - threshold;
+	bool collisionY = abs(obj->position.y - target->position.y) <= obj->vec2Dimensions.y + target->vec2Dimensions.y;
+
+	return collisionX && collisionY;
+}
+
+bool Collider2D::CheckAABBCircleCollision(Collider2D* aabb, Collider2D* circle)
+{
+
+
+	// get difference vector between both centers
+	glm::vec2 difference = circle->position - aabb->position;
+	glm::vec2 clamped = glm::clamp(difference, -aabb->vec2Dimensions, aabb->vec2Dimensions);
+	// now that we know the the clamped values, add this to AABB_center and we get the value of box closest to circle
+	glm::vec2 closest = aabb->position + clamped;
+	// now retrieve vector between center circle and closest point AABB and check if length < radius
+	difference = closest - circle->position;
+
+	if (glm::length(difference) < circle->vec2Dimensions.x) // not <= since in that case a collision also occurs when object one exactly touches object two, which they are at the end of each collision resolution stage.
+		return true;
+		//return std::make_tuple(true, VectorDirection(difference), difference);
+	else
+		//return std::make_tuple(false, UP, glm::vec2(0.0f, 0.0f));
+		return false;
+}
+
 Collider2D::Collider2D()
 	: vec2Dimensions(glm::vec2(0.5f, 0.5f))
 	, position(glm::vec3(1.f))
@@ -18,6 +48,7 @@ Collider2D::Collider2D()
 	, bEnabled(true)
 {
 	sLineShaderName = "LineShader";
+	colliderType = COLLIDER_QUAD;
 }
 
 Collider2D::~Collider2D()
@@ -64,12 +95,17 @@ bool Collider2D::CollideWith(Collider2D* object)
 {
 	if (object->bEnabled)
 	{
-		float threshold = 0.01f;
-		//vec2Dimensions is half width and half height	
-		bool collisionX = abs(position.x - object->position.x) <= vec2Dimensions.x + object->vec2Dimensions.x - threshold;
-		bool collisionY = abs(position.y - object->position.y) <= vec2Dimensions.y + object->vec2Dimensions.y;
-
-		return collisionX && collisionY;
+		if (object->colliderType == COLLIDER_QUAD)
+		{
+			return CheckAABBCollision(this, object);
+		}
+		else if (object->colliderType == COLLIDER_CIRCLE)
+		{
+				bool temp = CheckAABBCircleCollision(this, object);
+				if(temp)
+					cout << "help";
+				return temp;
+		}
 	}
 	
 	return false;

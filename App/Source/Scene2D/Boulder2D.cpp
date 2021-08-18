@@ -14,6 +14,7 @@ bool Boulder2D::Init()
 {
 	//Collider2D initialisation
 	collider2D->Init();
+	collider2D->colliderType = Collider2D::ColliderType::COLLIDER_CIRCLE;
 	collider2D->position = vTransform + glm::vec2(0.5f, 0.5f);
 
 	if (value >= 100 && value < 300)

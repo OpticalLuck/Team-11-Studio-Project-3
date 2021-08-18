@@ -70,10 +70,6 @@ bool CGUI_Scene2D::Init(void)
 	// Initialise the cInventoryManager
 	cInventoryManager = CInventoryManager::GetInstance();
 
-	// Add a Tree as one of the inventory items
-	cInventoryItem = cInventoryManager->Add("Shuriken", "Image/Collectibles/shuriken.png", 999, 0);
-	cInventoryItem->vec2Size = glm::vec2(25, 25);
-
 	interval = 0;
 	timer = 0;
 

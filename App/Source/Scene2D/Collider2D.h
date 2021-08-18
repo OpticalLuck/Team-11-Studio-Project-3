@@ -15,12 +15,24 @@
 
 class Collider2D
 {
+private:
+	static bool CheckAABBCollision(Collider2D* obj, Collider2D* target);
+	static bool CheckAABBCircleCollision(Collider2D* aabb, Collider2D* circle);
+
 public:
 	enum CorrectedAxis
 	{
 		X,
 		Y
 	};
+
+	enum ColliderType
+	{
+		COLLIDER_QUAD = 0,
+		COLLIDER_CIRCLE,
+		COLLIDER_TOTAL
+	};
+	ColliderType colliderType;
 	// Attributes of the Shader
 	glm::vec2 position;
 	glm::mat4 transform;

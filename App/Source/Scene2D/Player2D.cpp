@@ -135,24 +135,28 @@ bool CPlayer2D::Init(void)
 	currentColor = glm::vec4(1.0, 1.0, 1.0, 1.0);
 
 	// Get the handler to the CInventoryManager instance
-    // cInventoryManager = CInventoryManager::GetInstance();
+    cInventoryManager = CInventoryManager::GetInstance();
 	// Add a Lives icon as one of the inventory items
-	// cInventoryItem = cInventoryManager->Add("Lives", "Image/Collectibles/Scene2D_Lives.tga", 5, 3);
-	// cInventoryItem->vec2Size = glm::vec2(25, 25);
+	cInventoryItem = cInventoryManager->Add("Lives", "Image/Collectibles/Scene2D_Lives.tga", 5, 3);
+	cInventoryItem->vec2Size = glm::vec2(25, 25);
 
 	// Add a Health icon as one of the inventory items
-	// cInventoryItem = cInventoryManager->Add("Health", "Image/Scene2D_Health.tga", 100, 100);
-	// cInventoryItem->vec2Size = glm::vec2(25, 25);
+	cInventoryItem = cInventoryManager->Add("Health", "Image/Scene2D_Health.tga", 100, 100);
+	cInventoryItem->vec2Size = glm::vec2(25, 25);
+
+	// Add a Tree as one of the inventory items
+	cInventoryItem = cInventoryManager->Add("Shuriken", "Image/Collectibles/shuriken.png", 999, 0);
+	cInventoryItem->vec2Size = glm::vec2(25, 25);
 
 	jumpCount = 0;
 
 	camera = Camera2D::GetInstance();
 
-	//fMovementSpeed = 20.f;
-	//fJumpSpeed = 400.f;
+	/*fMovementSpeed = 5.f;
+	fJumpSpeed = 5.f;*/
 
-	fMovementSpeed = 5.f;
-	fJumpSpeed = 5.f;
+	fMovementSpeed = 1.f;
+	fJumpSpeed = 1.f;
 
 	// Get the handler to the CSoundController
 	cSoundController = CSoundController::GetInstance();
@@ -316,8 +320,9 @@ void CPlayer2D::Update(const double dElapsedTime)
 				CObject2D* obj = cMap2D->GetCObject(colCheck, rowCheck);;
   				if (collider2D->CollideWith(cMap2D->GetCObject(colCheck, rowCheck)->GetCollider()))
 				{
-					//Collider2D::CorrectedAxis axis = collider2D.ResolveCollision(cMap2D->GetCollider(uiRow, uiCol));
-					collider2D->ResolveCollisionX(obj->GetCollider());
+					if(obj->GetCollider()->colliderType == Collider2D::COLLIDER_QUAD)
+						collider2D->ResolveCollisionX(obj->GetCollider());
+					else if (obj->GetCollider()->colliderType == Collider2D::COLLIDER_CIRCLE)
 					// Resolve transform to corrected position in collider
 					vTransform = collider2D->position;
 
@@ -554,16 +559,10 @@ void CPlayer2D::MovementUpdate(double dt)
 void CPlayer2D::UpdateHealthLives(void)
 {
 	// Update health and lives
-	// cInventoryItem = cInventoryManager->GetItem("Health");
 	// Check if a life is lost
 	if (cInventoryItem->GetCount() <= 0)
 	{
 		state = S_DEATH;
-		// Reset the Health to max value
-		// cInventoryItem->iItemCount = cInventoryItem->GetMaxCount();
-		// But we reduce the lives by 1.
-	// 	cInventoryItem = cInventoryManager->GetItem("Lives");
-	// 	cInventoryItem->Remove(1);
 		cSoundController->PlaySoundByID(9);
 
 		// Check if there is no lives left...
@@ -574,49 +573,17 @@ void CPlayer2D::UpdateHealthLives(void)
 		}
 	}
 }
-//
-//void CPlayer2D::UpdateKeyboardInputs(void)
-//{
-//	std::array<bool, INPUT_TOTAL> currentFrameInputs;
-//	for (int i = 0; i < INPUT_TOTAL; ++i)
-//	{
-//		currentFrameInputs[i] = false;
-//	}
-//
-//	if (cKeyboardController->IsKeyDown(GLFW_KEY_W))
-//		currentFrameInputs[W] = true;
-//
-//	if (cKeyboardController->IsKeyDown(GLFW_KEY_A))
-//		currentFrameInputs[A] = true;
-//
-//	if (cKeyboardController->IsKeyDown(GLFW_KEY_S))
-//		currentFrameInputs[S] = true;
-//
-//	if (cKeyboardController->IsKeyDown(GLFW_KEY_D))
-//		currentFrameInputs[D] = true;
-//
-//	if (cKeyboardController->IsKeyDown(GLFW_KEY_SPACE))
-//		currentFrameInputs[SPACE] = true;
-//
-//	mKeyboardInputs.push_back(currentFrameInputs);
-//}
 
-void CPlayer2D::Hit(int health)
-{
-	if (state != S_DEATH)
-	{
-		// cInventoryItem = cInventoryManager->GetItem("Health");
-		// cInventoryItem->Remove(health);
-	}
-}
 void CPlayer2D::SetClone(bool bIsClone)
 {
 	this->bIsClone = bIsClone;
 }
+
 bool CPlayer2D::IsClone()
 {
 	return bIsClone;
 }
+
 void CPlayer2D::SetInputs(std::vector<std::array<bool, KEYBOARD_INPUTS::INPUT_TOTAL>> inputs)
 {
 	m_CloneKeyboardInputs = inputs;
