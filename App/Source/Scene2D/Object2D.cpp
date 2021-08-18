@@ -11,6 +11,7 @@ CObject2D::CObject2D(int value) {
 	this->value = value;
 
 	vTransform = glm::i32vec2();
+	currentIndex = glm::i32vec2();
 }
 
 CObject2D::~CObject2D(void) {
@@ -43,4 +44,14 @@ int CObject2D::Getvalue() const
 void CObject2D::SetValue(int value)
 {
 	this->value = value;
+}
+
+glm::i32vec2 CObject2D::GetCurrentIndex() const
+{
+	return currentIndex;
+}
+
+void CObject2D::SetCurrentIndex(glm::i32vec2 currentIndex)
+{
+	this->currentIndex = currentIndex;
 }

@@ -76,8 +76,8 @@ void CPhysics2D::Update(double dElapsedTime)
 	velocity += a * (float)dElapsedTime;
 
 
-	if (velocity.x < 0.1f && velocity.x > -0.1f)
-		velocity.x = 0;
+	//if (velocity.x < 0.1f && velocity.x > -0.1f)
+	//	velocity.x = 0;
 
 	velocity.x = Math::Clamp(velocity.x, -MAX_SPEED, MAX_SPEED);
 	velocity.y = Math::Clamp(velocity.y, -MAX_SPEED, MAX_SPEED);
@@ -85,7 +85,6 @@ void CPhysics2D::Update(double dElapsedTime)
 	*position += velocity * (float)dElapsedTime;
 
 	force = glm::vec2(0.f);
-	velocity = glm::vec2(0.f);
 }
 
 void CPhysics2D::SetForce(const glm::vec2 force)

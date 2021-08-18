@@ -36,54 +36,48 @@ void Boulder2D::Update(const double dElapsedTime)
 	CMap2D* cMap2D = CMap2D::GetInstance();
 
 	int range = 2;
-	//y
-	for (int row = -range; row <= range; row++)
+	for (int i = 0; i < 2; i++)
 	{
-		//x
-		for (int col = -range; col <= range; col++)
+		for (int row = -range; row <= range; row++) //y
 		{
-			int rowCheck = vTransform.y + row;
-			int colCheck = vTransform.x + col;
-
-			if (rowCheck < 0 || colCheck < 0 || rowCheck > cMap2D->GetLevelRow() - 1 || colCheck > cMap2D->GetLevelCol() - 1)
-				continue;
-
-			if (cMap2D->GetCObject(colCheck, rowCheck) && cMap2D->GetCObject(colCheck, rowCheck) != this)
+			for (int col = -range; col <= range; col++) //x
 			{
-				if (collider2D->CollideWith(cMap2D->GetCObject(colCheck, rowCheck)->GetCollider()))
+				int rowCheck = vTransform.y + row;
+				int colCheck = vTransform.x + col;
+
+				if (rowCheck < 0 || colCheck < 0 || rowCheck > cMap2D->GetLevelRow() - 1 || colCheck > cMap2D->GetLevelCol() - 1)
+					continue;
+
+				if (cMap2D->GetCObject(colCheck, rowCheck) && cMap2D->GetCObject(colCheck, rowCheck) != this)
 				{
-					//Collider2D::CorrectedAxis axis = collider2D.ResolveCollision(cMap2D->GetCollider(uiRow, uiCol));
-					collider2D->ResolveCollisionX(cMap2D->GetCObject(colCheck, rowCheck)->GetCollider());
-					// Resolve transform to corrected position in collider
-					vTransform = collider2D->position;
+					CObject2D* obj = cMap2D->GetCObject(colCheck, rowCheck);
+					Collision data = (collider2D->CollideWith(cMap2D->GetCObject(colCheck, rowCheck)->GetCollider()));
+					if (std::get<0>(data))
+					{
+						if (obj->GetCollider()->colliderType == Collider2D::COLLIDER_QUAD)
+						{
+							if (i == 0)
+								collider2D->ResolveAABB(obj->GetCollider(), Collider2D::Y);
+							else if (i == 1)
+								collider2D->ResolveAABB(obj->GetCollider(), Collider2D::X);
+						}
+						
+					}
 				}
 			}
 		}
 	}
+	vTransform = collider2D->position;
+	//Update Map index
+	cout << (int)vTransform.x << ", " << (int)vTransform.y << endl;
 
-	//COLLISION RESOLUTION ON X_AXIS
-	for (int row = -range; row <= range; row++)
+	//Initial is 6, 23, changing to 6,24
+	glm::i32vec2 newindex((int)vTransform.x, CMap2D::GetInstance()->GetLevelRow() - (int)vTransform.y - 1);
+	if (newindex != currentIndex)
 	{
-		for (int col = -range; col <= range; col++)
-		{
-			int rowCheck = vTransform.y + row;
-			int colCheck = vTransform.x + col;
-
-			if (rowCheck < 0 || colCheck < 0 || rowCheck > cMap2D->GetLevelRow() - 1 || colCheck > cMap2D->GetLevelCol() - 1)
-				continue;
-
-			if (cMap2D->GetCObject(colCheck, rowCheck) && cMap2D->GetCObject(colCheck, rowCheck) != this)
-			{
-				if (collider2D->CollideWith(cMap2D->GetCObject(colCheck, rowCheck)->GetCollider()))
-				{
-					cPhysics2D.SetVelocity(glm::vec2(cPhysics2D.GetVelocity().x, 0));
-					collider2D->ResolveCollisionY(cMap2D->GetCObject(colCheck, rowCheck)->GetCollider());
-					// Resolve transform to corrected position in collider
-					vTransform = collider2D->position;
-				}
-			}
-		}
+		CMap2D::GetInstance()->ReplaceGridInfo(newindex.y, newindex.x, this, false);
 	}
+
 }
 
 CPhysics2D& Boulder2D::GetPhysics()

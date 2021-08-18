@@ -12,18 +12,51 @@
 #include <includes/gtc/type_ptr.hpp>
 
 #include <string>
+#include <tuple>
+
+enum Direction {
+	UP,
+	RIGHT,
+	DOWN,
+	LEFT
+};
+
+typedef std::tuple<bool, Direction, glm::vec2> Collision;
 
 class Collider2D
 {
 private:
-	static bool CheckAABBCollision(Collider2D* obj, Collider2D* target);
-	static bool CheckAABBCircleCollision(Collider2D* aabb, Collider2D* circle);
+	static Collision CheckAABBCollision(Collider2D* obj, Collider2D* target);
+	static Collision CheckAABBCircleCollision(Collider2D* aabb, Collider2D* circle);
 
+	// calculates which direction a vector is facing (N,E,S or W)
+	static Direction VectorDirection(glm::vec2 target)
+	{
+		glm::vec2 compass[] = {
+			glm::vec2(0.0f, 1.0f),	// up
+			glm::vec2(1.0f, 0.0f),	// right
+			glm::vec2(0.0f, -1.0f),	// down
+			glm::vec2(-1.0f, 0.0f)	// left
+		};
+		float max = 0.0f;
+		unsigned int best_match = -1;
+		for (unsigned int i = 0; i < 4; i++)
+		{
+			float dot_product = glm::dot(glm::normalize(target), compass[i]);
+			if (dot_product > max)
+			{
+				max = dot_product;
+				best_match = i;
+			}
+		}
+		return (Direction)best_match;
+	}
 public:
 	enum CorrectedAxis
 	{
-		X,
-		Y
+		X = 0,
+		Y,
+		XY
 	};
 
 	enum ColliderType
@@ -47,7 +80,6 @@ public:
 	// Line width
 	float fLineWidth;
 
-
 	Collider2D();
 	virtual ~Collider2D();
 
@@ -55,15 +87,13 @@ public:
 
 	virtual void SetLineShader(const std::string & name);
 
-	bool CollideWith(Collider2D* object);
+	Collision CollideWith(Collider2D* object);
 
 	//Just Here if want to use
 	// NOT RECOMMENDED IF THERE IS MULTIPLE ENTITIES CLOSE TO EACHOTHER
-	CorrectedAxis ResolveCollision(Collider2D* object);
+	void ResolveAABB(Collider2D* object, CorrectedAxis axis);
 
-	// USE THIS IF THERE IS MULTIPLE ENTITES
-	void ResolveCollisionX(Collider2D* object);
-	void ResolveCollisionY(Collider2D* object);
+	void ResolveAABBCircle(Collider2D* object, Collision data, ColliderType target = COLLIDER_CIRCLE);
 
 	// PreRender
 	virtual void PreRender(void);

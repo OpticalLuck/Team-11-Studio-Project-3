@@ -30,10 +30,15 @@ class CObject2D : public CEntity2D
 		int Getvalue() const;
 		void SetValue(int value);
 
+		glm::i32vec2 GetCurrentIndex() const;
+		void SetCurrentIndex(glm::i32vec2 currentIndex);
 	protected:
 		int value;
 
 		float width;
 		float height;
+
+		//Current Index in map Grid
+		glm::i32vec2 currentIndex;
 };
 

@@ -247,6 +247,48 @@ void CMap2D::SetMapInfo(const unsigned int uiRow, const unsigned int uiCol, cons
 	arrObject[uiCurLevel].push_back(newObj);
 }
 
+void CMap2D::ReplaceGridInfo(const unsigned int uiRow, const unsigned uiCol, CObject2D* target, const bool bInvert)
+{
+	// Used for checking current spot
+	CObject2D* obj = nullptr;
+
+	// Used to check new spot
+	CObject2D* newSpot = nullptr;
+	if (bInvert)
+	{
+		obj = arrGrid[uiCurLevel][GetLevelRow() - target->GetCurrentIndex().y - 1][target->GetCurrentIndex().x];
+		newSpot =  arrGrid[uiCurLevel][GetLevelRow() - uiRow - 1][uiCol];
+	}
+	else
+	{
+		obj = arrGrid[uiCurLevel][target->GetCurrentIndex().y][target->GetCurrentIndex().x];
+		newSpot = arrGrid[uiCurLevel][uiRow][uiCol];
+	}
+
+	if (newSpot == nullptr)
+	{
+		if (obj == target)
+		{
+			if (bInvert)
+			{
+				arrGrid[uiCurLevel][target->GetCurrentIndex().y][target->GetCurrentIndex().x] = nullptr;
+				arrGrid[uiCurLevel][uiRow][uiCol] = target;
+			}
+			else
+			{
+				arrGrid[uiCurLevel][target->GetCurrentIndex().y][target->GetCurrentIndex().x] = nullptr;
+				arrGrid[uiCurLevel][uiRow][uiCol] = target;
+			}
+
+			target->SetCurrentIndex(glm::i32vec2(uiCol, uiRow));
+		}
+	}
+	else
+	{
+		cout << "SOMETHING IN GRID SPACE" << endl;
+	}
+}
+
 std::vector<CObject2D*> CMap2D::GetObjectArr()
 {
 	return arrObject[uiCurLevel];
@@ -309,6 +351,7 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 			if (currVal > 0) {
 				CObject2D* currObj = objFactory.CreateObject(currVal);
 				currObj->SetValue(currVal);
+				currObj->SetCurrentIndex(glm::i32vec2(uiCol, uiRow));
 
 				//Position of values
 				glm::vec2 currIndex;

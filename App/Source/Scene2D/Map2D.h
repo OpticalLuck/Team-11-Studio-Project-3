@@ -69,6 +69,8 @@ public:
 	// Set the value at certain indices in the arrMapInfo
 	void SetMapInfo(const unsigned int uiRow, const unsigned int uiCol, const int iValue, const bool bInvert = true);
 
+	void ReplaceGridInfo(const unsigned int uiRow, const unsigned uiCol, CObject2D* target, const bool bInvert = true);
+
 	std::vector<CObject2D*> GetObjectArr();
 
 	CObject2D* GetCObject(const unsigned int uiCol, const unsigned int uiRow, const bool bInvert = true);

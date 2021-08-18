@@ -152,11 +152,11 @@ bool CPlayer2D::Init(void)
 
 	camera = Camera2D::GetInstance();
 
-	/*fMovementSpeed = 5.f;
-	fJumpSpeed = 5.f;*/
+	fMovementSpeed = 5.f;
+	fJumpSpeed = 5.f;
 
-	fMovementSpeed = 1.f;
-	fJumpSpeed = 1.f;
+	//fMovementSpeed = 1.f;
+	//fJumpSpeed = 1.f;
 
 	// Get the handler to the CSoundController
 	cSoundController = CSoundController::GetInstance();
@@ -303,37 +303,46 @@ void CPlayer2D::Update(const double dElapsedTime)
 	int range = 3;
 
 	//COLLISION RESOLUTION ON Y_AXIS
-	//y
-	for (int row = -range; row <= range; row++)
+	for (int i = 0; i < 2; i++)
 	{
-		//x
-		for (int col = -range; col <= range; col++)
+		for (int row = -range; row <= range; row++) //y
 		{
-			int rowCheck = vTransform.y + row;
-			int colCheck = vTransform.x + col;
-
-			if (rowCheck < 0 || colCheck < 0 || rowCheck > cMap2D->GetLevelRow() - 1 || colCheck > cMap2D->GetLevelCol() -1)
-				continue;
-
-			if (cMap2D->GetCObject(colCheck, rowCheck))
+			for (int col = -range; col <= range; col++) //x
 			{
-				CObject2D* obj = cMap2D->GetCObject(colCheck, rowCheck);;
-  				if (collider2D->CollideWith(cMap2D->GetCObject(colCheck, rowCheck)->GetCollider()))
+				int rowCheck = vTransform.y + row;
+				int colCheck = vTransform.x + col;
+
+				if (rowCheck < 0 || colCheck < 0 || rowCheck > cMap2D->GetLevelRow() - 1 || colCheck > cMap2D->GetLevelCol() - 1)
+					continue;
+
+				if (cMap2D->GetCObject(colCheck, rowCheck))
 				{
-					if(obj->GetCollider()->colliderType == Collider2D::COLLIDER_QUAD)
-						collider2D->ResolveCollisionX(obj->GetCollider());
-					else if (obj->GetCollider()->colliderType == Collider2D::COLLIDER_CIRCLE)
-					// Resolve transform to corrected position in collider
-					vTransform = collider2D->position;
-
-
-					//if (obj->Getvalue() == 150)
-					if (obj->type == CObject2D::ENTITY_TYPE::INTERACTABLES)
+					CObject2D* obj = cMap2D->GetCObject(colCheck, rowCheck);;
+					Collision data = (collider2D->CollideWith(cMap2D->GetCObject(colCheck, rowCheck)->GetCollider()));
+					if (std::get<0>(data))
 					{
-						if (static_cast<Interactables*>(obj)->interactableType == Interactables::INTERACTABLE_TYPE::BOULDER)
+						if (obj->GetCollider()->colliderType == Collider2D::COLLIDER_QUAD)
 						{
-							glm::vec2 direction = glm::normalize(obj->vTransform - vTransform);
-							static_cast<Boulder2D*>(obj)->GetPhysics().SetForce(glm::vec2(120.f, 0) * direction);
+							if(i == 0)
+								collider2D->ResolveAABB(obj->GetCollider(), Collider2D::Y);
+							else if (i == 1)
+								collider2D->ResolveAABB(obj->GetCollider(), Collider2D::X);
+						}
+						else if (obj->GetCollider()->colliderType == Collider2D::COLLIDER_CIRCLE)
+						{
+							collider2D->ResolveAABBCircle(obj->GetCollider(), data, Collider2D::COLLIDER_QUAD);
+						}
+
+						vTransform = collider2D->position;
+						obj->vTransform = obj->GetCollider()->position;
+
+						if (obj->type == CObject2D::ENTITY_TYPE::INTERACTABLES)
+						{
+							if (static_cast<Interactables*>(obj)->interactableType == Interactables::INTERACTABLE_TYPE::BOULDER)
+							{
+								glm::vec2 direction = glm::normalize(obj->vTransform - vTransform);
+								//static_cast<Boulder2D*>(obj)->GetPhysics().SetForce(glm::vec2(120.f, 0) * direction);
+							}
 						}
 					}
 				}
@@ -341,29 +350,6 @@ void CPlayer2D::Update(const double dElapsedTime)
 		}
 	}
 
-	//COLLISION RESOLUTION ON X_AXIS
-	for (int row = -range; row <= range; row++)
-	{
-		for (int col = -range; col <= range; col++)
-		{
-			int rowCheck = vTransform.y + row;
-			int colCheck = vTransform.x + col;
-
-			if (rowCheck < 0 || colCheck < 0 || rowCheck > cMap2D->GetLevelRow() - 1 || colCheck > cMap2D->GetLevelCol() - 1)
-				continue;
-
- 			if (cMap2D->GetCObject(colCheck, rowCheck))
-			{
-				if (collider2D->CollideWith(cMap2D->GetCObject(colCheck, rowCheck)->GetCollider()))
-				{
-					cPhysics2D.SetVelocity(glm::vec2(cPhysics2D.GetVelocity().x, 0));
-					collider2D->ResolveCollisionY(cMap2D->GetCObject(colCheck, rowCheck)->GetCollider());
-					// Resolve transform to corrected position in collider
-					vTransform = collider2D->position;
-				}
-			}
-		}
-	}
 	
 	//animation States
 	switch (state)
