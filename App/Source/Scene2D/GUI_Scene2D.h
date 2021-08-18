@@ -64,9 +64,6 @@ public:
 	// PostRender
 	void PostRender(void);
 
-	void CreateIMGUI();
-	void DeleteIMGUI();
-
 protected:
 	// Constructor
 	CGUI_Scene2D(void);

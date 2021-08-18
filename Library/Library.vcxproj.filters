@@ -39,6 +39,9 @@
     <Filter Include="Math">
       <UniqueIdentifier>{57a330b9-680c-40a6-9ca5-c2766fb06d59}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ImGuiWindow">
+      <UniqueIdentifier>{ee54dd8b-caf6-4133-9f63-82f609eb680f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\TimeControl\FPSCounter.cpp">
@@ -121,6 +124,9 @@
     </ClCompile>
     <ClCompile Include="Source\GUI\backends\imgui_impl_opengl3.cpp">
       <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ImGuiWindow\ImGuiWindow.cpp">
+      <Filter>ImGuiWindow</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -216,6 +222,9 @@
     </ClInclude>
     <ClInclude Include="Source\System\Debug.h">
       <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ImGuiWindow\ImGuiWindow.h">
+      <Filter>ImGuiWindow</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

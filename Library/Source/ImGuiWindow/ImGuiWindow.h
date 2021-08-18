@@ -1,10 +1,10 @@
 #pragma once
-#include <DesignPatterns/SingletonTemplate.h>
+#include "../DesignPatterns/SingletonTemplate.h"
 
 #ifndef IMGUI_ACTIVE
-#include "GUI\imgui.h"
-#include "GUI\backends\imgui_impl_glfw.h"
-#include "GUI\backends\imgui_impl_opengl3.h"
+#include "..\GUI\imgui.h"
+#include "..\GUI\backends\imgui_impl_glfw.h"
+#include "..\GUI\backends\imgui_impl_opengl3.h"
 #define IMGUI_ACTIVE
 #endif
 
@@ -28,7 +28,9 @@ public:
 	bool WantCaptureMouse();
 	bool WantCaptureKeyboard();
 
-	void PreRender();
+	void Update(const sImGuiWindowProperties& props);
+
+	void PreRender(const sImGuiWindowProperties& props);
 	void PostRender();
 };
 

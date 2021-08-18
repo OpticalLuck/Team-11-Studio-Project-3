@@ -38,7 +38,9 @@ public:
 	virtual void Destroy(void);
 
 protected:
-	
+	unsigned FBO, RBO, textureColorBuffer;
+	unsigned int quadVAO, quadVBO;
+
 	CSettings*					cSettings;
 
 	CKeyboardInputHandler*		cKeyboardInputHandler;
@@ -49,4 +51,7 @@ protected:
 	void MoveCamera(void);
 	void ScaleMap(void);
 	void MouseInput(void);
+
+	void GenerateFBO();
+	void ImGuiRender();
 };

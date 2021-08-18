@@ -151,6 +151,7 @@ bool Application::Init(void)
 	// Get the CSettings instance
 	cSettings = CSettings::GetInstance();
 	m_ImGuiWindow = CImGuiWindow::GetInstance();
+	cSettings->m_ImGuiWindow = CImGuiWindow::GetInstance();
 
 	// Set the file location for the digital assets
 	// This is backup, in case filesystem cannot find the current directory
@@ -260,8 +261,8 @@ bool Application::Init(void)
 	// Set the active scene
 	CGameStateManager::GetInstance()->SetActiveGameState("IntroState");
 
-	ImGuiProperties.IsViewportEnabled = true;
-	m_ImGuiWindow->Create(ImGuiProperties);
+	cSettings->ImGuiProperties.IsDockingEnabled = false;
+	m_ImGuiWindow->Create(cSettings->ImGuiProperties);
 
 	return true;
 }
@@ -287,7 +288,7 @@ void Application::Run(void)
 		if (dElapsedTime > 0.0166666666666667)
 			dElapsedTime = 0.0166666666666667;
 
-		m_ImGuiWindow->PreRender();
+		m_ImGuiWindow->PreRender(cSettings->ImGuiProperties);
 
 		// Call the active Game State's Update method
 		if (CGameStateManager::GetInstance()->Update(0.0166666666666667) == false)

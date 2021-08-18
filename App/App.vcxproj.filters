@@ -36,9 +36,6 @@
     <Filter Include="LevelEditor">
       <UniqueIdentifier>{d32c614b-cd65-4009-882f-132487ba53b9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ImGuiWindow">
-      <UniqueIdentifier>{c91522aa-71fc-4284-8821-9cd331fb3f84}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp">
@@ -137,9 +134,6 @@
     <ClCompile Include="Source\LevelEditor\LevelGrid.cpp">
       <Filter>LevelEditor</Filter>
     </ClCompile>
-    <ClCompile Include="Source\ImGuiWindow\ImGuiWindow.cpp">
-      <Filter>ImGuiWindow</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h">
@@ -237,9 +231,6 @@
     </ClInclude>
     <ClInclude Include="Source\LevelEditor\LevelGrid.h">
       <Filter>LevelEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\ImGuiWindow\ImGuiWindow.h">
-      <Filter>ImGuiWindow</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

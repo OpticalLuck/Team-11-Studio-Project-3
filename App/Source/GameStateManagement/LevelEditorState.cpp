@@ -19,7 +19,7 @@
 
 #include "Math/MyMath.h"
 
-#include "../ImGuiWindow/ImGuiWindow.h"
+#include "ImGuiWindow/ImGuiWindow.h"
 
 #include <iostream>
 using namespace std;
@@ -41,6 +41,9 @@ CLevelEditorState::CLevelEditorState(void)
  */
 CLevelEditorState::~CLevelEditorState(void)
 {
+	glDeleteVertexArrays(1, &quadVAO);
+	glDeleteBuffers(1, &quadVBO);
+
 	cKeyboardInputHandler = NULL;
 	cLevelEditor = NULL;
 	cMouseController = NULL;
@@ -66,6 +69,8 @@ bool CLevelEditorState::Init(void)
 	cSettings->screenSize = CSettings::SSIZE_1600x900;
 	CSettings::GetInstance()->UpdateWindowSize();
 
+	GenerateFBO();
+
 	cLevelEditor = CLevelEditor::GetInstance();
 	cLevelGrid = CLevelGrid::GetInstance();
 	cLevelGrid->Init(cLevelEditor->iWorldWidth, cLevelEditor->iWorldHeight);
@@ -86,9 +91,6 @@ bool CLevelEditorState::Init(void)
  */
 bool CLevelEditorState::Update(const double dElapsedTime)
 {
-
-	ImGui::ShowDemoWindow();
-
 	Camera2D::GetInstance()->Update(dElapsedTime);
 
 	if (CKeyboardController::GetInstance()->IsKeyReleased(GLFW_KEY_ESCAPE))
@@ -110,6 +112,16 @@ bool CLevelEditorState::Update(const double dElapsedTime)
 	MoveCamera();
 	ScaleMap();
 
+	if (CKeyboardController::GetInstance()->IsKeyDown(GLFW_KEY_4))
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	}
+	if (CKeyboardController::GetInstance()->IsKeyDown(GLFW_KEY_3))
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	}
+
+
 	if (!CImGuiWindow::GetInstance()->WantCaptureMouse())
 		MouseInput();
 
@@ -121,7 +133,9 @@ bool CLevelEditorState::Update(const double dElapsedTime)
  */
 void CLevelEditorState::Render(void)
 {
-	glClear(GL_COLOR_BUFFER_BIT);
+	//glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+	//glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
 	cLevelEditor->PreRender();
@@ -132,6 +146,15 @@ void CLevelEditorState::Render(void)
 	cLevelGrid->Render();
 	cLevelGrid->PostRender();
 
+	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	//
+	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	//CShaderManager::GetInstance()->Use("Shader");
+	//glBindVertexArray(quadVAO);
+	//glBindTexture(GL_TEXTURE_2D, textureColorBuffer);
+	//glDrawArrays(GL_TRIANGLES, 0, 6);
+	ImGuiRender();
 }
 
 /**
@@ -230,4 +253,97 @@ void CLevelEditorState::MouseInput(void)
 	{
 		Camera2D::GetInstance()->UpdateZoom(Camera2D::GetInstance()->getTargetZoom() - 0.1);
 	}
+}
+
+void CLevelEditorState::GenerateFBO()
+{
+	float quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates. NOTE that this plane is now much smaller and at the top of the screen
+	   // positions   // texCoords
+	   -1.0f,  1.0f,  0.0f, 1.0f,
+	   -1.0f,  -1.0f,  0.0f, 0.0f,
+		1.0f,  -1.0f,  1.0f, 0.0f,
+
+	   -1.0f,  1.0f,  0.0f, 1.0f,
+		1.0f,  -1.0f,  1.0f, 0.0f,
+		1.0f,  1.0f,  1.0f, 1.0f
+	};
+
+	glGenVertexArrays(1, &quadVAO);
+	glGenBuffers(1, &quadVBO);
+	glBindVertexArray(quadVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+
+	glGenFramebuffers(1, &FBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+
+	// create a color attachment texture
+	glGenTextures(1, &textureColorBuffer);
+	glBindTexture(GL_TEXTURE_2D, textureColorBuffer);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1200, 900, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorBuffer, 0);
+
+	// create a renderbuffer object for depth and stencil attachment (we won't be sampling these)
+	glGenRenderbuffers(1, &RBO);
+	glBindRenderbuffer(GL_RENDERBUFFER, RBO);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 1200, 900); // use a single renderbuffer object for both a depth AND stencil buffer.
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, RBO); // now actually attach it
+																								  // now that we actually created the framebuffer and added all attachments we want to check if it is actually complete now
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		DEBUG_MSG("ERROR::FRAMEBUFFER:: Framebuffer is not complete!");
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void CLevelEditorState::ImGuiRender()
+{
+	//ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+	//ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_FirstUseEver);
+	//ImGui::Begin("GameView", NULL, windowFlags);
+	//{
+	//	ImGui::Image((void*)(intptr_t)textureColorBuffer, { 1200, (float)cSettings->iWindowHeight }, { 0, 1 }, { 1, 0 });
+	//	DEBUG_MSG(ImGui::GetWindowPos().x << " " << ImGui::GetWindowPos().y);
+	//}
+	//ImGui::End();
+	//ImGui::PopStyleVar();
+
+	if (ImGui::BeginMainMenuBar())
+	{
+		if (ImGui::BeginMenu("File"))
+		{
+			if (ImGui::MenuItem("Save")) cLevelEditor->SaveMap();
+			if (ImGui::MenuItem("Close")) CGameStateManager::GetInstance()->SetPauseGameState("MenuState");
+
+			ImGui::EndMenu();
+		}
+		ImGui::EndMainMenuBar();
+	}
+
+	ImGui::SetNextWindowPos(ImVec2(0, 0 + 19));
+	ImGui::SetNextWindowSize(ImVec2(300, cSettings->iWindowHeight));
+
+	ImGuiWindowFlags inventoryWindowFlags =
+		ImGuiWindowFlags_AlwaysAutoResize |
+		ImGuiWindowFlags_NoTitleBar |
+		ImGuiWindowFlags_NoMove |
+		ImGuiWindowFlags_NoResize |
+		ImGuiWindowFlags_NoCollapse;
+
+	ImGuiWindowFlags windowFlags = 0;
+	windowFlags |= ImGuiWindowFlags_NoMove |
+		ImGuiWindowFlags_NoResize |
+		ImGuiWindowFlags_NoTitleBar |
+		ImGuiWindowFlags_NoCollapse;
+
+	if (ImGui::Begin("Window"), NULL, inventoryWindowFlags)
+	{
+		DEBUG_MSG(ImGui::GetWindowPos().x << " " << ImGui::GetWindowPos().y);
+		ImGui::End();
+	}
+
 }

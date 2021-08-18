@@ -7,6 +7,7 @@
 
  // Include SingletonTemplate
 #include "../DesignPatterns/SingletonTemplate.h"
+#include "../ImGuiWindow/ImGuiWindow.h"
 
 #include <Windows.h>
 
@@ -53,6 +54,8 @@ public:
 		SSIZE_TOTAL
 	};
 
+	sImGuiWindowProperties ImGuiProperties;
+	CImGuiWindow* m_ImGuiWindow;
 	SCREENSIZE screenSize;
 	// Should make these not hard-coded :P - You Right B)
 	unsigned int iWindowWidth;

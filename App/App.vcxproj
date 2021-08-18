@@ -11,7 +11,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\ImGuiWindow\ImGuiWindow.cpp" />
     <ClCompile Include="Source\Application.cpp" />
     <ClCompile Include="Source\Command\Command.cpp" />
     <ClCompile Include="Source\GameStateManagement\EditorSettingsState.cpp" />
@@ -46,7 +45,6 @@
     <ClCompile Include="Source\TextureManager\TextureManager.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\ImGuiWindow\ImGuiWindow.h" />
     <ClInclude Include="Source\Application.h" />
     <ClInclude Include="Source\Command\Command.h" />
     <ClInclude Include="Source\GameStateManagement\EditorSettingsState.h" />

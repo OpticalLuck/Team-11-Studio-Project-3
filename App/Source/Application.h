@@ -37,7 +37,6 @@ public:
 	int GetWindowWidth(void) const;
 	
 protected:
-	sImGuiWindowProperties ImGuiProperties;
 
 	// Declare timer for calculating time per frame
 	CStopWatch cStopWatch;

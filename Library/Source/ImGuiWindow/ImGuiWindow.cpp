@@ -1,5 +1,5 @@
 #include "ImGuiWindow.h"
-#include "GameControl/Settings.h"
+#include "../GameControl/Settings.h"
 
 CImGuiWindow::CImGuiWindow()
 {
@@ -53,11 +53,30 @@ bool CImGuiWindow::WantCaptureKeyboard()
 	return ImGui::GetIO().WantCaptureKeyboard;
 }
 
-void CImGuiWindow::PreRender()
+void CImGuiWindow::Update(const sImGuiWindowProperties& props)
+{
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	io.ConfigWindowsMoveFromTitleBarOnly = props.MoveFromTitleBarOnly;
+	if (props.IsDockingEnabled)
+	{
+		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+	}
+	if (props.IsViewportEnabled)
+	{
+		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+	}
+}
+
+void CImGuiWindow::PreRender(const sImGuiWindowProperties& props)
 {
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
+
+	if (props.IsDockingEnabled)
+	{
+		// ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
+	}
 }
 
 void CImGuiWindow::PostRender()

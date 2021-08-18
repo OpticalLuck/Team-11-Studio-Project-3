@@ -6,6 +6,7 @@ using namespace std;
 CSettings::CSettings(void)
 	: pWindow(NULL)
 	, logl_root(NULL)
+	, m_ImGuiWindow(NULL)
 	, screenSize(SSIZE_800x600)
 	, MASTER_VOLUME(100.f)
 	, BGM_VOLUME(100.f)
@@ -45,6 +46,7 @@ CSettings::CSettings(void)
 
 CSettings::~CSettings(void)
 {
+	m_ImGuiWindow = NULL;
 }
 
 

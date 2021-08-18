@@ -90,6 +90,7 @@ bool CGameStateManager::Update(const double dElapsedTime)
 				return false;
 		}
 	}
+
 	return true;
 }
 
