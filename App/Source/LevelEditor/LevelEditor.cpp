@@ -194,6 +194,17 @@ void CLevelEditor::LoadLevel(const char* filePath)
 }
 
 /**
+@brief Returns the Cell of the index specified
+*/
+sCell CLevelEditor::GetCell(unsigned int x, unsigned int y, bool bInvert)
+{
+    if (bInvert)
+        return m_CurrentLevel[iWorldHeight - y - 1][x];
+    else
+        return m_CurrentLevel[y][x];
+}
+
+/**
 @brief Updates the Cell in the level editor given an x and y index
 */
 void CLevelEditor::UpdateCell(unsigned int x, unsigned int y, int TileID, bool bInvert)

@@ -32,6 +32,8 @@ public:
 	virtual bool CreateIMGUI();
 	virtual bool DeleteIMGUI();
 protected:
+	
+	CSettings*					cSettings;
 
 	CKeyboardInputHandler*		cKeyboardInputHandler;
 	CMouseController*			cMouseController;

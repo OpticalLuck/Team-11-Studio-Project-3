@@ -15,6 +15,10 @@
 // Include CKeyboardController
 #include "Inputs/KeyboardController.h"
 
+#include "System/Debug.h"
+
+#include "Math/MyMath.h"
+
 #include <iostream>
 using namespace std;
 
@@ -24,6 +28,8 @@ using namespace std;
 CLevelEditorState::CLevelEditorState(void)
 	: cKeyboardInputHandler(NULL)
 	, cLevelEditor(NULL)
+	, cMouseController(NULL)
+	, cSettings(NULL)
 {
 
 }
@@ -33,6 +39,11 @@ CLevelEditorState::CLevelEditorState(void)
  */
 CLevelEditorState::~CLevelEditorState(void)
 {
+	cKeyboardInputHandler = NULL;
+	cLevelEditor = NULL;
+	cMouseController = NULL;
+	cSettings = NULL;
+
 	Destroy();
 }
 
@@ -43,10 +54,14 @@ bool CLevelEditorState::Init(void)
 {
 	cout << "CLevelEditorState::Init()\n" << endl;
 
+	cSettings = CSettings::GetInstance();
+
 	cLevelEditor = CLevelEditor::GetInstance();
 
 	Camera2D::GetInstance()->Reset();
-	Camera2D::GetInstance()->UpdateTarget(glm::vec2(CSettings::GetInstance()->NUM_TILES_XAXIS * 0.5, CSettings::GetInstance()->NUM_TILES_YAXIS * 0.5));
+	Camera2D::GetInstance()->UpdateTarget(glm::vec2(cSettings->NUM_TILES_XAXIS * 0.5, cSettings->NUM_TILES_YAXIS * 0.5));
+
+	cMouseController = CMouseController::GetInstance();
 
 	cKeyboardInputHandler = CKeyboardInputHandler::GetInstance();
 	cKeyboardInputHandler->Init();
@@ -86,6 +101,37 @@ bool CLevelEditorState::Update(const double dElapsedTime)
 	if (CKeyboardController::GetInstance()->IsKeyDown(GLFW_KEY_D))
 	{
 		Camera2D::GetInstance()->UpdateTarget(glm::vec2(Camera2D::GetInstance()->getTarget().x + 0.2, Camera2D::GetInstance()->getTarget().y));
+	}
+
+	glm::vec2 vMousePosInWindow = glm::vec2(cMouseController->GetMousePositionX(), cSettings->iWindowHeight - cMouseController->GetMousePositionY());
+	glm::vec2 vMousePosConvertedRatio = glm::vec2(vMousePosInWindow.x - cSettings->iWindowWidth * 0.5, vMousePosInWindow.y - cSettings->iWindowHeight * 0.5);
+	glm::vec2 vMousePosWorldSpace = glm::vec2(vMousePosConvertedRatio.x / cSettings->iWindowWidth * cSettings->NUM_TILES_XAXIS, vMousePosConvertedRatio.y / cSettings->iWindowHeight * cSettings->NUM_TILES_YAXIS);
+	glm::vec2 vMousePosRelativeToCamera = Camera2D::GetInstance()->getCurrPos() + vMousePosWorldSpace;
+
+	vMousePosRelativeToCamera.x = Math::Clamp(vMousePosRelativeToCamera.x, 0.f, (float)cLevelEditor->iWorldWidth - 1.f);
+	vMousePosRelativeToCamera.y = Math::Clamp(vMousePosRelativeToCamera.y, 0.f, (float)cLevelEditor->iWorldHeight - 1.f);
+
+	vMousePosRelativeToCamera.x = ceil(vMousePosRelativeToCamera.x);
+	vMousePosRelativeToCamera.y = ceil(vMousePosRelativeToCamera.y);
+
+
+	if (cMouseController->IsButtonDown(CMouseController::LMB))
+	{
+		// DEBUG_MSG("x:" << u16vec2FinalMousePosInEditor.x << " y:" << u16vec2FinalMousePosInEditor.y);
+		DEBUG_MSG("[x: " << vMousePosRelativeToCamera.x << ", y: " << vMousePosRelativeToCamera.y << "] Cell TileID: " << cLevelEditor->GetCell(vMousePosRelativeToCamera.x, vMousePosRelativeToCamera.y, false).iTileID);
+		if (cLevelEditor->GetCell(vMousePosRelativeToCamera.x, vMousePosRelativeToCamera.y, false).iTileID == 0)
+		{
+			cLevelEditor->UpdateCell(vMousePosRelativeToCamera.x, vMousePosRelativeToCamera.y, 100, false);
+		}
+	}
+
+	if (cMouseController->IsButtonDown(CMouseController::RMB))
+	{
+		// DEBUG_MSG("x:" << u16vec2FinalMousePosInEditor.x << " y:" << u16vec2FinalMousePosInEditor.y);
+		if (cLevelEditor->GetCell(vMousePosRelativeToCamera.x, vMousePosRelativeToCamera.y, false).iTileID != 0)
+		{
+			cLevelEditor->UpdateCell(vMousePosRelativeToCamera.x, vMousePosRelativeToCamera.y, 0, false);
+		}
 	}
 
 	return true;
