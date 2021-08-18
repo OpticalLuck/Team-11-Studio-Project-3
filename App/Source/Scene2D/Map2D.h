@@ -118,9 +118,6 @@ protected:
 	// The number of levels
 	unsigned int uiNumLevels;
 
-	// A 1-D array which stores the map sizes for each level
-	MapSize* arrMapSizes;
-
 	//CS: The quadMesh for drawing the tiles
 	CMesh* quadMesh;
 
@@ -134,7 +131,7 @@ protected:
 	virtual ~CMap2D(void);
 
 	// Render a tile
-	void RenderTile(const CObject2D* Obj);
+	void RenderTile(const CObject2D obj);
 
 };
 

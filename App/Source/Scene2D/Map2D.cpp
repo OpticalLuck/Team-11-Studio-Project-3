@@ -62,7 +62,7 @@ bool CMap2D::Init(const unsigned int uiNumLevels,
 	//Initialising objects
 	arrObject.clear();
 	for (unsigned i = 0; i < uiNumLevels; i++)
-		arrObject.push_back(std::vector<CObject2D>());
+		arrObject.push_back(std::vector<CObject2D*>());
 
 	//Initialising limits of map
 	arrLevelLimit.clear();
@@ -170,7 +170,7 @@ void CMap2D::Render(void)
 		// Update the shaders with the latest transform
 		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
 
-		RenderTile(currObj);
+		RenderTile(*currObj);
 	}
 }
 
