@@ -230,11 +230,11 @@ bool CScene2D::Update(const double dElapsedTime)
 
 	if (cKeyboardController->IsKeyDown(GLFW_KEY_UP))
 	{
-		cInventoryManager->NavigateIndex(2);
+		cInventoryManager->NavigateIndex("UP");
 	}
 	if (cKeyboardController->IsKeyDown(GLFW_KEY_DOWN))
 	{
-		cInventoryManager->NavigateIndex(1);
+		cInventoryManager->NavigateIndex("DOWN");
 	}
 
 	return true;

@@ -152,12 +152,12 @@ void CGUI_Scene2D::Update(const double dElapsedTime)
 		////if selected
 		cInventoryItem = cInventoryManager->GetItem("Potion");
 		ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 1.0f, 1.0f));
-		ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1.f, 0.f, 0.f, 1.f));
 		//ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1.f, 0.f, 0.f, 1.f));
-		//if (cInventoryManager->GetItemIndex() == 1)
-		//{
-		//	ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1.f, 0.f, 0.f, 1.f));
-		//}
+		//ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1.f, 0.f, 0.f, 1.f));
+		if (cInventoryManager->GetItemIndex() == 1)
+		{
+			ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1.f, 0.f, 0.f, 1.f));
+		}
 		ImGui::Begin("Testing : ", NULL, inventoryWindowFlags);
 		ImGui::SetWindowPos(ImVec2(cSettings->iWindowWidth * 0.01f, cSettings->iWindowHeight * 0.065f));
 		ImGui::SetWindowSize(ImVec2(200.0f * relativeScale_x, 25.0f * relativeScale_y));
@@ -168,7 +168,11 @@ void CGUI_Scene2D::Update(const double dElapsedTime)
 		ImGui::SetWindowFontScale(1.5f * relativeScale_y);
 		ImGui::TextColored(ImVec4(1, 1, 0, 1), "Potion: %d",cInventoryItem->GetCount());
 		ImGui::End();
-		ImGui::PopStyleColor(2);
+		ImGui::PopStyleColor();
+		if (cInventoryManager->GetItemIndex() == 1)
+		{
+			ImGui::PopStyleColor();
+		}
 
 	}
 
@@ -176,11 +180,11 @@ void CGUI_Scene2D::Update(const double dElapsedTime)
 	{
 		cInventoryItem = cInventoryManager->GetItem("Hook");
 		ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 1.0f, 1.0f));
-		ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1.f, 0.f, 0.f, 1.f));
-		//if (cInventoryManager->GetItemIndex() == 2)
-		//{
-		//	ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1.f, 0.f, 0.f, 1.f));
-		//}
+		//ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1.f, 0.f, 0.f, 1.f));
+		if (cInventoryManager->GetItemIndex() == 2)
+		{
+			ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1.f, 0.f, 0.f, 1.f));
+		}
 		ImGui::Begin("Testing2 : ", NULL, inventoryWindowFlags);
 		ImGui::SetWindowPos(ImVec2(cSettings->iWindowWidth * 0.01f, cSettings->iWindowHeight * 0.140f));
 		ImGui::SetWindowSize(ImVec2(200.0f * relativeScale_x, 60.0f * relativeScale_y));
@@ -191,7 +195,11 @@ void CGUI_Scene2D::Update(const double dElapsedTime)
 		ImGui::SetWindowFontScale(1.9f * relativeScale_y);
 		ImGui::TextColored(ImVec4(1, 1, 0, 1), "Hook: %d", cInventoryItem->GetCount());
 		ImGui::End();
-		ImGui::PopStyleColor(2);
+		ImGui::PopStyleColor();
+		if (cInventoryManager->GetItemIndex() == 2)
+		{
+			ImGui::PopStyleColor();
+		}
 	}
 
 	ImGui::End();

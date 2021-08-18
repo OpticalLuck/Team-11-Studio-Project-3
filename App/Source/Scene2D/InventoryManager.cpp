@@ -121,11 +121,11 @@ int CInventoryManager::GetItemIndex(void)
 	return iItemIndex;
 }
 
-void CInventoryManager::NavigateIndex(int direction)
+void CInventoryManager::NavigateIndex(string direction)
 {
-	if (direction == 1)
+	if (direction == "DOWN")
 		iItemIndex += 1;
-	else if (direction == 2)
+	else if (direction == "UP")
 		iItemIndex -= 1;
 	else
 		return;

@@ -35,7 +35,7 @@ public:
 
 	int GetItemIndex(void);
 
-	void NavigateIndex(int direction);
+	void NavigateIndex(string direction);
 
 	// The map containing all the items
 	std::map<std::string, CInventoryItem*> inventoryMap;
