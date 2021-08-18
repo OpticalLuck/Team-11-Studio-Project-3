@@ -111,9 +111,6 @@ bool CScene2D::Init(void)
 		return false;
 	}
 
-	// Activate diagonal movement
-	cMap2D->SetDiagonalMovement(false);
-
 	// Load Scene2DColor into ShaderManager
 	CShaderManager::GetInstance()->Add("2DColorShader", "Shader//Scene2DColor.vs", "Shader//Scene2DColor.fs");
 	CShaderManager::GetInstance()->Use("2DColorShader");

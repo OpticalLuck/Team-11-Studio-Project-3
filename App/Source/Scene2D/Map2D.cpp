@@ -30,9 +30,6 @@ CMap2D::CMap2D(void)
 	, camera(NULL)
 {
 	arrMapSizes = nullptr;
-	m_nrOfDirections = 0;
-	m_startPos = m_targetPos = glm::i32vec2();
-	m_weight = 0;
 	quadMesh = nullptr;
 	uiNumLevels = 0;
 }
@@ -42,9 +39,6 @@ CMap2D::CMap2D(void)
  */
 CMap2D::~CMap2D(void)
 {
-	// Delete AStar lists
-	DeleteAStarLists();
-
 	// optional: de-allocate all resources once they've outlived their purpose:
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
@@ -206,23 +200,6 @@ bool CMap2D::Init(const unsigned int uiNumLevels,
 
 	//Camera
 	camera = Camera2D::GetInstance();
-
-	// Initialise the variables for AStar
-	m_weight = 1;
-	m_startPos = glm::i32vec2(0, 0);
-	m_targetPos = glm::i32vec2(0, 0);
-	//m_size = cSettings->NUM_TILES_YAXIS* cSettings->NUM_TILES_XAXIS;
-
-	m_nrOfDirections = 4;
-	m_directions = { { -1, 0 }, { 1, 0 }, { 0, 1 }, { 0, -1 },
-						{ -1, -1 }, { 1, 1 }, { -1, 1 }, { 1, -1 } };
-
-	// Resize these 2 lists
-	m_cameFromList.resize(cSettings->NUM_TILES_YAXIS * cSettings->NUM_TILES_XAXIS);
-	m_closedList.resize(cSettings->NUM_TILES_YAXIS * cSettings->NUM_TILES_XAXIS, false);
-
-	//// Clear AStar memory
-	//ClearAStar();
 
 	return true;
 }
@@ -615,7 +592,6 @@ unsigned int CMap2D::GetCurrentLevel(void) const
 	return uiCurLevel;
 }
 
-
 /**
  @brief Load a texture, assign it a code and store it in MapOfTextureIDs.
  @param filename A const char* variable which contains the file name of the texture
@@ -673,133 +649,4 @@ void CMap2D::RenderTile(const CObject2D* obj) {
 	//CS: Render the tile
 	quadMesh->Render();
 	glBindVertexArray(0);
-}
-
-/**
- @brief Build a path
- */
-std::vector<glm::i32vec2> CMap2D::BuildPath() const
-{
-	std::vector<glm::i32vec2> path;
-	auto currentPos = m_targetPos;
-	auto currentIndex = ConvertTo1D(currentPos);
-
-	while (!(m_cameFromList[currentIndex].parent == currentPos))
-	{
-		path.push_back(currentPos);
-		currentPos = m_cameFromList[currentIndex].parent;
-		currentIndex = ConvertTo1D(currentPos);
-	}
-
-	// If the path has only 1 entry, then it is the the target position
-	if (path.size() == 1)
-	{
-		// if m_startPos is next to m_targetPos, then having 1 path point is OK
-		if (m_nrOfDirections == 4)
-		{
-			if (abs(m_targetPos.y - m_startPos.y) + abs(m_targetPos.x - m_startPos.x) > 1)
-				path.clear();
-		}
-		else
-		{
-			if (abs(m_targetPos.y - m_startPos.y) + abs(m_targetPos.x - m_startPos.x) > 2)
-				path.clear();
-			else if (abs(m_targetPos.y - m_startPos.y) + abs(m_targetPos.x - m_startPos.x) > 1)
-				path.clear();
-		}
-	}
-	else
-		std::reverse(path.begin(), path.end());
-
-	return path;
-}
-
-/**
- @brief Toggle the checks for diagonal movements
- */
-void CMap2D::SetDiagonalMovement(const bool bEnable)
-{
-	m_nrOfDirections = (bEnable) ? 8 : 4;
-}
-
-/**
- @brief Check if a position is valid
- */
-bool CMap2D::isValid(const glm::i32vec2& pos) const
-{
-	//return (pos.x >= 0) && (pos.x < m_dimensions.x) &&
-	//	(pos.y >= 0) && (pos.y < m_dimensions.y);
-	return ((unsigned)pos.x >= 0) && ((unsigned)pos.x < cSettings->NUM_TILES_XAXIS) &&
-		((unsigned)pos.y >= 0) && ((unsigned)pos.y < cSettings->NUM_TILES_YAXIS);
-}
-
-/**
- @brief Returns a 1D index based on a 2D coordinate using row-major layout
- */
-int CMap2D::ConvertTo1D(const glm::i32vec2& pos) const
-{
-	//return (pos.y * m_dimensions.x) + pos.x;
-	return (pos.y * cSettings->NUM_TILES_XAXIS) + pos.x;
-}
-
-/**
- @brief Delete AStar lists
- */
-bool CMap2D::DeleteAStarLists(void)
-{
-	// Delete m_openList
-	while (m_openList.size() != 0)
-		m_openList.pop();
-	// Delete m_cameFromList
-	m_cameFromList.clear();
-	// Delete m_closedList
-	m_closedList.clear();
-
-	return true;
-}
-
-
-/**
- @brief Reset AStar lists
- */
-bool CMap2D::ResetAStarLists(void)
-{
-	// Delete m_openList
-	while (m_openList.size() != 0)
-		m_openList.pop();
-	// Reset m_cameFromList
-	for (unsigned i = 0; i < m_cameFromList.size(); i++)
-	{
-		m_cameFromList[i].pos = glm::i32vec2(0,0);
-		m_cameFromList[i].parent = glm::i32vec2(0, 0);
-		m_cameFromList[i].f = 0;
-		m_cameFromList[i].g = 0;
-		m_cameFromList[i].h = 0;
-	}
-	// Reset m_closedList
-	for (unsigned i = 0; i < m_closedList.size(); i++)
-	{
-		m_closedList[i] = false;
-	}
-
-	return true;
-}
-
-
-/**
- @brief manhattan calculation method for calculation of h
- */
-unsigned int heuristic::manhattan(const glm::i32vec2& v1, const glm::i32vec2& v2, int weight)
-{
-	glm::i32vec2 delta = v2 - v1;
-	return static_cast<unsigned int>(weight * (delta.x + delta.y));
-}
-
-/**
- @brief euclidean calculation method for calculation of h
- */
-unsigned int heuristic::euclidean(const glm::i32vec2& v1, const glm::i32vec2& v2, int weight)
-{
-	glm::i32vec2 delta = v2 - v1;
-	return static_cast<unsigned int>(weight * sqrt((delta.x * delta.x) + (delta.y * delta.y)));
 }
