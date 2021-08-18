@@ -54,49 +54,38 @@ public:
     void CreateLevel(std::string levelName, unsigned int iWorldWidth = 32, unsigned int iWorldHeight = 24);
     void LoadLevel(const char* filePath);
     void LoadExistingLevels(void);
-    void UpdateCell(unsigned int x, unsigned int y, int TileID);
+    void UpdateCell(unsigned int x, unsigned int y, int TileID, bool bInvert = true);
     void SetShader(const std::string& _name);
 
     std::vector<Level> GetLevels(void);
 
 protected:
 
-    CTextureManager* cTextureManager;
-
+    // Application Settings
     CSettings* cSettings;
 
+    // OpenGL Locations
     unsigned int VAO, VBO, EBO;
     unsigned int quadVAO, quadVBO, quadEBO;
 
     // The texture ID in OpenGL
     unsigned int iTextureID;
 
-    // A transformation matrix for controlling where to render the entities
-    glm::mat4 transform;
+    // Render Control
+    CTextureManager*    cTextureManager;            // Texture Manager Instance
+    std::string         sShaderName;                // Name of Shader Program instance
+    glm::mat4           transform;                  // A transformation matrix for controlling where to render the entities
+    CMesh*              quadMesh;                   // Mesh to draw
+    Camera2D*           camera;                     // Camera handler
 
-    // Name of Shader Program instance
-    std::string sShaderName;
+    // Document Variables
+    rapidcsv::Document  doc;                        // CSV document of the level
+    std::string         levelFolderPath;            // Path to the folder that contains the level CSVs
 
-    // Mesh to draw
-    CMesh* quadMesh;
-
-    //Camera handler
-    Camera2D* camera;
-
-    // Path to the folder that contains the level CSVs
-    std::string levelFolderPath;
-
-    // CSV document of the level
-    rapidcsv::Document doc;
-
-    // Vector of existing levels
-    std::vector<Level> m_Levels;
-
-    // Current level data
-    Level currentLevel;
-
-    // Dynamic array of the current level being editted
-    std::vector<std::vector<sCell>> m_CurrentLevel;
+    // Level Editor Variables
+    std::vector<std::vector<sCell>> m_CurrentLevel; // Dynamic Array that stores the map of the currently editted level
+    std::vector<Level>              m_Levels;       // Vector of stored levels
+    Level                           currentLevel;   // Current Level data
 
     CLevelEditor();
     ~CLevelEditor();

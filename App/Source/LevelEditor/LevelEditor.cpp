@@ -139,6 +139,9 @@ void CLevelEditor::PostRender()
     glDisable(GL_BLEND);
 }
 
+/**
+@brief Creates a new level in m_CurrentLevel
+*/
 void CLevelEditor::CreateLevel(std::string levelName, unsigned int iWorldWidth, unsigned int iWorldHeight)
 {
     this->iWorldWidth = iWorldWidth;
@@ -193,9 +196,12 @@ void CLevelEditor::LoadLevel(const char* filePath)
 /**
 @brief Updates the Cell in the level editor given an x and y index
 */
-void CLevelEditor::UpdateCell(unsigned int x, unsigned int y, int TileID)
+void CLevelEditor::UpdateCell(unsigned int x, unsigned int y, int TileID, bool bInvert)
 {
-    m_CurrentLevel[y][x].iTileID = TileID;
+    if (bInvert)
+        m_CurrentLevel[iWorldHeight - y - 1][x].iTileID = TileID;
+    else
+        m_CurrentLevel[y][x].iTileID = TileID;
 }
 
 void CLevelEditor::SetShader(const std::string& _name)
@@ -227,6 +233,9 @@ void CLevelEditor::LoadExistingLevels(void)
     }
 }
 
+/**
+@brief Generates the VAO for the grid quad
+*/
 void CLevelEditor::GenerateQuadVAO(void)
 {
     glm::vec2 vec2Dimensions = glm::vec2(1, 1) * 0.5f;

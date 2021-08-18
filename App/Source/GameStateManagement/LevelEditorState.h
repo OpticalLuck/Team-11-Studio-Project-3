@@ -10,6 +10,7 @@
 #include "GameStateBase.h"
 #include "../KeyboardInputHandler/CKeyboardInputHandler.h"
 #include "../LevelEditor/LevelEditor.h"
+#include "Inputs/MouseController.h"
 
 class CLevelEditorState : public CGameStateBase
 {
@@ -31,8 +32,8 @@ public:
 	virtual bool CreateIMGUI();
 	virtual bool DeleteIMGUI();
 protected:
-	CLevelEditor* cLevelEditor;
 
-	// The handler to the CScene2D instance
-	CKeyboardInputHandler* cKeyboardInputHandler;
+	CKeyboardInputHandler*		cKeyboardInputHandler;
+	CMouseController*			cMouseController;
+	CLevelEditor*				cLevelEditor;
 };
