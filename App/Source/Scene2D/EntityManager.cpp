@@ -5,6 +5,7 @@ CEntityManager::CEntityManager()
 	: cPlayer2D(NULL)
 	, cEnemy2D(NULL)
 	, cMap2D(NULL)
+	, cBoss2D(NULL)
 	, cCloneTemplate(NULL)
 	, cKeyboardController(NULL)
 	, cKeyboardInputHandler(NULL)
@@ -54,6 +55,16 @@ bool CEntityManager::EntityManagerInit(void)
 		if (cEnemy2D->Init() == false)
 		{
 			cout << "Failed to load CEnemy2D" << endl;
+			return false;
+		}
+	}
+
+	//Boss initialisation
+	if (cMap2D->FindValue(305, uiRow, uiCol)) {
+		cBoss2D = new CBoss2D;
+		cBoss2D->SetShader("2DColorShader");
+		if (cBoss2D->Init() == false) {
+			cout << "Failed to load CBoss2D" << endl;
 			return false;
 		}
 	}
@@ -139,6 +150,14 @@ void CEntityManager::RenderEnemy(void)
 		m_enemyList[i]->Render();
 		m_enemyList[i]->PostRender();
 	}
+
+	if (cBoss2D) {
+		cBoss2D->PreRender();
+		cBoss2D->Render();
+		cBoss2D->PostRender();
+		
+		cBoss2D->RenderCollider();
+	}
 }
 
 void CEntityManager::RenderClone(void)
@@ -148,6 +167,7 @@ void CEntityManager::RenderClone(void)
 		m_cloneList[i]->PreRender();
 		m_cloneList[i]->Render();
 		m_cloneList[i]->PostRender();
+		m_cloneList[i]->RenderCollider();
 	}
 }
 
@@ -167,6 +187,9 @@ void CEntityManager::Update(const double dElapsedTime)
 {
 	// Call the cPlayer2D's update method before Map2D as we want to capture the inputs before map2D update
 	cPlayer2D->Update(dElapsedTime);
+
+	if (cBoss2D)
+		cBoss2D->Update(dElapsedTime);
 
 	for (unsigned i = 0; i < m_cloneList.size(); ++i)
 	{
@@ -192,22 +215,6 @@ void CEntityManager::Update(const double dElapsedTime)
 	{
 		Clone();
 	}
-	
-	
-	//for (std::vector<CEntity2D*>::iterator it = m_playerList.begin(); it != m_playerList.end(); ++it)
-	//{
-	//	CEntity2D* player = (CEntity2D*)*it;
-	//	{
-	//		for (std::vector<CEntity2D*>::iterator it2 = m_enemyList.begin(); it2 != m_enemyList.end(); ++it2)
-	//		{
-	//			CEntity2D* enemy = (CEntity2D*)*it2;
-	//			if (CheckCollision(player, enemy))
-	//			{
-	//				//reduce health or some shit
-	//			}
-	//		}
-	//	}
-	//}
 }
 
 

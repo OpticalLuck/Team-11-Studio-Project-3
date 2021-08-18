@@ -218,27 +218,3 @@ bool CEntity2D::LoadTexture(const char* filename)
 	return true;
 }
 
-//bool CEntity2D::isCollidable()
-//{
-//	for (std::vector<CEntity2D*>::iterator it = entity_list.begin(); it != entity_list.end(); ++it)
-//	{
-//		CEntity2D* entity = (CEntity2D*)*it;
-//		if (entity->type == CEntity2D::PLAYER)
-//		{
-//			entity->collidable = true;
-//			return true;
-//		}
-//		else if (entity->type == CEntity2D::ENEMY)
-//		{
-//			entity->collidable = true;
-//			return true;
-//		}
-//		else if (entity->type == CEntity2D::CLONE)
-//		{
-//			entity->collidable = false;
-//			return false;
-//		}
-//		else
-//			return false;
-//	}
-//}

@@ -525,8 +525,8 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 			//Collider2D initialisation
 			currObj->collider2D.Init();
 			currObj->collider2D.position = glm::vec3(
-				currIndex.x  + 0.5f,
-				currIndex.y  + 0.5f,
+				currIndex.x,
+				currIndex.y,
 				0.f
 			);
 
@@ -542,6 +542,9 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 
 				//Add in new CObj pointer if available
 				arrGrid[uiCurLevel][uiRow][uiCol] = currObj;
+			}
+			else {
+				delete currObj;
 			}
 		}
 	}

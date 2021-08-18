@@ -79,8 +79,6 @@ public:
 	// The vec2 variable which stores the UV coordinates to render the Entity2D
 	glm::vec2 vec2UVCoordinate;
 
-	//bool isCollidable();
-
 	bool collidable;
 
 protected:

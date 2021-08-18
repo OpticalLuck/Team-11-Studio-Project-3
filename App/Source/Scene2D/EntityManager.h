@@ -1,7 +1,8 @@
 #pragma once 
-//#include "Primitives/Entity2D.h"
+
 #include "Player2D.h"
 #include "Enemy2D.h"
+#include "Boss2D.h"
 #include <vector>
 #include <iostream>
 #include "Map2D.h"
@@ -35,7 +36,10 @@ protected:
 
 	CPlayer2D* cCloneTemplate;
 	CPlayer2D* cPlayer2D;
+
+	CBoss2D* cBoss2D;
 	CEnemy2D* cEnemy2D;
+
 	CMap2D* cMap2D;
 
 	//list of vectors

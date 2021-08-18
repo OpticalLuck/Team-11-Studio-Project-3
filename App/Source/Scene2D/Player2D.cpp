@@ -106,9 +106,9 @@ bool CPlayer2D::Init(void)
 	cMap2D->SetMapInfo(uiRow, uiCol, 0);
 
 	// Set checkpoint position to start position
-	checkpoint = glm::i32vec2(uiCol, uiRow);
+	checkpoint = glm::vec2(uiCol, uiRow);
 	// Set the start position of the Player to iRow and iCol
-	vTransform = glm::i32vec2(uiCol, uiRow);
+	vTransform = glm::vec2(uiCol, uiRow);
 
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
@@ -164,6 +164,8 @@ bool CPlayer2D::Init(void)
 	cKeyboardInputHandler = CKeyboardInputHandler::GetInstance();
 
 	collider2D.Init();
+	collider2D.position = vTransform;
+
 	cPhysics2D.Init(&vTransform);
 
 	return true;
@@ -231,6 +233,8 @@ bool CPlayer2D::Init(glm::i32vec2 spawnpoint)
 	cKeyboardInputHandler = CKeyboardInputHandler::GetInstance();
 
 	collider2D.Init();
+	collider2D.position = vTransform;
+
 	cPhysics2D.Init(&vTransform);
 
 	return true;
@@ -316,14 +320,11 @@ void CPlayer2D::Update(const double dElapsedTime)
 	{
 		if (collider2D.CollideWith(&object->getCollider()))
 		{
-			if (collider2D.CollideWith(&object->getCollider()))
-			{
-				cPhysics2D.SetVelocity(glm::vec2(cPhysics2D.GetVelocity().x, 0));
+			cPhysics2D.SetVelocity(glm::vec2(cPhysics2D.GetVelocity().x, 0));
 
-				collider2D.ResolveCollisionY(&object->getCollider());
-				// Resolve transform to corrected position in collider
-				vTransform = collider2D.position;
-			}
+			collider2D.ResolveCollisionY(&object->getCollider());
+			// Resolve transform to corrected position in collider
+			vTransform = collider2D.position;
 		}
 	}
 
@@ -396,7 +397,7 @@ void CPlayer2D::Render(void)
 	transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
 	
 	//Get camera transforms and use them instead
-	glm::vec2 offset = glm::i32vec2((cSettings->NUM_TILES_XAXIS / 2) - 1, (cSettings->NUM_TILES_YAXIS / 2) - 1);
+	glm::vec2 offset = glm::vec2((cSettings->NUM_TILES_XAXIS / 2) - 0.5f, (cSettings->NUM_TILES_YAXIS / 2) - 0.5f);
 	glm::vec2 cameraPos = camera->getCurrPos();
 
 	glm::vec2 IndexPos = vTransform;

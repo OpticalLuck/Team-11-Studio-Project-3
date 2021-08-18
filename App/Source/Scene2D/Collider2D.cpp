@@ -181,7 +181,7 @@ void Collider2D::Render(void)
 
 
 	//Camera init
-	glm::vec2 offset = glm::vec2(float(CSettings::GetInstance()->NUM_TILES_XAXIS / 2.f) - 1.f, float(CSettings::GetInstance()->NUM_TILES_YAXIS / 2.f) - 1.f);
+	glm::vec2 offset = glm::vec2(float(CSettings::GetInstance()->NUM_TILES_XAXIS / 2.f) - 0.5f, float(CSettings::GetInstance()->NUM_TILES_YAXIS / 2.f) - 0.5f);
 	glm::vec2 cameraPos = Camera2D::GetInstance()->getCurrPos();
 
 	glm::vec2 objCamPos = position - cameraPos + offset;
