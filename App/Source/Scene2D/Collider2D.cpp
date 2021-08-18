@@ -26,8 +26,6 @@ Collider2D::~Collider2D()
 
 bool Collider2D::Init()
 {
-	vec2Dimensions = glm::vec2(1, 1) * 0.5f;
-
 	float vertices[] = {
 		-vec2Dimensions.x, -vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
 		vec2Dimensions.x, -vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
@@ -66,10 +64,13 @@ bool Collider2D::CollideWith(Collider2D* object)
 {
 	if (object->colliderEnabled)
 	{
+		float threshold = 0.01f;
 		//vec2Dimensions is half width and half height	
-		bool collisionX = abs(position.x - object->position.x) < vec2Dimensions.x + object->vec2Dimensions.x;
-		bool collisionY = abs(position.y - object->position.y) < vec2Dimensions.y + object->vec2Dimensions.y;
+		bool collisionX = abs(position.x - object->position.x) <= vec2Dimensions.x + object->vec2Dimensions.x - threshold;
+		bool collisionY = abs(position.y - object->position.y) <= vec2Dimensions.y + object->vec2Dimensions.y;
 
+		if (collisionX && collisionY)
+ 			cout << "help";
 		return collisionX && collisionY;
 	}
 	
@@ -133,7 +134,7 @@ void Collider2D::ResolveCollisionX(Collider2D* object)
 		}
 	}
 
-	if (shortestXDist < shortestYDist)
+	if (shortestXDist < shortestYDist && shortestYDist != 0)
 	{
 		glm::vec2 correctionAxis = glm::normalize(glm::vec2(direction.x * -1, 0.f));
 		position += glm::vec2(shortestXDist, 0) * correctionAxis;

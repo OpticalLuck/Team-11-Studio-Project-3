@@ -161,6 +161,7 @@ bool CPlayer2D::Init(void)
 
 	cKeyboardInputHandler = CKeyboardInputHandler::GetInstance();
 
+	collider2D.vec2Dimensions = glm::vec2(0.20000f,0.50000f);
 	collider2D.Init();
 	cPhysics2D.Init(&vTransform);
 
@@ -337,7 +338,7 @@ void CPlayer2D::Update(const double dElapsedTime)
 			if (rowCheck < 0 || colCheck < 0 || rowCheck > cMap2D->GetLevelRow() - 1 || colCheck > cMap2D->GetLevelCol() - 1)
 				continue;
 
-			if (cMap2D->GetCObject(colCheck, rowCheck))
+ 			if (cMap2D->GetCObject(colCheck, rowCheck))
 			{
 				if (collider2D.CollideWith(&cMap2D->GetCObject(colCheck, rowCheck)->getCollider()))
 				{
