@@ -13,6 +13,7 @@
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp" />
     <ClCompile Include="Source\Command\Command.cpp" />
+    <ClCompile Include="Source\Factory\ObjectFactory.cpp" />
     <ClCompile Include="Source\GameStateManagement\EditorSettingsState.cpp" />
     <ClCompile Include="Source\GameStateManagement\GameOverState.cpp" />
     <ClCompile Include="Source\GameStateManagement\GameStateManager.cpp" />
@@ -26,6 +27,7 @@
     <ClCompile Include="Source\LevelEditor\LevelEditor.cpp" />
     <ClCompile Include="Source\main.cpp" />
     <ClCompile Include="Source\Scene2D\BackgroundEntity.cpp" />
+    <ClCompile Include="Source\Scene2D\Boulder2D.cpp" />
     <ClCompile Include="Source\Scene2D\Camera2D.cpp" />
     <ClCompile Include="Source\Scene2D\Collider2D.cpp" />
     <ClCompile Include="Source\Scene2D\Enemy2D.cpp" />
@@ -47,6 +49,7 @@
   <ItemGroup>
     <ClInclude Include="Source\Application.h" />
     <ClInclude Include="Source\Command\Command.h" />
+    <ClInclude Include="Source\Factory\ObjectFactory.h" />
     <ClInclude Include="Source\GameStateManagement\EditorSettingsState.h" />
     <ClInclude Include="Source\GameStateManagement\GameOverState.h" />
     <ClInclude Include="Source\GameStateManagement\GameStateBase.h" />
@@ -60,6 +63,7 @@
     <ClInclude Include="Source\LevelEditor\LevelGrid.h" />
     <ClInclude Include="Source\LevelEditor\LevelEditor.h" />
     <ClInclude Include="Source\Scene2D\BackgroundEntity.h" />
+    <ClInclude Include="Source\Scene2D\Boulder2D.h" />
     <ClInclude Include="Source\Scene2D\Camera2D.h" />
     <ClInclude Include="Source\Scene2D\Collider2D.h" />
     <ClInclude Include="Source\Scene2D\Enemy2D.h" />

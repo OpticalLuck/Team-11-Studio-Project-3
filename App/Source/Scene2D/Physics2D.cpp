@@ -67,14 +67,17 @@ void CPhysics2D::Update(double dElapsedTime)
 	
 	glm::vec2 friction = CalculateFriction(FRICTONAL_COEFFICIENT);
 
-	a += friction;
+	if (abs(friction.x * (float)dElapsedTime) < abs(velocity.x))
+		a += friction;
+	else
+		velocity.x = 0; 
 
 	a += v2Gravity;
 	velocity += a * (float)dElapsedTime;
 
 
-	if (velocity.x < 0.1f && velocity.x > -0.1f)
-		velocity.x = 0;
+	//if (velocity.x < 0.1f && velocity.x > -0.1f)
+	//	velocity.x = 0;
 
 	velocity.x = Math::Clamp(velocity.x, -MAX_SPEED, MAX_SPEED);
 	velocity.y = Math::Clamp(velocity.y, -MAX_SPEED, MAX_SPEED);
