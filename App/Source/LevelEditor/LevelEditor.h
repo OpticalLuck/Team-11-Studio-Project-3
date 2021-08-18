@@ -1,0 +1,96 @@
+#pragma once
+
+// Include Singleton Pattern
+#include "DesignPatterns/SingletonTemplate.h"
+
+// Include the RapidCSV
+#include "System/rapidcsv.h"
+
+#include "Primitives/MeshBuilder.h"
+
+#include "GameControl/Settings.h"
+
+#include "RenderControl/ShaderManager.h"
+
+#include "../TextureManager/TextureManager.h"
+
+#include <string>
+
+#include <vector>
+#include "../Scene2D/Camera2D.h"
+
+struct sCell
+{
+    int iTileID = 0;
+};
+
+struct Level
+{
+    std::string LevelName = "";
+    std::string LevelPath = "";
+};
+
+class CLevelEditor : public CSingletonTemplate<CLevelEditor>
+{
+    friend CSingletonTemplate<CLevelEditor>;
+public:
+
+    unsigned int iWorldWidth;
+    unsigned int iWorldHeight;
+
+    void Init();
+
+    void PreRender();
+    void Render();
+    void PostRender();
+
+    void CreateLevel(std::string levelName, unsigned int iWorldWidth = 32, unsigned int iWorldHeight = 24);
+    void LoadLevel(const char* filePath);
+    void LoadExistingLevels(void);
+    void UpdateCell(unsigned int x, unsigned int y, int TileID);
+    void SetShader(const std::string& _name);
+
+    std::vector<Level> GetLevels(void);
+
+protected:
+
+    CTextureManager* cTextureManager;
+
+    CSettings* cSettings;
+
+    unsigned int VAO, VBO, EBO;
+
+    // The texture ID in OpenGL
+    unsigned int iTextureID;
+
+    // A transformation matrix for controlling where to render the entities
+    glm::mat4 transform;
+
+    // Name of Shader Program instance
+    std::string sShaderName;
+
+    // Mesh to draw
+    CMesh* quadMesh;
+
+    //Camera handler
+    Camera2D* camera;
+
+    // Path to the folder that contains the level CSVs
+    std::string levelFolderPath;
+
+    // CSV document of the level
+    rapidcsv::Document doc;
+
+    // Vector of existing levels
+    std::vector<Level> m_Levels;
+
+    // Current level data
+    Level currentLevel;
+
+    // Dynamic array of the current level being editted
+    std::vector<std::vector<sCell>> m_CurrentLevel;
+
+    CLevelEditor();
+    ~CLevelEditor();
+
+};

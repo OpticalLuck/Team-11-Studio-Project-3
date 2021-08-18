@@ -38,6 +38,7 @@
     <ClCompile Include="Source\Scene2D\Scene2D.cpp" />
     <ClCompile Include="Source\SoundController\SoundController.cpp" />
     <ClCompile Include="Source\SoundController\SoundInfo.cpp" />
+    <ClCompile Include="Source\TextureManager\TextureManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h" />
@@ -67,12 +68,14 @@
     <ClInclude Include="Source\Scene2D\Scene2D.h" />
     <ClInclude Include="Source\SoundController\SoundController.h" />
     <ClInclude Include="Source\SoundController\SoundInfo.h" />
+    <ClInclude Include="Source\TextureManager\TextureManager.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{9B172635-4E2B-46F1-A403-08F4194D00F5}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>Base</RootNamespace>
     <ProjectName>App</ProjectName>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -114,6 +117,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)/Library/Source;$(SolutionDir)/glfw/include;$(SolutionDir)/glew/include;$(SolutionDir)/glm;$(SolutionDir)/irrKlang;$(SolutionDir)/Lua/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <LanguageStandard>Default</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
