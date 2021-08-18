@@ -82,8 +82,8 @@ void CLevelGrid::Render(void)
 
             float clampX = 1.01f;
             float clampY = 1.01f;
-            // if (actualPos.x <= -clampX || actualPos.x >= clampX || actualPos.y <= -clampY || actualPos.y >= clampY)
-                // continue;
+            if (actualPos.x <= -clampX || actualPos.x >= clampX || actualPos.y <= -clampY || actualPos.y >= clampY)
+                continue;
 
             transform = glm::mat4(1.f);
             transform = glm::translate(transform, glm::vec3(actualPos.x, actualPos.y, 0.f));

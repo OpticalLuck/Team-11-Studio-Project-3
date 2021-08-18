@@ -92,8 +92,8 @@ void CLevelEditor::Render()
 
             float clampX = 1.01f;
             float clampY = 1.01f;
-            // if (actualPos.x <= -clampX || actualPos.x >= clampX || actualPos.y <= -clampY || actualPos.y >= clampY)
-                // continue;
+            if (actualPos.x <= -clampX || actualPos.x >= clampX || actualPos.y <= -clampY || actualPos.y >= clampY)
+                continue;
 
             transform = glm::mat4(1.f);
             transform = glm::translate(transform, glm::vec3(actualPos.x, actualPos.y, 0.f));
@@ -110,16 +110,6 @@ void CLevelEditor::Render()
                 quadMesh->Render();
                 glBindVertexArray(0);
             }
-
-            //transform = glm::scale(transform, glm::vec3(CSettings::GetInstance()->TILE_WIDTH, CSettings::GetInstance()->TILE_HEIGHT, 1.f));
-
-            //CShaderManager::GetInstance()->Use("LineShader");
-            //CShaderManager::GetInstance()->activeShader->setMat4("transform", transform);
-
-            //glBindVertexArray(quadVAO);
-            //glDrawArrays(GL_LINE_LOOP, 0, 6);
-            //glBindVertexArray(0);
-
         }
     }
 }
