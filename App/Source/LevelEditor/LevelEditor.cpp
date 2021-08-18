@@ -88,7 +88,7 @@ void CLevelEditor::Render()
         {
 
             glm::vec2 objCamPos = glm::vec2(uiCol, uiRow) - cameraPos + offset;
-            glm::vec2 actualPos = cSettings->ConvertIndexToUVSpace(objCamPos);
+            glm::vec2 actualPos = cSettings->ConvertIndexToUVSpace(objCamPos) * camera->getZoom();
 
             float clampX = 1.01f;
             float clampY = 1.01f;
@@ -97,6 +97,7 @@ void CLevelEditor::Render()
 
             transform = glm::mat4(1.f);
             transform = glm::translate(transform, glm::vec3(actualPos.x, actualPos.y, 0.f));
+            transform = glm::scale(transform, glm::vec3(camera->getZoom()));
 
             // Update the shaders with the latest transform
             glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));

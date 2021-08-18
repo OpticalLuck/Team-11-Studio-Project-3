@@ -392,4 +392,5 @@ void Application::UpdateInputDevices(void)
 void Application::PostUpdateInputDevices(void)
 {
 	CKeyboardController::GetInstance()->PostUpdate();
+	CMouseController::GetInstance()->PostUpdate();
 }

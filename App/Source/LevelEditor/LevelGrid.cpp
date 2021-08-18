@@ -78,7 +78,7 @@ void CLevelGrid::Render(void)
         {
 
             glm::vec2 objCamPos = glm::vec2(uiCol, uiRow) - cameraPos + offset;
-            glm::vec2 actualPos = CSettings::GetInstance()->ConvertIndexToUVSpace(objCamPos);
+            glm::vec2 actualPos = CSettings::GetInstance()->ConvertIndexToUVSpace(objCamPos) * Camera2D::GetInstance()->getZoom();
 
             float clampX = 1.01f;
             float clampY = 1.01f;
@@ -87,6 +87,7 @@ void CLevelGrid::Render(void)
 
             transform = glm::mat4(1.f);
             transform = glm::translate(transform, glm::vec3(actualPos.x, actualPos.y, 0.f));
+            transform = glm::scale(transform, glm::vec3(Camera2D::GetInstance()->getZoom()));
             transform = glm::scale(transform, glm::vec3(CSettings::GetInstance()->TILE_WIDTH, CSettings::GetInstance()->TILE_HEIGHT, 1.f));
 
             CShaderManager::GetInstance()->activeShader->setMat4("transform", transform);
