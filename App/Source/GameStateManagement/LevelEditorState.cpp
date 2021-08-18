@@ -19,6 +19,8 @@
 
 #include "Math/MyMath.h"
 
+#include "../ImGuiWindow/ImGuiWindow.h"
+
 #include <iostream>
 using namespace std;
 
@@ -61,6 +63,8 @@ bool CLevelEditorState::Init(void)
 	cout << "CLevelEditorState::Init()\n" << endl;
 
 	cSettings = CSettings::GetInstance();
+	cSettings->screenSize = CSettings::SSIZE_1600x900;
+	CSettings::GetInstance()->UpdateWindowSize();
 
 	cLevelEditor = CLevelEditor::GetInstance();
 	cLevelGrid = CLevelGrid::GetInstance();
@@ -74,8 +78,6 @@ bool CLevelEditorState::Init(void)
 	cKeyboardInputHandler = CKeyboardInputHandler::GetInstance();
 	cKeyboardInputHandler->Init();
 
-	CreateIMGUI();
-
 	return true;
 }
 
@@ -84,10 +86,6 @@ bool CLevelEditorState::Init(void)
  */
 bool CLevelEditorState::Update(const double dElapsedTime)
 {
-	// Start the Dear ImGui frame
-	ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplGlfw_NewFrame();
-	ImGui::NewFrame();
 
 	ImGui::ShowDemoWindow();
 
@@ -111,7 +109,9 @@ bool CLevelEditorState::Update(const double dElapsedTime)
 
 	MoveCamera();
 	ScaleMap();
-	MouseInput();
+
+	if (!CImGuiWindow::GetInstance()->WantCaptureMouse())
+		MouseInput();
 
 	return true;
 }
@@ -132,11 +132,6 @@ void CLevelEditorState::Render(void)
 	cLevelGrid->Render();
 	cLevelGrid->PostRender();
 
-	// Rendering
-	ImGui::Render();
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
-
 }
 
 /**
@@ -147,33 +142,6 @@ void CLevelEditorState::Destroy(void)
 	cout << "CLevelEditorState::Destroy()\n" << endl;
 }
 
-bool CLevelEditorState::CreateIMGUI()
-{
-	// Setup Dear ImGui context
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
-
-	// Setup Dear ImGui style
-	ImGui::StyleColorsDark();
-	//ImGui::StyleColorsClassic();
-
-	// Setup Platform/Renderer bindings
-	ImGui_ImplGlfw_InitForOpenGL(CSettings::GetInstance()->pWindow, true);
-	const char* glsl_version = "#version 330";
-	ImGui_ImplOpenGL3_Init(glsl_version);
-
-	return true;
-}
-bool CLevelEditorState::DeleteIMGUI()
-{
-	// Cleanup
-	ImGui_ImplOpenGL3_Shutdown();
-	ImGui_ImplGlfw_Shutdown();
-	ImGui::DestroyContext();
-
-	return true;
-}
 
 void CLevelEditorState::MoveCamera(void)
 {

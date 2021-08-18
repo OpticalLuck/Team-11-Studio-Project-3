@@ -14,6 +14,8 @@
 // FPS Counter
 #include "TimeControl\FPSCounter.h"
 
+#include "ImGuiWindow/ImGuiWindow.h"
+
 struct GLFWwindow;
 
 class CSettings;
@@ -35,6 +37,8 @@ public:
 	int GetWindowWidth(void) const;
 	
 protected:
+	sImGuiWindowProperties ImGuiProperties;
+
 	// Declare timer for calculating time per frame
 	CStopWatch cStopWatch;
 
@@ -44,6 +48,8 @@ protected:
 	//CScene2D* cScene2D;
 	// The handler to the CFPSCounter instance
 	CFPSCounter* cFPSCounter;
+
+	CImGuiWindow* m_ImGuiWindow;
 
 	// Constructor
 	Application(void);

@@ -80,7 +80,6 @@ protected:
 
     // OpenGL Locations
     unsigned int VAO, VBO, EBO;
-    unsigned int quadVAO, quadVBO, quadEBO;
 
     // The texture ID in OpenGL
     unsigned int iTextureID;

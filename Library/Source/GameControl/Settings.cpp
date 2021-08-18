@@ -130,6 +130,10 @@ void CSettings::UpdateWindowSize()
 		iWindowWidth = 1600;
 		iWindowHeight = 1200;
 		break;
+	case SSIZE_1600x900:
+		iWindowWidth = 1600;
+		iWindowHeight = 900;
+		break;
 	}
 	glfwSetWindowSize(pWindow, iWindowWidth, iWindowHeight);
 }

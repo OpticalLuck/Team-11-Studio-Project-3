@@ -21,9 +21,6 @@ public:
 	virtual bool Update(const double dElapsedTime) = 0;
 	virtual void Render() = 0;
 	virtual void Destroy() = 0;
-	
-	virtual bool CreateIMGUI() = 0;
-	virtual bool DeleteIMGUI() = 0;
 
 };
 

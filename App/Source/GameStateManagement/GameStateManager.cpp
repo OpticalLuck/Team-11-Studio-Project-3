@@ -85,8 +85,6 @@ bool CGameStateManager::Update(const double dElapsedTime)
 			pauseGameState->Destroy();
 			pauseGameState = nullptr;
 
-			//Re initialize imgui context
-			activeGameState->CreateIMGUI();
 			//Update imgui components
 			if (activeGameState->Update(dElapsedTime) == false)
 				return false;
@@ -208,7 +206,6 @@ bool CGameStateManager::SetPauseGameState(const std::string& _name)
 	// Scene exist, set the next scene pointer to that scene
 	pauseGameState = GameStateMap[_name];
 	// Init the new pause CGameState
-	activeGameState->DeleteIMGUI();
 	pauseGameState->Init();
 
 	bPause = true;
