@@ -54,6 +54,15 @@ CMap2D::~CMap2D(void)
 	arrObject.clear();
 	arrGrid.clear();
 
+	//Deletion of background
+	for (unsigned i = 0; i < arrBackground.size(); i++) {
+		if (arrBackground[i]) {
+			delete arrBackground[i];
+			arrBackground[i] = nullptr;
+		}
+	}
+	arrBackground.clear();
+
 	// optional: de-allocate all resources once they've outlived their purpose:
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
@@ -77,10 +86,13 @@ bool CMap2D::Init(const unsigned int uiNumLevels,
 	arrLevelLimit.clear();
 	arrGrid.clear();
 	arrObject.clear();
+	arrBackground.clear();
+
 	for (unsigned i = 0; i < uiNumLevels; i++) {
 		arrLevelLimit.push_back(glm::i32vec2());
 		arrObject.push_back(std::vector<CObject2D*>());
 		arrGrid.push_back(std::vector<std::vector<CObject2D*>>());
+		arrBackground.push_back(nullptr);
 	}
 
 
@@ -284,8 +296,11 @@ void CMap2D::Render(void)
 
 		glm::vec2 actualPos = cSettings->ConvertIndexToUVSpace(objCamPos);
 
-		float clampX = 1.01f;
-		float clampY = 1.01f;
+		float clampOffset = cSettings->ConvertIndexToUVSpace(cSettings->x, 1, false) / 2;
+		clampOffset = (clampOffset + 1);
+
+		float clampX = 1.0f + clampOffset;
+		float clampY = 1.0f + clampOffset;
 		if (actualPos.x <= -clampX || actualPos.x >= clampX || actualPos.y <= -clampY || actualPos.y >= clampY)
 			continue;
 
@@ -489,13 +504,6 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 	doc = rapidcsv::Document(FileSystem::getPath(filename).c_str());
 
 	// Check if the sizes of CSV data matches the declared arrMapInfo sizes
-	/*if ((cSettings->NUM_TILES_XAXIS != (unsigned int)doc.GetColumnCount()) ||
-		(cSettings->NUM_TILES_YAXIS != (unsigned int)doc.GetRowCount()))
-	{
-		cout << "Sizes of CSV map does not match declared arrMapInfo sizes." << endl;
-		return false;
-	}*/
-
 	arrLevelLimit[uiCurLevel] = glm::i32vec2(doc.GetColumnCount(), doc.GetRowCount());
 
 	// Read the rows and columns of CSV data into arrMapInfo
@@ -504,10 +512,22 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 		// Read a row from the CSV file
 		std::vector<std::string> row = doc.GetRow<std::string>(uiRow);
 
+		//If iterating through first row, create BackgroundEntity if available
+		if (uiRow == 0) {
+			std::string dir = row[doc.GetColumnCount() - 1];
+			CBackgroundEntity* bgEntity = new CBackgroundEntity(dir);
+			bgEntity->SetShader("2DShader");
+
+			if (!bgEntity->Init(2.5,2.5))  //If initialisation fails, delete value
+				delete bgEntity;
+			else
+				arrBackground[uiCurLevel] = bgEntity; //Else put background into array
+		}
+
 		arrGrid[uiCurLevel].push_back(std::vector<CObject2D*>());
 		
 		// Load a particular CSV value into the arrMapInfo
-		for (unsigned int uiCol = 0; uiCol < (unsigned int)doc.GetColumnCount(); ++uiCol)
+		for (unsigned int uiCol = 0; uiCol < (unsigned int)doc.GetColumnCount() - 1; ++uiCol)
 		{
 			//Init of objects values
 			int currVal = (int)stoi(row[uiCol]);
@@ -554,6 +574,27 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 	}
 
 	return true;
+}
+
+void CMap2D::RenderBackground(void) {
+	if (arrBackground[uiCurLevel]) {
+		//Parallax background math
+		float spdVariantX = 0.1f; //Higher value = faster movement
+		float spdVariantY = spdVariantX;
+
+		float bgX = -camera->getCurrPos().x * spdVariantX;
+		float bgY = -camera->getCurrPos().y * spdVariantY;
+
+		bgX += (cSettings->NUM_TILES_XAXIS - 0.5f) / 2.f;
+		bgY += (cSettings->NUM_TILES_YAXIS - 0.5f) / 2.f;
+
+		glm::vec2 uvSpace = cSettings->ConvertIndexToUVSpace(glm::vec2(bgX, bgY));
+		arrBackground[uiCurLevel]->vec2UVCoordinate = uvSpace;
+
+		arrBackground[uiCurLevel]->PreRender();
+		arrBackground[uiCurLevel]->Render();
+		arrBackground[uiCurLevel]->PostRender();
+	}
 }
 
 /**

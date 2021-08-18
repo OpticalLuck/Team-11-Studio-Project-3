@@ -209,6 +209,14 @@ void CBoss2D::Render(void) {
 	glm::vec2 actualPos = IndexPos - cameraPos + offset;
 	actualPos = cSettings->ConvertIndexToUVSpace(actualPos);
 
+	float clampOffset = cSettings->ConvertIndexToUVSpace(cSettings->x, 1, false) / 2;
+	clampOffset = (clampOffset + 1);
+
+	float clampX = 1.0f + clampOffset;
+	float clampY = 1.0f + clampOffset;
+	if (actualPos.x <= -clampX || actualPos.x >= clampX || actualPos.y <= -clampY || actualPos.y >= clampY)
+		return; //Exit code if enemy is too far to be rendered
+
 	transform = glm::translate(transform, glm::vec3(actualPos.x, actualPos.y, 0.f));
 
 	/*if (facing == LEFT) //ROTATION CODE: UNCOMMENT IF NEEDED

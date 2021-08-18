@@ -256,6 +256,9 @@ void CScene2D::PreRender(void)
  */
 void CScene2D::Render(void)
 {
+	//Call the Map's background (If there's any)
+	cMap2D->RenderBackground();
+
 	cEntityManager->RenderEnemy();
 	cEntityManager->RenderClone();
 	cEntityManager->RenderPlayer();

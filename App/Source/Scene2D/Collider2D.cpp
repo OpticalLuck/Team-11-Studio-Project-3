@@ -16,6 +16,7 @@ Collider2D::Collider2D()
 	, bIsDisplayed(true)
 	, fLineWidth(1.0f)
 	, colliderEnabled(true)
+	, cSettings(NULL)
 {
 	sLineShaderName = "LineShader";
 }
@@ -53,6 +54,8 @@ bool Collider2D::Init()
 	glEnableVertexAttribArray(1);
 	
 	glLineWidth(fLineWidth);
+
+	cSettings = CSettings::GetInstance();
 	 
 	return true;
 }
@@ -188,8 +191,11 @@ void Collider2D::Render(void)
 
 	glm::vec2 actualPos = CSettings::GetInstance()->ConvertIndexToUVSpace(objCamPos);
 
-	float clampX = 1.001f;
-	float clampY = 1.001f;
+	float clampOffset = cSettings->ConvertIndexToUVSpace(cSettings->x, 1, false) / 2;
+	clampOffset = (clampOffset + 1);
+
+	float clampX = 1.0f + clampOffset;
+	float clampY = 1.0f + clampOffset;
 	if (fabs(actualPos.x) < clampX && fabs(actualPos.y) < clampY)
 	{
 		transform = glm::mat4(1.f);

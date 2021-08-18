@@ -14,6 +14,8 @@
 
 #include <string>
 
+class CSettings;
+
 class Collider2D
 {
 public:
@@ -65,6 +67,7 @@ protected:
 	std::string sLineShaderName;
 	unsigned int VAO, VBO;
 
-
+	//Handlers
+	CSettings* cSettings;
 };
 

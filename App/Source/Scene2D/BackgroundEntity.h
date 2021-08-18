@@ -27,7 +27,7 @@ public:
 	~CBackgroundEntity();
 
 	// Init
-	bool Init(void);
+	bool Init(float scaleX = 2, float scaleY = 2);
 protected:
 	std::string textureName;
 };

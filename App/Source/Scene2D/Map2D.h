@@ -39,6 +39,9 @@
 //Include camera
 #include "Camera2D.h"
 
+//Include background entity
+#include "BackgroundEntity.h"
+
 // Include files for AStar
 #include <queue>
 #include <functional>
@@ -108,6 +111,9 @@ public:
 	// PostRender
 	void PostRender(void);
 
+	//Render background
+	void RenderBackground(void);
+
 	// Set the specifications of the map
 	void SetNumTiles(const CSettings::AXIS sAxis, const unsigned int uiValue);
 	void SetNumSteps(const CSettings::AXIS sAxis, const unsigned int uiValue);
@@ -164,6 +170,9 @@ protected:
 
 	//Vector array that stores limits of each level
 	std::vector<glm::i32vec2> arrLevelLimit;
+
+	//Vector array storing BackgroundEntity
+	std::vector<CBackgroundEntity*> arrBackground;
 
 	// The current level
 	unsigned int uiCurLevel;
