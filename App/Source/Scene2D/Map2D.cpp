@@ -518,7 +518,7 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 			CBackgroundEntity* bgEntity = new CBackgroundEntity(dir);
 			bgEntity->SetShader("2DShader");
 
-			if (!bgEntity->Init(2.5,2.5))  //If initialisation fails, delete value
+			if (!bgEntity->Init(3.6,3.6))  //If initialisation fails, delete value
 				delete bgEntity;
 			else
 				arrBackground[uiCurLevel] = bgEntity; //Else put background into array
@@ -579,18 +579,34 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 void CMap2D::RenderBackground(void) {
 	if (arrBackground[uiCurLevel]) {
 		//Parallax background math
-		float spdVariantX = 0.1f; //Higher value = faster movement
-		float spdVariantY = spdVariantX;
+		glm::vec2 allowance = glm::vec2((arrBackground[uiCurLevel]->scaleX - 2), (arrBackground[uiCurLevel]->scaleY - 2)); //Get allowance for offsetting
 
-		float bgX = -camera->getCurrPos().x * spdVariantX;
-		float bgY = -camera->getCurrPos().y * spdVariantY;
+		//Scaling of allowance. 0.f to 1.f
+		float allowanceScaleX = 1.f;
+		float allowanceScaleY = 0.5f;
 
-		bgX += (cSettings->NUM_TILES_XAXIS - 0.5f) / 2.f;
-		bgY += (cSettings->NUM_TILES_YAXIS - 0.5f) / 2.f;
+		allowance.x *= allowanceScaleX;
+		allowance.y *= allowanceScaleY;
 
-		glm::vec2 uvSpace = cSettings->ConvertIndexToUVSpace(glm::vec2(bgX, bgY));
+		//Get beginning and end (In terms of how far the camera can go
+		glm::vec2 beginning = glm::vec2((float(cSettings->NUM_TILES_XAXIS) / 2.f) - 1.f, (float(cSettings->NUM_TILES_YAXIS) / 2.f) - 1.f);
+		glm::vec2 end = (glm::vec2)arrLevelLimit[uiCurLevel] - beginning;
+
+		//Scaling of position
+		glm::vec2 total = end - beginning;
+		glm::vec2 curr = camera->getCurrPos() - beginning;
+
+		float uvSpaceX = (curr.x / total.x) * allowance.x;
+		float uvSpaceY = (curr.y / total.y) * allowance.y;
+
+		uvSpaceX -= allowance.x / 2.f;
+		uvSpaceY -= allowance.y / 2.f;
+
+		glm::vec2 uvSpace = glm::vec2(uvSpaceX, uvSpaceY);
+
 		arrBackground[uiCurLevel]->vec2UVCoordinate = uvSpace;
 
+		//Rendering
 		arrBackground[uiCurLevel]->PreRender();
 		arrBackground[uiCurLevel]->Render();
 		arrBackground[uiCurLevel]->PostRender();

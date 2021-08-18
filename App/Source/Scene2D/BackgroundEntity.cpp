@@ -19,6 +19,8 @@ CBackgroundEntity::CBackgroundEntity(std::string name)
 {
 	transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
 	textureName = name;
+
+	scaleX = scaleY = 2;
 }
 
 CBackgroundEntity::~CBackgroundEntity()
@@ -39,6 +41,8 @@ bool CBackgroundEntity::Init(float scaleX, float scaleY)
 
 	//CS: Create the Quad Mesh using the mesh builder
 	mesh = CMeshBuilder::GenerateQuad(glm::vec4(1, 1, 1, 1), scaleX, scaleY);
+	this->scaleX = scaleX;
+	this->scaleY = scaleY;
 
 	return true;
 }
