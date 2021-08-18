@@ -35,7 +35,6 @@ public:
 	// Line width
 	float fLineWidth;
 
-	bool colliderEnabled;
 
 	Collider2D();
 	virtual ~Collider2D();
@@ -60,10 +59,18 @@ public:
 	virtual void Render(void);
 	// PostRender
 	virtual void PostRender(void);
+
+
+	bool GetbEnabled() const;
+	void SetbEnabled(bool bEnabled);
+
+	glm::vec2 GetPosition() const;
+	void SetPosition(glm::vec2 position);
 protected:
 	std::string sLineShaderName;
 	unsigned int VAO, VBO;
 
+	bool bEnabled;
 
 };
 

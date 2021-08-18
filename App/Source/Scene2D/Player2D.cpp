@@ -161,8 +161,8 @@ bool CPlayer2D::Init(void)
 
 	cKeyboardInputHandler = CKeyboardInputHandler::GetInstance();
 
-	collider2D.vec2Dimensions = glm::vec2(0.20000f,0.50000f);
-	collider2D.Init();
+	collider2D->vec2Dimensions = glm::vec2(0.20000f,0.50000f);
+	collider2D->Init();
 	cPhysics2D.Init(&vTransform);
 
 	return true;
@@ -229,7 +229,7 @@ bool CPlayer2D::Init(glm::i32vec2 spawnpoint)
 
 	cKeyboardInputHandler = CKeyboardInputHandler::GetInstance();
 
-	collider2D.Init();
+	collider2D->Init();
 	cPhysics2D.Init(&vTransform);
 
 	return true;
@@ -297,7 +297,7 @@ void CPlayer2D::Update(const double dElapsedTime)
 	cPhysics2D.Update(dElapsedTime);
 
 	// Update Collider2D Position
-	collider2D.position = glm::vec3(vTransform, 0.f);
+	collider2D->position = glm::vec3(vTransform, 0.f);
 
 	int range = 2;
 
@@ -316,12 +316,12 @@ void CPlayer2D::Update(const double dElapsedTime)
 
 			if (cMap2D->GetCObject(colCheck, rowCheck))
 			{
-  				if (collider2D.CollideWith(&cMap2D->GetCObject(colCheck, rowCheck)->getCollider()))
+  				if (collider2D->CollideWith(cMap2D->GetCObject(colCheck, rowCheck)->GetCollider()))
 				{
 					//Collider2D::CorrectedAxis axis = collider2D.ResolveCollision(cMap2D->GetCollider(uiRow, uiCol));
-					collider2D.ResolveCollisionX(&cMap2D->GetCObject(colCheck, rowCheck)->getCollider());
+					collider2D->ResolveCollisionX(cMap2D->GetCObject(colCheck, rowCheck)->GetCollider());
 					// Resolve transform to corrected position in collider
-					vTransform = collider2D.position;
+					vTransform = collider2D->position;
 				}
 			}
 		}
@@ -340,12 +340,12 @@ void CPlayer2D::Update(const double dElapsedTime)
 
  			if (cMap2D->GetCObject(colCheck, rowCheck))
 			{
-				if (collider2D.CollideWith(&cMap2D->GetCObject(colCheck, rowCheck)->getCollider()))
+				if (collider2D->CollideWith(cMap2D->GetCObject(colCheck, rowCheck)->GetCollider()))
 				{
 					cPhysics2D.SetVelocity(glm::vec2(cPhysics2D.GetVelocity().x, 0));
-					collider2D.ResolveCollisionY(&cMap2D->GetCObject(colCheck, rowCheck)->getCollider());
+					collider2D->ResolveCollisionY(cMap2D->GetCObject(colCheck, rowCheck)->GetCollider());
 					// Resolve transform to corrected position in collider
-					vTransform = collider2D.position;
+					vTransform = collider2D->position;
 				}
 			}
 		}

@@ -26,7 +26,7 @@ CEntity2D::CEntity2D(ENTITY_TYPE type)
 	, iTextureID(0)
 	, cSettings(NULL)
 	, mesh(NULL)
-	, collidable(false)
+	, collider2D(NULL)
 {
 	transform = glm::mat4(1.0f);	// make sure to initialize matrix to identity matrix first
 
@@ -35,6 +35,8 @@ CEntity2D::CEntity2D(ENTITY_TYPE type)
 
 	// Initialise vec2UVCoordinate
 	vec2UVCoordinate = glm::vec2(0.0f);
+
+	collider2D = new Collider2D();
 }
 
 //CEntity2D::CEntity2D(ENTITY_TYPE type)
@@ -168,12 +170,12 @@ void CEntity2D::PostRender(void)
 
 void CEntity2D::RenderCollider()
 {
-	collider2D.PreRender();
-	collider2D.Render();
-	collider2D.PostRender();
+	collider2D->PreRender();
+	collider2D->Render();
+	collider2D->PostRender();
 }
 
-Collider2D CEntity2D::getCollider()
+Collider2D* CEntity2D::GetCollider()
 {
 	return collider2D;
 }

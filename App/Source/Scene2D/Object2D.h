@@ -17,22 +17,21 @@
 // Include CEntity2D
 #include "Primitives/Entity2D.h"
 
-class CMap2D;
-
 class CObject2D : public CEntity2D
 {
-	friend class CMap2D;
-
 	public:
 		CObject2D(void);
-		CObject2D(int, bool);
+		CObject2D(int);
 		~CObject2D(void); //Do nothing for now
 
-		void setIndexSpace(glm::vec2);
+		glm::vec2 GetIndexSpace();
+		void SetIndexSpace(glm::vec2 indexSpace);
+
+		int Getvalue() const;
+		void SetValue(int value);
 
 	private:
 		int value;
-		bool collidable;
 
 		float width;
 		float height;

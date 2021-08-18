@@ -15,7 +15,7 @@ Collider2D::Collider2D()
 	, vec4Colour(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f))
 	, bIsDisplayed(true)
 	, fLineWidth(1.0f)
-	, colliderEnabled(true)
+	, bEnabled(true)
 {
 	sLineShaderName = "LineShader";
 }
@@ -62,15 +62,13 @@ void Collider2D::SetLineShader(const std::string& name)
 
 bool Collider2D::CollideWith(Collider2D* object)
 {
-	if (object->colliderEnabled)
+	if (object->bEnabled)
 	{
 		float threshold = 0.01f;
 		//vec2Dimensions is half width and half height	
 		bool collisionX = abs(position.x - object->position.x) <= vec2Dimensions.x + object->vec2Dimensions.x - threshold;
 		bool collisionY = abs(position.y - object->position.y) <= vec2Dimensions.y + object->vec2Dimensions.y;
 
-		if (collisionX && collisionY)
- 			cout << "help";
 		return collisionX && collisionY;
 	}
 	
@@ -206,4 +204,24 @@ void Collider2D::Render(void)
 
 void Collider2D::PostRender(void)
 {
+}
+
+bool Collider2D::GetbEnabled() const
+{
+	return bEnabled;
+}
+
+void Collider2D::SetbEnabled(bool bEnabled)
+{
+	this->bEnabled = bEnabled;
+}
+
+glm::vec2 Collider2D::GetPosition() const
+{
+	return position;
+}
+
+void Collider2D::SetPosition(glm::vec2 position)
+{
+	this->position = position;
 }

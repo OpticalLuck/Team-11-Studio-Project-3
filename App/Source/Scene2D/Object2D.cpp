@@ -2,15 +2,13 @@
 
 CObject2D::CObject2D(void) {
 	value = 0;
-	collidable = true;
 	indexSpace = glm::vec2();
 
 	width = height = 1.f; //Default value is 1 x 1
 }
 
-CObject2D::CObject2D(int value, bool collidable) {
+CObject2D::CObject2D(int value) {
 	this->value = value;
-	this->collidable = collidable;
 
 	indexSpace = glm::i32vec2();
 }
@@ -19,6 +17,21 @@ CObject2D::~CObject2D(void) {
 	//Do nothing for now
 }
 
-void CObject2D::setIndexSpace(glm::vec2 indexSpace) {
+glm::vec2 CObject2D::GetIndexSpace()
+{
+	return indexSpace;
+}
+
+void CObject2D::SetIndexSpace(glm::vec2 indexSpace) {
 	this->indexSpace = indexSpace;
+}
+
+int CObject2D::Getvalue() const
+{
+	return value;
+}
+
+void CObject2D::SetValue(int value)
+{
+	this->value = value;
 }

@@ -247,8 +247,8 @@ void CMap2D::Render(void)
 	glm::vec2 cameraPos = camera->getCurrPos();
 
 	for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++) {
-		const CObject2D* currObj = arrObject[uiCurLevel][i];
-		glm::vec2 objCamPos = currObj->indexSpace - cameraPos + offset;
+		CObject2D* currObj = arrObject[uiCurLevel][i];
+		glm::vec2 objCamPos = currObj->GetIndexSpace() - cameraPos + offset;
 
 		glm::vec2 actualPos = cSettings->ConvertIndexToUVSpace(objCamPos);
 
@@ -284,9 +284,9 @@ void CMap2D::PostRender(void)
 	{
 		CObject2D* currObj = arrObject[uiCurLevel][i];
 
-		currObj->collider2D.PreRender();
-		currObj->collider2D.Render();
-		currObj->collider2D.PostRender();
+		currObj->GetCollider()->PreRender();
+		currObj->GetCollider()->Render();
+		currObj->GetCollider()->PostRender();
 	}
 }
 
@@ -313,9 +313,9 @@ void CMap2D::SetMapInfo(const unsigned int uiRow, const unsigned int uiCol, cons
 	for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++) {
 		CObject2D* obj = arrObject[uiCurLevel][i];
 
-		if (obj->indexSpace.x == uiCol && obj->indexSpace.y == uiRow) {
+		if (obj->GetIndexSpace().x == uiCol && obj->GetIndexSpace().y == uiRow) {
 			if (iValue == 0) {
-				arrGrid[uiCurLevel][GetLevelRow() - obj->indexSpace.y - 1][obj->indexSpace.x] = nullptr;
+				arrGrid[uiCurLevel][GetLevelRow() - obj->GetIndexSpace().y - 1][obj->GetIndexSpace().x] = nullptr;
 
 				delete obj;
 				arrObject[uiCurLevel][i] = nullptr;
@@ -325,7 +325,7 @@ void CMap2D::SetMapInfo(const unsigned int uiRow, const unsigned int uiCol, cons
 				return;
 			}
 
-			obj->value = iValue;
+			obj->SetValue(iValue);
 			return;
 		}
 	}
@@ -334,8 +334,8 @@ void CMap2D::SetMapInfo(const unsigned int uiRow, const unsigned int uiCol, cons
 		return;
 
 	CObject2D* newObj = new CObject2D;
-	newObj->setIndexSpace(glm::i32vec2(uiCol, uiRow));
-	newObj->value = iValue;
+	newObj->SetIndexSpace(glm::i32vec2(uiCol, uiRow));
+	newObj->SetValue(iValue);
 
 	arrObject[uiCurLevel].push_back(newObj);
 }
@@ -363,10 +363,10 @@ int CMap2D::GetMapInfo(const unsigned int uiRow, const unsigned int uiCol, const
 {
 	//Check if theres object on tile
 	for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++) {
-		const CObject2D* obj = arrObject[uiCurLevel][i];
+		CObject2D* obj = arrObject[uiCurLevel][i];
 
-		if (obj->indexSpace.x == uiCol && obj->indexSpace.y == uiRow)
-			return obj->value;
+		if (obj->GetIndexSpace().x == uiCol && obj->GetIndexSpace().y == uiRow)
+			return obj->Getvalue();
 	}
 
 	//Return false if theres nothing on the tile
@@ -407,30 +407,24 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 			bool currCollide = false;
 
 			CObject2D* currObj = new CObject2D();
-			currObj->value = currVal;
-			if (currVal >= 100)
-				currCollide = true;
-			currObj->collidable = currCollide;
+			currObj->SetValue(currVal);
 
 			//Position of values
 			glm::vec2 currIndex;
 			currIndex.x = (float)uiCol;
 			currIndex.y = (float)doc.GetRowCount() - (float)uiRow - 1.f;
 
-			currObj->setIndexSpace(currIndex);
+			currObj->SetIndexSpace(currIndex);
 
 			//Collider2D initialisation
-			currObj->collider2D.Init();
-			currObj->collider2D.position = glm::vec3(
-				currIndex.x  + 0.5f,
-				currIndex.y  + 0.5f,
-				0.f
-			);
+			currObj->GetCollider()->Init();
+			currObj->GetCollider()->SetPosition(glm::vec2(currIndex.x + 0.5f,
+				currIndex.y + 0.5f));
 
 			if (currVal >= 100 && currVal < 300)
-				currObj->collider2D.colliderEnabled = true;
-			else
-				currObj->collider2D.colliderEnabled = false;
+				currObj->GetCollider()->SetbEnabled(true);
+			else					 
+				currObj->GetCollider()->SetbEnabled(false);
 			
 			arrGrid[uiCurLevel][uiRow].push_back(nullptr);
 
@@ -467,7 +461,7 @@ bool CMap2D::SaveMap(string filename, const unsigned int uiCurLevel)
 	for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++) {
 		CObject2D* obj = arrObject[uiCurLevel][i];
 
-		doc.SetCell(obj->indexSpace.x, cSettings->NUM_TILES_YAXIS - 1 - obj->indexSpace.y, obj->value);
+		doc.SetCell(obj->GetIndexSpace().x, cSettings->NUM_TILES_YAXIS - 1 - obj->GetIndexSpace().y, obj->Getvalue());
 	}
 
 	// Save the rapidcsv::Document to a file
@@ -488,9 +482,9 @@ bool CMap2D::FindValue(const int iValue, unsigned int& uirRow, unsigned int& uir
 	for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++) {
 		CObject2D* obj = arrObject[uiCurLevel][i];
 
-		if (obj->value == iValue) {
-			uirCol = obj->indexSpace.x;
-			uirRow = obj->indexSpace.y; //For now keep the same
+		if (obj->Getvalue() == iValue) {
+			uirCol = obj->GetIndexSpace().x;
+			uirRow = obj->GetIndexSpace().y; //For now keep the same
 
 			return true;
 		}
@@ -509,6 +503,7 @@ void CMap2D::SetCurrentLevel(unsigned int uiCurLevel)
 		this->uiCurLevel = uiCurLevel;
 	}
 }
+
 /**
  @brief Get current level
  */
@@ -568,7 +563,7 @@ bool CMap2D::LoadTexture(const char* filename, const int iTextureCode)
 }
 
 void CMap2D::RenderTile(const CObject2D* obj) {
-	glBindTexture(GL_TEXTURE_2D, MapOfTextureIDs.at(obj->value));
+	glBindTexture(GL_TEXTURE_2D, MapOfTextureIDs.at(obj->Getvalue()));
 
 	glBindVertexArray(VAO);
 	//CS: Render the tile
