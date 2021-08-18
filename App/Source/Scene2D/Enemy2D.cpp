@@ -149,17 +149,6 @@ void CEnemy2D::Update(const double dElapsedTime)
 	runtimer += dElapsedTime;
 	jumptimer += dElapsedTime;
 
-	////hit
-	//if (cPhysics2D.CalculateMicroSteps(vTransform, i32vec2NumMicroSteps, cPlayer2D->vTransform, cPlayer2D->i32vec2NumMicroSteps) < 12.0f)
-	//{
-	//	if (cPlayer2D->Getstate() == CPlayer2D::STATE::S_ATTACK && health > 0)
-	//	{
-	//		sCurrentFSM = HIT;
-	//		iFSMCounter = 0;
-	//		CSoundController::GetInstance()->PlaySoundByID(5);
-	//	}
-	//}
-
  	switch (sCurrentFSM)
 	{
 	case IDLE:

@@ -190,7 +190,7 @@ bool CScene2D::Update(const double dElapsedTime)
 
 	//Camera work
 	cameraHandler->UpdateTarget(cPlayer2D->vTransform);
-	cameraHandler->Update(dElapsedTime);
+	cameraHandler->Update((float)dElapsedTime);
 	cameraHandler->ClampCamPos(cMap2D->GetLevelLimit());
 
 	// Check if the game should go to the next level

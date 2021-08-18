@@ -485,7 +485,7 @@ void CPlayer2D::MovementUpdate(double dt)
 	state = S_IDLE;
 	
 	std::vector<std::array<bool, KEYBOARD_INPUTS::INPUT_TOTAL>> keyboardInputs = (bIsClone) ? m_CloneKeyboardInputs : cKeyboardInputHandler->GetAllInputs();
-	if (iTempFrameCounter >= keyboardInputs.size())
+	if ((unsigned)iTempFrameCounter >= keyboardInputs.size())
 		return;
 
 	glm::vec2 velocity = cPhysics2D.GetVelocity();

@@ -45,6 +45,15 @@ CMap2D::~CMap2D(void)
 	// Delete AStar lists
 	DeleteAStarLists();
 
+	for (unsigned i = 0; i < arrObject.size(); i++) {
+		for (unsigned x = 0; x < arrObject[i].size(); x++) {
+			delete arrObject[i][x];
+			arrObject[i][x] = nullptr;
+		}
+	} 
+	arrObject.clear();
+	arrGrid.clear();
+
 	// optional: de-allocate all resources once they've outlived their purpose:
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
@@ -583,8 +592,8 @@ bool CMap2D::FindValue(const int iValue, unsigned int& uirRow, unsigned int& uir
 		CObject2D* obj = arrObject[uiCurLevel][i];
 
 		if (obj->value == iValue) {
-			uirCol = obj->indexSpace.x;
-			uirRow = obj->indexSpace.y; //For now keep the same
+			uirCol = (unsigned int)obj->indexSpace.x;
+			uirRow = (unsigned int)obj->indexSpace.y; //For now keep the same
 
 			return true;
 		}
