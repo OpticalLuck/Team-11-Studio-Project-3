@@ -28,7 +28,7 @@ class CSettings : public CSingletonTemplate<CSettings>
 {
 	friend CSingletonTemplate<CSettings>;
 public:
-	enum AXIS
+	enum class AXIS
 	{
 		x = 0,
 		y = 1,

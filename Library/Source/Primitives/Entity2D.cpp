@@ -33,12 +33,12 @@ CEntity2D::CEntity2D(ENTITY_TYPE type)
 	// Initialise vecIndex
 	vTransform = glm::i32vec2(0);
 
+	vRotate = 0.f;
+
 	collider2D = new Collider2D();
 }
 
-//CEntity2D::CEntity2D(ENTITY_TYPE type)
-//{
-//}
+
 
 
 /**
@@ -71,6 +71,9 @@ bool CEntity2D::Init(void)
 
 	//Draw a quad for a default entity2D
 	mesh = CMeshBuilder::GenerateQuad(glm::vec4(1, 1, 1, 1), 1.0f);
+
+	vRotate = 0.f;
+
 	/*
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);

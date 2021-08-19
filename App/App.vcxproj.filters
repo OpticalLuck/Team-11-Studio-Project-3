@@ -110,6 +110,9 @@
     <ClCompile Include="Source\Scene2D\Collider2D.cpp">
       <Filter>Entity2D</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Scene2D\Boss2D.cpp">
+      <Filter>Entity2D</Filter>
+	</ClCompile>
     <ClCompile Include="Source\Factory\ObjectFactory.cpp">
       <Filter>Factory</Filter>
     </ClCompile>
@@ -127,7 +130,7 @@
     </ClCompile>
     <ClCompile Include="Source\Scene2D\EntityManager.cpp">
       <Filter>Manager2D</Filter>
-    </ClCompile>
+	</ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h">
@@ -199,6 +202,9 @@
     <ClInclude Include="Source\Scene2D\Collider2D.h">
       <Filter>Entity2D</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Scene2D\Boss2D.h">
+      <Filter>Entity2D</Filter>
+	</ClInclude>
     <ClInclude Include="Source\Factory\ObjectFactory.h">
       <Filter>Factory</Filter>
     </ClInclude>
