@@ -70,7 +70,7 @@ bool Collider2D::CollideWith(Collider2D* object)
 		bool collisionY = abs(position.y - object->position.y) <= vec2Dimensions.y + object->vec2Dimensions.y;
 
 		if (collisionX && collisionY)
- 			cout << "help";
+ 			//cout << "help";
 		return collisionX && collisionY;
 	}
 	

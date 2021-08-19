@@ -74,6 +74,8 @@ public:
 	void DeleteIMGUI();
 
 	bool isCompleted;
+
+	float fCooldown = 0.f;
 protected:
 	// The handler containing the instance of the 2D Map
 	CMap2D* cMap2D;

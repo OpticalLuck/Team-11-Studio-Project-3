@@ -133,7 +133,6 @@ void CGUI_Scene2D::Update(const double dElapsedTime)
 		ImGuiWindowFlags_NoResize |
 		ImGuiWindowFlags_NoCollapse |
 		ImGuiWindowFlags_NoScrollbar;
-	ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1.f,0.f,0.f,1.f));
 	ImGui::Begin("Shuriken", NULL, inventoryWindowFlags);
 	ImGui::SetWindowPos(ImVec2(cSettings->iWindowWidth * 0.03f, cSettings->iWindowHeight * 0.92f));
 	ImGui::SetWindowSize(ImVec2(200.0f * relativeScale_x, 25.0f * relativeScale_y));
@@ -144,7 +143,7 @@ void CGUI_Scene2D::Update(const double dElapsedTime)
 	ImGui::SetWindowFontScale(1.5f * relativeScale_y);
 	ImGui::TextColored(ImVec4(1, 1, 0, 1), "Shuriken: %d", cInventoryItem->GetCount());
 	ImGui::End();
-	ImGui::PopStyleColor(2);
+	ImGui::PopStyleColor();
 
 
 	//potion 1

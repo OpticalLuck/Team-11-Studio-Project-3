@@ -5,6 +5,7 @@
 @brief Constructor
 */
 CInventoryManager::CInventoryManager(void) 
+	: iItemIndex(1)
 {
 }
 
@@ -124,17 +125,20 @@ int CInventoryManager::GetItemIndex(void)
 void CInventoryManager::NavigateIndex(string direction)
 {
 	if (direction == "DOWN")
+	{
 		iItemIndex += 1;
-	else if (direction == "UP")
+		if (iItemIndex > 2)
+			iItemIndex = 1;
+	}
+	if (direction == "UP")
+	{
 		iItemIndex -= 1;
-	else
-		return;
+		if (iItemIndex <= 0)
+			iItemIndex = 2;
+	}
 
-	if (iItemIndex < 0)
-		iItemIndex == 1;
-	if (iItemIndex > 2)
-		iItemIndex == 1;
 }
+
 
 
 

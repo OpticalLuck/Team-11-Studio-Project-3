@@ -47,8 +47,7 @@ protected:
 	// Destructor
 	virtual ~CInventoryManager(void);
 
-	int iItemIndex = 1;
-
+	int iItemIndex;
 
 
 
