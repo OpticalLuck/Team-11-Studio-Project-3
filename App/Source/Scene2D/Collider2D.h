@@ -111,9 +111,13 @@ public:
 
 	glm::vec2 GetPosition() const;
 	void SetPosition(glm::vec2 position);
+
+	void SetAngle(float ang);
 protected:
 	std::string sLineShaderName;
 	unsigned int VAO, VBO;
+
+	float angle;
 
 	//Handlers
 	CSettings* cSettings;

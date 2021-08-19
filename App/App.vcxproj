@@ -32,6 +32,7 @@
     <ClCompile Include="Source\Scene2D\Camera2D.cpp" />
     <ClCompile Include="Source\Scene2D\Collider2D.cpp" />
     <ClCompile Include="Source\Scene2D\Enemy2D.cpp" />
+    <ClCompile Include="Source\Scene2D\EnemyBullet2D.cpp" />
     <ClCompile Include="Source\Scene2D\EntityManager.cpp" />
     <ClCompile Include="Source\Scene2D\GameManager.cpp" />
     <ClCompile Include="Source\Scene2D\GUI_Scene2D.cpp" />
@@ -69,6 +70,7 @@
     <ClInclude Include="Source\Scene2D\Camera2D.h" />
     <ClInclude Include="Source\Scene2D\Collider2D.h" />
     <ClInclude Include="Source\Scene2D\Enemy2D.h" />
+    <ClInclude Include="Source\Scene2D\EnemyBullet2D.h" />
     <ClInclude Include="Source\Scene2D\EntityManager.h" />
     <ClInclude Include="Source\Scene2D\GameManager.h" />
     <ClInclude Include="Source\Scene2D\GUI_Scene2D.h" />

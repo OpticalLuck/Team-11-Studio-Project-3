@@ -46,7 +46,7 @@ class Camera2D;
 #include <map>
 #include <array>
 #include "../KeyboardInputHandler/CKeyboardInputHandler.h"
-
+#include "Inputs/MouseController.h"
 class CPlayer2D : public CEntity2D
 {
 public:
@@ -116,6 +116,7 @@ protected:
 	};
 
 	CKeyboardInputHandler* cKeyboardInputHandler;
+	CMouseController* cMouseController;
 	std::vector<std::array<bool, KEYBOARD_INPUTS::INPUT_TOTAL>> m_CloneKeyboardInputs;
 
 	int iTempFrameCounter; // move to game manager/scene2D/PlayGameState later

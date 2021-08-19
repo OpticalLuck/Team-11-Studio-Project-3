@@ -71,6 +71,9 @@ bool CEntityManager::EntityManagerInit(void)
 	return true;
 }
 
+void CEntityManager::PushEnemy(CEnemy2D* enemy) {
+	m_enemyList.push_back(enemy);
+}
 
 bool CEntityManager::Clone(void)
 {
@@ -152,6 +155,8 @@ void CEntityManager::RenderEnemy(void)
 		m_enemyList[i]->PreRender();
 		m_enemyList[i]->Render();
 		m_enemyList[i]->PostRender();
+
+		m_enemyList[i]->RenderCollider();
 	}
 
 	if (cBoss2D) {
@@ -210,10 +215,30 @@ void CEntityManager::Update(const double dElapsedTime)
 			m_enemyList.erase(m_enemyList.begin() + i);
 		}
 	}
-	for (unsigned i = 0; i < m_enemyList.size(); i++)
+
+	auto itEnemy = m_enemyList.begin();
+	while (itEnemy != m_enemyList.end()) {
+		CEnemy2D* enemy = *itEnemy;
+		enemy->Update(dElapsedTime);
+
+		EnemyBullet2D* bullet = dynamic_cast<EnemyBullet2D*>(enemy);
+
+		if (bullet && bullet->OutOfWorld()) {
+			delete bullet;
+			enemy = nullptr;
+			bullet = nullptr;
+			*itEnemy = nullptr;
+			itEnemy = m_enemyList.erase(itEnemy); //Remove value and delete bullet if bullet is out of world space
+		}
+		else {
+			++itEnemy; //Else, increment iterator
+		}
+	}
+
+	/*for (unsigned i = 0; i < m_enemyList.size(); i++)
 	{
 		m_enemyList[i]->Update(dElapsedTime);
-	}
+	}*/
 
 	if (cKeyboardController->IsKeyPressed(GLFW_KEY_C))
 	{

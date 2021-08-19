@@ -151,7 +151,7 @@ protected:
 	virtual ~CMap2D(void);
 
 	// Render a tile
-	void RenderTile(const CObject2D obj);
+	void RenderTile(const CObject2D& obj);
 
 };
 

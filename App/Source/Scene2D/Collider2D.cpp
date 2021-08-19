@@ -43,6 +43,7 @@ Collider2D::Collider2D()
 	, fLineWidth(1.0f)
 	, cSettings(NULL)
 	, bEnabled(true)
+	, angle(0.f)
 {
 	sLineShaderName = "LineShader";
 	colliderType = COLLIDER_QUAD;
@@ -81,6 +82,8 @@ bool Collider2D::Init()
 	glLineWidth(fLineWidth);
 
 	cSettings = CSettings::GetInstance();
+
+	angle = 0;
 	 
 	return true;
 }
@@ -88,6 +91,10 @@ bool Collider2D::Init()
 void Collider2D::SetLineShader(const std::string& name)
 {
 	sLineShaderName = name;
+}
+
+void Collider2D::SetAngle(float ang) {
+	angle = ang;
 }
 
 Collision Collider2D::CollideWith(Collider2D* object)
@@ -261,6 +268,7 @@ void Collider2D::Render(void)
 	{
 		transform = glm::mat4(1.f);
 		transform = glm::translate(transform, glm::vec3(actualPos.x, actualPos.y, 0.f));
+		transform = glm::rotate(transform, angle, glm::vec3(0, 0, 1));
 		transform = glm::scale(transform, glm::vec3(CSettings::GetInstance()->TILE_WIDTH, CSettings::GetInstance()->TILE_HEIGHT, 1.f));
 		CShaderManager::GetInstance()->activeShader->setMat4("transform", transform);
 

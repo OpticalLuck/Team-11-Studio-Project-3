@@ -64,7 +64,7 @@ class CBoss2D : public CEnemy2D
 		bool isSeen;
 
 		float bulletAng; //Angle of which where the bullet will come from
-		int maxBulletTimer; //Timer in terms of frames
+		int maxBulletTimer[(int)ATK::A_TOTAL]; //Timer in terms of frames
 		int bulletTimer;
 
 		//Rendering
@@ -76,7 +76,6 @@ class CBoss2D : public CEnemy2D
 		bool bIsActive;
 
 		//Handlers
-		Camera2D* camera;
 		CEntityManager* cEntityManager;
 
 		//Functions

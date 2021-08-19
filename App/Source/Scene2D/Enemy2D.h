@@ -43,7 +43,7 @@ public:
 	virtual ~CEnemy2D(void);
 
 	// Init
-	bool Init(void);
+	virtual bool Init(void);
 
 	// Update
 	virtual void Update(const double dElapsedTime);
@@ -102,6 +102,9 @@ protected:
 
 	// Handler to the CMap2D instance
 	CMap2D* cMap2D;
+
+	//Handler to camera
+	Camera2D* camera;
 
 	// A transformation matrix for controlling where to render the entities
 	glm::mat4 transform;

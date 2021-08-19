@@ -49,6 +49,7 @@ CEnemy2D::CEnemy2D(void)
 
 	//type = ENEMY;
 
+	animatedSprites = nullptr;
 	int chance = Math::RandIntMinMax(0, 100);
 }
 
@@ -57,13 +58,25 @@ CEnemy2D::CEnemy2D(void)
  */
 CEnemy2D::~CEnemy2D(void)
 {
+	if (animatedSprites) {
+		delete animatedSprites;
+		animatedSprites = nullptr;
+	}
 
-	// We won't delete this since it was created elsewhere
-	cPlayer2D = NULL;
+	if (quadMesh) {
+		delete quadMesh;
+		quadMesh = nullptr;
+	}
 
-	// We won't delete this since it was created elsewhere
-	cMap2D = NULL;
+	cMap2D = nullptr;
+	camera = nullptr;
+	cSettings = nullptr;
 
+	cPlayer2D = currTarget = nullptr;
+	for (unsigned i = 0; i < arrPlayer.size(); i++)
+		arrPlayer[i] = nullptr;
+	arrPlayer.clear();
+	
 	// optional: de-allocate all resources once they've outlived their purpose:
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
@@ -80,6 +93,9 @@ bool CEnemy2D::Init(void)
 
 	// Get the handler to the CMap2D instance
 	cMap2D = CMap2D::GetInstance();
+
+	camera = Camera2D::GetInstance();
+
 	// Find the indices for the player in arrMapInfo, and assign it to cPlayer2D
 	unsigned int uiRow = -1;
 	unsigned int uiCol = -1;

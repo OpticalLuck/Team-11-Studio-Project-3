@@ -39,6 +39,9 @@
     <Filter Include="Items">
       <UniqueIdentifier>{3b664dd3-f778-43dd-9188-98d0618c77bf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Entity2D\Enemy2D">
+      <UniqueIdentifier>{12b6e96b-a1d8-4859-87bd-b2727a81f938}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp">
@@ -83,9 +86,6 @@
     <ClCompile Include="Source\Scene2D\Player2D.cpp">
       <Filter>Entity2D</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Scene2D\Enemy2D.cpp">
-      <Filter>Entity2D</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Scene2D\GameManager.cpp">
       <Filter>Manager2D</Filter>
     </ClCompile>
@@ -110,9 +110,6 @@
     <ClCompile Include="Source\Scene2D\Collider2D.cpp">
       <Filter>Entity2D</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Scene2D\Boss2D.cpp">
-      <Filter>Entity2D</Filter>
-	</ClCompile>
     <ClCompile Include="Source\Factory\ObjectFactory.cpp">
       <Filter>Factory</Filter>
     </ClCompile>
@@ -130,7 +127,31 @@
     </ClCompile>
     <ClCompile Include="Source\Scene2D\EntityManager.cpp">
       <Filter>Manager2D</Filter>
-	</ClCompile>
+    </ClCompile>
+    <ClCompile Include="Source\GameStateManagement\EditorSettingsState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GameStateManagement\LevelEditorState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LevelEditor\LevelGrid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LevelEditor\LevelEditor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\TextureManager\TextureManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene2D\Boss2D.cpp">
+      <Filter>Entity2D\Enemy2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene2D\Enemy2D.cpp">
+      <Filter>Entity2D\Enemy2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene2D\EnemyBullet2D.cpp">
+      <Filter>Entity2D\Enemy2D</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h">
@@ -175,9 +196,6 @@
     <ClInclude Include="Source\Scene2D\Player2D.h">
       <Filter>Entity2D</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Scene2D\Enemy2D.h">
-      <Filter>Entity2D</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Scene2D\GameManager.h">
       <Filter>Manager2D</Filter>
     </ClInclude>
@@ -202,9 +220,6 @@
     <ClInclude Include="Source\Scene2D\Collider2D.h">
       <Filter>Entity2D</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Scene2D\Boss2D.h">
-      <Filter>Entity2D</Filter>
-	</ClInclude>
     <ClInclude Include="Source\Factory\ObjectFactory.h">
       <Filter>Factory</Filter>
     </ClInclude>
@@ -222,6 +237,30 @@
     </ClInclude>
     <ClInclude Include="Source\Scene2D\EntityManager.h">
       <Filter>Manager2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GameStateManagement\EditorSettingsState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GameStateManagement\LevelEditorState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\LevelEditor\LevelGrid.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\LevelEditor\LevelEditor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\TextureManager\TextureManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene2D\Boss2D.h">
+      <Filter>Entity2D\Enemy2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene2D\Enemy2D.h">
+      <Filter>Entity2D\Enemy2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene2D\EnemyBullet2D.h">
+      <Filter>Entity2D\Enemy2D</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

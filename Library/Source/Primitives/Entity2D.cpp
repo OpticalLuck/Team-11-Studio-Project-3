@@ -51,9 +51,18 @@ CEntity2D::~CEntity2D(void)
 	//glDeleteBuffers(1, &VBO);
 	//glDeleteBuffers(1, &EBO);
 	//CS: Delete the mesh
-	if(mesh)
-		delete mesh;
 
+	cSettings = nullptr;
+
+	if (mesh) {
+		delete mesh;
+		mesh = nullptr;
+	}
+
+	if (collider2D) {
+		delete collider2D;
+		collider2D = nullptr;
+	}
 }
 
 /**
@@ -87,6 +96,9 @@ bool CEntity2D::Init(void)
 	// texture coord attribute
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);*/
+
+	if (!collider2D)
+		collider2D = new Collider2D;
 
 	// Load the enemy2D texture
 	if (LoadTexture("Image/Scene2D_EnemyTile.tga") == false)

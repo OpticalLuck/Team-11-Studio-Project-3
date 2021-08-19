@@ -32,8 +32,56 @@ CBoss2D::CBoss2D(void) {
 
 CBoss2D::~CBoss2D(void) {
 	//Delete fsm array
-	delete[] arrATK;
-	arrATK = nullptr;
+	if (arrATK) {
+		delete[] arrATK;
+		arrATK = nullptr;
+	}
+
+	if (arrAtkDuration) {
+		delete[] arrAtkDuration;
+		arrAtkDuration = nullptr;
+	}
+
+	if (arrPauseDuration) {
+		delete[] arrPauseDuration;
+		arrPauseDuration = nullptr;
+	}
+
+	for (unsigned i = 0; i < arrPlayer.size(); i++)
+		arrPlayer[i] = nullptr;
+
+	arrPlayer.clear();
+
+	// We won't delete this since it was created elsewhere
+	cPlayer2D = NULL;
+
+	// We won't delete this since it was created elsewhere
+	cMap2D = NULL;
+
+	camera = nullptr;
+	cSettings = nullptr;
+	currTarget = nullptr;
+	cEntityManager = nullptr;
+
+	if (quadMesh) {
+		delete quadMesh;
+		quadMesh = nullptr;
+	}
+
+	if (mesh) {
+		delete mesh;
+		mesh = nullptr;
+	}
+
+	if (animatedSprites) {
+		delete animatedSprites;
+		animatedSprites = nullptr;
+	}
+
+	if (collider2D) {
+		delete collider2D;
+		collider2D = nullptr;
+	}
 
 	// optional: de-allocate all resources once they've outlived their purpose:
 	glDeleteVertexArrays(1, &VAO);
@@ -84,8 +132,10 @@ bool CBoss2D::Init(void) {
 	collider2D->SetPosition(glm::vec3(vTransform, 0.f));
 
 	//Initialisation of variables
-	bulletAng = (float)Math::RandIntMinMax(0, 359);
-	maxBulletTimer = int(0.5f * float(cSettings->FPS));
+	bulletAng = 0;
+	maxBulletTimer[(int)ATK::A_ATTACK] = int(2.f * float(cSettings->FPS));
+	maxBulletTimer[(int)ATK::A_CIRCLE] = int(0.15f * float(cSettings->FPS));
+
 	bulletTimer = 0;
 
 	health = 100;
@@ -207,20 +257,42 @@ void CBoss2D::UpdateAttack(float dElapsedTime) {
 	//Attack phrase
 	arrAtkDuration[roundIndex][fsmIndex] = Math::Max(arrAtkDuration[roundIndex][fsmIndex] - 1, 0); //Reduce timer
 
-	//
+	//Rotate direction that bullet will move towards
 	switch (arrATK[roundIndex][fsmIndex]) {
-		case ATK::A_ATTACK:
-			break;
+		case ATK::A_ATTACK: {
+				float targetEnemyAng = GetAngle(currTarget->vTransform);
+				float angSpd = 60.f * dElapsedTime;
 
-		case ATK::A_CIRCLE:
+				if (targetEnemyAng - bulletAng > angSpd)
+					bulletAng += angSpd;
+				else if (targetEnemyAng - bulletAng < -angSpd)
+					bulletAng -= angSpd;
+				break;
+			}
+
+		case ATK::A_CIRCLE: {
+			float angSpd = 60.f * dElapsedTime;
+
+			bulletAng -= angSpd;
 			break;
+		}
 
 		default:
 			std::cout << "WARNING: ARRATK ENUM IS UNRECOGNISED...\n";
 			break;
 	}
 
+	if (bulletTimer > 0)
+		return; //Do not fire bullet if timer is not triggered
 
+	bulletTimer = maxBulletTimer[(int)arrATK[roundIndex][fsmIndex]];
+
+	//Spawn bullet
+	EnemyBullet2D* bullet = new EnemyBullet2D;
+	bullet->Init(bulletAng, vTransform);
+	bullet->SetShader("2DColorShader");
+
+	cEntityManager->PushEnemy(bullet);
 }
 
 void CBoss2D::PreRender(void) {

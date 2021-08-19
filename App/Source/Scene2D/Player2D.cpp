@@ -58,6 +58,11 @@ CPlayer2D::CPlayer2D(void)
  */
 CPlayer2D::~CPlayer2D(void)
 {
+	if (collider2D) {
+		delete collider2D;
+		collider2D = nullptr;
+	}
+
 	// We won't delete this since it was created elsewhere
 	cSoundController = NULL;
 
@@ -87,6 +92,7 @@ bool CPlayer2D::Init(void)
 	// Reset all keys since we are starting a new game
 	cKeyboardController->Reset();
 
+	cMouseController = CMouseController::GetInstance();
 	// Get the handler to the CSettings instance
 	cSettings = CSettings::GetInstance();
 
@@ -350,7 +356,6 @@ void CPlayer2D::Update(const double dElapsedTime)
 			}
 		}
 	}
-
 	
 	//animation States
 	switch (state)
