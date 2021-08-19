@@ -53,10 +53,6 @@ CPlayer2D::CPlayer2D(void)
 	currentColor = glm::vec4();
 }
 
-CPlayer2D::CPlayer2D(string cloneName) : CEntity2D() {
-	
-}
-
 /**
  @brief Destructor This destructor has protected access modifier as this class will be a Singleton
  */
@@ -232,8 +228,8 @@ bool CPlayer2D::Init(glm::i32vec2 spawnpoint)
 
 	cKeyboardInputHandler = CKeyboardInputHandler::GetInstance();
 
+	collider2D->vec2Dimensions = glm::vec2(0.20000f, 0.50000f);
 	collider2D->Init();
-	collider2D->SetPosition(vTransform);
 
 	cPhysics2D.Init(&vTransform);
 

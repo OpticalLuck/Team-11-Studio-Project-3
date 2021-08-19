@@ -6,7 +6,6 @@ CEntityManager::CEntityManager()
 	, cEnemy2D(NULL)
 	, cMap2D(NULL)
 	, cBoss2D(NULL)
-	, cCloneTemplate(NULL)
 	, cKeyboardController(NULL)
 	, cKeyboardInputHandler(NULL)
 {
@@ -67,22 +66,6 @@ bool CEntityManager::EntityManagerInit(void)
 		}
 	}
 
-	//clone init
-	cCloneTemplate = new CPlayer2D();
-	if (cCloneTemplate->Init(cPlayer2D->GetCheckpoint()) == false)
-	{
-		cout << "Failed to load clone" << endl;
-		return false;
-	}
-	// initialise all default values
-	cCloneTemplate->SetClone(true);
-	cCloneTemplate->SetShader("2DColorShader");
-	// find position to spawn in map
-	if (cMap2D->FindValue(1, uiRow, uiCol) == true)
-	{
-		cCloneTemplate->vTransform = glm::vec2(uiCol, uiRow);
-	}
-
 	currRound = 0;
 
 	return true;
@@ -91,7 +74,7 @@ bool CEntityManager::EntityManagerInit(void)
 
 bool CEntityManager::Clone(void)
 {
-	CPlayer2D* clone = new CPlayer2D(*cCloneTemplate);
+	CPlayer2D* clone = new CPlayer2D();
 	clone->SetShader("2DColorShader");
 
 	if (!clone->Init(cPlayer2D->GetCheckpoint()))
@@ -99,6 +82,8 @@ bool CEntityManager::Clone(void)
 		std::cout << "Failed to clone Player\n";
 		return false;
 	}
+
+	clone->SetClone(true);
 	clone->SetInputs(cKeyboardInputHandler->GetAllInputs());
 	m_cloneList.push_back(clone);
 
@@ -185,6 +170,7 @@ void CEntityManager::RenderClone(void)
 		m_cloneList[i]->PreRender();
 		m_cloneList[i]->Render();
 		m_cloneList[i]->PostRender();
+
 		m_cloneList[i]->RenderCollider();
 	}
 }

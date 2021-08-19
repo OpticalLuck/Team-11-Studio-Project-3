@@ -23,7 +23,7 @@ CBoss2D::CBoss2D(void) {
 	quadMesh = nullptr;
 	camera = nullptr;
 
-	arrFSM = nullptr;
+	arrATK = nullptr;
 	arrAtkDuration = arrPauseDuration = nullptr;
 	cEntityManager = nullptr;
 
@@ -32,8 +32,8 @@ CBoss2D::CBoss2D(void) {
 
 CBoss2D::~CBoss2D(void) {
 	//Delete fsm array
-	delete[] arrFSM;
-	arrFSM = nullptr;
+	delete[] arrATK;
+	arrATK = nullptr;
 
 	// optional: de-allocate all resources once they've outlived their purpose:
 	glDeleteVertexArrays(1, &VAO);
@@ -85,26 +85,33 @@ bool CBoss2D::Init(void) {
 
 	//Initialisation of variables
 	bulletAng = (float)Math::RandIntMinMax(0, 359);
+	maxBulletTimer = int(0.5f * float(cSettings->FPS));
+	bulletTimer = 0;
+
 	health = 100;
 	currTarget = nullptr;
+
+	isSeen = false;
 
 	//Array of vectors
 	fsmIndex = 0;
 	roundIndex = 0;
 
-	if (!arrFSM) {
-		arrFSM = new std::vector<ATK>[5];
-		arrFSM[roundIndex].push_back((ATK)RandomiseAttack());
+	if (!arrATK) {
+		arrATK = new std::vector<ATK>[5];
+		arrATK[roundIndex].push_back((ATK)RandomiseAttack());
 	}
 
 	if (!arrAtkDuration) {
 		arrAtkDuration = new std::vector<int>[5];
 		arrAtkDuration[roundIndex].push_back(RandomiseTimer(true));
+		currAtkDuration = arrAtkDuration[roundIndex][0];
 	}
 
 	if (!arrPauseDuration) {
 		arrPauseDuration = new std::vector<int>[5];
 		arrPauseDuration[roundIndex].push_back(RandomiseTimer(false));
+		currPauseDuration = arrPauseDuration[roundIndex][0];
 	}
 
 	return true;
@@ -166,16 +173,53 @@ void CBoss2D::Update(const double dElapsedTime) {
 	if (!bIsActive)
 		return; //Return if boss is not active
 
+	bulletTimer = Math::Max(bulletTimer - 1, 0);
+
 	if (currTarget) {
 		UpdateAttack((float)dElapsedTime);
+		
+		if (!WithinProjectedCamera(currTarget))
+			currTarget = nullptr;
 	}
 	else {
 		//Check if player is near and enable boss fight
-		currTarget = GetNearestTarget();
+		isSeen = false;
+		currTarget = GetNearestTarget(cMap2D->GetLevelLimit().x);
+
+		if (currTarget)
+			bulletAng = GetAngle(currTarget->vTransform); 
 	}
+
 }
 
 void CBoss2D::UpdateAttack(float dElapsedTime) {
+	//Remove pause time if its 
+	if (isSeen == false && arrPauseDuration[roundIndex][fsmIndex] != 0) {
+		isSeen = true;
+		arrPauseDuration[roundIndex][fsmIndex] = 0;
+	}
+
+	if (arrPauseDuration[roundIndex][fsmIndex] > 0) {
+		arrPauseDuration[roundIndex][fsmIndex]--;
+		return; //Dont attack if still in pause state
+	}
+
+	//Attack phrase
+	arrAtkDuration[roundIndex][fsmIndex] = Math::Max(arrAtkDuration[roundIndex][fsmIndex] - 1, 0); //Reduce timer
+
+	//
+	switch (arrATK[roundIndex][fsmIndex]) {
+		case ATK::A_ATTACK:
+			break;
+
+		case ATK::A_CIRCLE:
+			break;
+
+		default:
+			std::cout << "WARNING: ARRATK ENUM IS UNRECOGNISED...\n";
+			break;
+	}
+
 
 }
 
@@ -215,7 +259,7 @@ void CBoss2D::Render(void) {
 	glm::vec2 actualPos = IndexPos - cameraPos + offset;
 	actualPos = cSettings->ConvertIndexToUVSpace(actualPos);
 
-	float clampOffset = cSettings->ConvertIndexToUVSpace(CSettings::AXIS::x, 1, false) / 2;
+	float clampOffset = cSettings->ConvertIndexToUVSpace(CSettings::AXIS::x, 1, false);
 	clampOffset = (clampOffset + 1);
 
 	float clampX = 1.0f + clampOffset;

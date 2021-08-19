@@ -125,6 +125,9 @@ protected:
 	CPlayer2D* currTarget;
 	std::vector<CPlayer2D*> arrPlayer;
 
+	//Get angle from enemy to position
+	float GetAngle(glm::vec2 pos);
+
 
 	// Current FSM
 	FSM sCurrentFSM;
@@ -135,7 +138,12 @@ protected:
 	// Load a texture
 	bool LoadTexture(const char* filename, GLuint& iTextureID);
 
-	//Get nearest player. NOTE: TARGET HAS TO BE VALID AND BE WITHIN RANGE FIRST
-	CPlayer2D* GetNearestTarget(void);
+	//Get nearest player. NOTE: TARGET HAS TO BE VALID AND BE WITHIN RANGE FIRST. DEFAULT ACCEPTABLE RANGE IS WITHIN HALF CAMERA WIDTH
+	CPlayer2D* GetNearestTarget(float dist = 16.f);
+
+	float GetDistanceBetweenPlayer(CPlayer2D* player);
+
+	//Check if its within the projected camera of the player entity
+	bool WithinProjectedCamera(CPlayer2D* player);
 };
 

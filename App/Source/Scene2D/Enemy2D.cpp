@@ -124,8 +124,8 @@ bool CEnemy2D::Init(void)
 	return true;
 }
 
-CPlayer2D* CEnemy2D::GetNearestTarget(void) {
-	float indexDist = (float)cSettings->NUM_TILES_XAXIS * 0.8f; //Approx distance the target has to be within to be counted on
+CPlayer2D* CEnemy2D::GetNearestTarget(float dist) {
+	float indexDist = dist; //Approx distance the target has to be within to be counted on
 	float minDist = indexDist;
 
 	CPlayer2D* nearest = nullptr;
@@ -133,7 +133,7 @@ CPlayer2D* CEnemy2D::GetNearestTarget(void) {
 	for (unsigned i = 0; i < arrPlayer.size(); i++) {
 		CPlayer2D* currPlayer = arrPlayer[i];
 
-		float currDist = float((currPlayer->vTransform - vTransform).length());
+		float currDist = glm::length((currPlayer->vTransform - vTransform));
 
 		if (currDist <= indexDist && currDist <= minDist) {
 			minDist = currDist;
@@ -141,7 +141,68 @@ CPlayer2D* CEnemy2D::GetNearestTarget(void) {
 		}
 	}
 
+	if (!WithinProjectedCamera(nearest))
+		nearest = nullptr;
+
 	return nearest;
+}
+
+float CEnemy2D::GetAngle(glm::vec2 pos) {
+	glm::vec2 dirVec = glm::normalize(pos - vTransform);
+
+	float angle = atan2f(dirVec.y, dirVec.x);
+	angle = Math::RadianToDegree(angle);
+
+	if (angle < 0)
+		angle += 360;
+	else if (angle >= 360)
+		angle -= 360;
+
+	return angle;
+}
+
+float CEnemy2D::GetDistanceBetweenPlayer(CPlayer2D* player) {
+	return glm::length(player->vTransform - vTransform);
+}
+
+bool CEnemy2D::WithinProjectedCamera(CPlayer2D* player) {
+	//Get camera transforms and use them instead
+	glm::vec2 offset = glm::vec2((cSettings->NUM_TILES_XAXIS / 2.f) - 0.5f, (cSettings->NUM_TILES_YAXIS / 2.f) - 0.5f);
+
+	//Camera init
+	glm::vec2 cameraPos = player->vTransform;
+	//Clamping of camera
+	float xOffset = ((float)cSettings->NUM_TILES_XAXIS / 2.f) - 1;
+	float yOffset = ((float)cSettings->NUM_TILES_YAXIS / 2.f) - 1;
+
+	glm::vec2 clampPos = cMap2D->GetLevelLimit();
+
+	//Clamping of X axis
+	if (cameraPos.x < xOffset)
+		cameraPos.x = xOffset;
+	else if (cameraPos.x > clampPos.x - xOffset - 2)
+		cameraPos.x = clampPos.x - xOffset - 2;
+
+	//Clamping of Y axis
+	if (cameraPos.y < yOffset)
+		cameraPos.y = yOffset;
+	else if (cameraPos.y > clampPos.y - yOffset - 2)
+		cameraPos.y = clampPos.y - yOffset - 2;
+
+	glm::vec2 IndexPos = vTransform;
+
+	glm::vec2 actualPos = IndexPos - cameraPos + offset;
+	actualPos = cSettings->ConvertIndexToUVSpace(actualPos);
+
+	float clampOffset = cSettings->ConvertIndexToUVSpace(CSettings::AXIS::x, 1, false);
+	clampOffset = (clampOffset + 1);
+
+	float clampX = 1.0f + clampOffset;
+	float clampY = 1.0f + clampOffset;
+	if (actualPos.x <= -clampX || actualPos.x >= clampX || actualPos.y <= -clampY || actualPos.y >= clampY)
+		return false; //Return false if enemy is too far from projected camera
+	else
+		return true;
 }
 
 /**

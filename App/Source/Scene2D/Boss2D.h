@@ -51,17 +51,21 @@ class CBoss2D : public CEnemy2D
 			A_TOTAL
 		};
 
-		std::vector<ATK>* arrFSM; //Current attack during current round
+		std::vector<ATK>* arrATK; //Current attack during current round
 		int fsmIndex; //Current index of where its at in the array
 		int roundIndex; //Current round
 
-		//float atkDuration;
-		//float pauseDuration;
+		float currAtkDuration;
+		float currPauseDuration;
 
 		std::vector<int>* arrAtkDuration;
 		std::vector<int>* arrPauseDuration;
 
+		bool isSeen;
+
 		float bulletAng; //Angle of which where the bullet will come from
+		int maxBulletTimer; //Timer in terms of frames
+		int bulletTimer;
 
 		//Rendering
 		//Mesh
@@ -72,7 +76,6 @@ class CBoss2D : public CEnemy2D
 		bool bIsActive;
 
 		//Handlers
-		CMap2D* cMap2D;
 		Camera2D* camera;
 		CEntityManager* cEntityManager;
 

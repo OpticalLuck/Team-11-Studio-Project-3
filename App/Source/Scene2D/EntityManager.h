@@ -37,7 +37,6 @@ protected:
 	CKeyboardInputHandler* cKeyboardInputHandler;
 	CKeyboardController* cKeyboardController;
 
-	CPlayer2D* cCloneTemplate;
 	CPlayer2D* cPlayer2D;
 
 	CBoss2D* cBoss2D;
