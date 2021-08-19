@@ -39,11 +39,8 @@ CLevelEditorState::CLevelEditorState(void)
 	, cLevelGrid(NULL)
 	, activeTile(0)
 	, transform(1.f)
-	, vMousePosInWindow(0.f)
-	, vMousePosConvertedRatio(0.f)
-	, vMousePosWorldSpace(0.f)
-	, vMousePosRelativeToCamera(0.f)
 	, cursor(NULL)
+	, vMousePos(0.f)
 {
 }
 /**
@@ -108,7 +105,11 @@ bool CLevelEditorState::Init(void)
 bool CLevelEditorState::Update(const double dElapsedTime)
 {
 	Camera2D::GetInstance()->Update(dElapsedTime);
-	CalculateMousePosition();
+
+	vMousePos = Camera2D::GetInstance()->GetCursorPosInWorldSpace(0.5f);
+
+	vMousePos.x = Math::Clamp((float)vMousePos.x, 0.f, (float)cLevelEditor->iWorldWidth - 1);
+	vMousePos.y = Math::Clamp((float)vMousePos.y, 0.f, (float)cLevelEditor->iWorldHeight - 1);
 
 	if (CKeyboardController::GetInstance()->IsKeyReleased(GLFW_KEY_ESCAPE))
 	{
@@ -235,19 +236,19 @@ void CLevelEditorState::MouseInput(void)
 	if (cMouseController->IsButtonDown(CMouseController::LMB))
 	{
 		// DEBUG_MSG("x:" << u16vec2FinalMousePosInEditor.x << " y:" << u16vec2FinalMousePosInEditor.y);
-		DEBUG_MSG("[x: " << vMousePosRelativeToCamera.x << ", y: " << vMousePosRelativeToCamera.y << "] Cell TileID: " << cLevelEditor->GetCell(vMousePosRelativeToCamera.x, vMousePosRelativeToCamera.y, false).iTileID);
-		if (cLevelEditor->GetCell(vMousePosRelativeToCamera.x, vMousePosRelativeToCamera.y, false).iTileID == 0)
+		DEBUG_MSG("[x: " << vMousePos.x << ", y: " << vMousePos.y << "] Cell TileID: " << cLevelEditor->GetCell(vMousePos.x, vMousePos.y, false).iTileID);
+		if (cLevelEditor->GetCell(vMousePos.x, vMousePos.y, false).iTileID == 0)
 		{
-			cLevelEditor->UpdateCell(vMousePosRelativeToCamera.x, vMousePosRelativeToCamera.y, activeTile, false);
+			cLevelEditor->UpdateCell(vMousePos.x, vMousePos.y, activeTile, false);
 		}
 	}
 
 	if (cMouseController->IsButtonDown(CMouseController::RMB))
 	{
 		// DEBUG_MSG("x:" << u16vec2FinalMousePosInEditor.x << " y:" << u16vec2FinalMousePosInEditor.y);
-		if (cLevelEditor->GetCell(vMousePosRelativeToCamera.x, vMousePosRelativeToCamera.y, false).iTileID != 0)
+		if (cLevelEditor->GetCell(vMousePos.x, vMousePos.y, false).iTileID != 0)
 		{
-			cLevelEditor->UpdateCell(vMousePosRelativeToCamera.x, vMousePosRelativeToCamera.y, 0, false);
+			cLevelEditor->UpdateCell(vMousePos.x, vMousePos.y, 0, false);
 		}
 	}
 
@@ -442,7 +443,6 @@ void CLevelEditorState::ImGuiRender()
 
 void CLevelEditorState::RenderCursor()
 {
-
 	// Activate blending mode
 	glActiveTexture(GL_TEXTURE0);
 	glEnable(GL_BLEND);
@@ -453,7 +453,7 @@ void CLevelEditorState::RenderCursor()
 	glm::vec2 offset = glm::vec2(float(CSettings::GetInstance()->NUM_TILES_XAXIS / 2.f), float(CSettings::GetInstance()->NUM_TILES_YAXIS / 2.f));
 	glm::vec2 cameraPos = Camera2D::GetInstance()->getCurrPos();
 
-	glm::vec2 objCamPos = glm::vec2(vMousePosRelativeToCamera.x, vMousePosRelativeToCamera.y) - cameraPos + offset;
+	glm::vec2 objCamPos = glm::vec2(vMousePos.x, vMousePos.y) - cameraPos + offset;
 	glm::vec2 actualPos = CSettings::GetInstance()->ConvertIndexToUVSpace(objCamPos) * Camera2D::GetInstance()->getZoom();
 
 	transform = glm::mat4(1.f);
@@ -473,22 +473,4 @@ void CLevelEditorState::RenderCursor()
 
 	// Disable blending
 	glDisable(GL_BLEND);
-}
-
-void CLevelEditorState::CalculateMousePosition(void)
-{
-	vMousePosInWindow = glm::vec2(cMouseController->GetMousePositionX(), cSettings->iWindowHeight - cMouseController->GetMousePositionY());
-	vMousePosConvertedRatio = glm::vec2(vMousePosInWindow.x - cSettings->iWindowWidth * 0.5, vMousePosInWindow.y - cSettings->iWindowHeight * 0.5);
-	vMousePosWorldSpace = glm::vec2(vMousePosConvertedRatio.x / cSettings->iWindowWidth * cSettings->NUM_TILES_XAXIS, vMousePosConvertedRatio.y / cSettings->iWindowHeight * cSettings->NUM_TILES_YAXIS);
-	vMousePosRelativeToCamera = Camera2D::GetInstance()->getCurrPos() + vMousePosWorldSpace / Camera2D::GetInstance()->getZoom();
-
-	// vMousePosRelativeToCamera.x -= 0.5;
-	// vMousePosRelativeToCamera.y -= 0.5;
-
-	vMousePosRelativeToCamera.x = Math::Clamp(vMousePosRelativeToCamera.x, 0.f, (float)cLevelEditor->iWorldWidth - 1.f);
-	vMousePosRelativeToCamera.y = Math::Clamp(vMousePosRelativeToCamera.y, 0.f, (float)cLevelEditor->iWorldHeight - 1.f);
-	vMousePosRelativeToCamera += glm::vec2(0.5f);
-
-	vMousePosRelativeToCamera.x = (int)(vMousePosRelativeToCamera.x);
-	vMousePosRelativeToCamera.y = (int)(vMousePosRelativeToCamera.y);
 }
