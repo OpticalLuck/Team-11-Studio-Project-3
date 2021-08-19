@@ -79,8 +79,8 @@ float Camera2D::getTargetZoom()
 
 void Camera2D::ClampCamPos(glm::i32vec2 clampPos) {
 	CSettings* cSettings = CSettings::GetInstance();
-	float xOffset = ((float)cSettings->NUM_TILES_XAXIS / 2.f) - 1;
-	float yOffset = ((float)cSettings->NUM_TILES_YAXIS / 2.f) - 1;
+	float xOffset = ((float)cSettings->NUM_TILES_XAXIS / 2.f);
+	float yOffset = ((float)cSettings->NUM_TILES_YAXIS / 2.f);
 
 	//Clamping of X axis
 	if (pos.x < xOffset)

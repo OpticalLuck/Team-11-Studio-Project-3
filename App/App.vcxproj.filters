@@ -128,6 +128,24 @@
     <ClCompile Include="Source\Scene2D\EntityManager.cpp">
       <Filter>Manager2D</Filter>
     </ClCompile>
+    <ClCompile Include="Source\GameStateManagement\EditorSettingsState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GameStateManagement\LevelEditorState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LevelEditor\LevelGrid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LevelEditor\LevelEditor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\TextureManager\TextureManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene2D\Projectiles.cpp">
+      <Filter>Entity2D\Object2D</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h">
@@ -216,6 +234,24 @@
     </ClInclude>
     <ClInclude Include="Source\Scene2D\EntityManager.h">
       <Filter>Manager2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GameStateManagement\EditorSettingsState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GameStateManagement\LevelEditorState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\LevelEditor\LevelGrid.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\LevelEditor\LevelEditor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\TextureManager\TextureManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene2D\Projectiles.h">
+      <Filter>Entity2D\Object2D</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

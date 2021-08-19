@@ -194,9 +194,10 @@ void CLevelEditorState::MouseInput(void)
 	vMousePosRelativeToCamera.x = Math::Clamp(vMousePosRelativeToCamera.x, 0.f, (float)cLevelEditor->iWorldWidth - 1.f);
 	vMousePosRelativeToCamera.y = Math::Clamp(vMousePosRelativeToCamera.y, 0.f, (float)cLevelEditor->iWorldHeight - 1.f);
 
-	vMousePosRelativeToCamera.x = ceil(vMousePosRelativeToCamera.x);
-	vMousePosRelativeToCamera.y = ceil(vMousePosRelativeToCamera.y);
+	cout << vMousePosRelativeToCamera.x << ", " << vMousePosRelativeToCamera.y << endl;
 
+	vMousePosRelativeToCamera.x = (int)(vMousePosRelativeToCamera.x);
+	vMousePosRelativeToCamera.y = (int)(vMousePosRelativeToCamera.y);
 
 	if (cMouseController->IsButtonDown(CMouseController::LMB))
 	{

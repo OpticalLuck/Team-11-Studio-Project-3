@@ -66,9 +66,13 @@ public:
 	// PostRender
 	void PostRender(void);
 
-	// Set the value at certain indices in the arrMapInfo
-	void SetMapInfo(const unsigned int uiRow, const unsigned int uiCol, const int iValue, const bool bInvert = true);
+	// Set the value at certain indices in the arrMapInfo - Doesnt care if there is something there since it will replace
+	void SetMapInfo(unsigned int uiRow, unsigned int uiCol, const int iValue, const bool bInvert = true);
 
+	// Insert mapinfo into the gridarr and arrobj, will return false if something is in the way
+	bool InsertMapInfo(unsigned int uiRow, unsigned int uiCol, const int iValue, const bool bInvert = true);
+	
+	//Replace with existing cobject
 	void ReplaceGridInfo(const unsigned int uiRow, const unsigned uiCol, CObject2D* target, const bool bInvert = true);
 
 	std::vector<CObject2D*> GetObjectArr();
@@ -136,6 +140,5 @@ protected:
 
 	// Render a tile
 	void RenderTile(const CObject2D obj);
-
 };
 

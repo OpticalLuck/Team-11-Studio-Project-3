@@ -85,25 +85,6 @@ bool CMap2D::Init(const unsigned int uiNumLevels,
 	//CS: Create the Quad Mesh using the mesh builder
 	quadMesh = CMeshBuilder::GenerateQuad(glm::vec4(1, 1, 1, 1), cSettings->TILE_WIDTH, cSettings->TILE_HEIGHT);
 
-	// Load and create textures
-	// Load the ground texture
-
-	/// <summary>
-	/// 1 -> Player
-	/// 2 - 99 -> NO COLLISION
-	///		2 - 10  -> Collectibles
-	///		11 - 20 -> Interactables?
-	///			11 - 20 -> Toggles
-	///			16 - 20 -> In Range??
-	///		21 - 30 -> AOE Effect
-	/// 
-	/// 100 - 200 -> COLLISION
-	///		100 - 149 -> Ground Tiles?
-	///		150 - 159 -> Physics Affected Objects? e.g. boulder
-	/// 300 - 400 -> ENEMY / ENTITY
-	/// </summary>
-
-
 	//Camera
 	camera = Camera2D::GetInstance();
 
@@ -149,7 +130,7 @@ void CMap2D::Render(void)
 	//Render(MY VERSION)
 
 	//Camera init
-	glm::vec2 offset = glm::vec2(float(cSettings->NUM_TILES_XAXIS / 2.f) - 1.f, float(cSettings->NUM_TILES_YAXIS / 2.f) - 1.f);
+	glm::vec2 offset = glm::vec2(float(cSettings->NUM_TILES_XAXIS / 2.f), float(cSettings->NUM_TILES_YAXIS / 2.f));
 	glm::vec2 cameraPos = camera->getCurrPos();
 
 	for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++) {
@@ -205,7 +186,7 @@ int CMap2D::GetLevelRow(void) {
 }
 
 glm::i32vec2 CMap2D::GetLevelLimit(void) {
-	return arrLevelLimit[uiCurLevel];
+	return glm::vec2(arrLevelLimit[uiCurLevel].x, arrLevelLimit[uiCurLevel].y);
 }
 
 /**
@@ -214,37 +195,82 @@ glm::i32vec2 CMap2D::GetLevelLimit(void) {
  @param iCol A const int variable containing the column index of the element to set to
  @param iValue A const int variable containing the value to assign to this arrMapInfo
  */
-void CMap2D::SetMapInfo(const unsigned int uiRow, const unsigned int uiCol, const int iValue, const bool bInvert)
+void CMap2D::SetMapInfo(unsigned int uiRow, unsigned int uiCol, const int iValue, const bool bInvert)
 {
-	for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++) {
-		CObject2D* obj = arrObject[uiCurLevel][i];
+	if (bInvert)
+	{
+		uiRow = GetLevelRow() - uiRow - 1;
+	}
 
-		if (obj->vTransform.x == uiCol && obj->vTransform.y == uiRow) {
-			if (iValue == 0) {
-				arrGrid[uiCurLevel][GetLevelRow() - obj->vTransform.y - 1][obj->vTransform.x] = nullptr;
+	//Check if its not a nullptr
+	if (!arrGrid[uiCurLevel][uiRow][uiCol]) 
+	{
+		CObject2D* currObj = objFactory.CreateObject(iValue);
+		currObj->SetCurrentIndex(glm::i32vec2(uiCol, uiRow));
+		currObj->vTransform = glm::i32vec2(uiCol, GetLevelRow() - uiRow - 1);
+		currObj->Init();
 
-				delete obj;
+		arrObject[uiCurLevel].push_back(currObj);
+
+		arrGrid[uiCurLevel][uiRow][uiCol] = currObj;
+	}
+	else
+	{
+		for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++)
+		{
+			CObject2D* currObj = arrObject[uiCurLevel][i];
+			if (currObj->GetCurrentIndex() == glm::i32vec2(uiCol, uiRow))
+			{
+				//Delete occupying object in arrObj
+				delete currObj;
 				arrObject[uiCurLevel][i] = nullptr;
 				arrObject[uiCurLevel].erase(arrObject[uiCurLevel].begin() + i);
 
-
-				return;
+				if (iValue > 0)
+				{
+					//Pushes in new Object
+					currObj = objFactory.CreateObject(iValue);
+					currObj->SetCurrentIndex(glm::i32vec2(uiCol, uiRow));
+					currObj->vTransform = glm::i32vec2(uiCol, GetLevelRow() - uiRow - 1);
+					currObj->Init();
+					arrObject[uiCurLevel].push_back(currObj);
+				
+					arrGrid[uiCurLevel][uiRow][uiCol] = currObj;
+				}
+				else
+				{
+					arrGrid[uiCurLevel][uiRow][uiCol] = nullptr;
+				}
 			}
-
-			obj->SetValue(iValue);
-			return;
 		}
 	}
+}
 
-	if (iValue == 0)
-		return;
+bool CMap2D::InsertMapInfo(unsigned int uiRow, unsigned int uiCol, const int iValue, const bool bInvert)
+{
+	if (bInvert)
+	{
+		uiRow = GetLevelRow() - uiRow - 1;
+	}
 
-	CObject2D* newObj = objFactory.CreateObject(iValue);
-	newObj->vTransform = glm::i32vec2(uiCol, uiRow);
-	newObj->SetValue(iValue);
-	newObj->Init();
+	//Check if its not a nullptr
+	if (!arrGrid[uiCurLevel][uiRow][uiCol])
+	{
+		CObject2D* currObj = objFactory.CreateObject(iValue);
+		currObj->SetCurrentIndex(glm::i32vec2(uiCol, uiRow));
+		currObj->vTransform = glm::i32vec2(uiCol, GetLevelRow() - uiRow - 1);
+		currObj->Init();
 
-	arrObject[uiCurLevel].push_back(newObj);
+		arrObject[uiCurLevel].push_back(currObj);
+
+		arrGrid[uiCurLevel][uiRow][uiCol] = currObj;
+	}
+	else
+	{
+		cout << "Something is in Current TileGrid" << endl;
+		return false;
+	}
+	return true;
 }
 
 void CMap2D::ReplaceGridInfo(const unsigned int uiRow, const unsigned uiCol, CObject2D* target, const bool bInvert)

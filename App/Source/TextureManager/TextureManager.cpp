@@ -27,6 +27,16 @@ bool CTextureManager::Init(void)
         std::cout << "Failed to load ground tile texture" << std::endl;
         return false;
     }
+    if (LoadTexture("Image/Walls/wall_1.png", 101) == false)
+    {
+        std::cout << "Failed to load wall_1 tile texture" << std::endl;
+        return false;
+    }
+    if (LoadTexture("Image/Walls/wall_2.png", 102) == false)
+    {
+        std::cout << "Failed to load wall_2 tile texture" << std::endl;
+        return false;
+    }
     if (LoadTexture("Image/Ground/GrassTile.png", 103) == false)
     {
         std::cout << "Failed to load GrassTile tile texture" << std::endl;
@@ -44,16 +54,7 @@ bool CTextureManager::Init(void)
     }
 
 
-    if (LoadTexture("Image/Walls/wall_1.png", 101) == false)
-    {
-        std::cout << "Failed to load wall_1 tile texture" << std::endl;
-        return false;
-    }
-    if (LoadTexture("Image/Walls/wall_2.png", 102) == false)
-    {
-        std::cout << "Failed to load wall_2 tile texture" << std::endl;
-        return false;
-    }
+    
 
     if (LoadTexture("Image/Boulder.png", 150) == false)
     {
@@ -82,7 +83,6 @@ bool CTextureManager::Init(void)
         std::cout << "Failed to load switch_1_on tile texture" << std::endl;
         return false;
     }
-
     if (LoadTexture("Image/Switches/switch_2_off.png", 13) == false)
     {
         std::cout << "Failed to load switch_2_off tile texture" << std::endl;
@@ -93,7 +93,6 @@ bool CTextureManager::Init(void)
         std::cout << "Failed to load switch_2_on tile texture" << std::endl;
         return false;
     }
-
     if (LoadTexture("Image/Portals/portal.png", 15) == false)
     {
         std::cout << "Failed to load portal15 tile texture" << std::endl;
@@ -104,7 +103,6 @@ bool CTextureManager::Init(void)
         std::cout << "Failed to load portal16 tile texture" << std::endl;
         return false;
     }
-
     if (LoadTexture("Image/Portals/portalgate.png", 17) == false)
     {
         std::cout << "Failed to load portalgate tile texture" << std::endl;
@@ -115,13 +113,11 @@ bool CTextureManager::Init(void)
         std::cout << "Failed to load portalgate_off tile texture" << std::endl;
         return false;
     }
-
     if (LoadTexture("Image/Scene2D_Spikes.tga", 20) == false)
     {
         std::cout << "Failed to load Scene2D_Spikes tile texture" << std::endl;
         return false;
     }
-
     if (LoadTexture("Image/altar.png", 21) == false)
     {
         std::cout << "Failed to load Scene2D_Spa tile texture" << std::endl;
