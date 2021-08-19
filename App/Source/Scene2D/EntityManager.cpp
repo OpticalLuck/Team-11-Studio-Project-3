@@ -86,6 +86,8 @@ bool CEntityManager::EntityManagerInit(void)
 	}
 
 	currRound = 0;
+
+	return true;
 }
 
 

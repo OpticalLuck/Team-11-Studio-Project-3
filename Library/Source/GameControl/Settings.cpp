@@ -57,18 +57,18 @@ CSettings::~CSettings(void)
 float CSettings::ConvertIndexToUVSpace(const AXIS sAxis, const int iIndex, const bool bInvert, const float fOffset)
 {
 	float fResult = 0.0f;
-	if (sAxis == x)
+	if (sAxis == CSettings::AXIS::x)
 	{
 		fResult = -1.0f + (float)iIndex * TILE_WIDTH + TILE_WIDTH / 2.0f + fOffset;
 	}
-	else if (sAxis == y)
+	else if (sAxis == CSettings::AXIS::y)
 	{
 		if (bInvert)
 			fResult = 1.0f - (float)(iIndex + 1) * TILE_HEIGHT + TILE_HEIGHT / 2.0f + fOffset;
 		else
 			fResult = -1.0f + (float)iIndex * TILE_HEIGHT + TILE_HEIGHT / 2.0f + fOffset;
 	}
-	else if (sAxis == z)
+	else if (sAxis == CSettings::AXIS::z)
 	{
 		// Not used in here
 	}

@@ -298,7 +298,7 @@ void CMap2D::Render(void)
 
 		glm::vec2 actualPos = cSettings->ConvertIndexToUVSpace(objCamPos);
 
-		float clampOffset = cSettings->ConvertIndexToUVSpace(cSettings->x, 1, false) / 2;
+		float clampOffset = cSettings->ConvertIndexToUVSpace(CSettings::AXIS::x, 1, false) / 2;
 		clampOffset = (clampOffset + 1);
 
 		float clampX = 1.0f + clampOffset;
@@ -369,17 +369,17 @@ void CMap2D::SetNumTiles(const CSettings::AXIS sAxis, const unsigned int uiValue
 		return;
 	}
 
-	if (sAxis == CSettings::x)
+	if (sAxis == CSettings::AXIS::x)
 	{
 		cSettings->NUM_TILES_XAXIS = uiValue;
 		cSettings->UpdateSpecifications();
 	}
-	else if (sAxis == CSettings::y)
+	else if (sAxis == CSettings::AXIS::y)
 	{
 		cSettings->NUM_TILES_YAXIS = uiValue;
 		cSettings->UpdateSpecifications();
 	}
-	else if (sAxis == CSettings::z)
+	else if (sAxis == CSettings::AXIS::z)
 	{
 		// Not used in here
 	}
@@ -399,17 +399,17 @@ void CMap2D::SetNumSteps(const CSettings::AXIS sAxis, const unsigned int uiValue
 		return;
 	}
 
-	if (sAxis == CSettings::x)
+	if (sAxis == CSettings::AXIS::x)
 	{
 		cSettings->NUM_STEPS_PER_TILE_XAXIS = (float)uiValue;
 		cSettings->UpdateSpecifications();
 	}
-	else if (sAxis == CSettings::y)
+	else if (sAxis == CSettings::AXIS::y)
 	{
 		cSettings->NUM_STEPS_PER_TILE_YAXIS = (float)uiValue;
 		cSettings->UpdateSpecifications();
 	}
-	else if (sAxis == CSettings::z)
+	else if (sAxis == CSettings::AXIS::z)
 	{
 		// Not used in here
 	}
@@ -664,7 +664,7 @@ bool CMap2D::SaveMap(string filename, const unsigned int uiCurLevel)
 	for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++) {
 		CObject2D* obj = arrObject[uiCurLevel][i];
 
-		doc.SetCell(obj->indexSpace.x, cSettings->NUM_TILES_YAXIS - 1 - obj->indexSpace.y, obj->value);
+		doc.SetCell((int)obj->indexSpace.x, int(cSettings->NUM_TILES_YAXIS - 1 - obj->indexSpace.y), obj->value);
 	}
 
 	// Save the rapidcsv::Document to a file

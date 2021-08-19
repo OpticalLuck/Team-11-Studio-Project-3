@@ -133,7 +133,7 @@ CPlayer2D* CEnemy2D::GetNearestTarget(void) {
 	for (unsigned i = 0; i < arrPlayer.size(); i++) {
 		CPlayer2D* currPlayer = arrPlayer[i];
 
-		float currDist = (currPlayer->vTransform - vTransform).length();
+		float currDist = float((currPlayer->vTransform - vTransform).length());
 
 		if (currDist <= indexDist && currDist <= minDist) {
 			minDist = currDist;

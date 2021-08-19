@@ -191,7 +191,7 @@ void Collider2D::Render(void)
 
 	glm::vec2 actualPos = CSettings::GetInstance()->ConvertIndexToUVSpace(objCamPos);
 
-	float clampOffset = cSettings->ConvertIndexToUVSpace(cSettings->x, 1, false) / 2;
+	float clampOffset = cSettings->ConvertIndexToUVSpace(CSettings::AXIS::x, 1, false) / 2;
 	clampOffset = (clampOffset + 1);
 
 	float clampX = 1.0f + clampOffset;
