@@ -18,6 +18,7 @@ bool Projectiles::Init()
 {
 	cPhysics2D.Init(&vTransform);
 	cPhysics2D.MAX_SPEED = 50.f;
+	cPhysics2D.FRICTONAL_COEFFICIENT = 0.8f;
 	collider2D->colliderType = Collider2D::ColliderType::COLLIDER_CIRCLE;
 	collider2D->position = vTransform;
 	collider2D->Init();

@@ -307,8 +307,30 @@ void CMap2D::ReplaceGridInfo(const unsigned int uiRow, const unsigned uiCol, COb
 	}
 	else
 	{
-		obj = arrGrid[uiCurLevel][target->GetCurrentIndex().y][target->GetCurrentIndex().x];
-		newSpot = arrGrid[uiCurLevel][uiRow][uiCol];
+		if (uiRow < GetLevelRow() && uiCol < GetLevelCol() && uiRow >= 0 && uiCol >= 0)
+		{
+			obj = arrGrid[uiCurLevel][target->GetCurrentIndex().y][target->GetCurrentIndex().x];
+			newSpot = arrGrid[uiCurLevel][uiRow][uiCol];
+		}
+		else
+		{
+			cout << "Object went out of map range - Deleting" << endl;
+
+			//Get Object in arrObject list
+			for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++)
+			{
+				CObject2D* obj = arrObject[uiCurLevel][i];
+				if (obj == arrGrid[uiCurLevel][target->GetCurrentIndex().y][target->GetCurrentIndex().x])
+				{
+					arrGrid[uiCurLevel][target->GetCurrentIndex().y][target->GetCurrentIndex().x] = nullptr;
+					//Delete occupying object in arrObj
+					delete obj;
+					arrObject[uiCurLevel][i] = nullptr;
+					arrObject[uiCurLevel].erase(arrObject[uiCurLevel].begin() + i);
+					
+				}
+			}
+		}
 	}
 
 	if (newSpot == nullptr)

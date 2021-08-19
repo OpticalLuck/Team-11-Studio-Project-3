@@ -293,8 +293,6 @@ void CPlayer2D::Update(const double dElapsedTime)
 			}
 		}
 
-	glm::vec2 distance = Camera2D::GetInstance()->GetCursorPosInWorldSpace();
-	cout << distance.x << ", " << distance.y << endl;
 	if (cMouseController->IsButtonPressed(0))
 	{
 		cInventoryItem = cInventoryManager->GetItem("Shuriken");
@@ -302,6 +300,8 @@ void CPlayer2D::Update(const double dElapsedTime)
 		{
 			if (cMap2D->InsertMapInfo((int)vTransform.y, (int)vTransform.x, 2))
 			{
+				glm::vec2 distance = Camera2D::GetInstance()->GetCursorPosInWorldSpace() - vTransform;
+
 				CObject2D* shuriken = cMap2D->GetCObject((int)vTransform.x, (int)vTransform.y);
 				shuriken->vTransform = vTransform;
 
