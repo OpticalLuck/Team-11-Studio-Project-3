@@ -31,13 +31,15 @@
 #include "Primitives/Entity2D.h"
 
 //Include CObject2D
-#include "Object2D.h"
+#include "../Factory/ObjectFactory.h"
 
 //Include player
 #include "Player2D.h"
 
 //Include camera
 #include "Camera2D.h"
+
+#include "../TextureManager/TextureManager.h"
 
 // Include files for AStar
 #include <queue>
@@ -66,6 +68,8 @@ public:
 
 	// Set the value at certain indices in the arrMapInfo
 	void SetMapInfo(const unsigned int uiRow, const unsigned int uiCol, const int iValue, const bool bInvert = true);
+
+	void ReplaceGridInfo(const unsigned int uiRow, const unsigned uiCol, CObject2D* target, const bool bInvert = true);
 
 	std::vector<CObject2D*> GetObjectArr();
 
@@ -100,6 +104,8 @@ protected:
 	// We will load the CSV file's content into this Document
 	rapidcsv::Document doc;
 
+	ObjectFactory objFactory;
+
 	// Vector array that stores an array of objects level by level
 	std::vector<std::vector<CObject2D*>> arrObject;
 
@@ -109,13 +115,12 @@ protected:
 	//Vector array that stores limits of each level
 	std::vector<glm::i32vec2> arrLevelLimit;
 
+	CTextureManager* cTextureManager;
+
 	// The current level
 	unsigned int uiCurLevel;
 	// The number of levels
 	unsigned int uiNumLevels;
-
-	// Map containing texture IDs
-	map<int, int> MapOfTextureIDs;
 
 	//CS: The quadMesh for drawing the tiles
 	CMesh* quadMesh;
@@ -129,11 +134,8 @@ protected:
 	// Destructor
 	virtual ~CMap2D(void);
 
-	// Load a texture
-	bool LoadTexture(const char* filename, const int iTextureCode);
-
 	// Render a tile
-	void RenderTile(const CObject2D* Obj);
+	void RenderTile(const CObject2D obj);
 
 };
 

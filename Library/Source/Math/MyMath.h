@@ -250,6 +250,23 @@ Return a random float between min and max
 		return (num + min);
 	}//end of RandFloatMinMax function
 
+/******************************************************************************/
+/*!
+\brief
+Returns a vlue between two ends at a point on a linear scale
+
+\param start - current value
+\param end - target value
+\param speedFactor - speed of interpolation
+
+\exception None
+\return float
+*/
+	inline float Lerp(float start, float end, float speedFactor)
+	{
+		return start + speedFactor * (end - start);
+	}//end of Lerp function
+
 }//end namespace Math
 
 /******************************************************************************/

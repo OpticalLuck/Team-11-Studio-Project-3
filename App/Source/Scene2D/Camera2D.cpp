@@ -1,8 +1,14 @@
 #include "Camera2D.h"
+#include "Math/MyMath.h"
+#include "System/Debug.h"
 
-Camera2D::Camera2D(void) {
-	FirstTime = true;
-	pos = targetPos = glm::vec2(0.f, 0.f);
+Camera2D::Camera2D(void) 
+	: FirstTime(true)
+	, pos(0.f, 0.f)
+	, targetPos(0.f, 0.f)
+	, fZoom(1.f)
+	, fTargetZoom(1.f)
+{
 }
 
 Camera2D::~Camera2D(void) {
@@ -12,6 +18,7 @@ Camera2D::~Camera2D(void) {
 void Camera2D::Update(float dElapsedTime) {
 	if (FirstTime) {
 		pos = targetPos;
+		fZoom = fTargetZoom;
 		FirstTime = false;
 		return;
 	}
@@ -19,12 +26,28 @@ void Camera2D::Update(float dElapsedTime) {
 	float spd = 5 * dElapsedTime;
 
 	//Lerp
-	pos.x = pos.x + spd * (targetPos.x - pos.x);
-	pos.y = pos.y + spd * (targetPos.y - pos.y);
+	pos.x = Math::Lerp(pos.x, targetPos.x, spd);
+	pos.y = Math::Lerp(pos.y, targetPos.y, spd);
+
+	fZoom = Math::Lerp(fZoom, fTargetZoom, spd);
+	fZoom = Math::Clamp(fZoom, 0.7f, 2.f);
+	fTargetZoom = Math::Clamp(fTargetZoom, 0.7f, 2.f);
+
+	// DEBUG_MSG(fZoom);
 }
 
 void Camera2D::UpdateTarget(glm::vec2 target) {
 	targetPos = target;
+}
+
+void Camera2D::UpdateZoom(float fTarget)
+{
+	fTargetZoom = fTarget;
+}
+
+void Camera2D::UpdatePos(glm::vec2 pos)
+{
+	this->pos = pos;
 }
 
 void Camera2D::Reset(void) {
@@ -37,6 +60,21 @@ bool Camera2D::IsFirstTime(void) {
 
 glm::vec2 Camera2D::getCurrPos(void) {
 	return pos;
+}
+
+glm::vec2 Camera2D::getTarget(void)
+{
+	return targetPos;
+}
+
+float Camera2D::getZoom()
+{
+	return fZoom;
+}
+
+float Camera2D::getTargetZoom()
+{
+	return fTargetZoom;
 }
 
 void Camera2D::ClampCamPos(glm::i32vec2 clampPos) {

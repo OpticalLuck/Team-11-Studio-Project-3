@@ -65,9 +65,9 @@ public:
 
 	// PostRender
 	void PostRender(void);
-
 	void CreateIMGUI();
 	void DeleteIMGUI();
+
 
 
 protected:

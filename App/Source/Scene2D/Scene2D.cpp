@@ -79,8 +79,6 @@ CScene2D::~CScene2D(void)
 		cameraHandler = NULL;
 	}
 
-	// Clear out all the shaders
-	//CShaderManager::GetInstance()->Destroy();
 }
 
 /**
@@ -90,7 +88,6 @@ bool CScene2D::Init(void)
 {
 	Math::InitRNG();
 	// Include Shader Manager
-	//CShaderManager::GetInstance()->Add("2DShader", "Shader//Scene2D.vs", "Shader//Scene2D.fs");
 	CShaderManager::GetInstance()->Use("2DShader");
 	CShaderManager::GetInstance()->activeShader->setInt("texture1", 0);
 
@@ -303,14 +300,12 @@ void CScene2D::CreateIMGUI()
 {
 	// Store the cGUI_Scene2D singleton instance here
 	cGUI_Scene2D = CGUI_Scene2D::GetInstance();
-	cGUI_Scene2D->CreateIMGUI();
 }
 
 void CScene2D::DeleteIMGUI()
 {
 	if (cGUI_Scene2D)
 	{
-		cGUI_Scene2D->DeleteIMGUI();
 		cGUI_Scene2D = NULL;
 	}
 }

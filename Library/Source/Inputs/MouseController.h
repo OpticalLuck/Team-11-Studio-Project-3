@@ -49,6 +49,8 @@ public:
 	inline bool GetKeepMouseCentered() const { return bKeepMouseCentered; };
 	inline void SetKeepMouseCentered(bool _value){ bKeepMouseCentered = _value; };
 
+	void Reset(void);
+
 protected:
 	// Constructor
 	CMouseController(void);

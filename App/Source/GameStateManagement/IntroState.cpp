@@ -131,13 +131,3 @@ void CIntroState::Destroy(void)
 
 	cout << "CIntroState::Destroy()\n" << endl;
 }
-
-bool CIntroState::CreateIMGUI()
-{
-	return false;
-}
-
-bool CIntroState::DeleteIMGUI()
-{
-	return false;
-}

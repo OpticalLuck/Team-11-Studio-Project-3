@@ -29,7 +29,8 @@ using namespace std;
 
 // Include SoundController
 #include "SoundController/SoundController.h"
-
+// Include TextureManager
+#include "TextureManager/TextureManager.h"
 // Include CGameStateManager
 #include "GameStateManagement/GameStateManager.h"
 // Include CIntroState
@@ -40,6 +41,8 @@ using namespace std;
 #include "GameStateManagement/PlayGameState.h"
 #include "GameStateManagement/GameOverState.h"
 #include "GameStateManagement/PauseMenuState.h"
+#include "GameStateManagement/EditorSettingsState.h"
+#include "GameStateManagement/LevelEditorState.h"
 
 /**
  @brief Define an error callback
@@ -147,6 +150,8 @@ bool Application::Init(void)
 
 	// Get the CSettings instance
 	cSettings = CSettings::GetInstance();
+	m_ImGuiWindow = CImGuiWindow::GetInstance();
+	cSettings->m_ImGuiWindow = CImGuiWindow::GetInstance();
 
 	// Set the file location for the digital assets
 	// This is backup, in case filesystem cannot find the current directory
@@ -235,6 +240,10 @@ bool Application::Init(void)
 										"Shader//Scene2DColor.fs");
 	CShaderManager::GetInstance()->Add("textShader", "Shader//text.vs", "Shader//text.fs");
 	CShaderManager::GetInstance()->Add("LineShader", "Shader//Line2DShader.vs", "Shader//Line2DShader.fs");
+	CShaderManager::GetInstance()->Add("Shader", "Shader//Shader.vs", "Shader//Shader.fs");
+
+	// Initialise the TextureManager Instance
+	CTextureManager::GetInstance()->Init();
 
 	// Initialise the CFPSCounter instance
 	cFPSCounter = CFPSCounter::GetInstance();
@@ -246,9 +255,14 @@ bool Application::Init(void)
 	CGameStateManager::GetInstance()->AddGameState("PlayGameState", new CPlayGameState());
 	CGameStateManager::GetInstance()->AddGameState("GameOverState", new GameOverState());
 	CGameStateManager::GetInstance()->AddGameState("PauseState", new PauseMenuState());
+	CGameStateManager::GetInstance()->AddGameState("EditorSettingsState", new CEditorSettingsState());
+	CGameStateManager::GetInstance()->AddGameState("LevelEditorState", new CLevelEditorState());
 
 	// Set the active scene
 	CGameStateManager::GetInstance()->SetActiveGameState("IntroState");
+
+	cSettings->ImGuiProperties.IsDockingEnabled = false;
+	m_ImGuiWindow->Create(cSettings->ImGuiProperties);
 
 	return true;
 }
@@ -274,14 +288,19 @@ void Application::Run(void)
 		if (dElapsedTime > 0.0166666666666667)
 			dElapsedTime = 0.0166666666666667;
 
+		m_ImGuiWindow->PreRender(cSettings->ImGuiProperties);
+
 		// Call the active Game State's Update method
 		if (CGameStateManager::GetInstance()->Update(0.0166666666666667) == false)
 		{
 			break;
 		}
 
+
 		// Call the active Game State's Render method
 		CGameStateManager::GetInstance()->Render();
+		m_ImGuiWindow->PostRender();
+
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		// -------------------------------------------------------------------------------
@@ -316,9 +335,10 @@ void Application::Destroy(void)
 {
 	// Destroy the CGameStateManager
 	CGameStateManager::GetInstance()->Destroy();
-	// Destory the ShaderManager
+	// Destroy the ShaderManager
 	CShaderManager::GetInstance()->Destroy();
-
+	// Destroy the TextureManager
+	CTextureManager::GetInstance()->Destroy();
 	// Destroy the keyboard instance
 	CKeyboardController::GetInstance()->Destroy();
 
@@ -335,6 +355,9 @@ void Application::Destroy(void)
 	//	cScene2D->Destroy();
 	//	cScene2D = NULL;
 	//}
+
+	m_ImGuiWindow->Shutdown();
+	m_ImGuiWindow->Destroy();
 
 	//Close OpenGL window and terminate GLFW
 	glfwDestroyWindow(cSettings->pWindow);
@@ -383,4 +406,5 @@ void Application::UpdateInputDevices(void)
 void Application::PostUpdateInputDevices(void)
 {
 	CKeyboardController::GetInstance()->PostUpdate();
+	CMouseController::GetInstance()->PostUpdate();
 }

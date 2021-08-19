@@ -132,15 +132,3 @@ void CPlayGameState::Destroy(void)
 		cScene2D = NULL;
 	}
 }
-
-bool CPlayGameState::CreateIMGUI()
-{
-	cScene2D->CreateIMGUI();
-	return false;
-}
-
-bool CPlayGameState::DeleteIMGUI()
-{
-	cScene2D->DeleteIMGUI();
-	return false;
-}
