@@ -95,8 +95,6 @@ public:
 
 	STATE Getstate() const;
 
-	void Hit(int health);
-
 	void SetClone(bool bIsClone);
 
 	bool IsClone();
@@ -106,8 +104,8 @@ public:
 	CPlayer2D* const Clone();
 
 	glm::i32vec2 GetCheckpoint(void);
-protected:
 
+protected:
 	bool bIsClone;
 
 	enum DIRECTION
@@ -146,7 +144,7 @@ protected:
 	glm::vec4 currentColor;
 
 	// InventoryManager
-	// CInventoryManager* cInventoryManager;
+	CInventoryManager* cInventoryManager;
 	// InventoryItem
 	CInventoryItem* cInventoryItem;
 
@@ -167,8 +165,6 @@ protected:
 
 	// Update the health and lives
 	void UpdateHealthLives(void);
-
-	bool InRangeOfTile(unsigned tileID);
 
 	void MovementUpdate(double dt);
 };

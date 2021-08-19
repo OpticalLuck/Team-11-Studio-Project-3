@@ -17,26 +17,28 @@
 // Include CEntity2D
 #include "Primitives/Entity2D.h"
 
-class CMap2D;
-
 class CObject2D : public CEntity2D
 {
-	friend class CMap2D;
-
 	public:
 		CObject2D(void);
-		CObject2D(int, bool);
+		CObject2D(int);
 		~CObject2D(void); //Do nothing for now
+		
+		bool Init() override;
+		void Update(const double dElapsedTime) override;
 
-		void setIndexSpace(glm::vec2);
+		int Getvalue() const;
+		void SetValue(int value);
 
-	private:
+		glm::i32vec2 GetCurrentIndex() const;
+		void SetCurrentIndex(glm::i32vec2 currentIndex);
+	protected:
 		int value;
-		bool collidable;
 
 		float width;
 		float height;
 
-		glm::vec2 indexSpace; //LOCATION OF OBJECT IN WORLD SPACE
+		//Current Index in map Grid
+		glm::i32vec2 currentIndex;
 };
 

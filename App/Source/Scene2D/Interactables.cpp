@@ -12,14 +12,14 @@
 
 Interactables::Interactables(void)
 	: bInteracted(false)
+	, animatedSprites(NULL)
 {
 	transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
 
 	// Initialise vecIndex
 	vTransform = glm::i32vec2(0);
 
-	// Initialise vec2UVCoordinate
-	vec2UVCoordinate = glm::vec2(0.0f);
+	type = ENTITY_TYPE::INTERACTABLES;
 }
 
 Interactables::~Interactables(void)
@@ -77,8 +77,8 @@ void Interactables::Render(void)
 	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
 
 	transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-	transform = glm::translate(transform, glm::vec3(vec2UVCoordinate.x,
-		vec2UVCoordinate.y,
+	transform = glm::translate(transform, glm::vec3(
+		CSettings::GetInstance()->ConvertIndexToUVSpace(glm::vec2(vTransform.x, vTransform.y)),
 		0.0f));
 
 	// Update the shaders with the latest transform

@@ -31,7 +31,7 @@
 #include "Primitives/Entity2D.h"
 
 //Include CObject2D
-#include "Object2D.h"
+#include "../Factory/ObjectFactory.h"
 
 //Include player
 #include "Player2D.h"
@@ -69,6 +69,8 @@ public:
 	// Set the value at certain indices in the arrMapInfo
 	void SetMapInfo(const unsigned int uiRow, const unsigned int uiCol, const int iValue, const bool bInvert = true);
 
+	void ReplaceGridInfo(const unsigned int uiRow, const unsigned uiCol, CObject2D* target, const bool bInvert = true);
+
 	std::vector<CObject2D*> GetObjectArr();
 
 	CObject2D* GetCObject(const unsigned int uiCol, const unsigned int uiRow, const bool bInvert = true);
@@ -101,6 +103,8 @@ protected:
 	// The variable containing the rapidcsv::Document
 	// We will load the CSV file's content into this Document
 	rapidcsv::Document doc;
+
+	ObjectFactory objFactory;
 
 	// Vector array that stores an array of objects level by level
 	std::vector<std::vector<CObject2D*>> arrObject;
