@@ -107,7 +107,7 @@ protected:
 
 	CInventoryManager* cInventoryManager;
 
-	CInventoryMain* cInventoryMain;
+	CInventoryM* cInventoryM;
 
 	//Handler for camera
 	Camera2D* cameraHandler;

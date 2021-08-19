@@ -16,6 +16,7 @@ CGUI_Scene2D::CGUI_Scene2D(void)
 	: cSettings(NULL)
 	, m_fProgressBar(0.0f)
 	, cInventoryManager(NULL)
+	, cInventoryM(NULL)
 {
 }
 
@@ -24,11 +25,11 @@ CGUI_Scene2D::CGUI_Scene2D(void)
  */
 CGUI_Scene2D::~CGUI_Scene2D(void)
 {
-	if (cInventoryManager)
-	{
-		cInventoryManager->Destroy();
-		cInventoryManager = NULL;
-	}
+	//if (cInventoryManager)
+	//{
+	//	cInventoryManager->Destroy();
+	//	cInventoryManager = NULL;
+	//}
 
 	// Show the mouse pointer
 	if (cSettings->bDisableMousePointer == true)
@@ -67,6 +68,8 @@ bool CGUI_Scene2D::Init(void)
 	//glfwSetInputMode(CSettings::GetInstance()->pWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
 	cInventoryManager = CInventoryManager::GetInstance();
+
+	cInventoryM = CInventoryM::GetInstance();
 
 	// Initialise the cInventoryMain
 	cInventoryMain = new CInventoryMain;
@@ -159,8 +162,8 @@ void CGUI_Scene2D::Update(const double dElapsedTime)
 		ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 1.0f, 1.0f));
 		//ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1.f, 0.f, 0.f, 1.f));
 		//ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1.f, 0.f, 0.f, 1.f));
-		cout << cInventoryMain->GetItemIndex();
-		if (cInventoryMain->GetItemIndex() == 1)
+		//cout << cInventoryM->GetItemIndex();
+		if (cInventoryM->GetItemIndex() == 1)
 		{
 			ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1.f, 0.f, 0.f, 1.f));
 		}
@@ -175,7 +178,7 @@ void CGUI_Scene2D::Update(const double dElapsedTime)
 		ImGui::TextColored(ImVec4(1, 1, 0, 1), "Potion: %d", cInventoryMain->GetItemCount());
 		ImGui::End();
 		ImGui::PopStyleColor();
-		if (cInventoryMain->GetItemIndex() == 1)
+		if (cInventoryM->GetItemIndex() == 1)
 		{
 			ImGui::PopStyleColor();
 		}
@@ -187,7 +190,7 @@ void CGUI_Scene2D::Update(const double dElapsedTime)
 		cInventoryMain->GetItem("Hook");
 		ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 1.0f, 1.0f));
 		//ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1.f, 0.f, 0.f, 1.f));
-		if (cInventoryMain->GetItemIndex() == 2)
+		if (cInventoryM->GetItemIndex() == 2)
 		{
 			ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1.f, 0.f, 0.f, 1.f));
 		}
@@ -202,7 +205,7 @@ void CGUI_Scene2D::Update(const double dElapsedTime)
 		ImGui::TextColored(ImVec4(1, 1, 0, 1), "Hook: %d", cInventoryMain->GetItemCount());
 		ImGui::End();
 		ImGui::PopStyleColor();
-		if (cInventoryMain->GetItemIndex() == 2)
+		if (cInventoryM->GetItemIndex() == 2)
 		{
 			ImGui::PopStyleColor();
 		}

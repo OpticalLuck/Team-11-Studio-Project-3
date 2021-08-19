@@ -1,8 +1,8 @@
 #include "InventoryMain.h"
 
 CInventoryMain::CInventoryMain(void)
-	: iItemIndex(2) 
-	, cInventoryItem(NULL)
+	//: iItemIndex(2) 
+	: cInventoryItem(NULL)
 	, cInventoryManager(NULL)
 
 {
@@ -61,26 +61,26 @@ void CInventoryMain::GetItem(string item)
 		return;
 }
 
-void CInventoryMain::NavigateIndex(string direction)
-{
-	if (direction == "DOWN")
-	{
-		++iItemIndex;
-		//if (iItemIndex > 2)
-			//iItemIndex = 1;
-	}
-	if (direction == "UP")
-	{
-		--iItemIndex;
-		//if (iItemIndex <= 0)
-			//iItemIndex = 2;
-	}
-
-}
-int CInventoryMain::GetItemIndex(void)
-{
-	return iItemIndex;
-}
+//void CInventoryMain::NavigateIndex(string direction)
+//{
+//	if (direction == "DOWN")
+//	{
+//		++iItemIndex;
+//		//if (iItemIndex > 2)
+//			//iItemIndex = 1;
+//	}
+//	if (direction == "UP")
+//	{
+//		--iItemIndex;
+//		//if (iItemIndex <= 0)
+//			//iItemIndex = 2;
+//	}
+//
+//}
+//int CInventoryMain::GetItemIndex(void)
+//{
+//	return iItemIndex;
+//}
 
 unsigned int CInventoryMain::GetTexture(void) const
 {

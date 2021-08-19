@@ -19,12 +19,14 @@ public:
 	/*brief: returns the requested name*/
 	CItem GetItem(std::string name);
 
-
+	void NavigateIndex(std::string direction);
+	int GetItemIndex(void);
 
 
 private:
 	std::map<std::string, CItem>m_Items; //stores the list of items into the map
 	std::map<std::string, CInventory>m_Inventory; //store a list of inventory for clone/player
+	int iItemIndex;
 
 protected:
 	void AddItem(std::string sItemName, int iID);

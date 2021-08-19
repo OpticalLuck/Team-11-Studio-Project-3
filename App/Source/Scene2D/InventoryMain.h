@@ -24,16 +24,16 @@ public:
 
 	void GetItem(string item);
 
-	int GetItemIndex(void);
+	//int GetItemIndex(void);
 
-	void NavigateIndex(string direction);
+	//void NavigateIndex(string direction);
 
 	unsigned int GetTexture(void) const;
 
 	int GetItemCount(void);
 
 	glm::vec2 GetItemSize(void);
-	int iItemIndex;
+
 
 private:
 

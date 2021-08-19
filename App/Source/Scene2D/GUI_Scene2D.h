@@ -16,6 +16,8 @@
 
 #include "InventoryMain.h"
 
+#include "InventoryM.h"
+
 //Include math
 #include "Math/MyMath.h"
 
@@ -92,6 +94,7 @@ protected:
 	CInventoryManager* cInventoryManager;
 	CInventoryMain* cInventoryMain;
 	CInventoryItem* cInventoryItem;
+	CInventoryM* cInventoryM;
 
 
 	CKeyboardController* cKeyboardController;
