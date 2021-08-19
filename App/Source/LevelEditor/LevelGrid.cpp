@@ -22,7 +22,7 @@ CLevelGrid::~CLevelGrid()
 	glDeleteBuffers(1, &EBO);
 }
 
-void CLevelGrid::Init(unsigned int iWorldWidth, unsigned int iWorldHeight)
+void CLevelGrid::Init(uint32_t iWorldWidth, uint32_t iWorldHeight)
 {
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);

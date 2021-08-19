@@ -59,7 +59,7 @@ public:
     void RenderBackground(void);
 
     // Loading and Creating Functions
-    void CreateLevel(std::string levelName, unsigned int iWorldWidth = 32, unsigned int iWorldHeight = 24);  
+    void CreateLevel(std::string levelName, uint32_t iWorldWidth = 32, uint32_t iWorldHeight = 24);
     bool LoadLevel(const char* filePath);                                                                    
     bool LoadLevelByName(std::string levelName);                                                             
     void LoadExistingLevels(void);                                                                           
@@ -86,7 +86,7 @@ protected:
     // Application Settings
     CSettings* cSettings;
 
-    // OpenGL Locations
+    // OpenGL Objects
     unsigned int VAO, VBO, EBO;
 
     // The texture ID in OpenGL

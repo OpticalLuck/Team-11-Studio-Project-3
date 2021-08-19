@@ -11,9 +11,10 @@
 namespace FileDialog
 {
 	TCHAR strFilter[] =
-		_T("Bitmap Files (*. Bmp)\0 * .bmp\0")
-		_T("JPEG Files (*. Jpeg; * jpg)\0 * .jpeg; *. Jpg\0")
-		_T("PNG Files (*. Png)\0 * .png\0")
+		// _T("Bitmap Files (*. Bmp)\0 * .bmp\0")
+		// _T("JPEG Files (*. Jpeg; * jpg)\0 * .jpeg; *. Jpg\0")
+		_T("PNG Files (*. PNG)\0 * .png\0")
+		_T("TGA Files (*. TGA)\0 * .tga\0")
 		_T("All Files (*. *)\0 *. *\0");
 
 	std::string OpenFile(const char* filter = strFilter)

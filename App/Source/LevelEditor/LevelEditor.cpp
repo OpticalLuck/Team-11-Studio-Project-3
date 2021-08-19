@@ -138,7 +138,7 @@ void CLevelEditor::PostRender()
 /**
 @brief Creates a new level in m_CurrentLevel
 */
-void CLevelEditor::CreateLevel(std::string levelName, unsigned int iWorldWidth, unsigned int iWorldHeight)
+void CLevelEditor::CreateLevel(std::string levelName, uint32_t iWorldWidth, uint32_t iWorldHeight)
 {
     // Reload the level data
     ResetParams();

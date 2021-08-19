@@ -73,7 +73,7 @@ bool CLevelEditorState::Init(void)
 	cout << "CLevelEditorState::Init()\n" << endl;
 
 	cSettings = CSettings::GetInstance();
-	cSettings->screenSize = CSettings::SSIZE_1600x900;
+	cSettings->screenSize = CSettings::SSIZE_1024x768;
 	CSettings::GetInstance()->UpdateWindowSize();
 
 	glGenVertexArrays(1, &quadVAO);
@@ -120,11 +120,6 @@ bool CLevelEditorState::Update(const double dElapsedTime)
 		cout << "Loading PauseState" << endl;
 		CGameStateManager::GetInstance()->SetPauseGameState("PauseState");
 		return true;
-	}
-
-	if (CKeyboardController::GetInstance()->IsKeyReleased(GLFW_KEY_P))
-	{
-		cLevelEditor->SaveMap();
 	}
 
 	MoveCamera();
@@ -338,8 +333,8 @@ void CLevelEditorState::ImGuiRender()
 			std::string saveString = "Save " + cLevelEditor->GetCurrentLevel().LevelName;
 			std::string closeString = "Close " + cLevelEditor->GetCurrentLevel().LevelName;
 
-			if (ImGui::MenuItem(saveString.c_str())) cLevelEditor->SaveMap();
-			if (ImGui::MenuItem(closeString.c_str()))
+			if (ImGui::MenuItem(saveString.c_str(), "CTRL+S")) cLevelEditor->SaveMap();
+			if (ImGui::MenuItem(closeString.c_str(), "ESCAPE"))
 			{
 				DEBUG_MSG("Closing Editor");
 				CGameStateManager::GetInstance()->SetActiveGameState("MenuState");
@@ -351,7 +346,7 @@ void CLevelEditorState::ImGuiRender()
 	}
 
 	ImGui::SetNextWindowPos(ImVec2(0, 0 + 19));
-	ImGui::SetNextWindowSize(ImVec2(300, cSettings->iWindowHeight));
+	ImGui::SetNextWindowSize(ImVec2(250, cSettings->iWindowHeight));
 
 	ImGuiWindowFlags windowFlags =
 		ImGuiWindowFlags_AlwaysAutoResize |
@@ -382,12 +377,17 @@ void CLevelEditorState::ImGuiRender()
 			{
 				delete cLevelEditor->cBackgroundEntity;
 				cLevelEditor->cBackgroundEntity = new CBackgroundEntity(cLevelEditor->backgroundPath);
-				cLevelEditor->cBackgroundEntity->Init();
+				if (!cLevelEditor->cBackgroundEntity->Init())
+				{
+					delete cLevelEditor->cBackgroundEntity;
+					cLevelEditor->cBackgroundEntity = nullptr;
+				}
 			}
 		}
 
 		ImGui::NewLine();
 
+		ImGui::PushItemWidth(150);
 		ImGui::TextColored(ImVec4(1.f, 1.f, 0, 1.f), "Parallax Allowance");
 		ImGui::SliderFloat("Parallax X", &cLevelEditor->vAllowanceScale.x, 0.f, 1.f);
 		ImGui::SliderFloat("Parallax Y", &cLevelEditor->vAllowanceScale.y, 0.f, 1.f);
@@ -397,6 +397,7 @@ void CLevelEditorState::ImGuiRender()
 		ImGui::TextColored(ImVec4(1, 1, 0, 1), "BG Size");
 		ImGui::SliderFloat("BG X", &cLevelEditor->vUVCoords.x, 2.f, 5.f);
 		ImGui::SliderFloat("BG Y", &cLevelEditor->vUVCoords.y, 2.f, 5.f);
+		ImGui::PopItemWidth();
 
 		if (ImGui::BeginChild("Tile List"))
 		{
@@ -405,7 +406,7 @@ void CLevelEditorState::ImGuiRender()
 				if (ImGui::BeginTabItem("Tiles"))
 				{
 				
-					const int iMaxButtonsPerRow = 7;
+					const int iMaxButtonsPerRow = 6;
 					int iCounter = 0;
 					for (int i = TILE_GROUND; i < OBJECT_TOTAL; ++i)
 					{
