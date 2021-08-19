@@ -148,17 +148,6 @@ bool CPlayer2D::Init(void)
 
 	// Get the handler to the CInventoryManager instance
     cInventoryManager = CInventoryManager::GetInstance();
-	// Add a Lives icon as one of the inventory items
-	cInventoryItem = cInventoryManager->Add("Lives", "Image/Collectibles/Scene2D_Lives.tga", 5, 3);
-	cInventoryItem->vec2Size = glm::vec2(25, 25);
-
-	// Add a Health icon as one of the inventory items
-	cInventoryItem = cInventoryManager->Add("Health", "Image/Scene2D_Health.tga", 100, 100);
-	cInventoryItem->vec2Size = glm::vec2(25, 25);
-
-	// Add a Tree as one of the inventory items
-	cInventoryItem = cInventoryManager->Add("Shuriken", "Image/Collectibles/shuriken.png", 999, 10);
-	cInventoryItem->vec2Size = glm::vec2(25, 25);
 
 	jumpCount = 0;
 
@@ -304,16 +293,7 @@ void CPlayer2D::Update(const double dElapsedTime)
 			}
 		}
 
-	glm::vec2 vMousePosInWindow = glm::vec2(cMouseController->GetMousePositionX(), cSettings->iWindowHeight - cMouseController->GetMousePositionY());
-	glm::vec2 vMousePosConvertedRatio = glm::vec2(vMousePosInWindow.x - cSettings->iWindowWidth * 0.5, vMousePosInWindow.y - cSettings->iWindowHeight * 0.5);
-	glm::vec2 vMousePosWorldSpace = glm::vec2(vMousePosConvertedRatio.x / cSettings->iWindowWidth * cSettings->NUM_TILES_XAXIS, vMousePosConvertedRatio.y / cSettings->iWindowHeight * cSettings->NUM_TILES_YAXIS);
-	glm::vec2 vMousePosRelativeToCamera = Camera2D::GetInstance()->getCurrPos() + vMousePosWorldSpace / Camera2D::GetInstance()->getZoom();
-
-	vMousePosRelativeToCamera.x = Math::Clamp(vMousePosRelativeToCamera.x, -1.f, (float)CSettings::GetInstance()->iWindowWidth - 1.f);
-	vMousePosRelativeToCamera.y = Math::Clamp(vMousePosRelativeToCamera.y, -1.f, (float)CSettings::GetInstance()->iWindowHeight - 1.f);
-	
-	glm::vec2 distance = vMousePosRelativeToCamera;// -vTransform;
-	
+	glm::vec2 distance = Camera2D::GetInstance()->GetCursorPosInWorldSpace();
 	cout << distance.x << ", " << distance.y << endl;
 	if (cMouseController->IsButtonPressed(0))
 	{

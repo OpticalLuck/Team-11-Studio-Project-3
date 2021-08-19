@@ -153,7 +153,6 @@ void CMap2D::Render(void)
 
 	//Camera init
 	glm::vec2 offset = glm::vec2(float(cSettings->NUM_TILES_XAXIS / 2.f), float(cSettings->NUM_TILES_YAXIS / 2.f));
-
 	glm::vec2 cameraPos = camera->getCurrPos();
 
 	for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++) {
@@ -163,20 +162,15 @@ void CMap2D::Render(void)
 		glm::vec2 actualPos = cSettings->ConvertIndexToUVSpace(objCamPos);
 
 		float clampOffset = cSettings->ConvertIndexToUVSpace(CSettings::AXIS::x, 1, false) / 2;
-		clampOffset = (clampOffset + 1);
 
-		float clampX = 1.0f + clampOffset;
-		float clampY = 1.0f + clampOffset;
+		float clampX = 2.0f + clampOffset;
+		float clampY = 2.0f + clampOffset;
+
 		if (actualPos.x <= -clampX || actualPos.x >= clampX || actualPos.y <= -clampY || actualPos.y >= clampY)
 			continue;
 
 		transform = glm::mat4(1.f);
 		transform = glm::translate(transform, glm::vec3(actualPos.x, actualPos.y, 0.f));
-		/*transform = glm::translate(transform, glm::vec3(w
-			cSettings->ConvertIndexToUVSpace(cSettings->x, currObj.indexSpace.x, false, 0),
-			cSettings->ConvertIndexToUVSpace(cSettings->y, currObj.indexSpace.y, false),
-			0.f
-		));*/
 
 		// Update the shaders with the latest transform
 		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));

@@ -191,7 +191,6 @@ bool CScene2D::Update(const double dElapsedTime)
 
 	//Camera work
 	cameraHandler->UpdateTarget(cPlayer2D->vTransform);
-
 	cameraHandler->Update((float)dElapsedTime);
 	cameraHandler->ClampCamPos(cMap2D->GetLevelLimit());
 

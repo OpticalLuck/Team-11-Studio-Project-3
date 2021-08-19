@@ -106,7 +106,7 @@ bool CLevelEditorState::Update(const double dElapsedTime)
 {
 	Camera2D::GetInstance()->Update(dElapsedTime);
 
-	vMousePos = Camera2D::GetInstance()->GetCursorPosInWorldSpace(0.5f);
+	vMousePos = Camera2D::GetInstance()->GetCursorPosInWorldSpace(0);
 
 	vMousePos.x = Math::Clamp((float)vMousePos.x, 0.f, (float)cLevelEditor->iWorldWidth - 1);
 	vMousePos.y = Math::Clamp((float)vMousePos.y, 0.f, (float)cLevelEditor->iWorldHeight - 1);
