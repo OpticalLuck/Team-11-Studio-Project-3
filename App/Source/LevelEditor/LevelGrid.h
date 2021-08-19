@@ -24,7 +24,7 @@ public:
 	CLevelGrid();
 	~CLevelGrid();
 
-	void Init(uint32_t iWorldWidth, uint32_t iWorldHeight);
+	void Init(unsigned int iWorldWidth, unsigned int iWorldHeight);
 
 	void PreRender(void);
 	void Render(void);
