@@ -2,6 +2,7 @@
 
 // Include GLEW
 #ifndef GLEW_STATIC
+#include <Windows.h>
 #include <GL/glew.h>
 #define GLEW_STATIC
 #endif
@@ -22,6 +23,8 @@ enum Direction {
 };
 
 typedef std::tuple<bool, Direction, glm::vec2> Collision;
+
+class CSettings;
 
 class Collider2D
 {
@@ -112,7 +115,8 @@ protected:
 	std::string sLineShaderName;
 	unsigned int VAO, VBO;
 
+	//Handlers
+	CSettings* cSettings;
 	bool bEnabled;
-
 };
 

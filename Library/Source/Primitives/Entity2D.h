@@ -45,8 +45,6 @@ public:
 
 	CEntity2D(ENTITY_TYPE type = NONE);
 
-	CEntity2D(string entity_toClone) {}
-
 	// Constructor
 	//CEntity2D(void);
 
@@ -77,6 +75,11 @@ public:
 
 	// The i32vec2 which stores the indices of an Entity2D in the Map2D
 	glm::vec2 vTransform;
+
+	//For rotation purposes (Anti clockwise)
+	float vRotate;
+
+	bool collidable;
 
 protected:
 	// Name of Shader Program instance

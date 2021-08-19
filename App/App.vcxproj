@@ -27,6 +27,7 @@
     <ClCompile Include="Source\LevelEditor\LevelEditor.cpp" />
     <ClCompile Include="Source\main.cpp" />
     <ClCompile Include="Source\Scene2D\BackgroundEntity.cpp" />
+    <ClCompile Include="Source\Scene2D\Boss2D.cpp" />
     <ClCompile Include="Source\Scene2D\Boulder2D.cpp" />
     <ClCompile Include="Source\Scene2D\Camera2D.cpp" />
     <ClCompile Include="Source\Scene2D\Collider2D.cpp" />
@@ -63,6 +64,7 @@
     <ClInclude Include="Source\LevelEditor\LevelGrid.h" />
     <ClInclude Include="Source\LevelEditor\LevelEditor.h" />
     <ClInclude Include="Source\Scene2D\BackgroundEntity.h" />
+    <ClInclude Include="Source\Scene2D\Boss2D.h" />
     <ClInclude Include="Source\Scene2D\Boulder2D.h" />
     <ClInclude Include="Source\Scene2D\Camera2D.h" />
     <ClInclude Include="Source\Scene2D\Collider2D.h" />

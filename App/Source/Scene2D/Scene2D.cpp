@@ -55,7 +55,7 @@ CScene2D::~CScene2D(void)
 	cKeyboardInputHandler = NULL;
 
 	// Destroy the enemies
-	for (int i = 0; i < enemyVector.size(); i++)
+	for (unsigned i = 0; i < enemyVector.size(); i++)
 	{
 		delete enemyVector[i];
 		enemyVector[i] = NULL;
@@ -191,7 +191,7 @@ bool CScene2D::Update(const double dElapsedTime)
 
 	//Camera work
 	cameraHandler->UpdateTarget(cPlayer2D->vTransform);
-	cameraHandler->Update(dElapsedTime);
+	cameraHandler->Update((float)dElapsedTime);
 	cameraHandler->ClampCamPos(cMap2D->GetLevelLimit());
 
 	// Check if the game should go to the next level
@@ -269,6 +269,9 @@ void CScene2D::PreRender(void)
  */
 void CScene2D::Render(void)
 {
+	//Call the Map's background (If there's any)
+	cMap2D->RenderBackground();
+
 	cEntityManager->RenderEnemy();
 	cEntityManager->RenderClone();
 	cEntityManager->RenderPlayer();
