@@ -83,7 +83,6 @@
     <ClInclude Include="Source\SoundController\SoundController.h" />
     <ClInclude Include="Source\SoundController\SoundInfo.h" />
     <ClInclude Include="Source\TextureManager\TextureManager.h" />
-    <ClInclude Include="Source\WindowUtils\WindowUtils.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{9B172635-4E2B-46F1-A403-08F4194D00F5}</ProjectGuid>

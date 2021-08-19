@@ -71,6 +71,7 @@
     <ClInclude Include="Source\System\ImageLoader.h" />
     <ClInclude Include="Source\System\LoadOBJ.h" />
     <ClInclude Include="Source\System\rapidcsv.h" />
+    <ClInclude Include="Source\System\WindowUtils.h" />
     <ClInclude Include="Source\TimeControl\FPSCounter.h" />
     <ClInclude Include="Source\TimeControl\StopWatch.h" />
   </ItemGroup>

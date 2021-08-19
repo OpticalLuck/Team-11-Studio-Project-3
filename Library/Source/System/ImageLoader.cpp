@@ -50,7 +50,7 @@ unsigned char * CImageLoader::Load(const char* filename, int& width, int& height
 
 	unsigned char* data;
 
-	if (filename[0] == 'C' || filename[0] == 'E')
+	if ((filename[0] == 'C' && filename[1] == ':') || filename[0] == 'E' && filename[1] == ':')
 	{
 		data = stbi_load(filename, &width, &height, &nrChannels, 0);
 	}

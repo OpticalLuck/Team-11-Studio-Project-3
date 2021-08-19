@@ -253,8 +253,5 @@
     <ClInclude Include="Source\TextureManager\TextureManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\WindowUtils\WindowUtils.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>

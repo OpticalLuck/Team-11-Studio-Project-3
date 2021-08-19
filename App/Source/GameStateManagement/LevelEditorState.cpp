@@ -21,7 +21,7 @@
 
 #include "ImGuiWindow/ImGuiWindow.h"
 
-#include "../WindowUtils/WindowUtils.h"
+#include "System/WindowUtils.h"
 
 #include <iostream>
 using namespace std;
@@ -199,6 +199,8 @@ void CLevelEditorState::MoveCamera(void)
 		Camera2D::GetInstance()->UpdateTarget(glm::vec2(Camera2D::GetInstance()->getTarget().x + 0.2, Camera2D::GetInstance()->getTarget().y));
 	}
 
+	Camera2D::GetInstance()->UpdatePos(glm::vec2(Math::Clamp(Camera2D::GetInstance()->getCurrPos().x, 0.f, (float)cLevelEditor->iWorldWidth), Math::Clamp(Camera2D::GetInstance()->getCurrPos().y, 0.f, (float)cLevelEditor->iWorldHeight)));
+	Camera2D::GetInstance()->UpdateTarget(glm::vec2(Math::Clamp(Camera2D::GetInstance()->getTarget().x, 0.f, (float)cLevelEditor->iWorldWidth), Math::Clamp(Camera2D::GetInstance()->getTarget().y, 0.f, (float)cLevelEditor->iWorldHeight)));
 }
 
 void CLevelEditorState::ScaleMap(void)
@@ -370,9 +372,13 @@ void CLevelEditorState::ImGuiRender()
 		if (ImGui::Button("Change Background"))
 		{
 			cLevelEditor->backgroundPath = FileDialog::OpenFile("Image (*.png)\0*.png\0");
-			delete cLevelEditor->cBackgroundEntity;
-			cLevelEditor->cBackgroundEntity = new CBackgroundEntity(cLevelEditor->backgroundPath);
-			cLevelEditor->cBackgroundEntity->Init();
+
+			if (cLevelEditor->backgroundPath != "")
+			{
+				delete cLevelEditor->cBackgroundEntity;
+				cLevelEditor->cBackgroundEntity = new CBackgroundEntity(cLevelEditor->backgroundPath);
+				cLevelEditor->cBackgroundEntity->Init();
+			}
 		}
 
 		ImGui::NewLine();

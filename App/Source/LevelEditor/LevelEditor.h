@@ -52,7 +52,7 @@ public:
     CBackgroundEntity* cBackgroundEntity;
 
     void Init();
-
+    
     void PreRender();
     void Render();
     void PostRender();
@@ -66,7 +66,8 @@ public:
     bool LevelExists(std::string levelName);                                                                 
     std::vector<Level> GetLevels(void);      
     Level GetCurrentLevel(void);
-    bool SaveMap();                                                                                          
+    bool SaveMap(void);
+    void ReloadParams(void);
 
     // Resize Map
     bool DecreaseXSize(void);

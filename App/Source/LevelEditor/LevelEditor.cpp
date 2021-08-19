@@ -332,6 +332,10 @@ bool CLevelEditor::SaveMap()
     return true;
 }
 
+void CLevelEditor::ReloadParams(void)
+{
+}
+
 bool CLevelEditor::IncreaseXSize(void)
 {
     ++iWorldWidth;
@@ -418,8 +422,30 @@ void CLevelEditor::UpdateCell(unsigned int x, unsigned int y, int TileID, bool b
 
 void CLevelEditor::RenderBackground(void) {
     if (cBackgroundEntity) {
-        cBackgroundEntity->vTransform = glm::vec2(0.f, 0.f);
+        //Parallax background math
+        glm::vec2 allowance = glm::vec2((vUVCoords.x - 2), (vUVCoords.y - 2)); //Get allowance for offsetting
 
+        //Scaling of allowance. 0.f to 1.f
+        allowance.x *= vAllowanceScale.x;
+        allowance.y *= vAllowanceScale.y;
+
+        //Get beginning and end (In terms of how far the camera can go
+        glm::vec2 beginning = glm::vec2((float(cSettings->NUM_TILES_XAXIS) / 2.f) - 1.f, (float(cSettings->NUM_TILES_YAXIS) / 2.f) - 1.f);
+        glm::vec2 end = glm::vec2(iWorldWidth, iWorldHeight) - beginning;
+
+        //Scaling of position
+        glm::vec2 total = end - beginning;
+        glm::vec2 curr = camera->getCurrPos() - beginning;
+
+        float uvSpaceX = (curr.x / total.x) * allowance.x;
+        float uvSpaceY = (curr.y / total.y) * allowance.y;
+
+        uvSpaceX -= allowance.x / 2.f;
+        uvSpaceY -= allowance.y / 2.f;
+
+        glm::vec2 uvSpace = -glm::vec2(uvSpaceX, uvSpaceY);
+
+        cBackgroundEntity->vTransform = uvSpace;
         //Rendering
         cBackgroundEntity->PreRender();
         cBackgroundEntity->Render();
