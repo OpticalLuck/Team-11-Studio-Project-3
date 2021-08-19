@@ -23,6 +23,8 @@
 
 #include "System/WindowUtils.h"
 
+#include "../Scene2D/Object2D.h"
+
 #include <iostream>
 using namespace std;
 
@@ -401,7 +403,7 @@ void CLevelEditorState::ImGuiRender()
 				{
 					const int iMaxButtonsPerRow = 7;
 					int iCounter = 0;
-					for (int i = CTextureManager::TILE_GROUND; i < CTextureManager::TILE_TOTAL; ++i)
+					for (int i = TILE_GROUND; i < OBJECT_TOTAL; ++i)
 					{
 						if (CTextureManager::GetInstance()->MapOfTextureIDs.find(i) == CTextureManager::GetInstance()->MapOfTextureIDs.end())
 							continue;
