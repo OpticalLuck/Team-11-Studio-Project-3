@@ -1294,7 +1294,6 @@ namespace rapidcsv
       stream.exceptions(std::ifstream::failbit | std::ifstream::badbit);
       stream.open(mPath, std::ios::binary);
       ReadCsv(stream);
-      stream.close();
     }
 
     void ReadCsv(std::istream& pStream)
