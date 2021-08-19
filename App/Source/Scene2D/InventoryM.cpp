@@ -1,29 +1,28 @@
 #include "InventoryM.h"
+#include "Object2D.h"
+
+CInventoryM::CInventoryM()
+{
+}
+
+CInventoryM::~CInventoryM()
+{
+}
 
 void CInventoryM::Init()
 {
-
+	AddItem("Shuriken", ITEM_SHURIKEN);
+	AddItem("Potion", ITEM_POTION);
+	AddItem("Hook", ITEM_HOOK);
 
 }
 
 CItem CInventoryM::GetItem(std::string name)
 {
-	return CItem();
-}
-
-CItem CInventoryM::GetTextureID(int ID)
-{
-	if (ID == 2)
-	{
-		GetItem("Shuriken");
-	}
+	return m_Items.at(name);
 }
 
 void CInventoryM::AddItem(std::string sItemName, int iID)
 {
-	if (sItemName == "Shuriken")
-	{
-		CItem* item = new CItem(2);
-		m_Items.push_back(item);
-	}
+	m_Items.insert(std::make_pair(sItemName, CItem(iID, sItemName)));
 }

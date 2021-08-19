@@ -2,12 +2,14 @@
 
 #include "Player2D.h"
 #include "Enemy2D.h"
-#include "Boss2D.h"
 #include <vector>
 #include <iostream>
 #include "Map2D.h"
 //Include keyboard controller
 #include "Inputs/KeyboardController.h"
+#include "InventoryM.h"
+
+class CBoss2D;
 
 class CEntityManager : public CEntity2D , public CSingletonTemplate<CEntityManager>
 {
@@ -44,6 +46,8 @@ protected:
 	CEnemy2D* cEnemy2D;
 
 	CMap2D* cMap2D;
+
+	CInventoryM* cInventoryM;
 
 	//list of vectors
 	std::vector<CEnemy2D*> m_enemyList;

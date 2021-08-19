@@ -155,6 +155,9 @@
     <ClCompile Include="Source\Scene2D\Inventory.cpp">
       <Filter>Items</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Scene2D\Boss2D.cpp">
+      <Filter>Entity2D</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h">
@@ -270,6 +273,9 @@
     </ClInclude>
     <ClInclude Include="Source\Scene2D\Inventory.h">
       <Filter>Items</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene2D\Boss2D.h">
+      <Filter>Entity2D</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
