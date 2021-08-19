@@ -2,6 +2,7 @@
 #include "Enemy2D.h"
 #include "EntityManager.h"
 
+
 class EnemyBullet2D : public CEnemy2D
 {
 	public:
@@ -22,7 +23,5 @@ class EnemyBullet2D : public CEnemy2D
 		float mAngle;
 		float mSpd; 
 		float mScale; //Scale from 0 to 1 (1 being the max tile width and height)
-
-		CEntityManager* cEntityManager;
 };
 

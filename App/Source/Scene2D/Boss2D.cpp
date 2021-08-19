@@ -12,6 +12,8 @@
 #include "RenderControl/ShaderManager.h"
 //Include CEntityManager
 #include "EntityManager.h"
+//Enemy bullet
+#include "EnemyBullet2D.h"
 
 CBoss2D::CBoss2D(void) {
 	bIsActive = false;
@@ -25,7 +27,6 @@ CBoss2D::CBoss2D(void) {
 
 	arrATK = nullptr;
 	arrAtkDuration = arrPauseDuration = nullptr;
-	cEntityManager = nullptr;
 
 	fsmIndex = roundIndex = 0;
 }
@@ -73,11 +74,6 @@ CBoss2D::~CBoss2D(void) {
 		mesh = nullptr;
 	}
 
-	if (animatedSprites) {
-		delete animatedSprites;
-		animatedSprites = nullptr;
-	}
-
 	if (collider2D) {
 		delete collider2D;
 		collider2D = nullptr;
@@ -95,6 +91,7 @@ bool CBoss2D::Init(void) {
 	camera = Camera2D::GetInstance();
 	cEntityManager = CEntityManager::GetInstance();
 
+	arrPlayer.clear();
 	arrPlayer = cEntityManager->GetAllPlayers();
 
 	unsigned int uiRow = -1;
@@ -228,8 +225,8 @@ void CBoss2D::Update(const double dElapsedTime) {
 	if (currTarget) {
 		UpdateAttack((float)dElapsedTime);
 		
-		if (!WithinProjectedCamera(currTarget))
-			currTarget = nullptr;
+		/*if (!WithinProjectedCamera(currTarget))
+			currTarget = nullptr;*/
 	}
 	else {
 		//Check if player is near and enable boss fight

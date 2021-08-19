@@ -75,9 +75,6 @@ class CBoss2D : public CEnemy2D
 		glm::vec4 currentColor;
 		bool bIsActive;
 
-		//Handlers
-		CEntityManager* cEntityManager;
-
 		//Functions
 		// Load a texture
 		bool LoadTexture(const char* filename, GLuint& iTextureID);

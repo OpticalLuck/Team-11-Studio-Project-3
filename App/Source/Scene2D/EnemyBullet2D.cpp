@@ -9,13 +9,9 @@
 EnemyBullet2D::EnemyBullet2D(void) {
 	dirVec = glm::vec2();
 	mSpd= mScale = mAngle = 0;
-	cEntityManager = nullptr;
 }
 
 EnemyBullet2D::~EnemyBullet2D(void) {
-	//DEBUG_MSG("Deleted bullet!");
-	cEntityManager = nullptr;
-
 	// optional: de-allocate all resources once they've outlived their purpose:
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
@@ -112,7 +108,7 @@ void EnemyBullet2D::Render(void) {
 	transform = glm::translate(transform, glm::vec3(actualPos.x, actualPos.y, 0.f));
 	transform = glm::rotate(transform, glm::radians(mAngle), glm::vec3(0.f, 0.f, 1.f));
 
-		// Update the shaders with the latest transform
+	// Update the shaders with the latest transform
 	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
 	glUniform4fv(colorLoc, 1, glm::value_ptr(currentColor));
 

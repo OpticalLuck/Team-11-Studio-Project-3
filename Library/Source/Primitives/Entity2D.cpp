@@ -51,7 +51,6 @@ CEntity2D::~CEntity2D(void)
 	//glDeleteBuffers(1, &VBO);
 	//glDeleteBuffers(1, &EBO);
 	//CS: Delete the mesh
-
 	cSettings = nullptr;
 
 	if (mesh) {

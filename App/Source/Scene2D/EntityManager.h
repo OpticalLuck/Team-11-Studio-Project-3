@@ -4,7 +4,8 @@
 #include "Player2D.h"
 #include "Enemy2D.h"
 #include "Boss2D.h"
-#include "EnemyBullet2D.h"
+
+class EnemyBullet2D;
 
 #include <vector>
 #include <iostream>
@@ -17,6 +18,7 @@
 
 class CEntityManager : public CEntity2D , public CSingletonTemplate<CEntityManager>
 {
+	friend class CSingletonTemplate<CEntityManager>;
 public:
 	CEntityManager();
 	~CEntityManager();

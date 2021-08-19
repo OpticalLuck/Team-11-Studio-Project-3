@@ -51,6 +51,11 @@ Collider2D::Collider2D()
 
 Collider2D::~Collider2D()
 {
+	cSettings = nullptr;
+
+	//Delete buffers when done
+	glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(1, &VBO);
 }
 
 bool Collider2D::Init()

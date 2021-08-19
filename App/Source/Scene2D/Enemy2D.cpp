@@ -13,6 +13,8 @@ using namespace std;
 // Include Mesh Builder
 #include "Primitives/MeshBuilder.h"
 
+#include "EntityManager.h"
+
 //Include entity manager
 #include "EntityManager.h"
 
@@ -48,8 +50,6 @@ CEnemy2D::CEnemy2D(void)
 	vec2UVCoordinate = glm::vec2(0.0f);
 
 	//type = ENEMY;
-
-	animatedSprites = nullptr;
 	int chance = Math::RandIntMinMax(0, 100);
 }
 
@@ -58,11 +58,6 @@ CEnemy2D::CEnemy2D(void)
  */
 CEnemy2D::~CEnemy2D(void)
 {
-	if (animatedSprites) {
-		delete animatedSprites;
-		animatedSprites = nullptr;
-	}
-
 	if (quadMesh) {
 		delete quadMesh;
 		quadMesh = nullptr;
@@ -71,6 +66,7 @@ CEnemy2D::~CEnemy2D(void)
 	cMap2D = nullptr;
 	camera = nullptr;
 	cSettings = nullptr;
+	cEntityManager = nullptr;
 
 	cPlayer2D = currTarget = nullptr;
 	for (unsigned i = 0; i < arrPlayer.size(); i++)
@@ -129,6 +125,8 @@ bool CEnemy2D::Init(void)
 	//Get handlers to all player objects
 	currTarget = nullptr;
 	arrPlayer = CEntityManager::GetInstance()->GetAllPlayers();
+
+	cEntityManager = CEntityManager::GetInstance();
 
 	// Set the Physics to fall status by default
 	//cPhysics2D.Init();

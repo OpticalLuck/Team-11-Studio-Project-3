@@ -1,5 +1,6 @@
 #include "EntityManager.h"
 
+#include "EnemyBullet2D.h"
 
 CEntityManager::CEntityManager()
 	: cPlayer2D(NULL)
@@ -216,29 +217,21 @@ void CEntityManager::Update(const double dElapsedTime)
 		}
 	}
 
-	auto itEnemy = m_enemyList.begin();
-	while (itEnemy != m_enemyList.end()) {
-		CEnemy2D* enemy = *itEnemy;
-		enemy->Update(dElapsedTime);
+	for (unsigned i = 0; i < m_enemyList.size(); i++) {
+		m_enemyList[i]->Update(dElapsedTime);
 
-		EnemyBullet2D* bullet = dynamic_cast<EnemyBullet2D*>(enemy);
+		EnemyBullet2D* bullet = dynamic_cast<EnemyBullet2D*>(m_enemyList[i]);
 
 		if (bullet && bullet->OutOfWorld()) {
-			delete bullet;
-			enemy = nullptr;
+			delete m_enemyList[i];
 			bullet = nullptr;
-			*itEnemy = nullptr;
-			itEnemy = m_enemyList.erase(itEnemy); //Remove value and delete bullet if bullet is out of world space
-		}
-		else {
-			++itEnemy; //Else, increment iterator
+			m_enemyList[i] = nullptr;
 		}
 	}
 
-	/*for (unsigned i = 0; i < m_enemyList.size(); i++)
-	{
-		m_enemyList[i]->Update(dElapsedTime);
-	}*/
+	m_enemyList.erase(std::remove(m_enemyList.begin(), m_enemyList.end(), nullptr), m_enemyList.end()); //Remove any nullptrs in the array
+
+	//DEBUG_MSG("SIZE: " + std::to_string(m_enemyList.size()));
 
 	if (cKeyboardController->IsKeyPressed(GLFW_KEY_C))
 	{

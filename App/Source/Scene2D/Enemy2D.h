@@ -18,6 +18,7 @@
 
 // Include the Map2D as we will use it to check the player's movements and actions
 class CMap2D;
+class CEntityManager;
 
 // Include Settings
 #include "GameControl\Settings.h"
@@ -94,9 +95,6 @@ protected:
 	//Direction
 	DIRECTION dir;
 
-	//CS: Animated Sprite
-	CSpriteAnimation* animatedSprites;
-
 	//CS: The quadMesh for drawing the tiles
 	CMesh* quadMesh;
 
@@ -105,6 +103,8 @@ protected:
 
 	//Handler to camera
 	Camera2D* camera;
+
+	CEntityManager* cEntityManager;
 
 	// A transformation matrix for controlling where to render the entities
 	glm::mat4 transform;
