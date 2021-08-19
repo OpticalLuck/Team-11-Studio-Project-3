@@ -274,7 +274,7 @@ bool CLevelEditor::SaveMap()
     return true;
 }
 
-bool CLevelEditor::IncreaseXSize()
+bool CLevelEditor::IncreaseXSize(void)
 {
     ++iWorldWidth;
  
@@ -302,7 +302,7 @@ bool CLevelEditor::DecreaseYSize(void)
     return true;
 }
 
-bool CLevelEditor::DecreaseXSize()
+bool CLevelEditor::DecreaseXSize(void)
 {
     if (iWorldWidth == 32)
         return false;
