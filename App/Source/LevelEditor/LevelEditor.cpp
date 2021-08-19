@@ -81,7 +81,7 @@ void CLevelEditor::Render()
     //Render(MY VERSION)
 
     //Camera init
-    glm::vec2 offset = glm::vec2(float(cSettings->NUM_TILES_XAXIS / 2.f) - 0.5f, float(cSettings->NUM_TILES_YAXIS / 2.f) - 0.5f);
+    glm::vec2 offset = glm::vec2(float(cSettings->NUM_TILES_XAXIS / 2.f), float(cSettings->NUM_TILES_YAXIS / 2.f));
     glm::vec2 cameraPos = camera->getCurrPos();
 
     for (unsigned int uiRow = 0; uiRow < iWorldHeight; ++uiRow) 

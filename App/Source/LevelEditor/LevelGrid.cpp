@@ -69,7 +69,7 @@ void CLevelGrid::PreRender(void)
 
 void CLevelGrid::Render(void)
 {
-    glm::vec2 offset = glm::vec2(float(CSettings::GetInstance()->NUM_TILES_XAXIS / 2.f) - 0.5f, float(CSettings::GetInstance()->NUM_TILES_YAXIS / 2.f) - 0.5f);
+    glm::vec2 offset = glm::vec2(float(CSettings::GetInstance()->NUM_TILES_XAXIS / 2.f), float(CSettings::GetInstance()->NUM_TILES_YAXIS / 2.f));
     glm::vec2 cameraPos = Camera2D::GetInstance()->getCurrPos();
 
     for (unsigned int uiRow = 0; uiRow < iWorldHeight; ++uiRow)

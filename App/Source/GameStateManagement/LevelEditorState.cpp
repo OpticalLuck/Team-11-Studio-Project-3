@@ -450,7 +450,7 @@ void CLevelEditorState::RenderCursor()
 
 	glBindVertexArray(quadVAO);
 
-	glm::vec2 offset = glm::vec2(float(CSettings::GetInstance()->NUM_TILES_XAXIS / 2.f) - 0.5f, float(CSettings::GetInstance()->NUM_TILES_YAXIS / 2.f) - 0.5f);
+	glm::vec2 offset = glm::vec2(float(CSettings::GetInstance()->NUM_TILES_XAXIS / 2.f), float(CSettings::GetInstance()->NUM_TILES_YAXIS / 2.f));
 	glm::vec2 cameraPos = Camera2D::GetInstance()->getCurrPos();
 
 	glm::vec2 objCamPos = glm::vec2(vMousePosRelativeToCamera.x, vMousePosRelativeToCamera.y) - cameraPos + offset;
@@ -487,7 +487,8 @@ void CLevelEditorState::CalculateMousePosition(void)
 
 	vMousePosRelativeToCamera.x = Math::Clamp(vMousePosRelativeToCamera.x, 0.f, (float)cLevelEditor->iWorldWidth - 1.f);
 	vMousePosRelativeToCamera.y = Math::Clamp(vMousePosRelativeToCamera.y, 0.f, (float)cLevelEditor->iWorldHeight - 1.f);
+	vMousePosRelativeToCamera += glm::vec2(0.5f);
 
-	vMousePosRelativeToCamera.x = ceil(vMousePosRelativeToCamera.x);
-	vMousePosRelativeToCamera.y = ceil(vMousePosRelativeToCamera.y);
+	vMousePosRelativeToCamera.x = (int)(vMousePosRelativeToCamera.x);
+	vMousePosRelativeToCamera.y = (int)(vMousePosRelativeToCamera.y);
 }
