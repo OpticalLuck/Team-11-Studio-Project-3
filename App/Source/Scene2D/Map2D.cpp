@@ -87,12 +87,14 @@ bool CMap2D::Init(const unsigned int uiNumLevels,
 	arrGrid.clear();
 	arrObject.clear();
 	arrBackground.clear();
+	arrAllowanceScale.clear();
 
 	for (unsigned i = 0; i < uiNumLevels; i++) {
 		arrLevelLimit.push_back(glm::i32vec2());
 		arrObject.push_back(std::vector<CObject2D*>());
 		arrGrid.push_back(std::vector<std::vector<CObject2D*>>());
 		arrBackground.push_back(nullptr);
+		arrAllowanceScale.push_back(glm::vec2());
 	}
 
 
@@ -513,15 +515,46 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 		std::vector<std::string> row = doc.GetRow<std::string>(uiRow);
 
 		//If iterating through first row, create BackgroundEntity if available
-		if (uiRow == 0) {
-			std::string dir = row[doc.GetColumnCount() - 1];
+		if (uiRow == 2) { //3rd row
+			//Creation of initialisation values
+			std::string dir = doc.GetRow<std::string>(0)[doc.GetColumnCount() - 1];
+			stringstream scaleTxt(doc.GetRow<std::string>(1)[doc.GetColumnCount() - 1]);
+			stringstream allowanceScaleTxt(doc.GetRow<std::string>(2)[doc.GetColumnCount() - 1]);
+
+			std::vector<float> scaleFloat;
+			std::vector<float> allowanceScaleFloat;
+
+			//Conversions from texts to floats :: 0 IS X AXIS AND 1 IS Y AXIS
+			while (scaleTxt.good()) { 
+				std::string substr;
+				getline(scaleTxt, substr, ',');
+				scaleFloat.push_back(stof(substr));
+			}
+
+			while (allowanceScaleTxt.good()) {
+				std::string substr;
+				getline(allowanceScaleTxt, substr, ',');
+				allowanceScaleFloat.push_back(stof(substr));
+			}
+
+			arrAllowanceScale[uiCurLevel] = glm::vec2(allowanceScaleFloat[0], allowanceScaleFloat[1]);
+
 			CBackgroundEntity* bgEntity = new CBackgroundEntity(dir);
 			bgEntity->SetShader("2DShader");
 
-			if (!bgEntity->Init(2.5,2.5))  //If initialisation fails, delete value
+			if (!bgEntity->Init(scaleFloat[0],scaleFloat[1]))  //If initialisation fails, delete value
 				delete bgEntity;
 			else
 				arrBackground[uiCurLevel] = bgEntity; //Else put background into array
+
+			//Cout for debugging purposes
+			std::cout << "Background settings for level " << uiCurLevel + 1 << ": \n";
+			std::cout << "Scale: " << scaleFloat[0] << ", " << scaleFloat[1] << std::endl;
+			std::cout << "Allowance Scale: " << allowanceScaleFloat[0] << ", " << allowanceScaleFloat[1] << std::endl;
+			if (arrBackground[uiCurLevel])
+				std::cout << "Background loaded!\n";
+			else
+				std::cout << "Background is disabled\n";
 		}
 
 		arrGrid[uiCurLevel].push_back(std::vector<CObject2D*>());
@@ -582,11 +615,8 @@ void CMap2D::RenderBackground(void) {
 		glm::vec2 allowance = glm::vec2((arrBackground[uiCurLevel]->scaleX - 2), (arrBackground[uiCurLevel]->scaleY - 2)); //Get allowance for offsetting
 
 		//Scaling of allowance. 0.f to 1.f
-		float allowanceScaleX = 1.f;
-		float allowanceScaleY = 1.f;
-
-		allowance.x *= allowanceScaleX;
-		allowance.y *= allowanceScaleY;
+		allowance.x *= arrAllowanceScale[uiCurLevel].x;
+		allowance.y *= arrAllowanceScale[uiCurLevel].y;
 
 		//Get beginning and end (In terms of how far the camera can go
 		glm::vec2 beginning = glm::vec2((float(cSettings->NUM_TILES_XAXIS) / 2.f) - 1.f, (float(cSettings->NUM_TILES_YAXIS) / 2.f) - 1.f);

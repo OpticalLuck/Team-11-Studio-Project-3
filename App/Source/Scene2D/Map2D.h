@@ -46,6 +46,9 @@
 #include <queue>
 #include <functional>
 
+//Include stringstream for extraction of data
+#include <sstream>
+
 // A structure storing information about Map Sizes
 struct MapSize {
 	unsigned int uiRowSize;
@@ -171,8 +174,9 @@ protected:
 	//Vector array that stores limits of each level
 	std::vector<glm::i32vec2> arrLevelLimit;
 
-	//Vector array storing BackgroundEntity
+	//Vector arrays storing BackgroundEntity and allowance scale
 	std::vector<CBackgroundEntity*> arrBackground;
+	std::vector<glm::vec2> arrAllowanceScale;
 
 	// The current level
 	unsigned int uiCurLevel;
