@@ -48,9 +48,16 @@ unsigned char * CImageLoader::Load(const char* filename, int& width, int& height
 	// tell stb_image.h to flip loaded texture's on the y-axis.
 	stbi_set_flip_vertically_on_load(bInvert);
 
-	// load image, create texture and generate mipmaps
-	unsigned char *data = stbi_load(FileSystem::getPath(filename).c_str(),
-									&width, &height, &nrChannels, 0);
+	unsigned char* data;
+
+	if (filename[0] == 'C' || filename[0] == 'E')
+	{
+		data = stbi_load(filename, &width, &height, &nrChannels, 0);
+	}
+	else {
+		// load image, create texture and generate mipmaps
+		data = stbi_load(FileSystem::getPath(filename).c_str(), &width, &height, &nrChannels, 0);
+	}
 
 	// Return the data but you must remember to free up the memory of the file data read in
 	return data;

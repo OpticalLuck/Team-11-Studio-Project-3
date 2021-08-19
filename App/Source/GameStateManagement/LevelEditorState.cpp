@@ -21,6 +21,8 @@
 
 #include "ImGuiWindow/ImGuiWindow.h"
 
+#include "../WindowUtils/WindowUtils.h"
+
 #include <iostream>
 using namespace std;
 
@@ -355,9 +357,17 @@ void CLevelEditorState::ImGuiRender()
 	{
 		ImGui::TextColored(ImVec4(1.f, 1.f, 0, 1.f), "Background Mesh");
 		if (cLevelEditor->cBackgroundEntity)
-			ImGui::Text(cLevelEditor->cBackgroundEntity->textureName.c_str());
+			ImGui::TextWrapped(cLevelEditor->backgroundPath.c_str());
 		else 
 			ImGui::Text("No Background");
+
+		if (ImGui::Button("Change Background"))
+		{
+			cLevelEditor->backgroundPath = FileDialog::OpenFile("Image (*.png)\0*.png\0");
+			delete cLevelEditor->cBackgroundEntity;
+			cLevelEditor->cBackgroundEntity = new CBackgroundEntity(cLevelEditor->backgroundPath);
+			cLevelEditor->cBackgroundEntity->Init();
+		}
 
 		ImGui::NewLine();
 
