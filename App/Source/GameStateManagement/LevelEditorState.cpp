@@ -393,8 +393,8 @@ void CLevelEditorState::ImGuiRender()
 		ImGui::NewLine();
 
 		ImGui::TextColored(ImVec4(1, 1, 0, 1), "BG Size");
-		ImGui::SliderFloat("BG X", &cLevelEditor->vUVCoords.x, 1.f, 5.f);
-		ImGui::SliderFloat("BG Y", &cLevelEditor->vUVCoords.y, 1.f, 5.f);
+		ImGui::SliderFloat("BG X", &cLevelEditor->vUVCoords.x, 2.f, 5.f);
+		ImGui::SliderFloat("BG Y", &cLevelEditor->vUVCoords.y, 2.f, 5.f);
 
 		if (ImGui::BeginTabBar("Editor Tab"))
 		{

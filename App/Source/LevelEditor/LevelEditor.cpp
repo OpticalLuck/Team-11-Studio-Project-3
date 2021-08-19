@@ -21,7 +21,7 @@ CLevelEditor::CLevelEditor()
     , camera(NULL)
     , cTextureManager(NULL)
     , vAllowanceScale(1.f)
-    , vUVCoords(1.f)
+    , vUVCoords(2.f)
     , cBackgroundEntity(NULL)
 {
 }
@@ -446,6 +446,8 @@ void CLevelEditor::RenderBackground(void) {
         glm::vec2 uvSpace = -glm::vec2(uvSpaceX, uvSpaceY);
 
         cBackgroundEntity->vTransform = uvSpace;
+        cBackgroundEntity->scaleX = vUVCoords.x;
+        cBackgroundEntity->scaleY = vUVCoords.y;
         //Rendering
         cBackgroundEntity->PreRender();
         cBackgroundEntity->Render();
