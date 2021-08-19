@@ -5,7 +5,6 @@
 @brief Constructor
 */
 CInventoryManager::CInventoryManager(void) 
-	: iItemIndex(1)
 {
 }
 
@@ -40,7 +39,7 @@ void CInventoryManager::Exit(void)
 @brief Add a Scene to this Inventory Manager
 */
 CInventoryItem* CInventoryManager::Add(	const std::string& _name,
-								const char* imagePath,
+								const int iTextureID,
 								const int iItemMaxCount,
 								const int iItemCount)
 {
@@ -51,7 +50,8 @@ CInventoryItem* CInventoryManager::Add(	const std::string& _name,
 		return NULL;
 	}
 
-	CInventoryItem* cNewItem = new CInventoryItem(imagePath);
+	CInventoryItem* cNewItem = new CInventoryItem(iTextureID);
+	cNewItem->sName = _name;
 	cNewItem->iItemMaxCount = iItemMaxCount;
 	cNewItem->iItemCount = iItemCount;
 
@@ -117,27 +117,7 @@ int CInventoryManager::GetNumItems(void) const
 
 
 
-int CInventoryManager::GetItemIndex(void)
-{
-	return iItemIndex;
-}
 
-void CInventoryManager::NavigateIndex(string direction)
-{
-	if (direction == "DOWN")
-	{
-		iItemIndex += 1;
-		if (iItemIndex > 2)
-			iItemIndex = 1;
-	}
-	if (direction == "UP")
-	{
-		iItemIndex -= 1;
-		if (iItemIndex <= 0)
-			iItemIndex = 2;
-	}
-
-}
 
 
 

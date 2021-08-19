@@ -15,7 +15,7 @@ class CInventoryItem : public CEntity2D
 {
 public:
 	// Constructor
-	CInventoryItem(const char* imagePath = NULL);
+	CInventoryItem(unsigned int iTextureID = 0);
 
 	// Destructor
 	virtual ~CInventoryItem(void);

@@ -148,8 +148,9 @@ bool CScene2D::Init(void)
 
 	cKeyboardInputHandler = CKeyboardInputHandler::GetInstance();
 
-	cInventoryManager = CInventoryManager::GetInstance();
-
+	//cInventoryManager = CInventoryManager::GetInstance();
+	cInventoryMain = new CInventoryMain;
+	cInventoryMain->Init();
 	return true;
 }
 
@@ -232,16 +233,16 @@ bool CScene2D::Update(const double dElapsedTime)
 		return false;
 	}
 
-	if (cKeyboardController->IsKeyDown(GLFW_KEY_UP) && fCooldown <= 0)
+	if (cKeyboardController->IsKeyPressed(GLFW_KEY_UP) && fCooldown <= 0)
 	{
-		cInventoryManager->NavigateIndex("UP");
-		std::cout << "index is : " << cInventoryManager->GetItemIndex() << std::endl;
+		cInventoryMain->NavigateIndex("UP");
+		std::cout << "index is : " << cInventoryMain->GetItemIndex() << std::endl;
 		fCooldown = .5f;
 	}
-	if (cKeyboardController->IsKeyDown(GLFW_KEY_DOWN) && fCooldown <= 0)
+	if (cKeyboardController->IsKeyPressed(GLFW_KEY_DOWN) && fCooldown <= 0)
 	{
-		cInventoryManager->NavigateIndex("DOWN");
-		std::cout << "index is : " << cInventoryManager->GetItemIndex() << std::endl;
+		cInventoryMain->NavigateIndex("DOWN");
+		std::cout << "index is : " << cInventoryMain->GetItemIndex() << std::endl;
 		fCooldown = .5f;
 	}
 

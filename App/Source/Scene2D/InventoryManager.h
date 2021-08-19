@@ -20,7 +20,7 @@ public:
 
 	// Add a new item
 	CInventoryItem* Add(	const std::string& _name,
-							const char* imagePath, 
+							const int iTextureID,
 							const int iItemMaxCount, 
 							const int iItemCount = 0);
 	// Remove an item
@@ -33,10 +33,6 @@ public:
 	// Get the number of items
 	int GetNumItems(void) const;
 
-	int GetItemIndex(void);
-
-	void NavigateIndex(string direction);
-
 	// The map containing all the items
 	std::map<std::string, CInventoryItem*> inventoryMap;
 
@@ -47,7 +43,7 @@ protected:
 	// Destructor
 	virtual ~CInventoryManager(void);
 
-	int iItemIndex;
+
 
 
 

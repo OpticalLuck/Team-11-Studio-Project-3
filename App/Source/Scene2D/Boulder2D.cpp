@@ -69,7 +69,7 @@ void Boulder2D::Update(const double dElapsedTime)
 	}
 	vTransform = collider2D->position;
 	//Update Map index
-	cout << (int)vTransform.x << ", " << (int)vTransform.y << endl;
+
 
 	//Initial is 6, 23, changing to 6,24
 	glm::i32vec2 newindex((int)vTransform.x, CMap2D::GetInstance()->GetLevelRow() - (int)vTransform.y - 1);

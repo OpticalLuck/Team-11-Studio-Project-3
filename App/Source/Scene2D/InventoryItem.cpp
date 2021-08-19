@@ -6,15 +6,12 @@
 /**
 @brief Constructor
 */
-CInventoryItem::CInventoryItem(const char* imagePath)
+CInventoryItem::CInventoryItem(unsigned int iTextureID)
 	: iItemCount(0)
 	, iItemMaxCount(0)
 	, vec2Size(glm::vec2(0.0f))
 {
-	if ((imagePath) && (LoadTexture(imagePath) == false))
-	{
-		std::cout << "Failed to load " << imagePath << " texture." << std::endl;
-	}
+	this->iTextureID = iTextureID;
 }
 
 /**
