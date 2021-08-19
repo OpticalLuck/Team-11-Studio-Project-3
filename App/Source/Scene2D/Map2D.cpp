@@ -319,7 +319,7 @@ void CMap2D::ReplaceGridInfo(const unsigned int uiRow, const unsigned uiCol, COb
 			//Get Object in arrObject list
 			for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++)
 			{
-				CObject2D* obj = arrObject[uiCurLevel][i];
+				obj = arrObject[uiCurLevel][i];
 				if (obj == arrGrid[uiCurLevel][target->GetCurrentIndex().y][target->GetCurrentIndex().x])
 				{
 					arrGrid[uiCurLevel][target->GetCurrentIndex().y][target->GetCurrentIndex().x] = nullptr;
@@ -327,7 +327,9 @@ void CMap2D::ReplaceGridInfo(const unsigned int uiRow, const unsigned uiCol, COb
 					delete obj;
 					arrObject[uiCurLevel][i] = nullptr;
 					arrObject[uiCurLevel].erase(arrObject[uiCurLevel].begin() + i);
-					
+
+					obj = nullptr;
+					break;
 				}
 			}
 		}
