@@ -42,6 +42,18 @@ CLevelEditor::~CLevelEditor()
         cTextureManager = NULL;
 }
 
+void CLevelEditor::ResetParams()
+{
+    m_CurrentLevel.clear();
+    vAllowanceScale = glm::vec2(1.f);
+    vUVCoords = glm::vec2(2.f);
+    backgroundPath = "";
+    if (cBackgroundEntity)
+        delete cBackgroundEntity;
+
+    cBackgroundEntity = nullptr;
+}
+
 /**
 @brief Initialise this instance
 */
@@ -128,6 +140,9 @@ void CLevelEditor::PostRender()
 */
 void CLevelEditor::CreateLevel(std::string levelName, unsigned int iWorldWidth, unsigned int iWorldHeight)
 {
+    // Reload the level data
+    ResetParams();
+
     this->iWorldWidth = iWorldWidth;
     this->iWorldHeight = iWorldHeight;
 
@@ -153,11 +168,8 @@ void CLevelEditor::CreateLevel(std::string levelName, unsigned int iWorldWidth, 
 */
 bool CLevelEditor::LoadLevel(const char* filePath)
 {
-    m_CurrentLevel.clear();
-    vAllowanceScale = glm::vec2(1.f);
-    vUVCoords = glm::vec2(1.f);
-    backgroundPath = "";
-    cBackgroundEntity = nullptr;
+    // Reload the level data
+    ResetParams();
 
     // Load the Level CSV
     doc = rapidcsv::Document(FileSystem::getPath(filePath).c_str());
@@ -330,10 +342,6 @@ bool CLevelEditor::SaveMap()
     doc.Save(FileSystem::getPath(currentLevel.LevelPath).c_str());
     DEBUG_MSG("Saved " << currentLevel.LevelName);
     return true;
-}
-
-void CLevelEditor::ReloadParams(void)
-{
 }
 
 bool CLevelEditor::IncreaseXSize(void)

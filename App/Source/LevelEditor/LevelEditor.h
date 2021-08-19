@@ -67,7 +67,6 @@ public:
     std::vector<Level> GetLevels(void);      
     Level GetCurrentLevel(void);
     bool SaveMap(void);
-    void ReloadParams(void);
 
     // Resize Map
     bool DecreaseXSize(void);
@@ -111,4 +110,6 @@ protected:
 
     CLevelEditor();
     ~CLevelEditor();
+
+    void ResetParams();
 };
