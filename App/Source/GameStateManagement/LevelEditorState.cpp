@@ -366,6 +366,8 @@ void CLevelEditorState::ImGuiRender()
 		ImGui::Text(xSize.c_str());
 		ImGui::Text(ySize.c_str());
 
+		ImGui::NewLine();
+
 		ImGui::TextColored(ImVec4(1.f, 1.f, 0, 1.f), "Background Mesh");
 		if (cLevelEditor->cBackgroundEntity)
 			ImGui::TextWrapped(cLevelEditor->backgroundPath.c_str());
@@ -374,7 +376,7 @@ void CLevelEditorState::ImGuiRender()
 
 		if (ImGui::Button("Change Background"))
 		{
-			cLevelEditor->backgroundPath = FileDialog::OpenFile("Image (*.png)\0*.png\0");
+			cLevelEditor->backgroundPath = FileDialog::OpenFile();
 
 			if (cLevelEditor->backgroundPath != "")
 			{
@@ -396,12 +398,13 @@ void CLevelEditorState::ImGuiRender()
 		ImGui::SliderFloat("BG X", &cLevelEditor->vUVCoords.x, 2.f, 5.f);
 		ImGui::SliderFloat("BG Y", &cLevelEditor->vUVCoords.y, 2.f, 5.f);
 
-		if (ImGui::BeginTabBar("Editor Tab"))
+		if (ImGui::BeginChild("Tile List"))
 		{
-			if (ImGui::BeginTabItem("Tiles"))
+			if (ImGui::BeginTabBar("Editor Tab"))
 			{
-				if (ImGui::BeginChild("Tile List"))
+				if (ImGui::BeginTabItem("Tiles"))
 				{
+				
 					const int iMaxButtonsPerRow = 7;
 					int iCounter = 0;
 					for (int i = TILE_GROUND; i < OBJECT_TOTAL; ++i)
@@ -429,12 +432,22 @@ void CLevelEditorState::ImGuiRender()
 						++iCounter;
 						
 					}
+					ImGui::EndTabItem();
 				}	
-				ImGui::EndChild();
+
+				if (ImGui::BeginTabItem("Interactables"))
+				{
+					ImGui::EndTabItem();
+				}
+
+				if (ImGui::BeginTabItem("Enemies"))
+				{
+					ImGui::EndTabItem();
+				}
 			}
-			ImGui::EndTabItem();
+			ImGui::EndTabBar();
 		}
-		ImGui::EndTabBar();
+		ImGui::EndChild();
 		// DEBUG_MSG(ImGui::GetWindowPos().x << " " << ImGui::GetWindowPos().y);
 	}
 	ImGui::End();
