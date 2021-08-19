@@ -6,6 +6,7 @@ using namespace std;
 CSettings::CSettings(void)
 	: pWindow(NULL)
 	, logl_root(NULL)
+	, m_ImGuiWindow(NULL)
 	, screenSize(SSIZE_800x600)
 	, MASTER_VOLUME(100.f)
 	, BGM_VOLUME(100.f)
@@ -48,6 +49,7 @@ CSettings::CSettings(void)
 
 CSettings::~CSettings(void)
 {
+	m_ImGuiWindow = NULL;
 }
 
 
@@ -132,6 +134,10 @@ void CSettings::UpdateWindowSize()
 	case SSIZE_1600x1200:
 		iWindowWidth = 1600;
 		iWindowHeight = 1200;
+		break;
+	case SSIZE_1600x900:
+		iWindowWidth = 1600;
+		iWindowHeight = 900;
 		break;
 	}
 	glfwSetWindowSize(pWindow, iWindowWidth, iWindowHeight);

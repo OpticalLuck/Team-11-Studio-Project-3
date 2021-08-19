@@ -23,6 +23,9 @@ using namespace std;
 
 #include "Camera2D.h"
 
+#include "Math/MyMath.h"
+
+#include "Boulder2D.h"
 /**
  @brief Constructor This constructor has protected access modifier as this class will be a Singleton
  */
@@ -41,9 +44,6 @@ CPlayer2D::CPlayer2D(void)
 
 	// Initialise vecIndex
 	vTransform = glm::i32vec2(0);
-
-	// Initialise vec2UVCoordinate
-	vec2UVCoordinate = glm::vec2(0.0f);
 
 	type = PLAYER;
 
@@ -139,35 +139,38 @@ bool CPlayer2D::Init(void)
 	currentColor = glm::vec4(1.0, 1.0, 1.0, 1.0);
 
 	// Get the handler to the CInventoryManager instance
-    // cInventoryManager = CInventoryManager::GetInstance();
+    cInventoryManager = CInventoryManager::GetInstance();
 	// Add a Lives icon as one of the inventory items
-	// cInventoryItem = cInventoryManager->Add("Lives", "Image/Collectibles/Scene2D_Lives.tga", 5, 3);
-	// cInventoryItem->vec2Size = glm::vec2(25, 25);
+	cInventoryItem = cInventoryManager->Add("Lives", "Image/Collectibles/Scene2D_Lives.tga", 5, 3);
+	cInventoryItem->vec2Size = glm::vec2(25, 25);
 
 	// Add a Health icon as one of the inventory items
-	// cInventoryItem = cInventoryManager->Add("Health", "Image/Scene2D_Health.tga", 100, 100);
-	// cInventoryItem->vec2Size = glm::vec2(25, 25);
+	cInventoryItem = cInventoryManager->Add("Health", "Image/Scene2D_Health.tga", 100, 100);
+	cInventoryItem->vec2Size = glm::vec2(25, 25);
+
+	// Add a Tree as one of the inventory items
+	cInventoryItem = cInventoryManager->Add("Shuriken", "Image/Collectibles/shuriken.png", 999, 0);
+	cInventoryItem->vec2Size = glm::vec2(25, 25);
 
 	jumpCount = 0;
 
 	camera = Camera2D::GetInstance();
 
-	//fMovementSpeed = 20.f;
-	//fJumpSpeed = 400.f;
-
 	fMovementSpeed = 5.f;
 	fJumpSpeed = 5.f;
+
+	//fMovementSpeed = 1.f;
+	//fJumpSpeed = 1.f;
 
 	// Get the handler to the CSoundController
 	cSoundController = CSoundController::GetInstance();
 
 	cKeyboardInputHandler = CKeyboardInputHandler::GetInstance();
 
-	collider2D.Init();
-	collider2D.position = vTransform;
+	collider2D->vec2Dimensions = glm::vec2(0.20000f,0.50000f);
+	collider2D->Init();
 
 	cPhysics2D.Init(&vTransform);
-
 	return true;
 }
 
@@ -232,8 +235,8 @@ bool CPlayer2D::Init(glm::i32vec2 spawnpoint)
 
 	cKeyboardInputHandler = CKeyboardInputHandler::GetInstance();
 
-	collider2D.Init();
-	collider2D.position = vTransform;
+	collider2D->Init();
+	collider2D->SetPosition(vTransform);
 
 	cPhysics2D.Init(&vTransform);
 
@@ -302,29 +305,56 @@ void CPlayer2D::Update(const double dElapsedTime)
 	cPhysics2D.Update(dElapsedTime);
 
 	// Update Collider2D Position
-	collider2D.position = glm::vec3(vTransform, 0.f);
+	collider2D->position = vTransform;
 
-	for (auto object : cMap2D->GetMap())
+	int range = 3;
+
+	//COLLISION RESOLUTION ON Y_AXIS
+	for (int i = 0; i < 2; i++)
 	{
-		if (collider2D.CollideWith(&object->getCollider()))
+		for (int row = -range; row <= range; row++) //y
 		{
-			//Collider2D::CorrectedAxis axis = collider2D.ResolveCollision(cMap2D->GetCollider(uiRow, uiCol));
-			collider2D.ResolveCollisionX(&object->getCollider());
-			// Resolve transform to corrected position in collider
-			vTransform = collider2D.position;
-		}
-	}
-			
+			for (int col = -range; col <= range; col++) //x
+			{
+				int rowCheck = vTransform.y + row;
+				int colCheck = vTransform.x + col;
 
-	for (auto object : cMap2D->GetMap())
-	{
-		if (collider2D.CollideWith(&object->getCollider()))
-		{
-			cPhysics2D.SetVelocity(glm::vec2(cPhysics2D.GetVelocity().x, 0));
+				if (rowCheck < 0 || colCheck < 0 || rowCheck > cMap2D->GetLevelRow() - 1 || colCheck > cMap2D->GetLevelCol() - 1)
+					continue;
 
-			collider2D.ResolveCollisionY(&object->getCollider());
-			// Resolve transform to corrected position in collider
-			vTransform = collider2D.position;
+				if (cMap2D->GetCObject(colCheck, rowCheck))
+				{
+					CObject2D* obj = cMap2D->GetCObject(colCheck, rowCheck);;
+					Collision data = (collider2D->CollideWith(cMap2D->GetCObject(colCheck, rowCheck)->GetCollider()));
+					if (std::get<0>(data))
+					{
+						if (obj->GetCollider()->colliderType == Collider2D::COLLIDER_QUAD)
+						{
+							if(i == 0)
+								collider2D->ResolveAABB(obj->GetCollider(), Collider2D::Y);
+							else if (i == 1)
+								collider2D->ResolveAABB(obj->GetCollider(), Collider2D::X);
+						}
+						else if (obj->GetCollider()->colliderType == Collider2D::COLLIDER_CIRCLE)
+						{
+							collider2D->ResolveAABBCircle(obj->GetCollider(), data, Collider2D::COLLIDER_QUAD);
+						}
+
+						vTransform = collider2D->position;
+						obj->vTransform = obj->GetCollider()->position;
+
+						if (obj->type == CObject2D::ENTITY_TYPE::INTERACTABLES)
+						{
+							if (static_cast<Interactables*>(obj)->interactableType == Interactables::INTERACTABLE_TYPE::BOULDER)
+							{
+								glm::vec2 direction = glm::normalize(obj->vTransform - vTransform);
+								static_cast<Boulder2D*>(obj)->GetPhysics().SetForce(glm::vec2(120.f, 0) * direction);
+								cPhysics2D.SetVelocity(glm::vec2(0.f));
+							}
+						}
+					}
+				}
+			}
 		}
 	}
 
@@ -360,9 +390,6 @@ void CPlayer2D::Update(const double dElapsedTime)
 
 	//CS: Update the animated sprite
 	animatedSprites->Update(dElapsedTime);
-
-	// Update the UV Coordinates
-	vec2UVCoordinate = cSettings->ConvertIndexToUVSpace(vTransform);
 
 	iTempFrameCounter++;
 }
@@ -526,16 +553,10 @@ void CPlayer2D::MovementUpdate(double dt)
 void CPlayer2D::UpdateHealthLives(void)
 {
 	// Update health and lives
-	// cInventoryItem = cInventoryManager->GetItem("Health");
 	// Check if a life is lost
 	if (cInventoryItem->GetCount() <= 0)
 	{
 		state = S_DEATH;
-		// Reset the Health to max value
-		// cInventoryItem->iItemCount = cInventoryItem->GetMaxCount();
-		// But we reduce the lives by 1.
-	// 	cInventoryItem = cInventoryManager->GetItem("Lives");
-	// 	cInventoryItem->Remove(1);
 		cSoundController->PlaySoundByID(9);
 
 		// Check if there is no lives left...
@@ -546,49 +567,17 @@ void CPlayer2D::UpdateHealthLives(void)
 		}
 	}
 }
-//
-//void CPlayer2D::UpdateKeyboardInputs(void)
-//{
-//	std::array<bool, INPUT_TOTAL> currentFrameInputs;
-//	for (int i = 0; i < INPUT_TOTAL; ++i)
-//	{
-//		currentFrameInputs[i] = false;
-//	}
-//
-//	if (cKeyboardController->IsKeyDown(GLFW_KEY_W))
-//		currentFrameInputs[W] = true;
-//
-//	if (cKeyboardController->IsKeyDown(GLFW_KEY_A))
-//		currentFrameInputs[A] = true;
-//
-//	if (cKeyboardController->IsKeyDown(GLFW_KEY_S))
-//		currentFrameInputs[S] = true;
-//
-//	if (cKeyboardController->IsKeyDown(GLFW_KEY_D))
-//		currentFrameInputs[D] = true;
-//
-//	if (cKeyboardController->IsKeyDown(GLFW_KEY_SPACE))
-//		currentFrameInputs[SPACE] = true;
-//
-//	mKeyboardInputs.push_back(currentFrameInputs);
-//}
 
-void CPlayer2D::Hit(int health)
-{
-	if (state != S_DEATH)
-	{
-		// cInventoryItem = cInventoryManager->GetItem("Health");
-		// cInventoryItem->Remove(health);
-	}
-}
 void CPlayer2D::SetClone(bool bIsClone)
 {
 	this->bIsClone = bIsClone;
 }
+
 bool CPlayer2D::IsClone()
 {
 	return bIsClone;
 }
+
 void CPlayer2D::SetInputs(std::vector<std::array<bool, KEYBOARD_INPUTS::INPUT_TOTAL>> inputs)
 {
 	m_CloneKeyboardInputs = inputs;

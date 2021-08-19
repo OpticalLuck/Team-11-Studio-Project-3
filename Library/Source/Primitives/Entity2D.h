@@ -71,7 +71,7 @@ public:
 
 	virtual void RenderCollider();
 
-	Collider2D getCollider();
+	Collider2D* GetCollider();
 
 	// The i32vec2 which stores the indices of an Entity2D in the Map2D
 	glm::vec2 vTransform;
@@ -79,17 +79,11 @@ public:
 	//For rotation purposes (Anti clockwise)
 	float vRotate;
 
-	// The vec2 variable which stores the UV coordinates to render the Entity2D
-	glm::vec2 vec2UVCoordinate;
-
 	bool collidable;
 
 protected:
 	// Name of Shader Program instance
 	std::string sShaderName;
-
-	//all of entity list
-	//std::vector<CEntity2D*> entity_list;
 
 	//CS: The mesh that is used to draw objects
 	CMesh* mesh;
@@ -103,11 +97,10 @@ protected:
 	// A transformation matrix for controlling where to render the entities
 	glm::mat4 transform;
 
-	Collider2D collider2D;
+	Collider2D* collider2D;
 
 	// Load a texture
 	virtual bool LoadTexture(const char* filename);
-
 
 	// Settings
 	CSettings* cSettings;

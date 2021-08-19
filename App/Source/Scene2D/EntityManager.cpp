@@ -35,7 +35,6 @@ bool CEntityManager::EntityManagerInit(void)
 		cPlayer2D = new CPlayer2D;
 		// Pass shader to cPlayer2D
 		cPlayer2D->SetShader("2DColorShader");
-		cPlayer2D->collidable = true;
 		// m_playerList.push_back(cPlayer2D);
 		// Initialise the instance
 		if (cPlayer2D->Init() == false)
@@ -49,7 +48,6 @@ bool CEntityManager::EntityManagerInit(void)
 	if (cMap2D->FindValue(300, uiRow, uiCol) == true)
 	{
 		cEnemy2D = new CEnemy2D;
-		cEnemy2D->collidable = true;
 		cEnemy2D->SetShader("2DColorShader");
 		m_enemyList.push_back(cEnemy2D);
 		if (cEnemy2D->Init() == false)
@@ -71,7 +69,7 @@ bool CEntityManager::EntityManagerInit(void)
 
 	//clone init
 	cCloneTemplate = new CPlayer2D();
-	if (cCloneTemplate->Init() == false)
+	if (cCloneTemplate->Init(cPlayer2D->GetCheckpoint()) == false)
 	{
 		cout << "Failed to load clone" << endl;
 		return false;

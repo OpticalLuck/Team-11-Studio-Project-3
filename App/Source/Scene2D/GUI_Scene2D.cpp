@@ -30,8 +30,6 @@ CGUI_Scene2D::~CGUI_Scene2D(void)
 		cInventoryManager = NULL;
 	}
 
-	DeleteIMGUI();
-
 	// Show the mouse pointer
 	if (cSettings->bDisableMousePointer == true)
 		glfwSetInputMode(cSettings->pWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -55,7 +53,6 @@ bool CGUI_Scene2D::Init(void)
 	// Store the CFPSCounter singleton instance here
 	cFPSCounter = CFPSCounter::GetInstance();
 
-	CreateIMGUI();
 	// Define the window flags
 	window_flags = 0;
 	window_flags |= ImGuiWindowFlags_NoBackground;
@@ -69,10 +66,6 @@ bool CGUI_Scene2D::Init(void)
 
 	// Initialise the cInventoryManager
 	cInventoryManager = CInventoryManager::GetInstance();
-
-	// Add a Tree as one of the inventory items
-	cInventoryItem = cInventoryManager->Add("Shuriken", "Image/Collectibles/shuriken.png", 999, 0);
-	cInventoryItem->vec2Size = glm::vec2(25, 25);
 
 	interval = 0;
 	timer = 0;
@@ -93,10 +86,8 @@ void CGUI_Scene2D::Update(const double dElapsedTime)
 	relativeScale_x = Math::Max(1.f, relativeScale_x);
 	relativeScale_y = Math::Max(1.f, relativeScale_y);
 
-	// Start the Dear ImGui frame
-	ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplGlfw_NewFrame();
-	ImGui::NewFrame();
+	interval++;
+	timer = interval / 60;
 	    
 	// Create an invisible window which covers the entire OpenGL window
 	ImGui::Begin("Invisible window", NULL, window_flags);
@@ -160,9 +151,6 @@ void CGUI_Scene2D::PreRender(void)
  */
 void CGUI_Scene2D::Render(void)
 {
-	// Rendering
-	ImGui::Render();
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
 /**
@@ -170,29 +158,4 @@ void CGUI_Scene2D::Render(void)
  */
 void CGUI_Scene2D::PostRender(void)
 {
-}
-
-void CGUI_Scene2D::CreateIMGUI()
-{
-	// Setup Dear ImGui context
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
-
-	// Setup Dear ImGui style
-	ImGui::StyleColorsDark();
-	//ImGui::StyleColorsClassic();
-
-	// Setup Platform/Renderer bindings
-	ImGui_ImplGlfw_InitForOpenGL(CSettings::GetInstance()->pWindow, true);
-	const char* glsl_version = "#version 330";
-	ImGui_ImplOpenGL3_Init(glsl_version);
-}
-
-void CGUI_Scene2D::DeleteIMGUI()
-{
-	// Cleanup
-	ImGui_ImplOpenGL3_Shutdown();
-	ImGui_ImplGlfw_Shutdown();
-	ImGui::DestroyContext();
 }

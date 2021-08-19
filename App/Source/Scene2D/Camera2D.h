@@ -27,9 +27,14 @@ class Camera2D : public CSingletonTemplate<Camera2D>
 
 		void Update(float dElapsedTime);
 		void UpdateTarget(glm::vec2 target);
+		void UpdateZoom(float fTarget);
+		void UpdatePos(glm::vec2 pos);
 		void Reset(void);
 
-		glm::vec2 getCurrPos(void);
+		glm::vec2 getCurrPos(void); 
+		glm::vec2 getTarget(void);
+		float getZoom();
+		float getTargetZoom();
 		bool IsFirstTime(void);
 		void ClampCamPos(glm::i32vec2 clampPos);
 
@@ -37,5 +42,8 @@ class Camera2D : public CSingletonTemplate<Camera2D>
 		bool FirstTime;
 		glm::vec2 pos; //Position set to index space for now because worldspace can suck my ching cheng han ji
 		glm::vec2 targetPos;
+
+		float fZoom;
+		float fTargetZoom;
 };
 

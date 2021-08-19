@@ -30,6 +30,15 @@
     <Filter Include="Command">
       <UniqueIdentifier>{9ec58048-9e19-41d9-8642-8e72a3b90c0e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Factory">
+      <UniqueIdentifier>{db4c60e0-034a-4a8a-a80c-1225539467af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entity2D\Object2D">
+      <UniqueIdentifier>{a7550fef-c1ec-41c0-a138-7099839b0113}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Items">
+      <UniqueIdentifier>{3b664dd3-f778-43dd-9188-98d0618c77bf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp">
@@ -80,25 +89,13 @@
     <ClCompile Include="Source\Scene2D\GameManager.cpp">
       <Filter>Manager2D</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Scene2D\InventoryManager.cpp">
-      <Filter>Manager2D</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Scene2D\InventoryItem.cpp">
-      <Filter>Manager2D</Filter>
-    </ClCompile>
     <ClCompile Include="Source\GameStateManagement\GameOverState.cpp">
       <Filter>GameStateManagement</Filter>
     </ClCompile>
     <ClCompile Include="Source\GameStateManagement\PauseMenuState.cpp">
       <Filter>GameStateManagement</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Scene2D\Object2D.cpp">
-      <Filter>Entity2D</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Scene2D\Camera2D.cpp">
-      <Filter>Entity2D</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Scene2D\EntityManager.cpp">
       <Filter>Entity2D</Filter>
     </ClCompile>
     <ClCompile Include="Source\Scene2D\Interactables.cpp">
@@ -115,7 +112,25 @@
     </ClCompile>
     <ClCompile Include="Source\Scene2D\Boss2D.cpp">
       <Filter>Entity2D</Filter>
+	</ClCompile>
+    <ClCompile Include="Source\Factory\ObjectFactory.cpp">
+      <Filter>Factory</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Scene2D\Object2D.cpp">
+      <Filter>Entity2D\Object2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene2D\Boulder2D.cpp">
+      <Filter>Entity2D\Object2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene2D\InventoryItem.cpp">
+      <Filter>Items</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene2D\InventoryManager.cpp">
+      <Filter>Items</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene2D\EntityManager.cpp">
+      <Filter>Manager2D</Filter>
+	</ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h">
@@ -166,25 +181,13 @@
     <ClInclude Include="Source\Scene2D\GameManager.h">
       <Filter>Manager2D</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Scene2D\InventoryManager.h">
-      <Filter>Manager2D</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Scene2D\InventoryItem.h">
-      <Filter>Manager2D</Filter>
-    </ClInclude>
     <ClInclude Include="Source\GameStateManagement\GameOverState.h">
       <Filter>GameStateManagement</Filter>
     </ClInclude>
     <ClInclude Include="Source\GameStateManagement\PauseMenuState.h">
       <Filter>GameStateManagement</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Scene2D\Object2D.h">
-      <Filter>Entity2D</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Scene2D\Camera2D.h">
-      <Filter>Entity2D</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Scene2D\EntityManager.h">
       <Filter>Entity2D</Filter>
     </ClInclude>
     <ClInclude Include="Source\KeyboardInputHandler\CKeyboardInputHandler.h">
@@ -201,6 +204,24 @@
     </ClInclude>
     <ClInclude Include="Source\Scene2D\Boss2D.h">
       <Filter>Entity2D</Filter>
+	</ClInclude>
+    <ClInclude Include="Source\Factory\ObjectFactory.h">
+      <Filter>Factory</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene2D\Object2D.h">
+      <Filter>Entity2D\Object2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene2D\Boulder2D.h">
+      <Filter>Entity2D\Object2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene2D\InventoryItem.h">
+      <Filter>Items</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene2D\InventoryManager.h">
+      <Filter>Items</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene2D\EntityManager.h">
+      <Filter>Manager2D</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

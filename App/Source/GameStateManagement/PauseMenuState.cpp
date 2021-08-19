@@ -60,8 +60,6 @@ bool PauseMenuState::Init(void)
 	background->SetShader("2DShader");
 	background->Init();
 
-	CreateIMGUI();
-
 	// Load the images for buttons
 	CImageLoader* il = CImageLoader::GetInstance();
 	resumeButtonData.fileName = "Image\\GUI\\ResumeButton.png";
@@ -82,10 +80,6 @@ bool PauseMenuState::Init(void)
 
 bool PauseMenuState::Update(const double dElapsedTime)
 {
-	// Start the Dear ImGui frame
-	ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplGlfw_NewFrame();
-	ImGui::NewFrame();
 
 	ImGuiWindowFlags window_flags = 0;
 	window_flags |= ImGuiWindowFlags_NoTitleBar;
@@ -121,9 +115,6 @@ void PauseMenuState::Render(void)
 	//Render Background
 	background->Render();
 
-	// Rendering
-	ImGui::Render();
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
 void PauseMenuState::Destroy(void)
@@ -135,39 +126,7 @@ void PauseMenuState::Destroy(void)
 		background = NULL;
 	}
 
-	// Cleanup
-	DeleteIMGUI();
-
 	cout << "CMenuState::Destroy()\n" << endl;
-}
-
-bool PauseMenuState::CreateIMGUI()
-{
-	// Setup Dear ImGui context
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
-
-	// Setup Dear ImGui style
-	ImGui::StyleColorsDark();
-	//ImGui::StyleColorsClassic();
-
-	// Setup Platform/Renderer bindings
-	ImGui_ImplGlfw_InitForOpenGL(CSettings::GetInstance()->pWindow, true);
-	const char* glsl_version = "#version 330";
-	ImGui_ImplOpenGL3_Init(glsl_version);
-
-	return true;
-}
-
-bool PauseMenuState::DeleteIMGUI()
-{
-	// Cleanup
-	ImGui_ImplOpenGL3_Shutdown();
-	ImGui_ImplGlfw_Shutdown();
-	ImGui::DestroyContext();
-
-	return true;
 }
 
 bool PauseMenuState::UpdateMenu(ImGuiWindowFlags window_flags)

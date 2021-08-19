@@ -72,8 +72,6 @@ bool CMenuState::Init(void)
 	background->SetShader("2DShader");
 	background->Init();
 
-	CreateIMGUI();
-
 	// Load the images for buttons
 	CImageLoader* il = CImageLoader::GetInstance();
 	startButtonData.fileName = "Image\\GUI\\PlayButton.png";
@@ -96,10 +94,6 @@ bool CMenuState::Init(void)
  */
 bool CMenuState::Update(const double dElapsedTime)
 {
-	// Start the Dear ImGui frame
-	ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplGlfw_NewFrame();
-	ImGui::NewFrame();
 
 	ImGuiWindowFlags window_flags = 0;
 	window_flags |= ImGuiWindowFlags_NoTitleBar;
@@ -138,9 +132,6 @@ void CMenuState::Render(void)
 	//Render Background
 	background->Render();
 
-	// Rendering
-	ImGui::Render();
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
 /**
@@ -155,39 +146,7 @@ void CMenuState::Destroy(void)
 		background = NULL;
 	}
 
-	// Cleanup
-	DeleteIMGUI();
-
 	cout << "CMenuState::Destroy()\n" << endl;
-}
-
-bool CMenuState::CreateIMGUI()
-{
-	// Setup Dear ImGui context
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
-
-	// Setup Dear ImGui style
-	ImGui::StyleColorsDark();
-	//ImGui::StyleColorsClassic();
-
-	// Setup Platform/Renderer bindings
-	ImGui_ImplGlfw_InitForOpenGL(CSettings::GetInstance()->pWindow, true);
-	const char* glsl_version = "#version 330";
-	ImGui_ImplOpenGL3_Init(glsl_version);
-
-	return true;
-}
-
-bool CMenuState::DeleteIMGUI()
-{
-	// Cleanup
-	ImGui_ImplOpenGL3_Shutdown();
-	ImGui_ImplGlfw_Shutdown();
-	ImGui::DestroyContext();
-
-	return true;
 }
 
 bool CMenuState::UpdateMenu(ImGuiWindowFlags window_flags)
@@ -250,6 +209,16 @@ bool CMenuState::UpdateMenu(ImGuiWindowFlags window_flags)
 		// Load the menu state
 		cout << "Loading PlayGameState" << endl;
 		CGameStateManager::GetInstance()->SetActiveGameState("PlayGameState");
+		return true;
+	}
+	if (CKeyboardController::GetInstance()->IsKeyReleased(GLFW_KEY_E))
+	{
+		// Reset the CKeyboardController
+		CKeyboardController::GetInstance()->Reset();
+
+		// Load the menu state
+		cout << "Loading EditorSettingsState" << endl;
+		CGameStateManager::GetInstance()->SetActiveGameState("EditorSettingsState");
 		return true;
 	}
 	else if (CKeyboardController::GetInstance()->IsKeyReleased(GLFW_KEY_ESCAPE))

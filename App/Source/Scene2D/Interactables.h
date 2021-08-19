@@ -1,20 +1,27 @@
 #pragma once
-#include "Primitives\Entity2D.h"
 #include "..\App\Source\Command\Command.h"
 
 // Include AnimatedSprites
 #include "Primitives/SpriteAnimation.h"
 
-class Interactables : public CEntity2D
+#include "Object2D.h"
+
+class Interactables : public CObject2D
 {
 public:
 
 	enum INTERACTABLE_TYPE
 	{
+		//Collidables
+		BOULDER = 110,
+
+		//Non-collidables
 		BUTTON = 201,
 		LEVER = 202,
 		PRESSURE_PLATE = 203,
 	};
+
+	INTERACTABLE_TYPE interactableType;
 
 	Interactables(void);
 
