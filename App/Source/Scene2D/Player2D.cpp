@@ -60,6 +60,10 @@ CPlayer2D::CPlayer2D(void)
 	currentColor = glm::vec4();
 }
 
+CPlayer2D::CPlayer2D(string cloneName) : CEntity2D() {
+	
+}
+
 /**
  @brief Destructor This destructor has protected access modifier as this class will be a Singleton
  */
@@ -110,9 +114,9 @@ bool CPlayer2D::Init(void)
 	cMap2D->SetMapInfo(uiRow, uiCol, 0);
 
 	// Set checkpoint position to start position
-	checkpoint = glm::i32vec2(uiCol, uiRow);
+	checkpoint = glm::vec2(uiCol, uiRow);
 	// Set the start position of the Player to iRow and iCol
-	vTransform = glm::i32vec2(uiCol, uiRow);
+	vTransform = glm::vec2(uiCol, uiRow);
 
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
@@ -173,6 +177,7 @@ bool CPlayer2D::Init(void)
 
 	collider2D->vec2Dimensions = glm::vec2(0.20000f,0.50000f);
 	collider2D->Init();
+
 	cPhysics2D.Init(&vTransform);
 	return true;
 }
@@ -239,6 +244,8 @@ bool CPlayer2D::Init(glm::i32vec2 spawnpoint)
 	cKeyboardInputHandler = CKeyboardInputHandler::GetInstance();
 
 	collider2D->Init();
+	collider2D->SetPosition(vTransform);
+
 	cPhysics2D.Init(&vTransform);
 
 	return true;
@@ -535,7 +542,7 @@ void CPlayer2D::MovementUpdate(double dt)
 	state = S_IDLE;
 	
 	std::vector<std::array<bool, KEYBOARD_INPUTS::INPUT_TOTAL>> keyboardInputs = (bIsClone) ? m_CloneKeyboardInputs : cKeyboardInputHandler->GetAllInputs();
-	if (iTempFrameCounter >= keyboardInputs.size())
+	if ((unsigned)iTempFrameCounter >= keyboardInputs.size())
 		return;
 
 	glm::vec2 velocity = cPhysics2D.GetVelocity();

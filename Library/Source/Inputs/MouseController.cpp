@@ -198,3 +198,10 @@ double CMouseController::GetMouseDeltaY(void) const
 {
 	return delta_posY;
 }
+
+void CMouseController::Reset(void)
+{
+	curr_posX, curr_posY, prev_posX, prev_posY, delta_posX, delta_posY = 0;
+	currBtnStatus, prevBtnStatus = 0;
+	WheelOffset_X, WheelOffset_Y = 0;
+}

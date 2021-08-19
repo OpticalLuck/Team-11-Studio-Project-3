@@ -6,6 +6,7 @@ using namespace std;
 CSettings::CSettings(void)
 	: pWindow(NULL)
 	, logl_root(NULL)
+	, m_ImGuiWindow(NULL)
 	, screenSize(SSIZE_800x600)
 	, MASTER_VOLUME(100.f)
 	, BGM_VOLUME(100.f)
@@ -21,6 +22,9 @@ CSettings::CSettings(void)
 	, MICRO_STEP_XAXIS(0.015625f)
 	, MICRO_STEP_YAXIS(0.0208325f)
 {
+	iWindowWidth = 800;
+	iWindowHeight = 600;
+
 	switch (screenSize)
 	{
 	case SSIZE_800x600:
@@ -45,6 +49,7 @@ CSettings::CSettings(void)
 
 CSettings::~CSettings(void)
 {
+	m_ImGuiWindow = NULL;
 }
 
 
@@ -54,18 +59,18 @@ CSettings::~CSettings(void)
 float CSettings::ConvertIndexToUVSpace(const AXIS sAxis, const int iIndex, const bool bInvert, const float fOffset)
 {
 	float fResult = 0.0f;
-	if (sAxis == x)
+	if (sAxis == CSettings::AXIS::x)
 	{
 		fResult = -1.0f + (float)iIndex * TILE_WIDTH + TILE_WIDTH / 2.0f + fOffset;
 	}
-	else if (sAxis == y)
+	else if (sAxis == CSettings::AXIS::y)
 	{
 		if (bInvert)
 			fResult = 1.0f - (float)(iIndex + 1) * TILE_HEIGHT + TILE_HEIGHT / 2.0f + fOffset;
 		else
 			fResult = -1.0f + (float)iIndex * TILE_HEIGHT + TILE_HEIGHT / 2.0f + fOffset;
 	}
-	else if (sAxis == z)
+	else if (sAxis == CSettings::AXIS::z)
 	{
 		// Not used in here
 	}
@@ -81,8 +86,8 @@ glm::vec2 CSettings::ConvertIndexToUVSpace(const glm::vec2 pos)
 	glm::vec2 output = pos;
 
 	//ORIGINAL ONE
-	output.x = (output.x + 0.5f - (0.5 * NUM_TILES_XAXIS)) / (0.5 * NUM_TILES_XAXIS);
-	output.y = (output.y + 0.5f - (0.5 * NUM_TILES_YAXIS)) / (0.5 * NUM_TILES_YAXIS);
+	output.x = ((float)output.x - (0.5f * NUM_TILES_XAXIS)) / (0.5f * NUM_TILES_XAXIS);
+	output.y = ((float)output.y - (0.5f * NUM_TILES_YAXIS)) / (0.5f * NUM_TILES_YAXIS);
 
 	//NEW ONE
 	//output.x = (((pos.x + 0.5) / NUM_TILES_XAXIS) * 2) - 1;
@@ -94,8 +99,8 @@ glm::vec2 CSettings::ConvertIndexToUVSpace(const glm::vec2 pos)
 glm::vec2 CSettings::ConvertUVSpaceToIndex(const glm::vec2 pos)
 {
 	glm::vec2 output = pos;
-	output.x = output.x * (0.5 * NUM_TILES_XAXIS) + (0.5 * NUM_TILES_XAXIS);
-	output.y = output.y * (0.5 * NUM_TILES_YAXIS) + (0.5 * NUM_TILES_YAXIS);
+	output.x = (float)output.x * (0.5f * NUM_TILES_XAXIS) + (0.5f * NUM_TILES_XAXIS);
+	output.y = (float)output.y * (0.5f * NUM_TILES_YAXIS) + (0.5f * NUM_TILES_YAXIS);
 
 	return output;
 }
@@ -129,6 +134,10 @@ void CSettings::UpdateWindowSize()
 	case SSIZE_1600x1200:
 		iWindowWidth = 1600;
 		iWindowHeight = 1200;
+		break;
+	case SSIZE_1600x900:
+		iWindowWidth = 1600;
+		iWindowHeight = 900;
 		break;
 	}
 	glfwSetWindowSize(pWindow, iWindowWidth, iWindowHeight);

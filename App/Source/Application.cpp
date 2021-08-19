@@ -150,6 +150,8 @@ bool Application::Init(void)
 
 	// Get the CSettings instance
 	cSettings = CSettings::GetInstance();
+	m_ImGuiWindow = CImGuiWindow::GetInstance();
+	cSettings->m_ImGuiWindow = CImGuiWindow::GetInstance();
 
 	// Set the file location for the digital assets
 	// This is backup, in case filesystem cannot find the current directory
@@ -238,6 +240,7 @@ bool Application::Init(void)
 										"Shader//Scene2DColor.fs");
 	CShaderManager::GetInstance()->Add("textShader", "Shader//text.vs", "Shader//text.fs");
 	CShaderManager::GetInstance()->Add("LineShader", "Shader//Line2DShader.vs", "Shader//Line2DShader.fs");
+	CShaderManager::GetInstance()->Add("Shader", "Shader//Shader.vs", "Shader//Shader.fs");
 
 	// Initialise the TextureManager Instance
 	CTextureManager::GetInstance()->Init();
@@ -257,6 +260,9 @@ bool Application::Init(void)
 
 	// Set the active scene
 	CGameStateManager::GetInstance()->SetActiveGameState("IntroState");
+
+	cSettings->ImGuiProperties.IsDockingEnabled = false;
+	m_ImGuiWindow->Create(cSettings->ImGuiProperties);
 
 	return true;
 }
@@ -282,14 +288,19 @@ void Application::Run(void)
 		if (dElapsedTime > 0.0166666666666667)
 			dElapsedTime = 0.0166666666666667;
 
+		m_ImGuiWindow->PreRender(cSettings->ImGuiProperties);
+
 		// Call the active Game State's Update method
 		if (CGameStateManager::GetInstance()->Update(0.0166666666666667) == false)
 		{
 			break;
 		}
 
+
 		// Call the active Game State's Render method
 		CGameStateManager::GetInstance()->Render();
+		m_ImGuiWindow->PostRender();
+
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		// -------------------------------------------------------------------------------
@@ -344,6 +355,9 @@ void Application::Destroy(void)
 	//	cScene2D->Destroy();
 	//	cScene2D = NULL;
 	//}
+
+	m_ImGuiWindow->Shutdown();
+	m_ImGuiWindow->Destroy();
 
 	//Close OpenGL window and terminate GLFW
 	glfwDestroyWindow(cSettings->pWindow);

@@ -32,6 +32,7 @@
 
 // Include CKeyboardController
 #include "Inputs/KeyboardController.h"
+#include "Inputs/MouseController.h"
 #include "../App/Source/SoundController/SoundController.h"
 
 #include <iostream>
@@ -75,8 +76,6 @@ bool CEditorSettingsState::Init(void)
 	background->SetShader("2DShader");
 	background->Init();
 
-	CreateIMGUI();
-
 	// Load the images for buttons
 	CImageLoader* il = CImageLoader::GetInstance();
 	
@@ -91,10 +90,6 @@ bool CEditorSettingsState::Init(void)
  */
 bool CEditorSettingsState::Update(const double dElapsedTime)
 {
-	// Start the Dear ImGui frame
-	ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplGlfw_NewFrame();
-	ImGui::NewFrame();
 
 	ImGuiWindowFlags window_flags = 0;
 	window_flags |= ImGuiWindowFlags_NoTitleBar;
@@ -152,13 +147,47 @@ bool CEditorSettingsState::Update(const double dElapsedTime)
 		{
 			ImGui::TextColored(ImVec4(1, 1, 0, 1), "Please input a reasonable Level size");
 		}
-		else if (ImGui::Button("Create Level"))
+		else
 		{
 			std::string name = LevelName;
 			if (cLevelEditor->LevelExists(name.c_str()))
-				DEBUG_MSG("File Exists");
+			{
+				ImGui::PushTextWrapPos();
+				ImGui::TextColored(ImVec4(1, 1, 0, 1), "This level already exists.\nWould you like to edit it or overwrite it?");
+				ImGui::PopTextWrapPos();
+				if (ImGui::Button("Overwrite"))
+				{
+					cLevelEditor->CreateLevel(name, iWorldWidth, iWorldHeight);
+					// Reset the CKeyboardController
+					CMouseController::GetInstance()->Reset();
 
-			// cLevelEditor->CreateLevel("", iWorldWidth, iWorldHeight);
+					// Load the menu state
+					cout << "Loading LevelEditorState" << endl;
+					CGameStateManager::GetInstance()->SetActiveGameState("LevelEditorState");
+					
+				}
+				ImGui::SameLine();
+				if (ImGui::Button("Edit"))
+				{
+					cLevelEditor->LoadLevelByName(name);
+					// Reset the CKeyboardController
+					CMouseController::GetInstance()->Reset();
+
+					// Load the menu state
+					cout << "Loading LevelEditorState" << endl;
+					CGameStateManager::GetInstance()->SetActiveGameState("LevelEditorState");
+				}
+			}
+			else if (ImGui::Button("Create Level"))
+			{
+				cLevelEditor->CreateLevel(name, iWorldWidth, iWorldHeight);
+				// Reset the CKeyboardController
+				CMouseController::GetInstance()->Reset();
+
+				// Load the menu state
+				cout << "Loading LevelEditorState" << endl;
+				CGameStateManager::GetInstance()->SetActiveGameState("LevelEditorState");
+			}
 		}
 
 
@@ -201,10 +230,6 @@ void CEditorSettingsState::Render(void)
 
 	//Render Background
 	background->Render();
-
-	// Rendering
-	ImGui::Render();
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
 /**
@@ -219,38 +244,6 @@ void CEditorSettingsState::Destroy(void)
 		background = NULL;
 	}
 
-	// Cleanup
-	DeleteIMGUI();
 
 	cout << "CEditorSettingsState::Destroy()\n" << endl;
 }
-
-bool CEditorSettingsState::CreateIMGUI()
-{
-	// Setup Dear ImGui context
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
-
-	// Setup Dear ImGui style
-	ImGui::StyleColorsDark();
-	//ImGui::StyleColorsClassic();
-
-	// Setup Platform/Renderer bindings
-	ImGui_ImplGlfw_InitForOpenGL(CSettings::GetInstance()->pWindow, true);
-	const char* glsl_version = "#version 330";
-	ImGui_ImplOpenGL3_Init(glsl_version);
-
-	return true;
-}
-
-bool CEditorSettingsState::DeleteIMGUI()
-{
-	// Cleanup
-	ImGui_ImplOpenGL3_Shutdown();
-	ImGui_ImplGlfw_Shutdown();
-	ImGui::DestroyContext();
-
-	return true;
-}
-

@@ -41,6 +41,7 @@ Collider2D::Collider2D()
 	, vec4Colour(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f))
 	, bIsDisplayed(true)
 	, fLineWidth(1.0f)
+	, cSettings(NULL)
 	, bEnabled(true)
 {
 	sLineShaderName = "LineShader";
@@ -78,6 +79,8 @@ bool Collider2D::Init()
 	glEnableVertexAttribArray(1);
 	
 	glLineWidth(fLineWidth);
+
+	cSettings = CSettings::GetInstance();
 	 
 	return true;
 }
@@ -99,6 +102,7 @@ Collision Collider2D::CollideWith(Collider2D* object)
 		{
 			return CheckAABBCircleCollision(this, object);
 		}
+
 	}
 	
 	return std::make_tuple(false, UP, glm::vec2(0.0f, 0.0f));
@@ -243,14 +247,18 @@ void Collider2D::Render(void)
 
 	//Camera init
 	glm::vec2 offset = glm::vec2(float(CSettings::GetInstance()->NUM_TILES_XAXIS / 2.f), float(CSettings::GetInstance()->NUM_TILES_YAXIS / 2.f));
+
 	glm::vec2 cameraPos = Camera2D::GetInstance()->getCurrPos();
 
 	glm::vec2 objCamPos = position - cameraPos + offset;
 
 	glm::vec2 actualPos = CSettings::GetInstance()->ConvertIndexToUVSpace(objCamPos);
 
-	float clampX = 1.001f;
-	float clampY = 1.001f;
+	float clampOffset = cSettings->ConvertIndexToUVSpace(CSettings::AXIS::x, 1, false) / 2;
+	clampOffset = (clampOffset + 1);
+
+	float clampX = 1.0f + clampOffset;
+	float clampY = 1.0f + clampOffset;
 	if (fabs(actualPos.x) < clampX && fabs(actualPos.y) < clampY)
 	{
 		transform = glm::mat4(1.f);

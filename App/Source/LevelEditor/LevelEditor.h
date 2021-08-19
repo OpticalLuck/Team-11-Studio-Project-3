@@ -25,6 +25,7 @@
 
 #include <vector>
 #include "../Scene2D/Camera2D.h"
+#include "../Scene2D/BackgroundEntity.h"
 
 struct sCell
 {
@@ -45,26 +46,40 @@ public:
     unsigned int iWorldWidth;
     unsigned int iWorldHeight;
 
-    void Init();
+    glm::vec2 vAllowanceScale;
+    glm::vec2 vUVCoords;
+    std::string backgroundPath;
+    CBackgroundEntity* cBackgroundEntity;
 
+    void Init();
+    
     void PreRender();
     void Render();
     void PostRender();
+    void RenderBackground(void);
 
-    void CreateLevel(std::string levelName, unsigned int iWorldWidth = 32, unsigned int iWorldHeight = 24);
-    void LoadLevel(const char* filePath);
-    void LoadExistingLevels(void);
-    bool LevelExists(std::string levelName);
-    std::vector<Level> GetLevels(void);
+    // Loading and Creating Functions
+    void CreateLevel(std::string levelName, unsigned int iWorldWidth = 32, unsigned int iWorldHeight = 24);  
+    bool LoadLevel(const char* filePath);                                                                    
+    bool LoadLevelByName(std::string levelName);                                                             
+    void LoadExistingLevels(void);                                                                           
+    bool LevelExists(std::string levelName);                                                                 
+    std::vector<Level> GetLevels(void);      
+    Level GetCurrentLevel(void);
+    bool SaveMap(void);
+    void ReloadParams(void);
 
+    // Resize Map
     bool DecreaseXSize(void);
     bool IncreaseYSize(void);
     bool IncreaseXSize(void);
     bool DecreaseYSize(void);
 
-    sCell GetCell(unsigned int x, unsigned int y, bool bInvert = true);
-    void UpdateCell(unsigned int x, unsigned int y, int TileID, bool bInvert = true);
+    // Update Map
+    sCell GetCell(unsigned int x, unsigned int y, bool bInvert = true);                
+    void UpdateCell(unsigned int x, unsigned int y, int TileID, bool bInvert = true);  
 
+    // Render Control
     void SetShader(const std::string& _name);
 
 protected:
@@ -74,7 +89,6 @@ protected:
 
     // OpenGL Locations
     unsigned int VAO, VBO, EBO;
-    unsigned int quadVAO, quadVBO, quadEBO;
 
     // The texture ID in OpenGL
     unsigned int iTextureID;
@@ -97,7 +111,4 @@ protected:
 
     CLevelEditor();
     ~CLevelEditor();
-
-    void GenerateQuadVAO(void);
-
 };

@@ -9,6 +9,7 @@
 #include "System\filesystem.h"
 
 #include "System/Debug.h"
+#include <fstream>
 
 namespace fs = std::experimental::filesystem;
 
@@ -19,6 +20,9 @@ CLevelEditor::CLevelEditor()
     , cSettings(NULL)
     , camera(NULL)
     , cTextureManager(NULL)
+    , vAllowanceScale(1.f)
+    , vUVCoords(1.f)
+    , cBackgroundEntity(NULL)
 {
 }
 
@@ -45,8 +49,6 @@ void CLevelEditor::Init()
 {
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
-
-    GenerateQuadVAO();
 
     cSettings = CSettings::GetInstance();
     camera = Camera2D::GetInstance();
@@ -102,7 +104,7 @@ void CLevelEditor::Render()
             // Update the shaders with the latest transform
             glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
 
-            if (m_CurrentLevel[uiRow][uiCol].iTileID > 1)
+            if (m_CurrentLevel[uiRow][uiCol].iTileID > 1 && m_CurrentLevel[uiRow][uiCol].iTileID != 305)
             {
                 glBindTexture(GL_TEXTURE_2D, cTextureManager->MapOfTextureIDs.at(m_CurrentLevel[uiRow][uiCol].iTileID));
 
@@ -140,24 +142,82 @@ void CLevelEditor::CreateLevel(std::string levelName, unsigned int iWorldWidth, 
         }
     }
 
+    currentLevel.LevelName = levelName;
+    currentLevel.LevelPath = levelFolderPath + levelName + ".csv";
+
     DEBUG_MSG("Created New Level: " << levelName);
 }
 
 /**
 @brief Loads an existing CSV into the level editor
 */
-void CLevelEditor::LoadLevel(const char* filePath)
+bool CLevelEditor::LoadLevel(const char* filePath)
 {
+    m_CurrentLevel.clear();
+    vAllowanceScale = glm::vec2(1.f);
+    vUVCoords = glm::vec2(1.f);
+    backgroundPath = "";
+    cBackgroundEntity = nullptr;
+
     // Load the Level CSV
     doc = rapidcsv::Document(FileSystem::getPath(filePath).c_str());
 
     // Set World Width and Height
-    iWorldWidth = doc.GetColumnCount();
+    iWorldWidth = doc.GetColumnCount() - 1;
     iWorldHeight = doc.GetRowCount();
+
+    fs::path p = filePath;
+    currentLevel.LevelName = p.filename().generic_string();
+    currentLevel.LevelName = currentLevel.LevelName.substr(0, currentLevel.LevelName.size() - 4); // remove ".csv"
+    currentLevel.LevelPath = filePath;
 
     // Iterate through the Level Editor Map and set the values of the corresponding indexes
     for (int iRow = 0; iRow < iWorldHeight; ++iRow)
     {
+        if (iRow == 2)
+        {
+            std::string dir = doc.GetRow<std::string>(0)[doc.GetColumnCount() - 1];
+            stringstream scaleTxt(doc.GetRow<std::string>(1)[doc.GetColumnCount() - 1]);
+            stringstream allowanceScaleTxt(doc.GetRow<std::string>(2)[doc.GetColumnCount() - 1]);
+
+            std::vector<float> scaleFloat;
+            std::vector<float> allowanceScaleFloat;
+
+            //Conversions from texts to floats :: 0 IS X AXIS AND 1 IS Y AXIS
+            while (scaleTxt.good()) {
+                std::string substr;
+                getline(scaleTxt, substr, ',');
+                scaleFloat.push_back(stof(substr));
+            }
+
+            while (allowanceScaleTxt.good()) {
+                std::string substr;
+                getline(allowanceScaleTxt, substr, ',');
+                allowanceScaleFloat.push_back(stof(substr));
+            }
+
+            if (allowanceScaleFloat.size() == 2)
+            {
+                vAllowanceScale = glm::vec2(allowanceScaleFloat[0], allowanceScaleFloat[1]);
+                vUVCoords = glm::vec2(scaleFloat[0], scaleFloat[1]);
+                backgroundPath = dir;
+
+                CBackgroundEntity* bgEntity = new CBackgroundEntity(dir);
+                bgEntity->SetShader("2DShader");
+
+                if (!bgEntity->Init(scaleFloat[0], scaleFloat[1]))  //If initialisation fails, delete value
+                    delete bgEntity;
+                else
+                    cBackgroundEntity = bgEntity; //Else put background into array
+            }
+
+            //Cout for debugging purposes
+            if (cBackgroundEntity)
+                DEBUG_MSG("Background is loaded");
+            else
+                DEBUG_MSG("Background is disabled");
+        }
+
         m_CurrentLevel.push_back(std::vector<sCell>());
         std::vector<std::string> row = doc.GetRow<std::string>(iRow);
         for (int iCol = 0; iCol < iWorldWidth; ++iCol)
@@ -173,29 +233,17 @@ void CLevelEditor::LoadLevel(const char* filePath)
     std::reverse(m_CurrentLevel.begin(), m_CurrentLevel.end());
 
     DEBUG_MSG("Opened " << filePath);
+    return true;
 }
 
 /**
-@brief Returns the Cell of the index specified
+@brief Loads the level by name
 */
-sCell CLevelEditor::GetCell(unsigned int x, unsigned int y, bool bInvert)
+bool CLevelEditor::LoadLevelByName(std::string levelName)
 {
-    if (bInvert)
-        return m_CurrentLevel[iWorldHeight - y - 1][x];
-    else
-        return m_CurrentLevel[y][x];
+    return LoadLevel((levelFolderPath + levelName + ".csv").c_str());
 }
 
-/**
-@brief Updates the Cell in the level editor given an x and y index
-*/
-void CLevelEditor::UpdateCell(unsigned int x, unsigned int y, int TileID, bool bInvert)
-{
-    if (bInvert)
-        m_CurrentLevel[iWorldHeight - y - 1][x].iTileID = TileID;
-    else
-        m_CurrentLevel[y][x].iTileID = TileID;
-}
 
 void CLevelEditor::SetShader(const std::string& _name)
 {
@@ -210,11 +258,19 @@ std::vector<Level> CLevelEditor::GetLevels(void)
     return m_Levels;
 }
 
+Level CLevelEditor::GetCurrentLevel(void)
+{
+    return currentLevel;
+}
+
 /**
 @brief Loads existing CSV files into the m_Levels vector
 */
 void CLevelEditor::LoadExistingLevels(void)
 {
+    if (m_Levels.size() != 0)
+        m_Levels.clear();
+
     for (const auto& file : fs::directory_iterator(levelFolderPath))
     {
         Level level;
@@ -227,6 +283,9 @@ void CLevelEditor::LoadExistingLevels(void)
     }
 }
 
+/**
+@brief Checks if the level already exists
+*/
 bool CLevelEditor::LevelExists(std::string levelName)
 {
     for (const auto& file : fs::directory_iterator(levelFolderPath))
@@ -236,7 +295,48 @@ bool CLevelEditor::LevelExists(std::string levelName)
     return false;
 }
 
-bool CLevelEditor::IncreaseXSize()
+/**
+@brief Saves the map into the csv file
+*/
+bool CLevelEditor::SaveMap()
+{
+    // Check if the level already exists
+    if (!LevelExists(currentLevel.LevelName))
+    {
+        std::ofstream file;
+        file.open(currentLevel.LevelPath, std::ios::out | std::ios::app);
+
+        if (!file)
+            return false;
+    }         
+
+    doc = rapidcsv::Document(FileSystem::getPath(currentLevel.LevelPath).c_str());
+    for (unsigned int uiRow = 0; uiRow < iWorldHeight; uiRow++)
+    {
+        for (unsigned int uiCol = 0; uiCol < iWorldWidth; uiCol++)
+        {
+            doc.SetCell(uiCol, iWorldHeight - uiRow - 1, m_CurrentLevel[uiRow][uiCol].iTileID);
+        }
+    }
+
+    std::string UVCoord = std::to_string(vUVCoords.x) + "," + std::to_string(vUVCoords.y);
+    std::string allowance = std::to_string(vAllowanceScale.x) + "," + std::to_string(vAllowanceScale.y);
+
+    doc.SetCell(iWorldWidth, 0, backgroundPath);
+    doc.SetCell(iWorldWidth, 1, UVCoord);
+    doc.SetCell(iWorldWidth, 2, allowance);
+
+    // Save the rapidcsv::Document to a file
+    doc.Save(FileSystem::getPath(currentLevel.LevelPath).c_str());
+    DEBUG_MSG("Saved " << currentLevel.LevelName);
+    return true;
+}
+
+void CLevelEditor::ReloadParams(void)
+{
+}
+
+bool CLevelEditor::IncreaseXSize(void)
 {
     ++iWorldWidth;
  
@@ -264,7 +364,7 @@ bool CLevelEditor::DecreaseYSize(void)
     return true;
 }
 
-bool CLevelEditor::DecreaseXSize()
+bool CLevelEditor::DecreaseXSize(void)
 {
     if (iWorldWidth == 32)
         return false;
@@ -298,36 +398,57 @@ bool CLevelEditor::IncreaseYSize(void)
 }
 
 /**
-@brief Generates the VAO for the grid quad
+@brief Returns the Cell of the index specified
 */
-void CLevelEditor::GenerateQuadVAO(void)
+sCell CLevelEditor::GetCell(unsigned int x, unsigned int y, bool bInvert)
 {
-    glm::vec2 vec2Dimensions = glm::vec2(1, 1) * 0.5f;
-    glm::vec4 vec4Colour = glm::vec4(0, 0, 0, 0.3);
+    if (bInvert)
+        return m_CurrentLevel[iWorldHeight - y - 1][x];
+    else
+        return m_CurrentLevel[y][x];
+}
 
-    float vertices[] = {
-        -vec2Dimensions.x, -vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
-        vec2Dimensions.x, -vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
-        vec2Dimensions.x, vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
-        vec2Dimensions.x, vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
-        -vec2Dimensions.x, vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
-        -vec2Dimensions.x, -vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
-    };
+/**
+@brief Updates the Cell in the level editor given an x and y index
+*/
+void CLevelEditor::UpdateCell(unsigned int x, unsigned int y, int TileID, bool bInvert)
+{
+    if (bInvert)
+        m_CurrentLevel[iWorldHeight - y - 1][x].iTileID = TileID;
+    else
+        m_CurrentLevel[y][x].iTileID = TileID;
+}
 
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
 
-    glBindVertexArray(VAO);
+void CLevelEditor::RenderBackground(void) {
+    if (cBackgroundEntity) {
+        //Parallax background math
+        glm::vec2 allowance = glm::vec2((vUVCoords.x - 2), (vUVCoords.y - 2)); //Get allowance for offsetting
 
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+        //Scaling of allowance. 0.f to 1.f
+        allowance.x *= vAllowanceScale.x;
+        allowance.y *= vAllowanceScale.y;
 
-    // position attribute
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    // texture coord attribute
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(2 * sizeof(float)));
-    glEnableVertexAttribArray(1);
+        //Get beginning and end (In terms of how far the camera can go
+        glm::vec2 beginning = glm::vec2((float(cSettings->NUM_TILES_XAXIS) / 2.f) - 1.f, (float(cSettings->NUM_TILES_YAXIS) / 2.f) - 1.f);
+        glm::vec2 end = glm::vec2(iWorldWidth, iWorldHeight) - beginning;
 
-    glLineWidth(1.f);
+        //Scaling of position
+        glm::vec2 total = end - beginning;
+        glm::vec2 curr = camera->getCurrPos() - beginning;
+
+        float uvSpaceX = (curr.x / total.x) * allowance.x;
+        float uvSpaceY = (curr.y / total.y) * allowance.y;
+
+        uvSpaceX -= allowance.x / 2.f;
+        uvSpaceY -= allowance.y / 2.f;
+
+        glm::vec2 uvSpace = -glm::vec2(uvSpaceX, uvSpaceY);
+
+        cBackgroundEntity->vTransform = uvSpace;
+        //Rendering
+        cBackgroundEntity->PreRender();
+        cBackgroundEntity->Render();
+        cBackgroundEntity->PostRender();
+    }
 }

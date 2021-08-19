@@ -5,6 +5,7 @@
 #endif
 
 // Include GLFW
+#include <Windows.h>
 #include <GLFW/glfw3.h>
 
 // Include GLM
@@ -59,8 +60,6 @@ bool PauseMenuState::Init(void)
 	background->SetShader("2DShader");
 	background->Init();
 
-	CreateIMGUI();
-
 	// Load the images for buttons
 	CImageLoader* il = CImageLoader::GetInstance();
 	resumeButtonData.fileName = "Image\\GUI\\ResumeButton.png";
@@ -81,10 +80,6 @@ bool PauseMenuState::Init(void)
 
 bool PauseMenuState::Update(const double dElapsedTime)
 {
-	// Start the Dear ImGui frame
-	ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplGlfw_NewFrame();
-	ImGui::NewFrame();
 
 	ImGuiWindowFlags window_flags = 0;
 	window_flags |= ImGuiWindowFlags_NoTitleBar;
@@ -120,9 +115,6 @@ void PauseMenuState::Render(void)
 	//Render Background
 	background->Render();
 
-	// Rendering
-	ImGui::Render();
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
 void PauseMenuState::Destroy(void)
@@ -134,39 +126,7 @@ void PauseMenuState::Destroy(void)
 		background = NULL;
 	}
 
-	// Cleanup
-	DeleteIMGUI();
-
 	cout << "CMenuState::Destroy()\n" << endl;
-}
-
-bool PauseMenuState::CreateIMGUI()
-{
-	// Setup Dear ImGui context
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
-
-	// Setup Dear ImGui style
-	ImGui::StyleColorsDark();
-	//ImGui::StyleColorsClassic();
-
-	// Setup Platform/Renderer bindings
-	ImGui_ImplGlfw_InitForOpenGL(CSettings::GetInstance()->pWindow, true);
-	const char* glsl_version = "#version 330";
-	ImGui_ImplOpenGL3_Init(glsl_version);
-
-	return true;
-}
-
-bool PauseMenuState::DeleteIMGUI()
-{
-	// Cleanup
-	ImGui_ImplOpenGL3_Shutdown();
-	ImGui_ImplGlfw_Shutdown();
-	ImGui::DestroyContext();
-
-	return true;
 }
 
 bool PauseMenuState::UpdateMenu(ImGuiWindowFlags window_flags)
@@ -175,8 +135,8 @@ bool PauseMenuState::UpdateMenu(ImGuiWindowFlags window_flags)
 	float buttonHeight = 128;
 	// Create a window called "Hello, world!" and append into it.
 	ImGui::Begin("Pause Menu", NULL, window_flags);
-	ImGui::SetWindowPos(ImVec2(CSettings::GetInstance()->iWindowWidth / 2.0 - buttonWidth / 2.0,
-		CSettings::GetInstance()->iWindowHeight / 6.0));				// Set the top-left of the window at (10,10)
+	ImGui::SetWindowPos(ImVec2(CSettings::GetInstance()->iWindowWidth / 2.0f - buttonWidth / 2.0f,
+		CSettings::GetInstance()->iWindowHeight / 6.0f));				// Set the top-left of the window at (10,10)
 	ImGui::SetWindowSize(ImVec2(buttonWidth + 25, buttonHeight * 3 + 50));
 
 	//Added rounding for nicer effect
@@ -244,7 +204,7 @@ void PauseMenuState::UpdateOption(ImGuiWindowFlags window_flags)
 	ImGui::Begin("Options", NULL, window_flags);
 
 	ImGui::SetWindowPos(ImVec2(0, 0));
-	ImGui::SetWindowSize(ImVec2(CSettings::GetInstance()->iWindowWidth, CSettings::GetInstance()->iWindowHeight - buttonHeight - 50));
+	ImGui::SetWindowSize(ImVec2((float)CSettings::GetInstance()->iWindowWidth, (float)CSettings::GetInstance()->iWindowHeight - buttonHeight - 50.f));
 
 	//Resolution
 	static int screenRes = CSettings::GetInstance()->screenSize;

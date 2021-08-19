@@ -34,6 +34,23 @@ CMap2D::CMap2D(void)
  */
 CMap2D::~CMap2D(void)
 {
+	for (unsigned i = 0; i < arrObject.size(); i++) {
+		for (unsigned x = 0; x < arrObject[i].size(); x++) {
+			delete arrObject[i][x];
+			arrObject[i][x] = nullptr;
+		}
+	} 
+	arrObject.clear();
+	arrGrid.clear();
+
+	//Deletion of background
+	for (unsigned i = 0; i < arrBackground.size(); i++) {
+		if (arrBackground[i]) {
+			delete arrBackground[i];
+			arrBackground[i] = nullptr;
+		}
+	}
+	arrBackground.clear();
 	// optional: de-allocate all resources once they've outlived their purpose:
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
@@ -65,10 +82,15 @@ bool CMap2D::Init(const unsigned int uiNumLevels,
 	arrLevelLimit.clear();
 	arrGrid.clear();
 	arrObject.clear();
+	arrBackground.clear();
+	arrAllowanceScale.clear();
+
 	for (unsigned i = 0; i < uiNumLevels; i++) {
 		arrLevelLimit.push_back(glm::i32vec2());
 		arrObject.push_back(std::vector<CObject2D*>());
 		arrGrid.push_back(std::vector<std::vector<CObject2D*>>());
+		arrBackground.push_back(nullptr);
+		arrAllowanceScale.push_back(glm::vec2());
 	}
 
 
@@ -131,6 +153,7 @@ void CMap2D::Render(void)
 
 	//Camera init
 	glm::vec2 offset = glm::vec2(float(cSettings->NUM_TILES_XAXIS / 2.f), float(cSettings->NUM_TILES_YAXIS / 2.f));
+
 	glm::vec2 cameraPos = camera->getCurrPos();
 
 	for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++) {
@@ -139,8 +162,11 @@ void CMap2D::Render(void)
 
 		glm::vec2 actualPos = cSettings->ConvertIndexToUVSpace(objCamPos);
 
-		float clampX = 1.01f;
-		float clampY = 1.01f;
+		float clampOffset = cSettings->ConvertIndexToUVSpace(CSettings::AXIS::x, 1, false) / 2;
+		clampOffset = (clampOffset + 1);
+
+		float clampX = 1.0f + clampOffset;
+		float clampY = 1.0f + clampOffset;
 		if (actualPos.x <= -clampX || actualPos.x >= clampX || actualPos.y <= -clampY || actualPos.y >= clampY)
 			continue;
 
@@ -351,12 +377,13 @@ int CMap2D::GetMapInfo(const unsigned int uiRow, const unsigned int uiCol, const
 
 /**
  @brief Load a map
- */ 
+ */
 bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 {
 	doc = rapidcsv::Document(FileSystem::getPath(filename).c_str());
 
-	arrLevelLimit[uiCurLevel] = glm::i32vec2(doc.GetColumnCount(), doc.GetRowCount());
+	// Check if the sizes of CSV data matches the declared arrMapInfo sizes
+	arrLevelLimit[uiCurLevel] = glm::i32vec2(doc.GetColumnCount() - 1, doc.GetRowCount());
 
 	// Read the rows and columns of CSV data into arrMapInfo
 	for (unsigned int uiRow = 0; uiRow < (unsigned int)doc.GetRowCount(); uiRow++)
@@ -364,10 +391,53 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 		// Read a row from the CSV file
 		std::vector<std::string> row = doc.GetRow<std::string>(uiRow);
 
+		//If iterating through first row, create BackgroundEntity if available
+		if (uiRow == 2) { //3rd row
+			//Creation of initialisation values
+			std::string dir = doc.GetRow<std::string>(0)[doc.GetColumnCount() - 1];
+			stringstream scaleTxt(doc.GetRow<std::string>(1)[doc.GetColumnCount() - 1]);
+			stringstream allowanceScaleTxt(doc.GetRow<std::string>(2)[doc.GetColumnCount() - 1]);
+
+			std::vector<float> scaleFloat;
+			std::vector<float> allowanceScaleFloat;
+
+			//Conversions from texts to floats :: 0 IS X AXIS AND 1 IS Y AXIS
+			while (scaleTxt.good()) { 
+				std::string substr;
+				getline(scaleTxt, substr, ',');
+				scaleFloat.push_back(stof(substr));
+			}
+
+			while (allowanceScaleTxt.good()) {
+				std::string substr;
+				getline(allowanceScaleTxt, substr, ',');
+				allowanceScaleFloat.push_back(stof(substr));
+			}
+
+			arrAllowanceScale[uiCurLevel] = glm::vec2(allowanceScaleFloat[0], allowanceScaleFloat[1]);
+
+			CBackgroundEntity* bgEntity = new CBackgroundEntity(dir);
+			bgEntity->SetShader("2DShader");
+
+			if (!bgEntity->Init(scaleFloat[0],scaleFloat[1]))  //If initialisation fails, delete value
+				delete bgEntity;
+			else
+				arrBackground[uiCurLevel] = bgEntity; //Else put background into array
+
+			//Cout for debugging purposes
+			std::cout << "Background settings for level " << uiCurLevel + 1 << ": \n";
+			std::cout << "Scale: " << scaleFloat[0] << ", " << scaleFloat[1] << std::endl;
+			std::cout << "Allowance Scale: " << allowanceScaleFloat[0] << ", " << allowanceScaleFloat[1] << std::endl;
+			if (arrBackground[uiCurLevel])
+				std::cout << "Background loaded!\n";
+			else
+				std::cout << "Background is disabled\n";
+		}
+
 		arrGrid[uiCurLevel].push_back(std::vector<CObject2D*>());
-		
+
 		// Load a particular CSV value into the arrMapInfo
-		for (unsigned int uiCol = 0; uiCol < (unsigned int)doc.GetColumnCount(); ++uiCol)
+		for (unsigned int uiCol = 0; uiCol < (unsigned int)doc.GetColumnCount() - 1; ++uiCol)
 		{
 			//Init of objects values
 			int currVal = (int)stoi(row[uiCol]);
@@ -391,11 +461,44 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 				//Add in new CObj pointer if available
 				arrGrid[uiCurLevel][uiRow][uiCol] = currObj;
 			}
-
 		}
 	}
 
 	return true;
+}
+
+void CMap2D::RenderBackground(void) {
+	if (arrBackground[uiCurLevel]) {
+		//Parallax background math
+		glm::vec2 allowance = glm::vec2((arrBackground[uiCurLevel]->scaleX - 2), (arrBackground[uiCurLevel]->scaleY - 2)); //Get allowance for offsetting
+
+		//Scaling of allowance. 0.f to 1.f
+		allowance.x *= arrAllowanceScale[uiCurLevel].x;
+		allowance.y *= arrAllowanceScale[uiCurLevel].y;
+
+		//Get beginning and end (In terms of how far the camera can go
+		glm::vec2 beginning = glm::vec2((float(cSettings->NUM_TILES_XAXIS) / 2.f) - 1.f, (float(cSettings->NUM_TILES_YAXIS) / 2.f) - 1.f);
+		glm::vec2 end = (glm::vec2)arrLevelLimit[uiCurLevel] - beginning;
+
+		//Scaling of position
+		glm::vec2 total = end - beginning;
+		glm::vec2 curr = camera->getCurrPos() - beginning;
+
+		float uvSpaceX = (curr.x / total.x) * allowance.x;
+		float uvSpaceY = (curr.y / total.y) * allowance.y;
+
+		uvSpaceX -= allowance.x / 2.f;
+		uvSpaceY -= allowance.y / 2.f;
+
+		glm::vec2 uvSpace = -glm::vec2(uvSpaceX, uvSpaceY);
+
+		arrBackground[uiCurLevel]->vTransform = uvSpace;
+
+		//Rendering
+		arrBackground[uiCurLevel]->PreRender();
+		arrBackground[uiCurLevel]->Render();
+		arrBackground[uiCurLevel]->PostRender();
+	}
 }
 
 /**
@@ -418,8 +521,7 @@ bool CMap2D::SaveMap(string filename, const unsigned int uiCurLevel)
 
 	for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++) {
 		CObject2D* obj = arrObject[uiCurLevel][i];
-
-		doc.SetCell(obj->vTransform.x, cSettings->NUM_TILES_YAXIS - 1 - obj->vTransform.y, obj->Getvalue());
+		doc.SetCell((int)obj->vTransform.x, int(cSettings->NUM_TILES_YAXIS - 1 - obj->vTransform.y), obj->Getvalue());
 	}
 
 	// Save the rapidcsv::Document to a file
@@ -439,7 +541,6 @@ bool CMap2D::FindValue(const int iValue, unsigned int& uirRow, unsigned int& uir
 {
 	for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++) {
 		CObject2D* obj = arrObject[uiCurLevel][i];
-
 		if (obj->Getvalue() == iValue) {
 			uirCol = obj->vTransform.x;
 			uirRow = obj->vTransform.y; //For now keep the same

@@ -59,20 +59,6 @@ bool GameOverState::Init(void)
 	background->SetShader("2DShader");
 	background->Init();
 
-	// Setup Dear ImGui context
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
-
-	// Setup Dear ImGui style
-	ImGui::StyleColorsDark();
-	//ImGui::StyleColorsClassic();
-
-	// Setup Platform/Renderer bindings
-	ImGui_ImplGlfw_InitForOpenGL(CSettings::GetInstance()->pWindow, true);
-	const char* glsl_version = "#version 330";
-	ImGui_ImplOpenGL3_Init(glsl_version);
-
 	// Load the images for buttons
 	CImageLoader* il = CImageLoader::GetInstance();
 	exitButtonData.fileName = "Image\\GUI\\ExitButton.png";
@@ -87,10 +73,6 @@ bool GameOverState::Init(void)
 
 bool GameOverState::Update(const double dElapsedTime)
 {
-	// Start the Dear ImGui frame
-	ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplGlfw_NewFrame();
-	ImGui::NewFrame();
 
 	ImGuiWindowFlags window_flags = 0;
 	window_flags |= ImGuiWindowFlags_NoTitleBar;
@@ -110,18 +92,18 @@ bool GameOverState::Update(const double dElapsedTime)
 		static int counter = 0;
 
 		ImGui::Begin("Image", NULL, window_flags);
-		ImGui::SetWindowPos(ImVec2(CSettings::GetInstance()->iWindowWidth / 2.0 - buttonWidth / 2.0,
-								   CSettings::GetInstance()->iWindowHeight / 3.0 - buttonHeight - 64) );
-		ImGui::SetWindowSize(ImVec2(CSettings::GetInstance()->iWindowWidth, CSettings::GetInstance()->iWindowHeight));
+		ImGui::SetWindowPos(ImVec2(CSettings::GetInstance()->iWindowWidth / 2.0f - buttonWidth / 2.0f,
+								   CSettings::GetInstance()->iWindowHeight / 3.0f - buttonHeight - 64.f) );
+		ImGui::SetWindowSize(ImVec2((float)CSettings::GetInstance()->iWindowWidth, (float)CSettings::GetInstance()->iWindowHeight));
 		ImGui::Image((void*)(intptr_t)gameOverImage.textureID, ImVec2(buttonWidth, buttonWidth));
 		ImGui::End();
 
 
 		// Create a window called "Hello, world!" and append into it.
 		ImGui::Begin("Main Menu", NULL, window_flags);
-		ImGui::SetWindowPos(ImVec2(CSettings::GetInstance()->iWindowWidth / 2.0 - buttonWidth / 2.0,
-			CSettings::GetInstance()->iWindowHeight / 3.0));				// Set the top-left of the window at (10,10)
-		ImGui::SetWindowSize(ImVec2(CSettings::GetInstance()->iWindowWidth, CSettings::GetInstance()->iWindowHeight));
+		ImGui::SetWindowPos(ImVec2(CSettings::GetInstance()->iWindowWidth / 2.0f - buttonWidth / 2.0f,
+			CSettings::GetInstance()->iWindowHeight / 3.0f));				// Set the top-left of the window at (10,10)
+		ImGui::SetWindowSize(ImVec2((float)CSettings::GetInstance()->iWindowWidth, (float)CSettings::GetInstance()->iWindowHeight));
 
 		//Added rounding for nicer effect
 		ImGuiStyle& style = ImGui::GetStyle();
@@ -168,10 +150,6 @@ void GameOverState::Render(void)
 
 	//Render Background
 	background->Render();
-
-	// Rendering
-	ImGui::Render();
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
 void GameOverState::Destroy(void)
@@ -183,20 +161,5 @@ void GameOverState::Destroy(void)
 		background = NULL;
 	}
 
-	// Cleanup
-	ImGui_ImplOpenGL3_Shutdown();
-	ImGui_ImplGlfw_Shutdown();
-	ImGui::DestroyContext();
-
 	cout << "CMenuState::Destroy()\n" << endl;
-}
-
-bool GameOverState::CreateIMGUI()
-{
-	return false;
-}
-
-bool GameOverState::DeleteIMGUI()
-{
-	return false;
 }

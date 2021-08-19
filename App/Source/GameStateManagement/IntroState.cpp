@@ -5,6 +5,7 @@
 #endif
 
 // Include GLFW
+#include <Windows.h>
 #include <GLFW/glfw3.h>
 
 // Include GLM
@@ -130,14 +131,4 @@ void CIntroState::Destroy(void)
 	}
 
 	cout << "CIntroState::Destroy()\n" << endl;
-}
-
-bool CIntroState::CreateIMGUI()
-{
-	return false;
-}
-
-bool CIntroState::DeleteIMGUI()
-{
-	return false;
 }

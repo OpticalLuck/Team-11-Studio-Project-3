@@ -20,6 +20,7 @@
     <ClCompile Include="Source\GUI\imgui_draw.cpp" />
     <ClCompile Include="Source\GUI\imgui_tables.cpp" />
     <ClCompile Include="Source\GUI\imgui_widgets.cpp" />
+    <ClCompile Include="Source\ImGuiWindow\ImGuiWindow.cpp" />
     <ClCompile Include="Source\Inputs\KeyboardController.cpp" />
     <ClCompile Include="Source\Inputs\MouseController.cpp" />
     <ClCompile Include="Source\Primitives\Collider.cpp" />
@@ -48,6 +49,7 @@
     <ClInclude Include="Source\GUI\imconfig.h" />
     <ClInclude Include="Source\GUI\imgui.h" />
     <ClInclude Include="Source\GUI\imgui_internal.h" />
+    <ClInclude Include="Source\ImGuiWindow\ImGuiWindow.h" />
     <ClInclude Include="Source\Inputs\KeyboardController.h" />
     <ClInclude Include="Source\Inputs\MouseController.h" />
     <ClInclude Include="Source\Math\MyMath.h" />
@@ -69,6 +71,7 @@
     <ClInclude Include="Source\System\ImageLoader.h" />
     <ClInclude Include="Source\System\LoadOBJ.h" />
     <ClInclude Include="Source\System\rapidcsv.h" />
+    <ClInclude Include="Source\System\WindowUtils.h" />
     <ClInclude Include="Source\TimeControl\FPSCounter.h" />
     <ClInclude Include="Source\TimeControl\StopWatch.h" />
   </ItemGroup>

@@ -55,7 +55,7 @@ CScene2D::~CScene2D(void)
 	cKeyboardInputHandler = NULL;
 
 	// Destroy the enemies
-	for (int i = 0; i < enemyVector.size(); i++)
+	for (unsigned i = 0; i < enemyVector.size(); i++)
 	{
 		delete enemyVector[i];
 		enemyVector[i] = NULL;
@@ -148,6 +148,8 @@ bool CScene2D::Init(void)
 
 	cKeyboardInputHandler = CKeyboardInputHandler::GetInstance();
 
+	cInventoryManager = CInventoryManager::GetInstance();
+
 	return true;
 }
 
@@ -160,6 +162,11 @@ bool CScene2D::Update(const double dElapsedTime)
 
 	// Call the Map2D's update method
 	cMap2D->Update(dElapsedTime);
+
+	if (fCooldown > 0)
+	{
+		fCooldown -= dElapsedTime;
+	}
 
 	// Get keyboard updates
 	if (cKeyboardController->IsKeyDown(GLFW_KEY_F6))
@@ -184,8 +191,9 @@ bool CScene2D::Update(const double dElapsedTime)
 
 	//Camera work
 	cameraHandler->UpdateTarget(cPlayer2D->vTransform);
-	cameraHandler->Update(dElapsedTime);
- 	cameraHandler->ClampCamPos(cMap2D->GetLevelLimit());
+
+	cameraHandler->Update((float)dElapsedTime);
+	cameraHandler->ClampCamPos(cMap2D->GetLevelLimit());
 
 	// Check if the game should go to the next level
 	if (cGameManager->bLevelCompleted == true)
@@ -225,6 +233,18 @@ bool CScene2D::Update(const double dElapsedTime)
 		return false;
 	}
 
+	if (cKeyboardController->IsKeyDown(GLFW_KEY_UP) && fCooldown <= 0)
+	{
+		cInventoryManager->NavigateIndex("UP");
+		std::cout << "index is : " << cInventoryManager->GetItemIndex() << std::endl;
+		fCooldown = .5f;
+	}
+	if (cKeyboardController->IsKeyDown(GLFW_KEY_DOWN) && fCooldown <= 0)
+	{
+		cInventoryManager->NavigateIndex("DOWN");
+		std::cout << "index is : " << cInventoryManager->GetItemIndex() << std::endl;
+		fCooldown = .5f;
+	}
 
 	return true;
 }
@@ -250,6 +270,9 @@ void CScene2D::PreRender(void)
  */
 void CScene2D::Render(void)
 {
+	//Call the Map's background (If there's any)
+	cMap2D->RenderBackground();
+
 	cEntityManager->RenderEnemy();
 	cEntityManager->RenderClone();
 	cEntityManager->RenderPlayer();
@@ -281,14 +304,12 @@ void CScene2D::CreateIMGUI()
 {
 	// Store the cGUI_Scene2D singleton instance here
 	cGUI_Scene2D = CGUI_Scene2D::GetInstance();
-	cGUI_Scene2D->CreateIMGUI();
 }
 
 void CScene2D::DeleteIMGUI()
 {
 	if (cGUI_Scene2D)
 	{
-		cGUI_Scene2D->DeleteIMGUI();
 		cGUI_Scene2D = NULL;
 	}
 }

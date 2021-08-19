@@ -5,6 +5,7 @@
 #endif
 
 // Include GLFW
+#include <Windows.h>
 #include <GLFW/glfw3.h>
 
 #include "PlayGameState.h"
@@ -131,16 +132,4 @@ void CPlayGameState::Destroy(void)
 		cScene2D->Destroy();
 		cScene2D = NULL;
 	}
-}
-
-bool CPlayGameState::CreateIMGUI()
-{
-	cScene2D->CreateIMGUI();
-	return false;
-}
-
-bool CPlayGameState::DeleteIMGUI()
-{
-	cScene2D->DeleteIMGUI();
-	return false;
 }

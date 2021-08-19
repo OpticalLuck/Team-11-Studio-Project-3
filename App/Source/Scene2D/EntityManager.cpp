@@ -5,7 +5,10 @@ CEntityManager::CEntityManager()
 	: cPlayer2D(NULL)
 	, cEnemy2D(NULL)
 	, cMap2D(NULL)
+	, cBoss2D(NULL)
 	, cCloneTemplate(NULL)
+	, cKeyboardController(NULL)
+	, cKeyboardInputHandler(NULL)
 {
 }
 
@@ -54,6 +57,16 @@ bool CEntityManager::EntityManagerInit(void)
 		}
 	}
 
+	//Boss initialisation
+	if (cMap2D->FindValue(305, uiRow, uiCol)) {
+		cBoss2D = new CBoss2D;
+		cBoss2D->SetShader("2DColorShader");
+		if (cBoss2D->Init() == false) {
+			cout << "Failed to load CBoss2D" << endl;
+			return false;
+		}
+	}
+
 	//clone init
 	cCloneTemplate = new CPlayer2D();
 	if (cCloneTemplate->Init(cPlayer2D->GetCheckpoint()) == false)
@@ -69,6 +82,10 @@ bool CEntityManager::EntityManagerInit(void)
 	{
 		cCloneTemplate->vTransform = glm::vec2(uiCol, uiRow);
 	}
+
+	currRound = 0;
+
+	return true;
 }
 
 
@@ -127,23 +144,48 @@ CPlayer2D* CEntityManager::GetPlayer()
 	return cPlayer2D;
 }
 
+std::vector<CPlayer2D*> CEntityManager::GetAllPlayers(void) {
+	std::vector<CPlayer2D*> arr;
+	
+	arr.push_back(cPlayer2D); //Add controllable player
+
+	for (unsigned i = 0; i < m_cloneList.size(); i++) { //Add the other clones to the vector
+		arr.push_back(static_cast<CPlayer2D*>(m_cloneList[i])); 
+	}
+
+	return arr;
+}
+
+int CEntityManager::GetCurrRound(void) {
+	return currRound;
+}
+
 void CEntityManager::RenderEnemy(void)
 {
-	for (int i = 0; i < m_enemyList.size(); i++)
+	for (unsigned i = 0; i < m_enemyList.size(); i++)
 	{
 		m_enemyList[i]->PreRender();
 		m_enemyList[i]->Render();
 		m_enemyList[i]->PostRender();
 	}
+
+	if (cBoss2D) {
+		cBoss2D->PreRender();
+		cBoss2D->Render();
+		cBoss2D->PostRender();
+		
+		cBoss2D->RenderCollider();
+	}
 }
 
 void CEntityManager::RenderClone(void)
 {
-	for (int i = 0; i < m_cloneList.size(); ++i)
+	for (unsigned i = 0; i < m_cloneList.size(); ++i)
 	{
 		m_cloneList[i]->PreRender();
 		m_cloneList[i]->Render();
 		m_cloneList[i]->PostRender();
+		m_cloneList[i]->RenderCollider();
 	}
 }
 
@@ -164,14 +206,17 @@ void CEntityManager::Update(const double dElapsedTime)
 	// Call the cPlayer2D's update method before Map2D as we want to capture the inputs before map2D update
 	cPlayer2D->Update(dElapsedTime);
 
-	for (int i = 0; i < m_cloneList.size(); ++i)
+	if (cBoss2D)
+		cBoss2D->Update(dElapsedTime);
+
+	for (unsigned i = 0; i < m_cloneList.size(); ++i)
 	{
 		m_cloneList[i]->Update(dElapsedTime);
 	}
 
 	// Call all the cEnemy2D's update method before Map2D 
 	// as we want to capture the updates before map2D update
-	for (int i = 0; i < m_enemyList.size(); i++)
+	for (unsigned i = 0; i < m_enemyList.size(); i++)
 	{
 		if (static_cast<CEnemy2D*>(m_enemyList[i])->GetHealth() < 0)
 		{
@@ -179,7 +224,7 @@ void CEntityManager::Update(const double dElapsedTime)
 			m_enemyList.erase(m_enemyList.begin() + i);
 		}
 	}
-	for (int i = 0; i < m_enemyList.size(); i++)
+	for (unsigned i = 0; i < m_enemyList.size(); i++)
 	{
 		m_enemyList[i]->Update(dElapsedTime);
 	}
@@ -188,22 +233,6 @@ void CEntityManager::Update(const double dElapsedTime)
 	{
 		Clone();
 	}
-	
-	
-	//for (std::vector<CEntity2D*>::iterator it = m_playerList.begin(); it != m_playerList.end(); ++it)
-	//{
-	//	CEntity2D* player = (CEntity2D*)*it;
-	//	{
-	//		for (std::vector<CEntity2D*>::iterator it2 = m_enemyList.begin(); it2 != m_enemyList.end(); ++it2)
-	//		{
-	//			CEntity2D* enemy = (CEntity2D*)*it2;
-	//			if (CheckCollision(player, enemy))
-	//			{
-	//				//reduce health or some shit
-	//			}
-	//		}
-	//	}
-	//}
 }
 
 

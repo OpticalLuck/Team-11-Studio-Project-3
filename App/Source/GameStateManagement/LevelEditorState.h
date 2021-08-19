@@ -13,6 +13,13 @@
 #include "../LevelEditor/LevelGrid.h"
 #include "Inputs/MouseController.h"
 
+#ifndef IMGUI_ACTIVE
+#include "GUI\imgui.h"
+#include "GUI\backends\imgui_impl_glfw.h"
+#include "GUI\backends\imgui_impl_opengl3.h"
+#define IMGUI_ACTIVE
+#endif
+
 class CLevelEditorState : public CGameStateBase
 {
 public:
@@ -30,10 +37,17 @@ public:
 	// Destroy this class instance
 	virtual void Destroy(void);
 
-	virtual bool CreateIMGUI();
-	virtual bool DeleteIMGUI();
 protected:
-	
+
+	glm::i32vec2 vMousePos;
+
+	glm::mat4 transform;
+
+	unsigned FBO, RBO, textureColorBuffer;
+	unsigned int quadVAO, quadVBO;
+
+	CMesh* cursor;
+
 	CSettings*					cSettings;
 
 	CKeyboardInputHandler*		cKeyboardInputHandler;
@@ -41,7 +55,15 @@ protected:
 	CLevelEditor*				cLevelEditor;
 	CLevelGrid*					cLevelGrid;
 
+	int activeTile;
+
 	void MoveCamera(void);
 	void ScaleMap(void);
 	void MouseInput(void);
+
+	void GenerateQuadVAO(void);
+	void GenerateFBO(void);
+	void RenderQuad(unsigned int iTextureID);
+	void ImGuiRender(void);
+	void RenderCursor(void);
 };

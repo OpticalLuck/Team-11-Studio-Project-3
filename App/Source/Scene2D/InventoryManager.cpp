@@ -5,6 +5,7 @@
 @brief Constructor
 */
 CInventoryManager::CInventoryManager(void) 
+	: iItemIndex(1)
 {
 }
 
@@ -57,6 +58,8 @@ CInventoryItem* CInventoryManager::Add(	const std::string& _name,
 	// Nothing wrong, add the scene to our map
 	inventoryMap[_name] = cNewItem;
 
+																
+
 	return cNewItem;
 }
 
@@ -78,6 +81,7 @@ bool CInventoryManager::Remove(const std::string& _name)
 	// Delete and remove from our map
 	delete target;
 	inventoryMap.erase(_name);
+
 
 	return true;
 }
@@ -110,3 +114,32 @@ int CInventoryManager::GetNumItems(void) const
 {
 	return inventoryMap.size();
 }
+
+
+
+int CInventoryManager::GetItemIndex(void)
+{
+	return iItemIndex;
+}
+
+void CInventoryManager::NavigateIndex(string direction)
+{
+	if (direction == "DOWN")
+	{
+		iItemIndex += 1;
+		if (iItemIndex > 2)
+			iItemIndex = 1;
+	}
+	if (direction == "UP")
+	{
+		iItemIndex -= 1;
+		if (iItemIndex <= 0)
+			iItemIndex = 2;
+	}
+
+}
+
+
+
+
+

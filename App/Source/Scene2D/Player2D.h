@@ -70,7 +70,7 @@ public:
 	// Constructor
 	CPlayer2D(void);
 
-	CPlayer2D(string cloneName) : CEntity2D() {}
+	CPlayer2D(string cloneName);
 
 	// Destructor
 	virtual ~CPlayer2D(void);
