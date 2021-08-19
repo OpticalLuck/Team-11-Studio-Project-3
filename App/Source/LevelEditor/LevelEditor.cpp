@@ -20,6 +20,9 @@ CLevelEditor::CLevelEditor()
     , cSettings(NULL)
     , camera(NULL)
     , cTextureManager(NULL)
+    , vAllowanceScale(1.f)
+    , vUVCoords(1.f)
+    , cBackgroundEntity(NULL)
 {
 }
 
@@ -101,7 +104,7 @@ void CLevelEditor::Render()
             // Update the shaders with the latest transform
             glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
 
-            if (m_CurrentLevel[uiRow][uiCol].iTileID > 1)
+            if (m_CurrentLevel[uiRow][uiCol].iTileID > 1 && m_CurrentLevel[uiRow][uiCol].iTileID != 305)
             {
                 glBindTexture(GL_TEXTURE_2D, cTextureManager->MapOfTextureIDs.at(m_CurrentLevel[uiRow][uiCol].iTileID));
 
@@ -151,12 +154,16 @@ void CLevelEditor::CreateLevel(std::string levelName, unsigned int iWorldWidth, 
 bool CLevelEditor::LoadLevel(const char* filePath)
 {
     m_CurrentLevel.clear();
+    vAllowanceScale = glm::vec2(1.f);
+    vUVCoords = glm::vec2(1.f);
+    backgroundPath = "";
+    cBackgroundEntity = nullptr;
 
     // Load the Level CSV
     doc = rapidcsv::Document(FileSystem::getPath(filePath).c_str());
 
     // Set World Width and Height
-    iWorldWidth = doc.GetColumnCount();
+    iWorldWidth = doc.GetColumnCount() - 1;
     iWorldHeight = doc.GetRowCount();
 
     fs::path p = filePath;
@@ -167,6 +174,47 @@ bool CLevelEditor::LoadLevel(const char* filePath)
     // Iterate through the Level Editor Map and set the values of the corresponding indexes
     for (int iRow = 0; iRow < iWorldHeight; ++iRow)
     {
+        if (iRow == 2)
+        {
+            std::string dir = doc.GetRow<std::string>(0)[doc.GetColumnCount() - 1];
+            stringstream scaleTxt(doc.GetRow<std::string>(1)[doc.GetColumnCount() - 1]);
+            stringstream allowanceScaleTxt(doc.GetRow<std::string>(2)[doc.GetColumnCount() - 1]);
+
+            std::vector<float> scaleFloat;
+            std::vector<float> allowanceScaleFloat;
+
+            //Conversions from texts to floats :: 0 IS X AXIS AND 1 IS Y AXIS
+            while (scaleTxt.good()) {
+                std::string substr;
+                getline(scaleTxt, substr, ',');
+                scaleFloat.push_back(stof(substr));
+            }
+
+            while (allowanceScaleTxt.good()) {
+                std::string substr;
+                getline(allowanceScaleTxt, substr, ',');
+                allowanceScaleFloat.push_back(stof(substr));
+            }
+
+            vAllowanceScale = glm::vec2(allowanceScaleFloat[0], allowanceScaleFloat[1]);
+            vUVCoords = glm::vec2(scaleFloat[0], scaleFloat[1]);
+            backgroundPath = dir;
+
+            CBackgroundEntity* bgEntity = new CBackgroundEntity(dir);
+            bgEntity->SetShader("2DShader");
+
+            if (!bgEntity->Init(scaleFloat[0], scaleFloat[1]))  //If initialisation fails, delete value
+                delete bgEntity;
+            else
+                cBackgroundEntity = bgEntity; //Else put background into array
+
+            //Cout for debugging purposes
+            if (cBackgroundEntity)
+                DEBUG_MSG("Background is loaded");
+            else
+                DEBUG_MSG("Background is disabled");
+        }
+
         m_CurrentLevel.push_back(std::vector<sCell>());
         std::vector<std::string> row = doc.GetRow<std::string>(iRow);
         for (int iCol = 0; iCol < iWorldWidth; ++iCol)
@@ -260,13 +308,20 @@ bool CLevelEditor::SaveMap()
     }         
 
     doc = rapidcsv::Document(FileSystem::getPath(currentLevel.LevelPath).c_str());
-    for (unsigned int uiRow = 0; uiRow < cSettings->NUM_TILES_YAXIS; uiRow++)
+    for (unsigned int uiRow = 0; uiRow < iWorldHeight; uiRow++)
     {
-        for (unsigned int uiCol = 0; uiCol < cSettings->NUM_TILES_XAXIS; uiCol++)
+        for (unsigned int uiCol = 0; uiCol < iWorldWidth; uiCol++)
         {
             doc.SetCell(uiCol, iWorldHeight - uiRow - 1, m_CurrentLevel[uiRow][uiCol].iTileID);
         }
     }
+
+    std::string UVCoord = std::to_string(vUVCoords.x) + "," + std::to_string(vUVCoords.y);
+    std::string allowance = std::to_string(vAllowanceScale.x) + "," + std::to_string(vAllowanceScale.y);
+
+    doc.SetCell(iWorldWidth, 0, backgroundPath);
+    doc.SetCell(iWorldWidth, 1, UVCoord);
+    doc.SetCell(iWorldWidth, 2, allowance);
 
     // Save the rapidcsv::Document to a file
     doc.Save(FileSystem::getPath(currentLevel.LevelPath).c_str());
@@ -355,4 +410,16 @@ void CLevelEditor::UpdateCell(unsigned int x, unsigned int y, int TileID, bool b
         m_CurrentLevel[iWorldHeight - y - 1][x].iTileID = TileID;
     else
         m_CurrentLevel[y][x].iTileID = TileID;
+}
+
+
+void CLevelEditor::RenderBackground(void) {
+    if (cBackgroundEntity) {
+        cBackgroundEntity->vTransform = glm::vec2(0.f, 0.f);
+
+        //Rendering
+        cBackgroundEntity->PreRender();
+        cBackgroundEntity->Render();
+        cBackgroundEntity->PostRender();
+    }
 }

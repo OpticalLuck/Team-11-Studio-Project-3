@@ -32,6 +32,7 @@ public:
 	//Scale var
 	float scaleX;
 	float scaleY;
-protected:
+
 	std::string textureName;
+protected:
 };
