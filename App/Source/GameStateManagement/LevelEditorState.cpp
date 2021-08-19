@@ -390,18 +390,17 @@ void CLevelEditorState::ImGuiRender()
 						}
 						ImGui::PopStyleColor();
 						++iCounter;
+						
 					}
-					
-					ImGui::EndChild();
-				}
-				ImGui::EndTabItem();
+				}	
+				ImGui::EndChild();
 			}
-			ImGui::EndTabBar();
+			ImGui::EndTabItem();
 		}
-
+		ImGui::EndTabBar();
 		// DEBUG_MSG(ImGui::GetWindowPos().x << " " << ImGui::GetWindowPos().y);
-		ImGui::End();
 	}
+	ImGui::End();
 
 }
 
