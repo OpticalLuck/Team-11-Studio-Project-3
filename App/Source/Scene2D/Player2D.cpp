@@ -346,8 +346,8 @@ void CPlayer2D::Update(const double dElapsedTime)
 	//{
 		//Reset to checkpoint option
 		//ResetToCheckPoint();
-	LockWithinBoundary();
 	//}
+	LockWithinBoundary();
 	//animation States
 	switch (state)
 	{
