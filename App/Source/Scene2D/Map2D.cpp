@@ -293,7 +293,7 @@ bool CMap2D::InsertMapInfo(unsigned int uiRow, unsigned int uiCol, const int iVa
 	return true;
 }
 
-void CMap2D::ReplaceGridInfo(const unsigned int uiRow, const unsigned uiCol, CObject2D* target, const bool bInvert)
+void CMap2D::UpdateGridInfo(const unsigned int uiRow, const unsigned uiCol, CObject2D* target, const bool bInvert)
 {
 	// Used for checking current spot
 	CObject2D* obj = nullptr;
@@ -307,8 +307,32 @@ void CMap2D::ReplaceGridInfo(const unsigned int uiRow, const unsigned uiCol, COb
 	}
 	else
 	{
-		obj = arrGrid[uiCurLevel][target->GetCurrentIndex().y][target->GetCurrentIndex().x];
-		newSpot = arrGrid[uiCurLevel][uiRow][uiCol];
+		if (uiRow < GetLevelRow() && uiCol < GetLevelCol() && uiRow >= 0 && uiCol >= 0)
+		{
+			obj = arrGrid[uiCurLevel][target->GetCurrentIndex().y][target->GetCurrentIndex().x];
+			newSpot = arrGrid[uiCurLevel][uiRow][uiCol];
+		}
+		else
+		{
+			cout << "Object went out of map range - Deleting" << endl;
+
+			//Get Object in arrObject list
+			for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++)
+			{
+				obj = arrObject[uiCurLevel][i];
+				if (obj == arrGrid[uiCurLevel][target->GetCurrentIndex().y][target->GetCurrentIndex().x])
+				{
+					arrGrid[uiCurLevel][target->GetCurrentIndex().y][target->GetCurrentIndex().x] = nullptr;
+					//Delete occupying object in arrObj
+					delete obj;
+					arrObject[uiCurLevel][i] = nullptr;
+					arrObject[uiCurLevel].erase(arrObject[uiCurLevel].begin() + i);
+
+					obj = nullptr;
+					break;
+				}
+			}
+		}
 	}
 
 	if (newSpot == nullptr)
