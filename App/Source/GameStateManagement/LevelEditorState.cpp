@@ -355,6 +355,12 @@ void CLevelEditorState::ImGuiRender()
 
 	if (ImGui::Begin("Editor", NULL, windowFlags))
 	{
+		ImGui::TextColored(ImVec4(1.f, 1.f, 0, 1.f), "Map Size");
+		std::string xSize = "X: " + std::to_string(cLevelEditor->iWorldWidth);
+		std::string ySize = "Y: " + std::to_string(cLevelEditor->iWorldHeight);
+		ImGui::Text(xSize.c_str());
+		ImGui::Text(ySize.c_str());
+
 		ImGui::TextColored(ImVec4(1.f, 1.f, 0, 1.f), "Background Mesh");
 		if (cLevelEditor->cBackgroundEntity)
 			ImGui::TextWrapped(cLevelEditor->backgroundPath.c_str());
@@ -423,8 +429,6 @@ void CLevelEditorState::ImGuiRender()
 		// DEBUG_MSG(ImGui::GetWindowPos().x << " " << ImGui::GetWindowPos().y);
 	}
 	ImGui::End();
-
-	ImGui::ShowDemoWindow();
 
 }
 

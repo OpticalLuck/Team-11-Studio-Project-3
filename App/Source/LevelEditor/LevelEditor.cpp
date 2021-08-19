@@ -196,17 +196,20 @@ bool CLevelEditor::LoadLevel(const char* filePath)
                 allowanceScaleFloat.push_back(stof(substr));
             }
 
-            vAllowanceScale = glm::vec2(allowanceScaleFloat[0], allowanceScaleFloat[1]);
-            vUVCoords = glm::vec2(scaleFloat[0], scaleFloat[1]);
-            backgroundPath = dir;
+            if (allowanceScaleFloat.size() == 2)
+            {
+                vAllowanceScale = glm::vec2(allowanceScaleFloat[0], allowanceScaleFloat[1]);
+                vUVCoords = glm::vec2(scaleFloat[0], scaleFloat[1]);
+                backgroundPath = dir;
 
-            CBackgroundEntity* bgEntity = new CBackgroundEntity(dir);
-            bgEntity->SetShader("2DShader");
+                CBackgroundEntity* bgEntity = new CBackgroundEntity(dir);
+                bgEntity->SetShader("2DShader");
 
-            if (!bgEntity->Init(scaleFloat[0], scaleFloat[1]))  //If initialisation fails, delete value
-                delete bgEntity;
-            else
-                cBackgroundEntity = bgEntity; //Else put background into array
+                if (!bgEntity->Init(scaleFloat[0], scaleFloat[1]))  //If initialisation fails, delete value
+                    delete bgEntity;
+                else
+                    cBackgroundEntity = bgEntity; //Else put background into array
+            }
 
             //Cout for debugging purposes
             if (cBackgroundEntity)
