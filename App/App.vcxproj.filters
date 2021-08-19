@@ -39,6 +39,12 @@
     <Filter Include="Items">
       <UniqueIdentifier>{3b664dd3-f778-43dd-9188-98d0618c77bf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="TextureManager">
+      <UniqueIdentifier>{afe0f215-16c2-4a8d-8016-49e8d6a661a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LevelEditor">
+      <UniqueIdentifier>{ab1fa9a1-e10a-4a02-9838-35d9d16b15a5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp">
@@ -131,23 +137,23 @@
     <ClCompile Include="Source\Scene2D\EntityManager.cpp">
       <Filter>Manager2D</Filter>
     </ClCompile>
-    <ClCompile Include="Source\GameStateManagement\EditorSettingsState.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\GameStateManagement\LevelEditorState.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\LevelEditor\LevelGrid.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\LevelEditor\LevelEditor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\TextureManager\TextureManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Scene2D\Projectiles.cpp">
       <Filter>Entity2D\Object2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\TextureManager\TextureManager.cpp">
+      <Filter>TextureManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LevelEditor\LevelGrid.cpp">
+      <Filter>LevelEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LevelEditor\LevelEditor.cpp">
+      <Filter>LevelEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GameStateManagement\LevelEditorState.cpp">
+      <Filter>GameStateManagement</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GameStateManagement\EditorSettingsState.cpp">
+      <Filter>GameStateManagement</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -241,23 +247,23 @@
     <ClInclude Include="Source\Scene2D\EntityManager.h">
       <Filter>Manager2D</Filter>
     </ClInclude>
-    <ClInclude Include="Source\GameStateManagement\EditorSettingsState.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\GameStateManagement\LevelEditorState.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\LevelEditor\LevelGrid.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\LevelEditor\LevelEditor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\TextureManager\TextureManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Scene2D\Projectiles.h">
       <Filter>Entity2D\Object2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\TextureManager\TextureManager.h">
+      <Filter>TextureManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\LevelEditor\LevelGrid.h">
+      <Filter>LevelEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\LevelEditor\LevelEditor.h">
+      <Filter>LevelEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GameStateManagement\EditorSettingsState.h">
+      <Filter>GameStateManagement</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GameStateManagement\LevelEditorState.h">
+      <Filter>GameStateManagement</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
