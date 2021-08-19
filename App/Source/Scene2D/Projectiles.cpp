@@ -72,7 +72,7 @@ void Projectiles::Update(double dElapsedTime)
 	glm::i32vec2 newindex((int)vTransform.x, CMap2D::GetInstance()->GetLevelRow() - (int)vTransform.y - 1);
 	if (newindex != currentIndex)
 	{
-		CMap2D::GetInstance()->ReplaceGridInfo(newindex.y, newindex.x, this, false);
+		CMap2D::GetInstance()->UpdateGridInfo(newindex.y, newindex.x, this, false);
 	}
 }
 

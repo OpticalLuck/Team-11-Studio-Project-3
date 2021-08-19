@@ -293,7 +293,7 @@ bool CMap2D::InsertMapInfo(unsigned int uiRow, unsigned int uiCol, const int iVa
 	return true;
 }
 
-void CMap2D::ReplaceGridInfo(const unsigned int uiRow, const unsigned uiCol, CObject2D* target, const bool bInvert)
+void CMap2D::UpdateGridInfo(const unsigned int uiRow, const unsigned uiCol, CObject2D* target, const bool bInvert)
 {
 	// Used for checking current spot
 	CObject2D* obj = nullptr;
