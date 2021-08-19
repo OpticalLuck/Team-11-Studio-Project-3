@@ -20,6 +20,8 @@
 //Include math
 #include "Math/MyMath.h"
 
+#include "Inputs\KeyboardController.h"
+
 // Include GLEW
 #ifndef GLEW_STATIC
 #include <GL/glew.h>
@@ -63,6 +65,10 @@ public:
 
 	// PostRender
 	void PostRender(void);
+	void CreateIMGUI();
+	void DeleteIMGUI();
+
+
 
 protected:
 	// Constructor
@@ -78,8 +84,9 @@ protected:
 	ImGuiWindowFlags window_flags;
 	float m_fProgressBar;
 
-	float interval;
-	int timer;
+	float fInterval;
+	int iMinutes;
+	int iSeconds;
 
 	CSettings* cSettings;
 
@@ -87,4 +94,7 @@ protected:
 	CInventoryManager* cInventoryManager;
 	// The handler containing the instance of CInventoryItem
 	CInventoryItem* cInventoryItem;
+
+
+	CKeyboardController* cKeyboardController;
 };

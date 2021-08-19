@@ -148,6 +148,8 @@ bool CScene2D::Init(void)
 
 	cKeyboardInputHandler = CKeyboardInputHandler::GetInstance();
 
+	cInventoryManager = CInventoryManager::GetInstance();
+
 	return true;
 }
 
@@ -160,6 +162,11 @@ bool CScene2D::Update(const double dElapsedTime)
 
 	// Call the Map2D's update method
 	cMap2D->Update(dElapsedTime);
+
+	if (fCooldown > 0)
+	{
+		fCooldown -= dElapsedTime;
+	}
 
 	// Get keyboard updates
 	if (cKeyboardController->IsKeyDown(GLFW_KEY_F6))
@@ -225,6 +232,18 @@ bool CScene2D::Update(const double dElapsedTime)
 		return false;
 	}
 
+	if (cKeyboardController->IsKeyDown(GLFW_KEY_UP) && fCooldown <= 0)
+	{
+		cInventoryManager->NavigateIndex("UP");
+		std::cout << "index is : " << cInventoryManager->GetItemIndex() << std::endl;
+		fCooldown = .5f;
+	}
+	if (cKeyboardController->IsKeyDown(GLFW_KEY_DOWN) && fCooldown <= 0)
+	{
+		cInventoryManager->NavigateIndex("DOWN");
+		std::cout << "index is : " << cInventoryManager->GetItemIndex() << std::endl;
+		fCooldown = .5f;
+	}
 
 	return true;
 }

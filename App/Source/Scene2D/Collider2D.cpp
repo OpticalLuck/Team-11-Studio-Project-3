@@ -99,6 +99,7 @@ Collision Collider2D::CollideWith(Collider2D* object)
 		{
 			return CheckAABBCircleCollision(this, object);
 		}
+
 	}
 	
 	return std::make_tuple(false, UP, glm::vec2(0.0f, 0.0f));

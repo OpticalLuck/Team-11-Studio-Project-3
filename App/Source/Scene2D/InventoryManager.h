@@ -33,6 +33,13 @@ public:
 	// Get the number of items
 	int GetNumItems(void) const;
 
+	int GetItemIndex(void);
+
+	void NavigateIndex(string direction);
+
+	// The map containing all the items
+	std::map<std::string, CInventoryItem*> inventoryMap;
+
 protected:
 	// Constructor
 	CInventoryManager(void);
@@ -40,6 +47,9 @@ protected:
 	// Destructor
 	virtual ~CInventoryManager(void);
 
-	// The map containing all the items
-	std::map<std::string, CInventoryItem*> inventoryMap;
+	int iItemIndex;
+
+
+
 };
+
