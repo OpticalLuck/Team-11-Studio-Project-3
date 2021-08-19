@@ -101,7 +101,7 @@ void CLevelEditor::Render()
             // Update the shaders with the latest transform
             glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
 
-            if (m_CurrentLevel[uiRow][uiCol].iTileID > 1)
+            if (m_CurrentLevel[uiRow][uiCol].iTileID > 1 && m_CurrentLevel[uiRow][uiCol].iTileID != 305)
             {
                 glBindTexture(GL_TEXTURE_2D, cTextureManager->MapOfTextureIDs.at(m_CurrentLevel[uiRow][uiCol].iTileID));
 
@@ -156,7 +156,7 @@ bool CLevelEditor::LoadLevel(const char* filePath)
     doc = rapidcsv::Document(FileSystem::getPath(filePath).c_str());
 
     // Set World Width and Height
-    iWorldWidth = doc.GetColumnCount();
+    iWorldWidth = doc.GetColumnCount() - 1;
     iWorldHeight = doc.GetRowCount();
 
     fs::path p = filePath;
