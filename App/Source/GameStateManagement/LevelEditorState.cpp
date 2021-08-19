@@ -447,6 +447,9 @@ void CLevelEditorState::CalculateMousePosition(void)
 	vMousePosWorldSpace = glm::vec2(vMousePosConvertedRatio.x / cSettings->iWindowWidth * cSettings->NUM_TILES_XAXIS, vMousePosConvertedRatio.y / cSettings->iWindowHeight * cSettings->NUM_TILES_YAXIS);
 	vMousePosRelativeToCamera = Camera2D::GetInstance()->getCurrPos() + vMousePosWorldSpace / Camera2D::GetInstance()->getZoom();
 
+	vMousePosRelativeToCamera.x -= 0.5;
+	vMousePosRelativeToCamera.y -= 0.5;
+
 	vMousePosRelativeToCamera.x = Math::Clamp(vMousePosRelativeToCamera.x, 0.f, (float)cLevelEditor->iWorldWidth - 1.f);
 	vMousePosRelativeToCamera.y = Math::Clamp(vMousePosRelativeToCamera.y, 0.f, (float)cLevelEditor->iWorldHeight - 1.f);
 
