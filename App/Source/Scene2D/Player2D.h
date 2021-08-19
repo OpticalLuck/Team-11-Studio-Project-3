@@ -103,6 +103,10 @@ public:
 
 	void SetInputs(std::vector<std::array<bool, KEYBOARD_INPUTS::INPUT_TOTAL>> inputs);
 
+	void ResetToCheckPoint();
+
+	void LockWithinBoundary();
+
 	CPlayer2D* const Clone();
 
 	glm::i32vec2 GetCheckpoint(void);
@@ -168,6 +172,6 @@ protected:
 	// Update the health and lives
 	void UpdateHealthLives(void);
 
-	void MovementUpdate(double dt);
+	void InputUpdate(double dt);
 };
 

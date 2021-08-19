@@ -282,43 +282,16 @@ void CPlayer2D::Update(const double dElapsedTime)
 	// Store the old position
 	vOldTransform = vTransform;
 
-	// Get keyboard updates
-	MovementUpdate(dElapsedTime);
-	if (cKeyboardController->IsKeyPressed(GLFW_KEY_V))
-		{
-			if (state != S_ATTACK)
-			{
-				cSoundController->PlaySoundByID(6);
-				state = S_ATTACK;
-			}
-		}
-
-	if (cMouseController->IsButtonPressed(0))
-	{
-		cInventoryItem = cInventoryManager->GetItem("Shuriken");
-		if (cInventoryItem->GetCount() > 0)
-		{
-			if (cMap2D->InsertMapInfo((int)vTransform.y, (int)vTransform.x, 2))
-			{
-				glm::vec2 distance = Camera2D::GetInstance()->GetCursorPosInWorldSpace() - vTransform;
-
-				CObject2D* shuriken = cMap2D->GetCObject((int)vTransform.x, (int)vTransform.y);
-				shuriken->vTransform = vTransform;
-
-				static_cast<Projectiles*>(shuriken)->GetPhysics().SetForce(distance * 200.f);
-				cInventoryItem->Remove(1);
-			}
-		}
-	}
-
+	// Get keyboard & Mouse updates
+	InputUpdate(dElapsedTime);
+	
 	cPhysics2D.Update(dElapsedTime);
 
 	// Update Collider2D Position
 	collider2D->position = vTransform;
 
-	int range = 3;
-
 	//COLLISION RESOLUTION ON Y_AXIS AND X_AXIS
+	int range = 3;
 	for (int i = 0; i < 2; i++)
 	{
 		for (int row = -range; row <= range; row++) //y
@@ -368,6 +341,13 @@ void CPlayer2D::Update(const double dElapsedTime)
 		}
 	}
 
+	//BOUNDARY CHECK
+	//if (vTransform.y > cMap2D->GetLevelRow() - 1 || vTransform.x > cMap2D->GetLevelCol() - 1 || vTransform.y < -1 || vTransform.x < -1)
+	//{
+		//Reset to checkpoint option
+		//ResetToCheckPoint();
+	LockWithinBoundary();
+	//}
 	//animation States
 	switch (state)
 	{
@@ -517,7 +497,7 @@ bool CPlayer2D::LoadTexture(const char* filename, GLuint& iTextureID)
 	return true;
 }
 
-void CPlayer2D::MovementUpdate(double dt)
+void CPlayer2D::InputUpdate(double dt)
 {
 	state = S_IDLE;
 	
@@ -554,6 +534,33 @@ void CPlayer2D::MovementUpdate(double dt)
 
 	if (glm::length(velocity) > 0.f)
 		cPhysics2D.SetVelocity(velocity);
+
+	if (cKeyboardController->IsKeyPressed(GLFW_KEY_V))
+	{
+		if (state != S_ATTACK)
+		{
+			cSoundController->PlaySoundByID(6);
+			state = S_ATTACK;
+		}
+	}
+
+	if (cMouseController->IsButtonPressed(0))
+	{
+		cInventoryItem = cInventoryManager->GetItem("Shuriken");
+		if (cInventoryItem->GetCount() > 0)
+		{
+			if (cMap2D->InsertMapInfo((int)vTransform.y, (int)vTransform.x, 2))
+			{
+				glm::vec2 distance = Camera2D::GetInstance()->GetCursorPosInWorldSpace() - vTransform;
+
+				CObject2D* shuriken = cMap2D->GetCObject((int)vTransform.x, (int)vTransform.y);
+				shuriken->vTransform = vTransform;
+
+				static_cast<Projectiles*>(shuriken)->GetPhysics().SetForce(distance * 200.f);
+				cInventoryItem->Remove(1);
+			}
+		}
+	}
 }
 
 /**
@@ -590,6 +597,23 @@ bool CPlayer2D::IsClone()
 void CPlayer2D::SetInputs(std::vector<std::array<bool, KEYBOARD_INPUTS::INPUT_TOTAL>> inputs)
 {
 	m_CloneKeyboardInputs = inputs;
+}
+
+void CPlayer2D::ResetToCheckPoint()
+{
+	vTransform = checkpoint;
+	cPhysics2D.SetVelocity(glm::vec2(0.f));
+	cKeyboardController->Reset();
+}
+
+void CPlayer2D::LockWithinBoundary()
+{
+	glm::vec2 minVal = glm::vec2(0.5f, 0.f) - glm::vec2(collider2D->vec2Dimensions.x, 0);
+	minVal *= -1;
+	glm::vec2 maxVel = glm::vec2(cMap2D->GetLevelCol() - 3, cMap2D->GetLevelRow() - 3) - glm::vec2(0.5f - collider2D->vec2Dimensions.x, 0);
+
+	vTransform = glm::clamp(vTransform, minVal, maxVel);
+	collider2D->SetPosition(vTransform);
 }
 
 CPlayer2D* const CPlayer2D::Clone()
