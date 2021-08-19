@@ -5,6 +5,7 @@
 #endif
 
 // Include GLFW
+#include <Windows.h>
 #include <GLFW/glfw3.h>
 
 // Include GLM

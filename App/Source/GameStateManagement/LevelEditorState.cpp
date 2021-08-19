@@ -21,6 +21,10 @@
 
 #include "ImGuiWindow/ImGuiWindow.h"
 
+#include "System/WindowUtils.h"
+
+#include "../Scene2D/Object2D.h"
+
 #include <iostream>
 using namespace std;
 
@@ -151,6 +155,8 @@ void CLevelEditorState::Render(void)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
+	cLevelEditor->RenderBackground();
+
 	cLevelEditor->PreRender();
 	cLevelEditor->Render();
 	cLevelEditor->PostRender();
@@ -195,6 +201,8 @@ void CLevelEditorState::MoveCamera(void)
 		Camera2D::GetInstance()->UpdateTarget(glm::vec2(Camera2D::GetInstance()->getTarget().x + 0.2, Camera2D::GetInstance()->getTarget().y));
 	}
 
+	Camera2D::GetInstance()->UpdatePos(glm::vec2(Math::Clamp(Camera2D::GetInstance()->getCurrPos().x, 0.f, (float)cLevelEditor->iWorldWidth), Math::Clamp(Camera2D::GetInstance()->getCurrPos().y, 0.f, (float)cLevelEditor->iWorldHeight)));
+	Camera2D::GetInstance()->UpdateTarget(glm::vec2(Math::Clamp(Camera2D::GetInstance()->getTarget().x, 0.f, (float)cLevelEditor->iWorldWidth), Math::Clamp(Camera2D::GetInstance()->getTarget().y, 0.f, (float)cLevelEditor->iWorldHeight)));
 }
 
 void CLevelEditorState::ScaleMap(void)
@@ -344,21 +352,49 @@ void CLevelEditorState::ImGuiRender()
 	ImGui::SetNextWindowPos(ImVec2(0, 0 + 19));
 	ImGui::SetNextWindowSize(ImVec2(300, cSettings->iWindowHeight));
 
-	ImGuiWindowFlags inventoryWindowFlags =
+	ImGuiWindowFlags windowFlags =
 		ImGuiWindowFlags_AlwaysAutoResize |
-		ImGuiWindowFlags_NoTitleBar |
 		ImGuiWindowFlags_NoMove |
-		ImGuiWindowFlags_NoResize |
-		ImGuiWindowFlags_NoCollapse;
+		ImGuiWindowFlags_NoResize;
 
-	ImGuiWindowFlags windowFlags = 0;
-	windowFlags |= ImGuiWindowFlags_NoMove |
-		ImGuiWindowFlags_NoResize |
-		ImGuiWindowFlags_NoTitleBar |
-		ImGuiWindowFlags_NoCollapse;
-
-	if (ImGui::Begin("Editor", NULL, inventoryWindowFlags))
+	if (ImGui::Begin("Editor", NULL, windowFlags))
 	{
+		ImGui::TextColored(ImVec4(1.f, 1.f, 0, 1.f), "Map Size");
+		std::string xSize = "X: " + std::to_string(cLevelEditor->iWorldWidth);
+		std::string ySize = "Y: " + std::to_string(cLevelEditor->iWorldHeight);
+		ImGui::Text(xSize.c_str());
+		ImGui::Text(ySize.c_str());
+
+		ImGui::TextColored(ImVec4(1.f, 1.f, 0, 1.f), "Background Mesh");
+		if (cLevelEditor->cBackgroundEntity)
+			ImGui::TextWrapped(cLevelEditor->backgroundPath.c_str());
+		else 
+			ImGui::Text("No Background");
+
+		if (ImGui::Button("Change Background"))
+		{
+			cLevelEditor->backgroundPath = FileDialog::OpenFile("Image (*.png)\0*.png\0");
+
+			if (cLevelEditor->backgroundPath != "")
+			{
+				delete cLevelEditor->cBackgroundEntity;
+				cLevelEditor->cBackgroundEntity = new CBackgroundEntity(cLevelEditor->backgroundPath);
+				cLevelEditor->cBackgroundEntity->Init();
+			}
+		}
+
+		ImGui::NewLine();
+
+		ImGui::TextColored(ImVec4(1.f, 1.f, 0, 1.f), "Parallax Allowance");
+		ImGui::SliderFloat("Parallax X", &cLevelEditor->vAllowanceScale.x, 0.f, 1.f);
+		ImGui::SliderFloat("Parallax Y", &cLevelEditor->vAllowanceScale.y, 0.f, 1.f);
+
+		ImGui::NewLine();
+
+		ImGui::TextColored(ImVec4(1, 1, 0, 1), "BG Size");
+		ImGui::SliderFloat("BG X", &cLevelEditor->vUVCoords.x, 1.f, 5.f);
+		ImGui::SliderFloat("BG Y", &cLevelEditor->vUVCoords.y, 1.f, 5.f);
+
 		if (ImGui::BeginTabBar("Editor Tab"))
 		{
 			if (ImGui::BeginTabItem("Tiles"))
@@ -367,7 +403,7 @@ void CLevelEditorState::ImGuiRender()
 				{
 					const int iMaxButtonsPerRow = 7;
 					int iCounter = 0;
-					for (int i = CTextureManager::TILE_GROUND; i < CTextureManager::TILE_TOTAL; ++i)
+					for (int i = TILE_GROUND; i < OBJECT_TOTAL; ++i)
 					{
 						if (CTextureManager::GetInstance()->MapOfTextureIDs.find(i) == CTextureManager::GetInstance()->MapOfTextureIDs.end())
 							continue;
@@ -390,18 +426,17 @@ void CLevelEditorState::ImGuiRender()
 						}
 						ImGui::PopStyleColor();
 						++iCounter;
+						
 					}
-					
-					ImGui::EndChild();
-				}
-				ImGui::EndTabItem();
+				}	
+				ImGui::EndChild();
 			}
-			ImGui::EndTabBar();
+			ImGui::EndTabItem();
 		}
-
+		ImGui::EndTabBar();
 		// DEBUG_MSG(ImGui::GetWindowPos().x << " " << ImGui::GetWindowPos().y);
-		ImGui::End();
 	}
+	ImGui::End();
 
 }
 
@@ -447,8 +482,8 @@ void CLevelEditorState::CalculateMousePosition(void)
 	vMousePosWorldSpace = glm::vec2(vMousePosConvertedRatio.x / cSettings->iWindowWidth * cSettings->NUM_TILES_XAXIS, vMousePosConvertedRatio.y / cSettings->iWindowHeight * cSettings->NUM_TILES_YAXIS);
 	vMousePosRelativeToCamera = Camera2D::GetInstance()->getCurrPos() + vMousePosWorldSpace / Camera2D::GetInstance()->getZoom();
 
-	vMousePosRelativeToCamera.x -= 0.5;
-	vMousePosRelativeToCamera.y -= 0.5;
+	// vMousePosRelativeToCamera.x -= 0.5;
+	// vMousePosRelativeToCamera.y -= 0.5;
 
 	vMousePosRelativeToCamera.x = Math::Clamp(vMousePosRelativeToCamera.x, 0.f, (float)cLevelEditor->iWorldWidth - 1.f);
 	vMousePosRelativeToCamera.y = Math::Clamp(vMousePosRelativeToCamera.y, 0.f, (float)cLevelEditor->iWorldHeight - 1.f);

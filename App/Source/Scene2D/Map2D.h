@@ -39,11 +39,18 @@
 //Include camera
 #include "Camera2D.h"
 
+//Include background entity
+#include "BackgroundEntity.h"
+
+//Include texture manager
 #include "../TextureManager/TextureManager.h"
 
 // Include files for AStar
 #include <queue>
 #include <functional>
+
+//Include stringstream for extraction of data
+#include <sstream>
 
 class CMap2D : public CSingletonTemplate<CMap2D>, public CEntity2D
 {
@@ -65,6 +72,9 @@ public:
 
 	// PostRender
 	void PostRender(void);
+
+	//Render background
+	void RenderBackground(void);
 
 	// Set the value at certain indices in the arrMapInfo
 	void SetMapInfo(const unsigned int uiRow, const unsigned int uiCol, const int iValue, const bool bInvert = true);
@@ -115,7 +125,13 @@ protected:
 	//Vector array that stores limits of each level
 	std::vector<glm::i32vec2> arrLevelLimit;
 
+
+	//Vector arrays storing BackgroundEntity and allowance scale
+	std::vector<CBackgroundEntity*> arrBackground;
+	std::vector<glm::vec2> arrAllowanceScale;
+
 	CTextureManager* cTextureManager;
+
 
 	// The current level
 	unsigned int uiCurLevel;

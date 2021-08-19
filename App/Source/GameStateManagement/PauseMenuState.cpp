@@ -5,6 +5,7 @@
 #endif
 
 // Include GLFW
+#include <Windows.h>
 #include <GLFW/glfw3.h>
 
 // Include GLM
@@ -134,8 +135,8 @@ bool PauseMenuState::UpdateMenu(ImGuiWindowFlags window_flags)
 	float buttonHeight = 128;
 	// Create a window called "Hello, world!" and append into it.
 	ImGui::Begin("Pause Menu", NULL, window_flags);
-	ImGui::SetWindowPos(ImVec2(CSettings::GetInstance()->iWindowWidth / 2.0 - buttonWidth / 2.0,
-		CSettings::GetInstance()->iWindowHeight / 6.0));				// Set the top-left of the window at (10,10)
+	ImGui::SetWindowPos(ImVec2(CSettings::GetInstance()->iWindowWidth / 2.0f - buttonWidth / 2.0f,
+		CSettings::GetInstance()->iWindowHeight / 6.0f));				// Set the top-left of the window at (10,10)
 	ImGui::SetWindowSize(ImVec2(buttonWidth + 25, buttonHeight * 3 + 50));
 
 	//Added rounding for nicer effect
@@ -203,7 +204,7 @@ void PauseMenuState::UpdateOption(ImGuiWindowFlags window_flags)
 	ImGui::Begin("Options", NULL, window_flags);
 
 	ImGui::SetWindowPos(ImVec2(0, 0));
-	ImGui::SetWindowSize(ImVec2(CSettings::GetInstance()->iWindowWidth, CSettings::GetInstance()->iWindowHeight - buttonHeight - 50));
+	ImGui::SetWindowSize(ImVec2((float)CSettings::GetInstance()->iWindowWidth, (float)CSettings::GetInstance()->iWindowHeight - buttonHeight - 50.f));
 
 	//Resolution
 	static int screenRes = CSettings::GetInstance()->screenSize;

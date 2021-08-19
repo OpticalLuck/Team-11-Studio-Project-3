@@ -69,6 +69,7 @@ void CImGuiWindow::Update(const sImGuiWindowProperties& props)
 
 void CImGuiWindow::PreRender(const sImGuiWindowProperties& props)
 {
+	GLFWwindow* current_context = glfwGetCurrentContext();
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
