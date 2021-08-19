@@ -32,6 +32,7 @@
 
 // Include CKeyboardController
 #include "Inputs/KeyboardController.h"
+#include "Inputs/MouseController.h"
 #include "../App/Source/SoundController/SoundController.h"
 
 #include <iostream>
@@ -158,7 +159,7 @@ bool CEditorSettingsState::Update(const double dElapsedTime)
 				{
 					cLevelEditor->CreateLevel(name, iWorldWidth, iWorldHeight);
 					// Reset the CKeyboardController
-					CKeyboardController::GetInstance()->Reset();
+					CMouseController::GetInstance()->Reset();
 
 					// Load the menu state
 					cout << "Loading LevelEditorState" << endl;
@@ -170,7 +171,7 @@ bool CEditorSettingsState::Update(const double dElapsedTime)
 				{
 					cLevelEditor->LoadLevelByName(name);
 					// Reset the CKeyboardController
-					CKeyboardController::GetInstance()->Reset();
+					CMouseController::GetInstance()->Reset();
 
 					// Load the menu state
 					cout << "Loading LevelEditorState" << endl;
@@ -181,7 +182,7 @@ bool CEditorSettingsState::Update(const double dElapsedTime)
 			{
 				cLevelEditor->CreateLevel(name, iWorldWidth, iWorldHeight);
 				// Reset the CKeyboardController
-				CKeyboardController::GetInstance()->Reset();
+				CMouseController::GetInstance()->Reset();
 
 				// Load the menu state
 				cout << "Loading LevelEditorState" << endl;

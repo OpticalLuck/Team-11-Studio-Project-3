@@ -38,8 +38,17 @@ public:
 	virtual void Destroy(void);
 
 protected:
+	glm::mat4 transform;
+
+	glm::vec2 vMousePosInWindow;
+	glm::vec2 vMousePosConvertedRatio;
+	glm::vec2 vMousePosWorldSpace;
+	glm::vec2 vMousePosRelativeToCamera;
+
 	unsigned FBO, RBO, textureColorBuffer;
 	unsigned int quadVAO, quadVBO;
+
+	CMesh* cursor;
 
 	CSettings*					cSettings;
 
@@ -54,7 +63,10 @@ protected:
 	void ScaleMap(void);
 	void MouseInput(void);
 
-	void GenerateFBO();
-	void ImGuiRender();
-	void RenderCursor();
+	void GenerateQuadVAO(void);
+	void GenerateFBO(void);
+	void RenderQuad(unsigned int iTextureID);
+	void ImGuiRender(void);
+	void RenderCursor(void);
+	void CalculateMousePosition(void);
 };

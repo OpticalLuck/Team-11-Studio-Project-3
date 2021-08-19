@@ -34,9 +34,14 @@ CLevelEditorState::CLevelEditorState(void)
 	, cSettings(NULL)
 	, cLevelGrid(NULL)
 	, activeTile(0)
+	, transform(1.f)
+	, vMousePosInWindow(0.f)
+	, vMousePosConvertedRatio(0.f)
+	, vMousePosWorldSpace(0.f)
+	, vMousePosRelativeToCamera(0.f)
+	, cursor(NULL)
 {
 }
-
 /**
  @brief Destructor
  */
@@ -70,7 +75,13 @@ bool CLevelEditorState::Init(void)
 	cSettings->screenSize = CSettings::SSIZE_1600x900;
 	CSettings::GetInstance()->UpdateWindowSize();
 
-	GenerateFBO();
+	glGenVertexArrays(1, &quadVAO);
+	glGenBuffers(1, &quadVBO);
+
+	// GenerateQuadVAO();
+	// GenerateFBO();
+
+	cursor = CMeshBuilder::GenerateQuad();
 
 	cLevelEditor = CLevelEditor::GetInstance();
 	cLevelGrid = CLevelGrid::GetInstance();
@@ -93,6 +104,7 @@ bool CLevelEditorState::Init(void)
 bool CLevelEditorState::Update(const double dElapsedTime)
 {
 	Camera2D::GetInstance()->Update(dElapsedTime);
+	CalculateMousePosition();
 
 	if (CKeyboardController::GetInstance()->IsKeyReleased(GLFW_KEY_ESCAPE))
 	{
@@ -150,11 +162,8 @@ void CLevelEditorState::Render(void)
 	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	//
 	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	//CShaderManager::GetInstance()->Use("Shader");
-	//glBindVertexArray(quadVAO);
-	//glBindTexture(GL_TEXTURE_2D, textureColorBuffer);
-	//glDrawArrays(GL_TRIANGLES, 0, 6);
+	
+	RenderCursor();
 	ImGuiRender();
 }
 
@@ -215,18 +224,6 @@ void CLevelEditorState::ScaleMap(void)
 
 void CLevelEditorState::MouseInput(void)
 {
-	glm::vec2 vMousePosInWindow = glm::vec2(cMouseController->GetMousePositionX(), cSettings->iWindowHeight - cMouseController->GetMousePositionY());
-	glm::vec2 vMousePosConvertedRatio = glm::vec2(vMousePosInWindow.x - cSettings->iWindowWidth * 0.5, vMousePosInWindow.y - cSettings->iWindowHeight * 0.5);
-	glm::vec2 vMousePosWorldSpace = glm::vec2(vMousePosConvertedRatio.x / cSettings->iWindowWidth * cSettings->NUM_TILES_XAXIS, vMousePosConvertedRatio.y / cSettings->iWindowHeight * cSettings->NUM_TILES_YAXIS);
-	glm::vec2 vMousePosRelativeToCamera = Camera2D::GetInstance()->getCurrPos() + vMousePosWorldSpace / Camera2D::GetInstance()->getZoom();
-
-	vMousePosRelativeToCamera.x = Math::Clamp(vMousePosRelativeToCamera.x, 0.f, (float)cLevelEditor->iWorldWidth - 1.f);
-	vMousePosRelativeToCamera.y = Math::Clamp(vMousePosRelativeToCamera.y, 0.f, (float)cLevelEditor->iWorldHeight - 1.f);
-
-	vMousePosRelativeToCamera.x = ceil(vMousePosRelativeToCamera.x);
-	vMousePosRelativeToCamera.y = ceil(vMousePosRelativeToCamera.y);
-
-
 	if (cMouseController->IsButtonDown(CMouseController::LMB))
 	{
 		// DEBUG_MSG("x:" << u16vec2FinalMousePosInEditor.x << " y:" << u16vec2FinalMousePosInEditor.y);
@@ -256,7 +253,7 @@ void CLevelEditorState::MouseInput(void)
 	}
 }
 
-void CLevelEditorState::GenerateFBO()
+void CLevelEditorState::GenerateQuadVAO()
 {
 	float quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates. NOTE that this plane is now much smaller and at the top of the screen
 	   // positions   // texCoords
@@ -278,14 +275,17 @@ void CLevelEditorState::GenerateFBO()
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+}
 
+void CLevelEditorState::GenerateFBO()
+{
 	glGenFramebuffers(1, &FBO);
 	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
 
 	// create a color attachment texture
 	glGenTextures(1, &textureColorBuffer);
 	glBindTexture(GL_TEXTURE_2D, textureColorBuffer);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1200, 900, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, cSettings->iWindowWidth, cSettings->iWindowHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorBuffer, 0);
@@ -299,6 +299,15 @@ void CLevelEditorState::GenerateFBO()
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		DEBUG_MSG("ERROR::FRAMEBUFFER:: Framebuffer is not complete!");
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void CLevelEditorState::RenderQuad(unsigned int iTextureID)
+{
+	glBindVertexArray(quadVAO);
+	glBindTexture(GL_TEXTURE_2D, iTextureID);
+	// glDrawArrays(GL_TRIANGLES, 0, 6);
+	cursor->Render();
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void CLevelEditorState::ImGuiRender()
@@ -317,8 +326,15 @@ void CLevelEditorState::ImGuiRender()
 	{
 		if (ImGui::BeginMenu("File"))
 		{
-			if (ImGui::MenuItem("Save")) cLevelEditor->SaveMap();
-			if (ImGui::MenuItem("Close")) CGameStateManager::GetInstance()->SetPauseGameState("MenuState");
+			std::string saveString = "Save " + cLevelEditor->GetCurrentLevel().LevelName;
+			std::string closeString = "Close " + cLevelEditor->GetCurrentLevel().LevelName;
+
+			if (ImGui::MenuItem(saveString.c_str())) cLevelEditor->SaveMap();
+			if (ImGui::MenuItem(closeString.c_str()))
+			{
+				DEBUG_MSG("Closing Editor");
+				CGameStateManager::GetInstance()->SetActiveGameState("MenuState");
+			}
 
 			ImGui::EndMenu();
 		}
@@ -341,7 +357,7 @@ void CLevelEditorState::ImGuiRender()
 		ImGuiWindowFlags_NoTitleBar |
 		ImGuiWindowFlags_NoCollapse;
 
-	if (ImGui::Begin("Editor"), NULL, inventoryWindowFlags)
+	if (ImGui::Begin("Editor", NULL, inventoryWindowFlags))
 	{
 		if (ImGui::BeginTabBar("Editor Tab"))
 		{
@@ -387,4 +403,53 @@ void CLevelEditorState::ImGuiRender()
 		ImGui::End();
 	}
 
+}
+
+void CLevelEditorState::RenderCursor()
+{
+
+	// Activate blending mode
+	glActiveTexture(GL_TEXTURE0);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	glBindVertexArray(quadVAO);
+
+	glm::vec2 offset = glm::vec2(float(CSettings::GetInstance()->NUM_TILES_XAXIS / 2.f) - 0.5f, float(CSettings::GetInstance()->NUM_TILES_YAXIS / 2.f) - 0.5f);
+	glm::vec2 cameraPos = Camera2D::GetInstance()->getCurrPos();
+
+	glm::vec2 objCamPos = glm::vec2(vMousePosRelativeToCamera.x, vMousePosRelativeToCamera.y) - cameraPos + offset;
+	glm::vec2 actualPos = CSettings::GetInstance()->ConvertIndexToUVSpace(objCamPos) * Camera2D::GetInstance()->getZoom();
+
+	transform = glm::mat4(1.f);
+	transform = glm::translate(transform, glm::vec3(actualPos.x, actualPos.y, 0.f));
+	transform = glm::scale(transform, glm::vec3(Camera2D::GetInstance()->getZoom()));
+	transform = glm::scale(transform, glm::vec3(CSettings::GetInstance()->TILE_WIDTH, CSettings::GetInstance()->TILE_HEIGHT, 1.f));
+
+	CShaderManager::GetInstance()->Use("2DColorShader");
+	CShaderManager::GetInstance()->activeShader->setInt("texture1", 0);
+	CShaderManager::GetInstance()->activeShader->setVec4("runtime_color", glm::vec4(1.f, 1.f, 1.f, 0.6f));
+	CShaderManager::GetInstance()->activeShader->setMat4("transform", transform);
+
+	if (activeTile != 0)
+		RenderQuad(CTextureManager::GetInstance()->MapOfTextureIDs.at(activeTile));
+	
+	glBindVertexArray(0);
+
+	// Disable blending
+	glDisable(GL_BLEND);
+}
+
+void CLevelEditorState::CalculateMousePosition(void)
+{
+	vMousePosInWindow = glm::vec2(cMouseController->GetMousePositionX(), cSettings->iWindowHeight - cMouseController->GetMousePositionY());
+	vMousePosConvertedRatio = glm::vec2(vMousePosInWindow.x - cSettings->iWindowWidth * 0.5, vMousePosInWindow.y - cSettings->iWindowHeight * 0.5);
+	vMousePosWorldSpace = glm::vec2(vMousePosConvertedRatio.x / cSettings->iWindowWidth * cSettings->NUM_TILES_XAXIS, vMousePosConvertedRatio.y / cSettings->iWindowHeight * cSettings->NUM_TILES_YAXIS);
+	vMousePosRelativeToCamera = Camera2D::GetInstance()->getCurrPos() + vMousePosWorldSpace / Camera2D::GetInstance()->getZoom();
+
+	vMousePosRelativeToCamera.x = Math::Clamp(vMousePosRelativeToCamera.x, 0.f, (float)cLevelEditor->iWorldWidth - 1.f);
+	vMousePosRelativeToCamera.y = Math::Clamp(vMousePosRelativeToCamera.y, 0.f, (float)cLevelEditor->iWorldHeight - 1.f);
+
+	vMousePosRelativeToCamera.x = ceil(vMousePosRelativeToCamera.x);
+	vMousePosRelativeToCamera.y = ceil(vMousePosRelativeToCamera.y);
 }

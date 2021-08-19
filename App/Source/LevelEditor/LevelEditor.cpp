@@ -150,6 +150,8 @@ void CLevelEditor::CreateLevel(std::string levelName, unsigned int iWorldWidth, 
 */
 bool CLevelEditor::LoadLevel(const char* filePath)
 {
+    m_CurrentLevel.clear();
+
     // Load the Level CSV
     doc = rapidcsv::Document(FileSystem::getPath(filePath).c_str());
 
@@ -205,11 +207,19 @@ std::vector<Level> CLevelEditor::GetLevels(void)
     return m_Levels;
 }
 
+Level CLevelEditor::GetCurrentLevel(void)
+{
+    return currentLevel;
+}
+
 /**
 @brief Loads existing CSV files into the m_Levels vector
 */
 void CLevelEditor::LoadExistingLevels(void)
 {
+    if (m_Levels.size() != 0)
+        m_Levels.clear();
+
     for (const auto& file : fs::directory_iterator(levelFolderPath))
     {
         Level level;

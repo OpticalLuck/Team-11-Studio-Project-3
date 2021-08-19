@@ -57,7 +57,8 @@ public:
     bool LoadLevelByName(std::string levelName);                                                             
     void LoadExistingLevels(void);                                                                           
     bool LevelExists(std::string levelName);                                                                 
-    std::vector<Level> GetLevels(void);                                                                      
+    std::vector<Level> GetLevels(void);      
+    Level GetCurrentLevel(void);
     bool SaveMap();                                                                                          
 
     // Resize Map
