@@ -79,9 +79,9 @@ bool CBoss2D::Init(void) {
 	// If this class is initialised properly, then set the bIsActive to true
 	bIsActive = true;
 
-	collider2D.Init();
+	collider2D->Init();
 	//Update collider to Boss position
-	collider2D.position = glm::vec3(vTransform, 0.f);
+	collider2D->SetPosition(glm::vec3(vTransform, 0.f));
 
 	//Initialisation of variables
 	bulletAng = (float)Math::RandIntMinMax(0, 359);
