@@ -106,13 +106,6 @@ void CGUI_Scene2D::Update(const double dElapsedTime)
 	fInterval++;
 	iSeconds = fInterval / 110;
 
-
-	// Start the Dear ImGui frame
-	ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplGlfw_NewFrame();
-	ImGui::NewFrame();
-
-	    
 	// Create an invisible window which covers the entire OpenGL window
 	ImGui::Begin("Invisible window", NULL, window_flags);
 	ImGui::SetWindowPos(ImVec2(0.0f, 0.0f));

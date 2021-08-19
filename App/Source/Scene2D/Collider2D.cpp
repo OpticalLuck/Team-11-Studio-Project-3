@@ -91,16 +91,6 @@ Collision Collider2D::CollideWith(Collider2D* object)
 {
 	if (object->bEnabled)
 	{
-
-		float threshold = 0.01f;
-		//vec2Dimensions is half width and half height	
-		bool collisionX = abs(position.x - object->position.x) <= vec2Dimensions.x + object->vec2Dimensions.x - threshold;
-		bool collisionY = abs(position.y - object->position.y) <= vec2Dimensions.y + object->vec2Dimensions.y;
-
-		if (collisionX && collisionY)
- 			//cout << "help";
-		return collisionX && collisionY;
-
 		if (object->colliderType == COLLIDER_QUAD)
 		{
 			return CheckAABBCollision(this, object);

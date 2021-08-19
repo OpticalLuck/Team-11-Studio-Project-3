@@ -144,9 +144,6 @@ bool CPlayer2D::Init(void)
 	cInventoryItem = cInventoryManager->Add("Health", "Image/Scene2D_Health.tga", 100, 100);
 	cInventoryItem->vec2Size = glm::vec2(25, 25);
 
-	// Add a Tree as one of the inventory items
-	cInventoryItem = cInventoryManager->Add("Shuriken", "Image/Collectibles/shuriken.png", 999, 0);
-	cInventoryItem->vec2Size = glm::vec2(25, 25);
 
 	jumpCount = 0;
 
