@@ -41,10 +41,11 @@ public:
 	void SetVelocity(const glm::vec2 velocity);
 
 	glm::vec2 GetVelocity() const;
+
+	float MAX_SPEED;
 protected:
 	const glm::vec2 v2Gravity = glm::vec2(0.f, -20.f);
 	//const glm::vec2 v2Gravity = glm::vec2(0.f, 0.f);
-	const float MAX_SPEED = 10.f;
 	const float FRICTONAL_COEFFICIENT = 1.f;
 	glm::vec2 *position;
 	glm::vec2 velocity;

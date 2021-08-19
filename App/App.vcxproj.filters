@@ -146,6 +146,9 @@
     <ClCompile Include="Source\TextureManager\TextureManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Scene2D\Projectiles.cpp">
+      <Filter>Entity2D\Object2D</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h">
@@ -252,6 +255,9 @@
     </ClInclude>
     <ClInclude Include="Source\TextureManager\TextureManager.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene2D\Projectiles.h">
+      <Filter>Entity2D\Object2D</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

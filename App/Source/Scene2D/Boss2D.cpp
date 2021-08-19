@@ -207,7 +207,7 @@ void CBoss2D::Render(void) {
 	transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
 
 	//Get camera transforms and use them instead
-	glm::vec2 offset = glm::vec2((cSettings->NUM_TILES_XAXIS / 2.f) - 0.5f, (cSettings->NUM_TILES_YAXIS / 2.f) - 0.5f);
+	glm::vec2 offset = glm::vec2((cSettings->NUM_TILES_XAXIS / 2.f), (cSettings->NUM_TILES_YAXIS / 2.f));
 	glm::vec2 cameraPos = camera->getCurrPos();
 
 	glm::vec2 IndexPos = vTransform;
