@@ -33,6 +33,7 @@ CLevelEditorState::CLevelEditorState(void)
 	, cMouseController(NULL)
 	, cSettings(NULL)
 	, cLevelGrid(NULL)
+	, activeTile(0)
 {
 }
 
@@ -232,7 +233,7 @@ void CLevelEditorState::MouseInput(void)
 		DEBUG_MSG("[x: " << vMousePosRelativeToCamera.x << ", y: " << vMousePosRelativeToCamera.y << "] Cell TileID: " << cLevelEditor->GetCell(vMousePosRelativeToCamera.x, vMousePosRelativeToCamera.y, false).iTileID);
 		if (cLevelEditor->GetCell(vMousePosRelativeToCamera.x, vMousePosRelativeToCamera.y, false).iTileID == 0)
 		{
-			cLevelEditor->UpdateCell(vMousePosRelativeToCamera.x, vMousePosRelativeToCamera.y, 100, false);
+			cLevelEditor->UpdateCell(vMousePosRelativeToCamera.x, vMousePosRelativeToCamera.y, activeTile, false);
 		}
 	}
 
@@ -340,9 +341,49 @@ void CLevelEditorState::ImGuiRender()
 		ImGuiWindowFlags_NoTitleBar |
 		ImGuiWindowFlags_NoCollapse;
 
-	if (ImGui::Begin("Window"), NULL, inventoryWindowFlags)
+	if (ImGui::Begin("Editor"), NULL, inventoryWindowFlags)
 	{
-		DEBUG_MSG(ImGui::GetWindowPos().x << " " << ImGui::GetWindowPos().y);
+		if (ImGui::BeginTabBar("Editor Tab"))
+		{
+			if (ImGui::BeginTabItem("Tiles"))
+			{
+				if (ImGui::BeginChild("Tile List"))
+				{
+					const int iMaxButtonsPerRow = 7;
+					int iCounter = 0;
+					for (int i = CTextureManager::TILE_GROUND; i < CTextureManager::TILE_TOTAL; ++i)
+					{
+						if (CTextureManager::GetInstance()->MapOfTextureIDs.find(i) == CTextureManager::GetInstance()->MapOfTextureIDs.end())
+							continue;
+
+						if (iCounter <= iMaxButtonsPerRow && iCounter != 0)
+						{
+							ImGui::SameLine();
+						}
+						else
+							iCounter = 0;
+						
+						if (activeTile == i)
+							ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.26f, 0.59f, 0.98f, 0.40f));
+						else
+							ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.f, 0.f, 0.f, 0.f));
+
+						if (ImGui::ImageButton((void*)CTextureManager::GetInstance()->MapOfTextureIDs.at(i), ImVec2(25.f, 25.f), ImVec2(0, 1), ImVec2(1, 0)))
+						{
+							activeTile = i;
+						}
+						ImGui::PopStyleColor();
+						++iCounter;
+					}
+					
+					ImGui::EndChild();
+				}
+				ImGui::EndTabItem();
+			}
+			ImGui::EndTabBar();
+		}
+
+		// DEBUG_MSG(ImGui::GetWindowPos().x << " " << ImGui::GetWindowPos().y);
 		ImGui::End();
 	}
 

@@ -48,10 +48,13 @@ protected:
 	CLevelEditor*				cLevelEditor;
 	CLevelGrid*					cLevelGrid;
 
+	int activeTile;
+
 	void MoveCamera(void);
 	void ScaleMap(void);
 	void MouseInput(void);
 
 	void GenerateFBO();
 	void ImGuiRender();
+	void RenderCursor();
 };
