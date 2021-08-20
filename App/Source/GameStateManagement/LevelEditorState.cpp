@@ -69,6 +69,8 @@ bool CLevelEditorState::Init(void)
 {
 	cout << "CLevelEditorState::Init()\n" << endl;
 
+	eProperties.Reset();
+
 	cSettings = CSettings::GetInstance();
 	cSettings->screenSize = CSettings::SSIZE_1024x768;
 	CSettings::GetInstance()->UpdateWindowSize();
@@ -191,10 +193,21 @@ void CLevelEditorState::Destroy(void)
 
 bool CLevelEditorState::KeyboardShortcuts(void)
 {
+	// SHIFT+LMB - Area Fill
+	// SHIFT+RMB - Area Delete
 	// CTRL+Z - Undo
 	// CTRL+Y - Redo
 	// CTRL+S - Save
 	// ESCAPE - Close
+
+	if (cMouseController->IsButtonPressed(CMouseController::LMB) || cMouseController->IsButtonPressed(CMouseController::RMB))
+	{
+		if (!eProperties.bSaved)
+		{
+			eProperties.undoLevels.push_back(cLevelEditor->GetCurrentLevel());
+			eProperties.redoLevels.clear();
+		}
+	}
 
 	if (cKeyboardController->IsKeyDown(GLFW_KEY_LEFT_SHIFT))
 	{
@@ -244,14 +257,17 @@ bool CLevelEditorState::KeyboardShortcuts(void)
 		return false;
 	}
 
+	if (cMouseController->IsButtonPressed(CMouseController::MMB))
+	{
+		CopyBlock();
+		return false;
+	}
+
 	return false;
 }
 
 void CLevelEditorState::AreaFill(void)
 {
-	eProperties.undoLevels.push_back(cLevelEditor->GetCurrentLevel());
-	eProperties.redoLevels.clear();
-
 	int startXIndex = 0;
 	int endXIndex = 0;
 	int startYIndex = 0;
@@ -271,9 +287,6 @@ void CLevelEditorState::AreaFill(void)
 
 void CLevelEditorState::AreaDelete(void)
 {
-	eProperties.undoLevels.push_back(cLevelEditor->GetCurrentLevel());
-	eProperties.redoLevels.clear();
-
 	int startXIndex = 0;
 	int endXIndex = 0;
 	int startYIndex = 0;
@@ -308,6 +321,29 @@ void CLevelEditorState::Redo(void)
 	eProperties.undoLevels.push_back(cLevelEditor->GetCurrentLevel());
 	cLevelEditor->SetCurrentLevel(eProperties.redoLevels.back());
 	eProperties.redoLevels.pop_back();
+}
+
+void CLevelEditorState::CopyBlock(void)
+{
+	activeTile = cLevelEditor->GetCell(vMousePos.x, vMousePos.y).iTileID;
+}
+
+void CLevelEditorState::Save()
+{
+	eProperties.bSaved = true;
+	cLevelEditor->SaveMap();
+}
+
+void CLevelEditorState::Close()
+{
+	if (!eProperties.bSaved)
+		eProperties.bToggleCloseWindow = true;
+	else
+	{
+		DEBUG_MSG("Closing Editor");
+		CGameStateManager::GetInstance()->SetActiveGameState("MenuState");
+	}
+
 }
 
 void CLevelEditorState::MoveCamera(double dElapsedTime)
@@ -367,21 +403,16 @@ void CLevelEditorState::MouseInput(double dElapsedTime)
 		DEBUG_MSG("[x: " << vMousePos.x << ", y: " << vMousePos.y << "] Cell TileID: " << cLevelEditor->GetCell(vMousePos.x, vMousePos.y, false).iTileID);
 		if (cLevelEditor->GetCell(vMousePos.x, vMousePos.y).iTileID == 0)
 		{
-			eProperties.undoLevels.push_back(cLevelEditor->GetCurrentLevel());
-			eProperties.redoLevels.clear();
-
+			eProperties.bSaved = false;
 			cLevelEditor->UpdateCell(vMousePos.x, vMousePos.y, activeTile);
 		}
 	}
 
 	if (cMouseController->IsButtonDown(CMouseController::RMB))
 	{
-
 		if (cLevelEditor->GetCell(vMousePos.x, vMousePos.y).iTileID != 0)
 		{
-			eProperties.undoLevels.push_back(cLevelEditor->GetCurrentLevel());
-			eProperties.redoLevels.clear();
-
+			eProperties.bSaved = false;
 			cLevelEditor->UpdateCell(vMousePos.x, vMousePos.y, 0);
 		}
 	}
@@ -472,15 +503,34 @@ void CLevelEditorState::ImGuiRender()
 			std::string saveString = "Save " + cLevelEditor->GetCurrentLevelData().LevelName;
 			std::string closeString = "Close " + cLevelEditor->GetCurrentLevelData().LevelName;
 
-			if (ImGui::MenuItem(saveString.c_str(), "CTRL+S")) cLevelEditor->SaveMap();
-			if (ImGui::MenuItem(closeString.c_str(), "ESCAPE"))
-			{
-				DEBUG_MSG("Closing Editor");
-				CGameStateManager::GetInstance()->SetActiveGameState("MenuState");
-			}
+			if (ImGui::MenuItem(saveString.c_str(), "CTRL+S")) Save();
+			if (ImGui::MenuItem(closeString.c_str(), "ESCAPE")) Close();
 
 			ImGui::EndMenu();
 		}
+
+		if (!eProperties.bSaved)
+		{
+			ImGuiWindowFlags TextWindowFlags = ImGuiWindowFlags_NoTitleBar |
+				ImGuiWindowFlags_NoResize |
+				ImGuiWindowFlags_NoMove |
+				ImGuiWindowFlags_NoScrollbar |
+				ImGuiWindowFlags_NoScrollWithMouse |
+				ImGuiWindowFlags_NoCollapse |
+				ImGuiWindowFlags_AlwaysAutoResize |
+				ImGuiWindowFlags_NoBackground |
+				ImGuiWindowFlags_NoSavedSettings |
+				ImGuiWindowFlags_NoFocusOnAppearing |
+				ImGuiWindowFlags_NoBringToFrontOnFocus |
+				ImGuiWindowFlags_NoNavInputs |
+				ImGuiWindowFlags_NoNavFocus;
+
+			ImGuiIO& io = ImGui::GetIO();
+
+			ImGui::SetCursorPos(ImVec2(cSettings->iWindowWidth - 110, 0));
+			ImGui::TextColored(ImVec4(1, 1, 0, 1), "Unsaved Changes");
+		}
+
 		ImGui::EndMainMenuBar();
 	}
 
@@ -591,6 +641,30 @@ void CLevelEditorState::ImGuiRender()
 		// DEBUG_MSG(ImGui::GetWindowPos().x << " " << ImGui::GetWindowPos().y);
 	}
 	ImGui::End();
+
+
+	if (eProperties.bToggleCloseWindow)
+	{
+		windowFlags =
+			ImGuiWindowFlags_AlwaysAutoResize |
+			ImGuiWindowFlags_NoMove |
+			ImGuiWindowFlags_NoResize |
+			ImGuiWindowFlags_NoCollapse;
+		
+		ImGui::SetNextWindowPos(ImVec2((cSettings->iWindowWidth - 250) * 0.5, (cSettings->iWindowHeight - 105) * 0.5));
+		ImGui::SetNextWindowSize(ImVec2(250, 105));
+		if (ImGui::Begin("Alert", NULL, windowFlags))
+		{
+			DEBUG_MSG(ImGui::GetWindowSize().x << " " << ImGui::GetWindowSize().y);
+			ImGui::TextWrapped("You have unsaved changes. Do you want to discard them or cancel?");
+
+			ImGui::NewLine();
+
+			if (ImGui::Button("Discard")) eProperties.bSaved = true; Close(); ImGui::SameLine();
+			if (ImGui::Button("Cancel")) eProperties.bToggleCloseWindow = false;
+		}
+		ImGui::End();
+	}
 
 }
 

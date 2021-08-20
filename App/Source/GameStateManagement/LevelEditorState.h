@@ -22,6 +22,9 @@
 
 struct EditorProperties
 {
+	bool bSaved = true;
+	bool bToggleCloseWindow = false;
+
 	bool bIsSelecting = false;
 	glm::vec2 WideAreaSelectionStart = { 0 , 0 };
 	glm::vec2 WideAreaSelectionEnd = { 0 , 0 };
@@ -52,6 +55,19 @@ struct EditorProperties
 			startYIndex = this->WideAreaSelectionEnd.y;
 			endYIndex = this->WideAreaSelectionStart.y;
 		}
+	}
+
+	void Reset()
+	{
+		bSaved = true;
+		bToggleCloseWindow = false;
+
+		bIsSelecting = false;
+		WideAreaSelectionStart = { 0 , 0 };
+		WideAreaSelectionEnd = { 0 , 0 };
+
+		undoLevels.clear();
+		redoLevels.clear();
 	}
 };
 
@@ -108,4 +124,7 @@ protected:
 	void AreaDelete(void);
 	void Undo(void);
 	void Redo(void);
+	void CopyBlock(void);
+	void Save();
+	void Close();
 };
