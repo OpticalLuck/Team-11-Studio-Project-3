@@ -59,6 +59,12 @@ CPlayer2D::CPlayer2D(void)
 	camera = nullptr;
 	checkpoint  = glm::i32vec2();
 	currentColor = glm::vec4();
+
+	for (auto &timerVal : timerArr)
+	{
+		timerVal.first = false;
+		timerVal.second = 0;
+	}
 }
 
 CPlayer2D::CPlayer2D(string cloneName) : CEntity2D() {
@@ -282,6 +288,17 @@ void CPlayer2D::Update(const double dElapsedTime)
 {
 	// Store the old position
 	vOldTransform = vTransform;
+
+	for (auto& timerVal : timerArr)
+	{
+		if (timerVal.first)
+		{
+			if (timerVal.second <= 60)
+				timerVal.second += dElapsedTime;
+			else
+				timerVal.second = 0;
+		}
+	}
 
 	// Get keyboard & Mouse updates
 	InputUpdate(dElapsedTime);
@@ -527,15 +544,18 @@ void CPlayer2D::InputUpdate(double dt)
 		return;
 
 	glm::vec2 velocity = cPhysics2D.GetVelocity();
+	glm::vec2 force = glm::vec2(0.f);
+
 	if (keyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::W])
 	{
-		velocity.y = fMovementSpeed;
-		cPhysics2D.SetboolGrounded(false);
+		//velocity.y = fMovementSpeed;
+		//cPhysics2D.SetboolGrounded(false);
 	}
 	else if (keyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::S])
 	{
-		velocity.y = -fMovementSpeed;
+		//velocity.y = -fMovementSpeed;
 	}
+
 	if (keyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::D])
 	{
 		velocity.x = fMovementSpeed;
@@ -551,12 +571,39 @@ void CPlayer2D::InputUpdate(double dt)
 
 	if (keyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::SPACE])
 	{
-		velocity.y = fJumpSpeed;
-		cPhysics2D.SetboolGrounded(false);
+		if (timerArr[A_JUMP].second < 0.1)
+		{
+			timerArr[A_JUMP].first = true;
+			cout << timerArr[A_JUMP].second << endl;
+			force.y = 500;
+			cout << "Applying Force" << endl;
+			cPhysics2D.SetboolGrounded(false);
+		}
+		else
+		{
+			timerArr[A_JUMP].first = false;
+
+			if (cPhysics2D.GetboolGrounded())
+			{
+				timerArr[A_JUMP].second = 0;
+			}
+		}
 	}
+	else
+	{
+		timerArr[A_JUMP].first = false;
+		if (cPhysics2D.GetboolGrounded())
+		{
+			timerArr[A_JUMP].second = 0;
+		}
+	}
+
 
 	if (glm::length(velocity) > 0.f)
 		cPhysics2D.SetVelocity(velocity);
+
+	if (glm::length(force) > 0.f)
+		cPhysics2D.SetForce(force);
 
 	if (cKeyboardController->IsKeyPressed(GLFW_KEY_V))
 	{

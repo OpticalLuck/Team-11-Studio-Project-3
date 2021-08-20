@@ -33,8 +33,6 @@ Collision Collider2D::CheckAABBCollision(Collider2D* obj, Collider2D* target)
 	{
 		if (diffY > 0)
 		{
-			if ((collisionX && collisionY))
-				cout << "pain and suffering";
 			dir = UP;
 		}
 		else

@@ -80,9 +80,6 @@ void CPhysics2D::Update(double dElapsedTime)
 	velocity += a * (float)dElapsedTime;
 
 
-	//if (velocity.x < 0.1f && velocity.x > -0.1f)
-	//	velocity.x = 0;
-
 	velocity.x = Math::Clamp(velocity.x, -MAX_SPEED, MAX_SPEED);
 	velocity.y = Math::Clamp(velocity.y, -MAX_SPEED, MAX_SPEED);
 
