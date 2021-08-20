@@ -254,7 +254,7 @@ bool CScene2D::Update(const double dElapsedTime)
 
 	if (cKeyboardController->IsKeyPressed(GLFW_KEY_G))
 	{
-		cInventoryM->AddItem("Shuriken", ITEM_SHURIKEN);
+		//cInventoryM->AddItem("Shuriken", ITEM_SHURIKEN);
 	}
 
 	return true;
