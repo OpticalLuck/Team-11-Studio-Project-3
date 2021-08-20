@@ -111,5 +111,5 @@ protected:
     CLevelEditor();
     ~CLevelEditor();
 
-    void ResetParam();
+    void ResetParams();
 };

@@ -14,7 +14,6 @@
 // FPS Counter
 #include "TimeControl\FPSCounter.h"
 
-#include "InventoryMain.h"
 
 #include "InventoryM.h"
 
@@ -91,10 +90,9 @@ protected:
 
 	CSettings* cSettings;
 
-	CInventoryManager* cInventoryManager;
-	CInventoryMain* cInventoryMain;
-	CInventoryItem* cInventoryItem;
 	CInventoryM* cInventoryM;
+	CItem* cItem;
+	CTextureManager* cTextureManager;
 
 
 	CKeyboardController* cKeyboardController;

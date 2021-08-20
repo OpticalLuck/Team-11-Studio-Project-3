@@ -1,5 +1,4 @@
 #include "InventoryM.h"
-#include "Object2D.h"
 
 CInventoryM::CInventoryM()
 	:iItemIndex(1)
@@ -11,13 +10,17 @@ CInventoryM::~CInventoryM()
 	//clean up
 	m_Items.clear();
 	m_Inventory.clear();
+	m_potion.clear();
 }
 
 void CInventoryM::Init()
 {
-	//AddItem("Shuriken", ITEM_SHURIKEN);
+	AddItem("Shuriken", ITEM_SHURIKEN);
+	vec2Size = glm::vec2(25, 25);
 	AddItem("Potion", ITEM_POTION);
+	vec2Size = glm::vec2(25, 25);
 	AddItem("Hook", ITEM_HOOK);
+	vec2Size = glm::vec2(25, 25);
 
 }
 
@@ -45,8 +48,21 @@ void CInventoryM::NavigateIndex(std::string direction)
 void CInventoryM::AddItem(std::string sItemName, int iID)
 {
 	m_Items.insert(std::make_pair(sItemName, CItem(iID, sItemName)));
+	if(iID == ITEM_POTION)
+		m_potion.push_back(iID);
+	if (iID == ITEM_SHURIKEN)
+	{
+		for (int i = 0; i < 100; i++)
+		{
+			m_shuriken.push_back(i);
+		}
+	}
+
 	cout << "Added item " << sItemName << " and the size of map is " << m_Items.size()<<'\n';
+	cout << "Vector size is \n" << m_potion.size();
 }
+
+
 
 int CInventoryM::GetItemIndex(void)
 {
@@ -67,8 +83,11 @@ void CInventoryM::UseItem()
 {
 	if (iItemIndex == 1)
 	{
+		if (m_potion.size() <= 0)
+			return;
 		cout << "you are using potion\n";
-		//use potion
+		m_potion.erase(m_potion.begin()); //erase 1 potion from the vector
+		cout << "Vector size is " << m_potion.size()<<'\n';
 	}
 	else if (iItemIndex == 2)
 	{

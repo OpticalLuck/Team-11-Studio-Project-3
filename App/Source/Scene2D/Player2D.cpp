@@ -39,8 +39,6 @@ CPlayer2D::CPlayer2D(void)
 	: cMap2D(NULL)
 	, cKeyboardController(NULL)
 	, cMouseController(NULL)
-	, cInventoryManager(NULL)
-	, cInventoryItem(NULL)
 	, cSoundController(NULL)
 	, cKeyboardInputHandler(NULL)
 	, iTempFrameCounter(0)
@@ -146,15 +144,15 @@ bool CPlayer2D::Init(void)
 	//CS: Init the color to white
 	currentColor = glm::vec4(1.0, 1.0, 1.0, 1.0);
 
-	// Get the handler to the CInventoryManager instance
-    cInventoryManager = CInventoryManager::GetInstance();
-	// Add a Lives icon as one of the inventory items
-	cInventoryItem = cInventoryManager->Add("Lives", 2, 5, 3);
-	cInventoryItem->vec2Size = glm::vec2(25, 25);
+	//// Get the handler to the CInventoryManager instance
+ //   cInventoryManager = CInventoryManager::GetInstance();
+	//// Add a Lives icon as one of the inventory items
+	//cInventoryItem = cInventoryManager->Add("Lives", 2, 5, 3);
+	//cInventoryItem->vec2Size = glm::vec2(25, 25);
 
-	// Add a Health icon as one of the inventory items
-	cInventoryItem = cInventoryManager->Add("Health", 2, 100, 100);
-	cInventoryItem->vec2Size = glm::vec2(25, 25);
+	//// Add a Health icon as one of the inventory items
+	//cInventoryItem = cInventoryManager->Add("Health", 2, 100, 100);
+	//cInventoryItem->vec2Size = glm::vec2(25, 25);
 
 
 	jumpCount = 0;
@@ -174,6 +172,9 @@ bool CPlayer2D::Init(void)
 
 	collider2D->vec2Dimensions = glm::vec2(0.20000f,0.50000f);
 	collider2D->Init();
+
+	cInventoryM = CInventoryM::GetInstance();
+
 
 	cPhysics2D.Init(&vTransform);
 	return true;
@@ -554,8 +555,8 @@ void CPlayer2D::InputUpdate(double dt)
 
 	if (cMouseController->IsButtonPressed(0))
 	{
-		cInventoryItem = cInventoryManager->GetItem("Shuriken");
-		if (cInventoryItem->GetCount() > 0)
+		cInventoryM->GetItem("Shuriken");
+		if (cInventoryM->m_shuriken.size()>0)
 		{
 			if (cMap2D->InsertMapInfo((int)vTransform.y, (int)vTransform.x, 2))
 			{
@@ -565,7 +566,7 @@ void CPlayer2D::InputUpdate(double dt)
 				shuriken->vTransform = vTransform;
 
 				static_cast<Projectiles*>(shuriken)->GetPhysics().SetForce(distance * 200.f);
-				cInventoryItem->Remove(1);
+				cInventoryM->m_shuriken.erase(cInventoryM->m_shuriken.begin());
 			}
 		}
 	}
@@ -578,18 +579,18 @@ void CPlayer2D::UpdateHealthLives(void)
 {
 	// Update health and lives
 	// Check if a life is lost
-	if (cInventoryItem->GetCount() <= 0)
-	{
-		state = S_DEATH;
-		cSoundController->PlaySoundByID(9);
+	//if (cInventoryItem->GetCount() <= 0)
+	//{
+	//	state = S_DEATH;
+	//	cSoundController->PlaySoundByID(9);
 
-		// Check if there is no lives left...
-		if (cInventoryItem->GetCount() < 0)
-		{
-			// Player loses the game
-			CGameManager::GetInstance()->bPlayerLost = true;
-		}
-	}
+	//	// Check if there is no lives left...
+	//	if (cInventoryItem->GetCount() < 0)
+	//	{
+	//		// Player loses the game
+	//		CGameManager::GetInstance()->bPlayerLost = true;
+	//	}
+	//}
 }
 
 void CPlayer2D::SetClone(bool bIsClone)

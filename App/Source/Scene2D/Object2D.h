@@ -1,8 +1,5 @@
 #pragma once
 
-// Include Singleton template
-#include "DesignPatterns\SingletonTemplate.h"
-
 // Include GLEW
 #ifndef GLEW_STATIC
 #include <GL/glew.h>

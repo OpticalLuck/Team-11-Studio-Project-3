@@ -15,7 +15,6 @@ using namespace std;
 CGUI_Scene2D::CGUI_Scene2D(void)
 	: cSettings(NULL)
 	, m_fProgressBar(0.0f)
-	, cInventoryManager(NULL)
 	, cInventoryM(NULL)
 {
 }
@@ -67,19 +66,13 @@ bool CGUI_Scene2D::Init(void)
 	//// Show the mouse pointer
 	//glfwSetInputMode(CSettings::GetInstance()->pWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
-	cInventoryManager = CInventoryManager::GetInstance();
-
 	cInventoryM = CInventoryM::GetInstance();
 
-	// Initialise the cInventoryMain
-	cInventoryMain = new CInventoryMain;
-	cInventoryMain->Init();
 	
 	//cInventoryMain = CInventoryMain::GetInstance();
+	cTextureManager = CTextureManager::GetInstance();
+	cTextureManager->Init();
 
-	cInventoryMain->AddItem("Shuriken");
-	cInventoryMain->AddItem("Potion");
-	cInventoryMain->AddItem("Hook");
 
 	
 
@@ -150,7 +143,6 @@ void CGUI_Scene2D::Update(const double dElapsedTime)
 
 	// Render the inventory items
 	
-	cInventoryMain->GetItem("Shuriken");
 	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 1.0f, 1.0f));  // Set a background color
 	ImGuiWindowFlags inventoryWindowFlags = ImGuiWindowFlags_AlwaysAutoResize |
 		ImGuiWindowFlags_NoTitleBar |
@@ -179,7 +171,7 @@ void CGUI_Scene2D::Update(const double dElapsedTime)
 	//potion 1
 	{
 		////if selected
-		cInventoryMain->GetItem("Potion");
+		//cInventoryM->GetItem("Potion");
 		ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 1.0f, 1.0f));
 		//ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1.f, 0.f, 0.f, 1.f));
 		//ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1.f, 0.f, 0.f, 1.f));
@@ -191,12 +183,15 @@ void CGUI_Scene2D::Update(const double dElapsedTime)
 		ImGui::Begin("Testing : ", NULL, inventoryWindowFlags);
 		ImGui::SetWindowPos(ImVec2(cSettings->iWindowWidth * 0.01f, cSettings->iWindowHeight * 0.065f));
 		ImGui::SetWindowSize(ImVec2(200.0f * relativeScale_x, 25.0f * relativeScale_y));
-		ImGui::Image((void*)(intptr_t)CTextureManager::GetInstance()->MapOfTextureIDs.at(cInventoryMain->GetTexture()),
-			ImVec2(cInventoryMain->GetItemSize().x * relativeScale_x, cInventoryMain->GetItemSize().y * relativeScale_y),
+		//ImGui::Image((void*)(intptr_t)CTextureManager::GetInstance()->MapOfTextureIDs.at(cInventoryMain->GetTexture()),
+		//	ImVec2(cInventoryMain->GetItemSize().x * relativeScale_x, cInventoryMain->GetItemSize().y * relativeScale_y),
+		//	ImVec2(0, 1), ImVec2(1, 0));
+		ImGui::Image((void*)(intptr_t)cTextureManager->MapOfTextureIDs.at(cInventoryM->GetItem("Potion").get_ID()),
+			ImVec2(cInventoryM->vec2Size.x * relativeScale_x, cInventoryM->vec2Size.y * relativeScale_y),
 			ImVec2(0, 1), ImVec2(1, 0));
 		ImGui::SameLine();
 		ImGui::SetWindowFontScale(1.5f * relativeScale_y);
-		ImGui::TextColored(ImVec4(1, 1, 0, 1), "Potion: %d", cInventoryMain->GetItemCount());
+		ImGui::TextColored(ImVec4(1, 1, 0, 1), "Potion: %d", cInventoryM->m_potion.size());
 		ImGui::End();
 		ImGui::PopStyleColor();
 		if (cInventoryM->GetItemIndex() == 1)
@@ -208,7 +203,7 @@ void CGUI_Scene2D::Update(const double dElapsedTime)
 
 	//hook
 	{
-		cInventoryMain->GetItem("Hook");
+		cInventoryM->GetItem("Hook");
 		ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 1.0f, 1.0f));
 		//ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1.f, 0.f, 0.f, 1.f));
 		if (cInventoryM->GetItemIndex() == 2)
@@ -218,12 +213,12 @@ void CGUI_Scene2D::Update(const double dElapsedTime)
 		ImGui::Begin("Testing2 : ", NULL, inventoryWindowFlags);
 		ImGui::SetWindowPos(ImVec2(cSettings->iWindowWidth * 0.01f, cSettings->iWindowHeight * 0.140f));
 		ImGui::SetWindowSize(ImVec2(200.0f * relativeScale_x, 60.0f * relativeScale_y));
-		ImGui::Image((void*)(intptr_t)CTextureManager::GetInstance()->MapOfTextureIDs.at(cInventoryMain->GetTexture()),
-			ImVec2(cInventoryMain->GetItemSize().x * relativeScale_x, cInventoryMain->GetItemSize().y * relativeScale_y),
+		ImGui::Image((void*)(intptr_t)cTextureManager->MapOfTextureIDs.at(cInventoryM->GetItem("Hook").get_ID()),
+			ImVec2(cInventoryM->vec2Size.x * relativeScale_x, cInventoryM->vec2Size.y * relativeScale_y),
 			ImVec2(0, 1), ImVec2(1, 0));
 		ImGui::SameLine();
 		ImGui::SetWindowFontScale(1.9f * relativeScale_y);
-		ImGui::TextColored(ImVec4(1, 1, 0, 1), "Hook: %d", cInventoryMain->GetItemCount());
+		ImGui::TextColored(ImVec4(1, 1, 0, 1), "Hook: %d", cInventoryM->m_potion.size()); //REMEMBER TO CHANGE THIS 
 		ImGui::End();
 		ImGui::PopStyleColor();
 		if (cInventoryM->GetItemIndex() == 2)

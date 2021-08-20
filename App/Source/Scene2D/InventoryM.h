@@ -1,10 +1,7 @@
 #pragma once
-#include "Item.h"
 #include "DesignPatterns\SingletonTemplate.h"
 #include "Inventory.h"
-
-
-#include <string>
+#include "Object2D.h"
 
 class CInventoryM : public CSingletonTemplate<CInventoryM>
 {
@@ -30,6 +27,9 @@ public:
 
 	void AddItem(std::string sItemName, int iID); //add item into the map of items
 
+	std::vector<int>m_potion;
+	std::vector<int>m_shuriken;
+	glm::vec2 vec2Size;
 private:
 	std::map<std::string, CItem>m_Items; //stores the list of items into the map
 	std::map<std::string, CInventory>m_Inventory; //store a list of inventory for clone/player
