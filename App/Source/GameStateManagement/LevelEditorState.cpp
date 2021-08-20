@@ -113,11 +113,15 @@ bool CLevelEditorState::Update(const double dElapsedTime)
 	{
 		Close();
 	}
+	if (cKeyboardController->IsKeyPressed(GLFW_KEY_TAB))
+	{
+		eProperties.bToggleEditorWindow = !eProperties.bToggleEditorWindow;
+	}
 
 	if (!CImGuiWindow::GetInstance()->WantCaptureMouse())
 	{
 		// Disable default mouse events if currently using shortcuts
-		if (!KeyboardShortcuts())
+		if (!EditorShortcuts())
 			MouseInput(dElapsedTime);
 
 		// Mouse X Scroll
@@ -129,6 +133,7 @@ bool CLevelEditorState::Update(const double dElapsedTime)
 			Camera2D::GetInstance()->MoveTarget(0, (cSettings->iWindowHeight * 0.5 - cMouseController->GetMousePositionY()) * dElapsedTime * 0.025);
 	}
 
+	FileUtilShortcuts();
 	MoveCamera(dElapsedTime);
 	ScaleMap();
 
@@ -182,7 +187,7 @@ void CLevelEditorState::Destroy(void)
 }
 
 
-bool CLevelEditorState::KeyboardShortcuts(void)
+bool CLevelEditorState::EditorShortcuts(void)
 {
 	// SHIFT+LMB - Area Fill
 	// SHIFT+RMB - Area Delete
@@ -235,6 +240,17 @@ bool CLevelEditorState::KeyboardShortcuts(void)
 	else 
 		eProperties.bIsSelecting = false;
 
+	if (cMouseController->IsButtonPressed(CMouseController::MMB))
+	{
+		CopyBlock();
+		return false;
+	}
+
+	return false;
+}
+
+bool CLevelEditorState::FileUtilShortcuts(void)
+{
 	if (cKeyboardController->IsKeyDown(GLFW_KEY_LEFT_CONTROL))
 	{
 		if (cKeyboardController->IsKeyPressed(GLFW_KEY_Z))
@@ -249,16 +265,8 @@ bool CLevelEditorState::KeyboardShortcuts(void)
 		{
 			Save();
 		}
-		return false;
 	}
-
-	if (cMouseController->IsButtonPressed(CMouseController::MMB))
-	{
-		CopyBlock();
-		return false;
-	}
-
-	return false;
+	return true;
 }
 
 void CLevelEditorState::AreaFill(void)
@@ -398,7 +406,7 @@ void CLevelEditorState::MouseInput(double dElapsedTime)
 	{
 		// DEBUG_MSG("x:" << u16vec2FinalMousePosInEditor.x << " y:" << u16vec2FinalMousePosInEditor.y);
 		DEBUG_MSG("[x: " << vMousePos.x << ", y: " << vMousePos.y << "] Cell TileID: " << cLevelEditor->GetCell(vMousePos.x, vMousePos.y, false).iTileID);
-		if (cLevelEditor->GetCell(vMousePos.x, vMousePos.y).iTileID == 0)
+		if (activeTile != 0 && cLevelEditor->GetCell(vMousePos.x, vMousePos.y).iTileID == 0)
 		{
 			eProperties.bSaved = false;
 			cLevelEditor->UpdateCell(vMousePos.x, vMousePos.y, activeTile);
@@ -539,8 +547,11 @@ void CLevelEditorState::ImGuiRender()
 		ImGuiWindowFlags_NoMove |
 		ImGuiWindowFlags_NoResize;
 
+	ImGui::SetNextWindowCollapsed(!eProperties.bToggleEditorWindow);
+	eProperties.bToggleEditorWindow = false;
 	if (ImGui::Begin("Editor", NULL, windowFlags))
 	{
+		eProperties.bToggleEditorWindow = true;
 		ImGui::TextColored(ImVec4(1.f, 1.f, 0, 1.f), "Map Size");
 		std::string xSize = "X: " + std::to_string(cLevelEditor->iWorldWidth);
 		std::string ySize = "Y: " + std::to_string(cLevelEditor->iWorldHeight);
@@ -672,6 +683,7 @@ void CLevelEditorState::ImGuiRender()
 			ImGui::End();
 		}
 	}
+
 
 }
 
