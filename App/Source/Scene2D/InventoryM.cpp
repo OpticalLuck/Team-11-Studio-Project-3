@@ -8,6 +8,9 @@ CInventoryM::CInventoryM()
 
 CInventoryM::~CInventoryM()
 {
+	//clean up
+	m_Items.clear();
+	m_Inventory.clear();
 }
 
 void CInventoryM::Init()
@@ -47,4 +50,28 @@ void CInventoryM::AddItem(std::string sItemName, int iID)
 int CInventoryM::GetItemIndex(void)
 {
 	return iItemIndex;
+}
+
+void CInventoryM::RemoveItem(std::string name)
+{
+	if (name == "SHURIKEN")
+		m_Items.erase("SHURIKEN");
+	if (name == "potion")
+		m_Items.erase("POTION");
+	if (name == "hook")
+		m_Items.erase("HOOK");
+}
+
+void CInventoryM::UseItem()
+{
+	if (iItemIndex == 1)
+	{
+		cout << "you are using potion\n";
+		//use potion
+	}
+	else if (iItemIndex == 2)
+	{
+		cout << "you are using hook\n";
+		//use hook
+	}
 }

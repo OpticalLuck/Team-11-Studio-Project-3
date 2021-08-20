@@ -13,14 +13,20 @@ public:
 	CInventoryM();
 	~CInventoryM();
 	
-	/*brief: to initialize the item into inventory manager*/
+	//to initialize the item into inventory manager
 	void Init(); 
 
-	/*brief: returns the requested name*/
+	//brief: returns the requested name
 	CItem GetItem(std::string name);
 
+	//navigate the item
 	void NavigateIndex(std::string direction);
+	//returns the item index
 	int GetItemIndex(void);
+	//remove item (USE SMALL LETTER)
+	void RemoveItem(std::string name);
+	//use the item when requested
+	void UseItem();
 
 
 private:
@@ -29,5 +35,5 @@ private:
 	int iItemIndex;
 
 protected:
-	void AddItem(std::string sItemName, int iID);
+	void AddItem(std::string sItemName, int iID); //add item into the map of items
 };

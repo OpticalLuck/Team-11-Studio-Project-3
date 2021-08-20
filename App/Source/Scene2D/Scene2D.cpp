@@ -246,6 +246,12 @@ bool CScene2D::Update(const double dElapsedTime)
 		fCooldown = .5f;
 	}
 
+	if (cKeyboardController->IsKeyPressed(GLFW_KEY_ENTER) && fCooldown <= 0)
+	{
+		cInventoryM->UseItem();
+		fCooldown = .5f;
+	}
+
 	return true;
 }
 
