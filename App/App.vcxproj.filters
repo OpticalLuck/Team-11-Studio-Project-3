@@ -41,7 +41,7 @@
     </Filter>
     <Filter Include="Entity2D\Enemy2D">
       <UniqueIdentifier>{12b6e96b-a1d8-4859-87bd-b2727a81f938}</UniqueIdentifier>
-	</Filter>
+    </Filter>
     <Filter Include="TextureManager">
       <UniqueIdentifier>{afe0f215-16c2-4a8d-8016-49e8d6a661a0}</UniqueIdentifier>
     </Filter>
@@ -170,9 +170,6 @@
     <ClCompile Include="Source\TextureManager\TextureManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Scene2D\Boss2D.cpp">
-      <Filter>Entity2D\Enemy2D</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Scene2D\Enemy2D.cpp">
       <Filter>Entity2D\Enemy2D</Filter>
     </ClCompile>
@@ -181,12 +178,15 @@
     </ClCompile>
     <ClCompile Include="Source\Scene2D\MobEnemy2D.cpp">
       <Filter>Entity2D\Enemy2D</Filter>
-	</ClCompile>
+    </ClCompile>
     <ClCompile Include="Source\Scene2D\Inventory.cpp">
       <Filter>Items</Filter>
     </ClCompile>
     <ClCompile Include="Source\Scene2D\Boss2D.cpp">
       <Filter>Entity2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene2D\Boss2D.cpp">
+      <Filter>Entity2D\Enemy2D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
