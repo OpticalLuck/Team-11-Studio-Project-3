@@ -568,7 +568,7 @@ void CPlayer2D::InputUpdate(double dt)
 		}
 	}
 
-	if (cMouseController->IsButtonPressed(0))
+	if (cMouseController->IsButtonPressed(CMouseController::LMB))
 	{
 		cInventoryM->GetItem("Shuriken");
 		if (cInventoryM->m_shuriken.size()>0)
