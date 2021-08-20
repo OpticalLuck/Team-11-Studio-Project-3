@@ -107,24 +107,6 @@ bool CMap2D::Init(const unsigned int uiNumLevels,
 	//CS: Create the Quad Mesh using the mesh builder
 	quadMesh = CMeshBuilder::GenerateQuad(glm::vec4(1, 1, 1, 1), cSettings->TILE_WIDTH, cSettings->TILE_HEIGHT);
 
-	// Load and create textures
-	// Load the ground texture
-
-	/// <summary>
-	/// 1 -> Player
-	/// 2 - 99 -> NO COLLISION
-	///		2 - 10  -> Collectibles
-	///		11 - 20 -> Interactables?
-	///			11 - 20 -> Toggles
-	///			16 - 20 -> In Range??
-	///		21 - 30 -> AOE Effect
-	///
-	/// 100 - 200 -> COLLISION
-	///		100 - 149 -> Ground Tiles?
-	///		150 - 159 -> Physics Affected Objects? e.g. boulder
-	/// 300 - 400 -> ENEMY / ENTITY
-	/// </summary>
-
 	//Camera
 	camera = Camera2D::GetInstance();
 
@@ -170,7 +152,7 @@ void CMap2D::Render(void)
 	//Render(MY VERSION)
 
 	//Camera init
-	glm::vec2 offset = glm::vec2(float(cSettings->NUM_TILES_XAXIS / 2.f) - 0.5f, float(cSettings->NUM_TILES_YAXIS / 2.f) - 0.5f);
+	glm::vec2 offset = glm::vec2(float(cSettings->NUM_TILES_XAXIS / 2.f), float(cSettings->NUM_TILES_YAXIS / 2.f));
 	glm::vec2 cameraPos = camera->getCurrPos();
 
 	for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++) {
@@ -180,20 +162,15 @@ void CMap2D::Render(void)
 		glm::vec2 actualPos = cSettings->ConvertIndexToUVSpace(objCamPos);
 
 		float clampOffset = cSettings->ConvertIndexToUVSpace(CSettings::AXIS::x, 1, false) / 2;
-		clampOffset = (clampOffset + 1);
 
-		float clampX = 1.0f + clampOffset;
-		float clampY = 1.0f + clampOffset;
+		float clampX = 2.0f + clampOffset;
+		float clampY = 2.0f + clampOffset;
+
 		if (actualPos.x <= -clampX || actualPos.x >= clampX || actualPos.y <= -clampY || actualPos.y >= clampY)
 			continue;
 
 		transform = glm::mat4(1.f);
 		transform = glm::translate(transform, glm::vec3(actualPos.x, actualPos.y, 0.f));
-		/*transform = glm::translate(transform, glm::vec3(w
-			cSettings->ConvertIndexToUVSpace(cSettings->x, currObj.indexSpace.x, false, 0),
-			cSettings->ConvertIndexToUVSpace(cSettings->y, currObj.indexSpace.y, false),
-			0.f
-		));*/
 
 		// Update the shaders with the latest transform
 		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
@@ -229,7 +206,7 @@ int CMap2D::GetLevelRow(void) {
 }
 
 glm::i32vec2 CMap2D::GetLevelLimit(void) {
-	return arrLevelLimit[uiCurLevel];
+	return glm::vec2(arrLevelLimit[uiCurLevel].x, arrLevelLimit[uiCurLevel].y);
 }
 
 /**
@@ -238,40 +215,85 @@ glm::i32vec2 CMap2D::GetLevelLimit(void) {
  @param iCol A const int variable containing the column index of the element to set to
  @param iValue A const int variable containing the value to assign to this arrMapInfo
  */
-void CMap2D::SetMapInfo(const unsigned int uiRow, const unsigned int uiCol, const int iValue, const bool bInvert)
+void CMap2D::SetMapInfo(unsigned int uiRow, unsigned int uiCol, const int iValue, const bool bInvert)
 {
-	for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++) {
-		CObject2D* obj = arrObject[uiCurLevel][i];
+	if (bInvert)
+	{
+		uiRow = GetLevelRow() - uiRow - 1;
+	}
 
-		if (obj->vTransform.x == uiCol && obj->vTransform.y == uiRow) {
-			if (iValue == 0) {
-				arrGrid[uiCurLevel][GetLevelRow() - obj->vTransform.y - 1][obj->vTransform.x] = nullptr;
+	//Check if its not a nullptr
+	if (!arrGrid[uiCurLevel][uiRow][uiCol]) 
+	{
+		CObject2D* currObj = objFactory.CreateObject(iValue);
+		currObj->SetCurrentIndex(glm::i32vec2(uiCol, uiRow));
+		currObj->vTransform = glm::i32vec2(uiCol, GetLevelRow() - uiRow - 1);
+		currObj->Init();
 
-				delete obj;
+		arrObject[uiCurLevel].push_back(currObj);
+
+		arrGrid[uiCurLevel][uiRow][uiCol] = currObj;
+	}
+	else
+	{
+		for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++)
+		{
+			CObject2D* currObj = arrObject[uiCurLevel][i];
+			if (currObj->GetCurrentIndex() == glm::i32vec2(uiCol, uiRow))
+			{
+				//Delete occupying object in arrObj
+				delete currObj;
 				arrObject[uiCurLevel][i] = nullptr;
 				arrObject[uiCurLevel].erase(arrObject[uiCurLevel].begin() + i);
 
-
-				return;
+				if (iValue > 0)
+				{
+					//Pushes in new Object
+					currObj = objFactory.CreateObject(iValue);
+					currObj->SetCurrentIndex(glm::i32vec2(uiCol, uiRow));
+					currObj->vTransform = glm::i32vec2(uiCol, GetLevelRow() - uiRow - 1);
+					currObj->Init();
+					arrObject[uiCurLevel].push_back(currObj);
+				
+					arrGrid[uiCurLevel][uiRow][uiCol] = currObj;
+				}
+				else
+				{
+					arrGrid[uiCurLevel][uiRow][uiCol] = nullptr;
+				}
 			}
-
-			obj->SetValue(iValue);
-			return;
 		}
 	}
-
-	if (iValue == 0)
-		return;
-
-	CObject2D* newObj = objFactory.CreateObject(iValue);
-	newObj->vTransform = glm::i32vec2(uiCol, uiRow);
-	newObj->SetValue(iValue);
-	newObj->Init();
-
-	arrObject[uiCurLevel].push_back(newObj);
 }
 
-void CMap2D::ReplaceGridInfo(const unsigned int uiRow, const unsigned uiCol, CObject2D* target, const bool bInvert)
+bool CMap2D::InsertMapInfo(unsigned int uiRow, unsigned int uiCol, const int iValue, const bool bInvert)
+{
+	if (bInvert)
+	{
+		uiRow = GetLevelRow() - uiRow - 1;
+	}
+
+	//Check if its not a nullptr
+	if (!arrGrid[uiCurLevel][uiRow][uiCol])
+	{
+		CObject2D* currObj = objFactory.CreateObject(iValue);
+		currObj->SetCurrentIndex(glm::i32vec2(uiCol, uiRow));
+		currObj->vTransform = glm::i32vec2(uiCol, GetLevelRow() - uiRow - 1);
+		currObj->Init();
+
+		arrObject[uiCurLevel].push_back(currObj);
+
+		arrGrid[uiCurLevel][uiRow][uiCol] = currObj;
+	}
+	else
+	{
+		cout << "Something is in Current TileGrid" << endl;
+		return false;
+	}
+	return true;
+}
+
+void CMap2D::UpdateGridInfo(const unsigned int uiRow, const unsigned uiCol, CObject2D* target, const bool bInvert)
 {
 	// Used for checking current spot
 	CObject2D* obj = nullptr;
@@ -285,8 +307,32 @@ void CMap2D::ReplaceGridInfo(const unsigned int uiRow, const unsigned uiCol, COb
 	}
 	else
 	{
-		obj = arrGrid[uiCurLevel][target->GetCurrentIndex().y][target->GetCurrentIndex().x];
-		newSpot = arrGrid[uiCurLevel][uiRow][uiCol];
+		if (uiRow < GetLevelRow() && uiCol < GetLevelCol() && uiRow >= 0 && uiCol >= 0)
+		{
+			obj = arrGrid[uiCurLevel][target->GetCurrentIndex().y][target->GetCurrentIndex().x];
+			newSpot = arrGrid[uiCurLevel][uiRow][uiCol];
+		}
+		else
+		{
+			cout << "Object went out of map range - Deleting" << endl;
+
+			//Get Object in arrObject list
+			for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++)
+			{
+				obj = arrObject[uiCurLevel][i];
+				if (obj == arrGrid[uiCurLevel][target->GetCurrentIndex().y][target->GetCurrentIndex().x])
+				{
+					arrGrid[uiCurLevel][target->GetCurrentIndex().y][target->GetCurrentIndex().x] = nullptr;
+					//Delete occupying object in arrObj
+					delete obj;
+					arrObject[uiCurLevel][i] = nullptr;
+					arrObject[uiCurLevel].erase(arrObject[uiCurLevel].begin() + i);
+
+					obj = nullptr;
+					break;
+				}
+			}
+		}
 	}
 
 	if (newSpot == nullptr)

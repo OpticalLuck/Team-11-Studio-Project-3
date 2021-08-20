@@ -21,7 +21,7 @@ CLevelEditor::CLevelEditor()
     , camera(NULL)
     , cTextureManager(NULL)
     , vAllowanceScale(1.f)
-    , vUVCoords(1.f)
+    , vUVCoords(2.f)
     , cBackgroundEntity(NULL)
 {
 }
@@ -40,6 +40,18 @@ CLevelEditor::~CLevelEditor()
 
     if (cTextureManager)
         cTextureManager = NULL;
+}
+
+void CLevelEditor::ResetParams()
+{
+    m_CurrentLevel.clear();
+    vAllowanceScale = glm::vec2(1.f);
+    vUVCoords = glm::vec2(2.f);
+    backgroundPath = "";
+    if (cBackgroundEntity)
+        delete cBackgroundEntity;
+
+    cBackgroundEntity = nullptr;
 }
 
 /**
@@ -81,7 +93,7 @@ void CLevelEditor::Render()
     //Render(MY VERSION)
 
     //Camera init
-    glm::vec2 offset = glm::vec2(float(cSettings->NUM_TILES_XAXIS / 2.f) - 0.5f, float(cSettings->NUM_TILES_YAXIS / 2.f) - 0.5f);
+    glm::vec2 offset = glm::vec2(float(cSettings->NUM_TILES_XAXIS / 2.f), float(cSettings->NUM_TILES_YAXIS / 2.f));
     glm::vec2 cameraPos = camera->getCurrPos();
 
     for (unsigned int uiRow = 0; uiRow < iWorldHeight; ++uiRow) 
@@ -126,8 +138,11 @@ void CLevelEditor::PostRender()
 /**
 @brief Creates a new level in m_CurrentLevel
 */
-void CLevelEditor::CreateLevel(std::string levelName, unsigned int iWorldWidth, unsigned int iWorldHeight)
+void CLevelEditor::CreateLevel(std::string levelName, uint32_t iWorldWidth, uint32_t iWorldHeight)
 {
+    // Reload the level data
+    ResetParams();
+
     this->iWorldWidth = iWorldWidth;
     this->iWorldHeight = iWorldHeight;
 
@@ -153,11 +168,8 @@ void CLevelEditor::CreateLevel(std::string levelName, unsigned int iWorldWidth, 
 */
 bool CLevelEditor::LoadLevel(const char* filePath)
 {
-    m_CurrentLevel.clear();
-    vAllowanceScale = glm::vec2(1.f);
-    vUVCoords = glm::vec2(1.f);
-    backgroundPath = "";
-    cBackgroundEntity = nullptr;
+    // Reload the level data
+    ResetParams();
 
     // Load the Level CSV
     doc = rapidcsv::Document(FileSystem::getPath(filePath).c_str());
@@ -332,10 +344,6 @@ bool CLevelEditor::SaveMap()
     return true;
 }
 
-void CLevelEditor::ReloadParams(void)
-{
-}
-
 bool CLevelEditor::IncreaseXSize(void)
 {
     ++iWorldWidth;
@@ -446,6 +454,8 @@ void CLevelEditor::RenderBackground(void) {
         glm::vec2 uvSpace = -glm::vec2(uvSpaceX, uvSpaceY);
 
         cBackgroundEntity->vTransform = uvSpace;
+        cBackgroundEntity->scaleX = vUVCoords.x;
+        cBackgroundEntity->scaleY = vUVCoords.y;
         //Rendering
         cBackgroundEntity->PreRender();
         cBackgroundEntity->Render();

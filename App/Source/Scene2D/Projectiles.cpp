@@ -1,41 +1,38 @@
-#include "Boulder2D.h"
+#include "Projectiles.h"
+
 #include "Map2D.h"
 
-Boulder2D::Boulder2D()
+Projectiles::Projectiles()
+	: animatedSprites(NULL)
+	, currentColor(glm::vec4())
 {
-	interactableType = Interactables::BOULDER;
-	value = 150;
+	projectileType = PROJ_SHURIKEN;
+	value = 2; //Shuriken by default
 }
 
-Boulder2D::~Boulder2D()
+Projectiles::~Projectiles()
 {
 }
 
-bool Boulder2D::Init()
+bool Projectiles::Init()
 {
-	//Collider2D initialisation
-	collider2D->Init();
-	collider2D->colliderType = Collider2D::ColliderType::COLLIDER_CIRCLE;
-	collider2D->position = vTransform + glm::vec2(0.5f, 0.5f);
-
-	if (value >= 100 && value < 300)
-		collider2D->SetbEnabled(true);
-	else
-		collider2D->SetbEnabled(false);
-
 	cPhysics2D.Init(&vTransform);
-	cPhysics2D.SetMass(10);
-	return true;
+	cPhysics2D.MAX_SPEED = 50.f;
+	cPhysics2D.FRICTONAL_COEFFICIENT = 0.8f;
+	collider2D->colliderType = Collider2D::ColliderType::COLLIDER_CIRCLE;
+	collider2D->position = vTransform;
+	collider2D->Init();
+
+	return false;
 }
 
-void Boulder2D::Update(const double dElapsedTime)
+void Projectiles::Update(double dElapsedTime)
 {
 	cPhysics2D.Update(dElapsedTime);
 	// Update Collider2D Position
 	collider2D->SetPosition(vTransform);
 
 	CMap2D* cMap2D = CMap2D::GetInstance();
-
 	int range = 2;
 	for (int i = 0; i < 2; i++)
 	{
@@ -62,13 +59,14 @@ void Boulder2D::Update(const double dElapsedTime)
 							else if (i == 1)
 								collider2D->ResolveAABB(obj->GetCollider(), Collider2D::X);
 						}
-						
+
+						vTransform = collider2D->position;
 					}
 				}
 			}
 		}
 	}
-	vTransform = collider2D->position;
+
 
 	//Update Map index
 	glm::i32vec2 newindex((int)vTransform.x, CMap2D::GetInstance()->GetLevelRow() - (int)vTransform.y - 1);
@@ -76,11 +74,9 @@ void Boulder2D::Update(const double dElapsedTime)
 	{
 		CMap2D::GetInstance()->UpdateGridInfo(newindex.y, newindex.x, this, false);
 	}
-
 }
 
-CPhysics2D& Boulder2D::GetPhysics()
+CPhysics2D& Projectiles::GetPhysics()
 {
-	// TODO: insert return statement here
 	return cPhysics2D;
 }

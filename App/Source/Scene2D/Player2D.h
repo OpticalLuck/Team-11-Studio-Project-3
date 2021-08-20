@@ -29,6 +29,8 @@ class Camera2D;
 // Include Keyboard controller
 #include "Inputs\KeyboardController.h"
 
+#include "Inputs\MouseController.h"
+
 // Include Physics2D
 #include "Physics2D.h"
 
@@ -101,6 +103,10 @@ public:
 
 	void SetInputs(std::vector<std::array<bool, KEYBOARD_INPUTS::INPUT_TOTAL>> inputs);
 
+	void ResetToCheckPoint();
+
+	void LockWithinBoundary();
+
 	CPlayer2D* const Clone();
 
 	glm::i32vec2 GetCheckpoint(void);
@@ -136,7 +142,7 @@ protected:
 
 	// Keyboard Controller singleton instance
 	CKeyboardController* cKeyboardController;
-
+	CMouseController* cMouseController;
 	//CS: Animated Sprite
 	CSpriteAnimation* animatedSprites;
 
@@ -166,6 +172,6 @@ protected:
 	// Update the health and lives
 	void UpdateHealthLives(void);
 
-	void MovementUpdate(double dt);
+	void InputUpdate(double dt);
 };
 

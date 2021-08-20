@@ -39,11 +39,8 @@ CLevelEditorState::CLevelEditorState(void)
 	, cLevelGrid(NULL)
 	, activeTile(0)
 	, transform(1.f)
-	, vMousePosInWindow(0.f)
-	, vMousePosConvertedRatio(0.f)
-	, vMousePosWorldSpace(0.f)
-	, vMousePosRelativeToCamera(0.f)
 	, cursor(NULL)
+	, vMousePos(0.f)
 {
 }
 /**
@@ -76,7 +73,7 @@ bool CLevelEditorState::Init(void)
 	cout << "CLevelEditorState::Init()\n" << endl;
 
 	cSettings = CSettings::GetInstance();
-	cSettings->screenSize = CSettings::SSIZE_1600x900;
+	cSettings->screenSize = CSettings::SSIZE_1024x768;
 	CSettings::GetInstance()->UpdateWindowSize();
 
 	glGenVertexArrays(1, &quadVAO);
@@ -108,7 +105,11 @@ bool CLevelEditorState::Init(void)
 bool CLevelEditorState::Update(const double dElapsedTime)
 {
 	Camera2D::GetInstance()->Update(dElapsedTime);
-	CalculateMousePosition();
+
+	vMousePos = Camera2D::GetInstance()->GetCursorPosInWorldSpace(0);
+
+	vMousePos.x = Math::Clamp((float)vMousePos.x, 0.f, (float)cLevelEditor->iWorldWidth - 1);
+	vMousePos.y = Math::Clamp((float)vMousePos.y, 0.f, (float)cLevelEditor->iWorldHeight - 1);
 
 	if (CKeyboardController::GetInstance()->IsKeyReleased(GLFW_KEY_ESCAPE))
 	{
@@ -119,11 +120,6 @@ bool CLevelEditorState::Update(const double dElapsedTime)
 		cout << "Loading PauseState" << endl;
 		CGameStateManager::GetInstance()->SetPauseGameState("PauseState");
 		return true;
-	}
-
-	if (CKeyboardController::GetInstance()->IsKeyReleased(GLFW_KEY_P))
-	{
-		cLevelEditor->SaveMap();
 	}
 
 	MoveCamera();
@@ -235,19 +231,19 @@ void CLevelEditorState::MouseInput(void)
 	if (cMouseController->IsButtonDown(CMouseController::LMB))
 	{
 		// DEBUG_MSG("x:" << u16vec2FinalMousePosInEditor.x << " y:" << u16vec2FinalMousePosInEditor.y);
-		DEBUG_MSG("[x: " << vMousePosRelativeToCamera.x << ", y: " << vMousePosRelativeToCamera.y << "] Cell TileID: " << cLevelEditor->GetCell(vMousePosRelativeToCamera.x, vMousePosRelativeToCamera.y, false).iTileID);
-		if (cLevelEditor->GetCell(vMousePosRelativeToCamera.x, vMousePosRelativeToCamera.y, false).iTileID == 0)
+		DEBUG_MSG("[x: " << vMousePos.x << ", y: " << vMousePos.y << "] Cell TileID: " << cLevelEditor->GetCell(vMousePos.x, vMousePos.y, false).iTileID);
+		if (cLevelEditor->GetCell(vMousePos.x, vMousePos.y, false).iTileID == 0)
 		{
-			cLevelEditor->UpdateCell(vMousePosRelativeToCamera.x, vMousePosRelativeToCamera.y, activeTile, false);
+			cLevelEditor->UpdateCell(vMousePos.x, vMousePos.y, activeTile, false);
 		}
 	}
 
 	if (cMouseController->IsButtonDown(CMouseController::RMB))
 	{
 		// DEBUG_MSG("x:" << u16vec2FinalMousePosInEditor.x << " y:" << u16vec2FinalMousePosInEditor.y);
-		if (cLevelEditor->GetCell(vMousePosRelativeToCamera.x, vMousePosRelativeToCamera.y, false).iTileID != 0)
+		if (cLevelEditor->GetCell(vMousePos.x, vMousePos.y, false).iTileID != 0)
 		{
-			cLevelEditor->UpdateCell(vMousePosRelativeToCamera.x, vMousePosRelativeToCamera.y, 0, false);
+			cLevelEditor->UpdateCell(vMousePos.x, vMousePos.y, 0, false);
 		}
 	}
 
@@ -337,8 +333,8 @@ void CLevelEditorState::ImGuiRender()
 			std::string saveString = "Save " + cLevelEditor->GetCurrentLevel().LevelName;
 			std::string closeString = "Close " + cLevelEditor->GetCurrentLevel().LevelName;
 
-			if (ImGui::MenuItem(saveString.c_str())) cLevelEditor->SaveMap();
-			if (ImGui::MenuItem(closeString.c_str()))
+			if (ImGui::MenuItem(saveString.c_str(), "CTRL+S")) cLevelEditor->SaveMap();
+			if (ImGui::MenuItem(closeString.c_str(), "ESCAPE"))
 			{
 				DEBUG_MSG("Closing Editor");
 				CGameStateManager::GetInstance()->SetActiveGameState("MenuState");
@@ -350,7 +346,7 @@ void CLevelEditorState::ImGuiRender()
 	}
 
 	ImGui::SetNextWindowPos(ImVec2(0, 0 + 19));
-	ImGui::SetNextWindowSize(ImVec2(300, cSettings->iWindowHeight));
+	ImGui::SetNextWindowSize(ImVec2(250, cSettings->iWindowHeight));
 
 	ImGuiWindowFlags windowFlags =
 		ImGuiWindowFlags_AlwaysAutoResize |
@@ -365,6 +361,8 @@ void CLevelEditorState::ImGuiRender()
 		ImGui::Text(xSize.c_str());
 		ImGui::Text(ySize.c_str());
 
+		ImGui::NewLine();
+
 		ImGui::TextColored(ImVec4(1.f, 1.f, 0, 1.f), "Background Mesh");
 		if (cLevelEditor->cBackgroundEntity)
 			ImGui::TextWrapped(cLevelEditor->backgroundPath.c_str());
@@ -373,18 +371,23 @@ void CLevelEditorState::ImGuiRender()
 
 		if (ImGui::Button("Change Background"))
 		{
-			cLevelEditor->backgroundPath = FileDialog::OpenFile("Image (*.png)\0*.png\0");
+			cLevelEditor->backgroundPath = FileDialog::OpenFile();
 
 			if (cLevelEditor->backgroundPath != "")
 			{
 				delete cLevelEditor->cBackgroundEntity;
 				cLevelEditor->cBackgroundEntity = new CBackgroundEntity(cLevelEditor->backgroundPath);
-				cLevelEditor->cBackgroundEntity->Init();
+				if (!cLevelEditor->cBackgroundEntity->Init())
+				{
+					delete cLevelEditor->cBackgroundEntity;
+					cLevelEditor->cBackgroundEntity = nullptr;
+				}
 			}
 		}
 
 		ImGui::NewLine();
 
+		ImGui::PushItemWidth(150);
 		ImGui::TextColored(ImVec4(1.f, 1.f, 0, 1.f), "Parallax Allowance");
 		ImGui::SliderFloat("Parallax X", &cLevelEditor->vAllowanceScale.x, 0.f, 1.f);
 		ImGui::SliderFloat("Parallax Y", &cLevelEditor->vAllowanceScale.y, 0.f, 1.f);
@@ -392,16 +395,18 @@ void CLevelEditorState::ImGuiRender()
 		ImGui::NewLine();
 
 		ImGui::TextColored(ImVec4(1, 1, 0, 1), "BG Size");
-		ImGui::SliderFloat("BG X", &cLevelEditor->vUVCoords.x, 1.f, 5.f);
-		ImGui::SliderFloat("BG Y", &cLevelEditor->vUVCoords.y, 1.f, 5.f);
+		ImGui::SliderFloat("BG X", &cLevelEditor->vUVCoords.x, 2.f, 5.f);
+		ImGui::SliderFloat("BG Y", &cLevelEditor->vUVCoords.y, 2.f, 5.f);
+		ImGui::PopItemWidth();
 
-		if (ImGui::BeginTabBar("Editor Tab"))
+		if (ImGui::BeginChild("Tile List"))
 		{
-			if (ImGui::BeginTabItem("Tiles"))
+			if (ImGui::BeginTabBar("Editor Tab"))
 			{
-				if (ImGui::BeginChild("Tile List"))
+				if (ImGui::BeginTabItem("Tiles"))
 				{
-					const int iMaxButtonsPerRow = 7;
+				
+					const int iMaxButtonsPerRow = 6;
 					int iCounter = 0;
 					for (int i = TILE_GROUND; i < OBJECT_TOTAL; ++i)
 					{
@@ -428,12 +433,22 @@ void CLevelEditorState::ImGuiRender()
 						++iCounter;
 						
 					}
+					ImGui::EndTabItem();
 				}	
-				ImGui::EndChild();
+
+				if (ImGui::BeginTabItem("Interactables"))
+				{
+					ImGui::EndTabItem();
+				}
+
+				if (ImGui::BeginTabItem("Enemies"))
+				{
+					ImGui::EndTabItem();
+				}
 			}
-			ImGui::EndTabItem();
+			ImGui::EndTabBar();
 		}
-		ImGui::EndTabBar();
+		ImGui::EndChild();
 		// DEBUG_MSG(ImGui::GetWindowPos().x << " " << ImGui::GetWindowPos().y);
 	}
 	ImGui::End();
@@ -442,7 +457,6 @@ void CLevelEditorState::ImGuiRender()
 
 void CLevelEditorState::RenderCursor()
 {
-
 	// Activate blending mode
 	glActiveTexture(GL_TEXTURE0);
 	glEnable(GL_BLEND);
@@ -450,10 +464,10 @@ void CLevelEditorState::RenderCursor()
 
 	glBindVertexArray(quadVAO);
 
-	glm::vec2 offset = glm::vec2(float(CSettings::GetInstance()->NUM_TILES_XAXIS / 2.f) - 0.5f, float(CSettings::GetInstance()->NUM_TILES_YAXIS / 2.f) - 0.5f);
+	glm::vec2 offset = glm::vec2(float(CSettings::GetInstance()->NUM_TILES_XAXIS / 2.f), float(CSettings::GetInstance()->NUM_TILES_YAXIS / 2.f));
 	glm::vec2 cameraPos = Camera2D::GetInstance()->getCurrPos();
 
-	glm::vec2 objCamPos = glm::vec2(vMousePosRelativeToCamera.x, vMousePosRelativeToCamera.y) - cameraPos + offset;
+	glm::vec2 objCamPos = glm::vec2(vMousePos.x, vMousePos.y) - cameraPos + offset;
 	glm::vec2 actualPos = CSettings::GetInstance()->ConvertIndexToUVSpace(objCamPos) * Camera2D::GetInstance()->getZoom();
 
 	transform = glm::mat4(1.f);
@@ -473,21 +487,4 @@ void CLevelEditorState::RenderCursor()
 
 	// Disable blending
 	glDisable(GL_BLEND);
-}
-
-void CLevelEditorState::CalculateMousePosition(void)
-{
-	vMousePosInWindow = glm::vec2(cMouseController->GetMousePositionX(), cSettings->iWindowHeight - cMouseController->GetMousePositionY());
-	vMousePosConvertedRatio = glm::vec2(vMousePosInWindow.x - cSettings->iWindowWidth * 0.5, vMousePosInWindow.y - cSettings->iWindowHeight * 0.5);
-	vMousePosWorldSpace = glm::vec2(vMousePosConvertedRatio.x / cSettings->iWindowWidth * cSettings->NUM_TILES_XAXIS, vMousePosConvertedRatio.y / cSettings->iWindowHeight * cSettings->NUM_TILES_YAXIS);
-	vMousePosRelativeToCamera = Camera2D::GetInstance()->getCurrPos() + vMousePosWorldSpace / Camera2D::GetInstance()->getZoom();
-
-	// vMousePosRelativeToCamera.x -= 0.5;
-	// vMousePosRelativeToCamera.y -= 0.5;
-
-	vMousePosRelativeToCamera.x = Math::Clamp(vMousePosRelativeToCamera.x, 0.f, (float)cLevelEditor->iWorldWidth - 1.f);
-	vMousePosRelativeToCamera.y = Math::Clamp(vMousePosRelativeToCamera.y, 0.f, (float)cLevelEditor->iWorldHeight - 1.f);
-
-	vMousePosRelativeToCamera.x = ceil(vMousePosRelativeToCamera.x);
-	vMousePosRelativeToCamera.y = ceil(vMousePosRelativeToCamera.y);
 }
