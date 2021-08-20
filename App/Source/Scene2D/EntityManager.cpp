@@ -92,7 +92,7 @@ bool CEntityManager::Clone(void)
 		std::cout << "Failed to clone Player\n";
 		return false;
 	}
-	clone.SetClone(true);
+	clone->SetClone(true);
 	clone->SetKeyInputs(cInputHandler->GetAllKeyboardInputs());
 	clone->SetMouseInputs(cInputHandler->GetAllMouseInputs());
 	m_cloneList.push_back(clone);
