@@ -55,13 +55,6 @@ private:
 		return (Direction)best_match;
 	}
 public:
-	enum CorrectedAxis
-	{
-		X = 0,
-		Y,
-		XY
-	};
-
 	enum ColliderType
 	{
 		COLLIDER_QUAD = 0,
@@ -94,7 +87,7 @@ public:
 
 	//Just Here if want to use
 	// NOT RECOMMENDED IF THERE IS MULTIPLE ENTITIES CLOSE TO EACHOTHER
-	void ResolveAABB(Collider2D* object, CorrectedAxis axis);
+	void ResolveAABB(Collider2D* object, Direction axis);
 
 	void ResolveAABBCircle(Collider2D* object, Collision data, ColliderType target = COLLIDER_CIRCLE);
 

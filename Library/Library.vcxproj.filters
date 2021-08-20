@@ -226,5 +226,8 @@
     <ClInclude Include="Source\ImGuiWindow\ImGuiWindow.h">
       <Filter>ImGuiWindow</Filter>
     </ClInclude>
+    <ClInclude Include="Source\System\WindowUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

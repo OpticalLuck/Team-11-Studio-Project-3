@@ -279,7 +279,7 @@ void CEnemy2D::Render(void)
 	transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
 
 	//Get camera transforms and use them instead
-	glm::vec2 offset = glm::vec2((cSettings->NUM_TILES_XAXIS / 2.f) - 0.5f, (cSettings->NUM_TILES_YAXIS / 2.f) - 0.5f);
+	glm::vec2 offset = glm::i32vec2((cSettings->NUM_TILES_XAXIS / 2), (cSettings->NUM_TILES_YAXIS / 2));
 	glm::vec2 cameraPos = camera->getCurrPos();
 
 	glm::vec2 IndexPos = vTransform;
@@ -297,8 +297,6 @@ void CEnemy2D::Render(void)
 
 	transform = glm::translate(transform, glm::vec3(actualPos.x, actualPos.y, 0.f));
 
-	/*if (facing == LEFT)
-		transform = glm::rotate(transform, glm::radians(180.f), glm::vec3(0.f, 1.f, 0.f));*/
 	// Update the shaders with the latest transform
 	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
 	glUniform4fv(colorLoc, 1, glm::value_ptr(currentColor));

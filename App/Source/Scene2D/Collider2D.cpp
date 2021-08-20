@@ -16,7 +16,28 @@ Collision Collider2D::CheckAABBCollision(Collider2D* obj, Collider2D* target)
 	bool collisionX = abs(obj->position.x - target->position.x) <= obj->vec2Dimensions.x + target->vec2Dimensions.x - threshold;
 	bool collisionY = abs(obj->position.y - target->position.y) <= obj->vec2Dimensions.y + target->vec2Dimensions.y;
 
-	return std::make_tuple(collisionX && collisionY, UP, glm::vec2(0.0f, 0.0f));
+
+	float diffX = obj->position.x - target->position.x;
+	float diffY = obj->position.y - target->position.y;
+
+	Direction dir;
+	if (abs(diffX) > abs(diffY))
+	{
+
+		if (diffX > 0)
+			dir = RIGHT;
+		else
+			dir = LEFT;
+	}
+	else
+	{
+		if (diffY > 0)
+			dir = UP;
+		else
+			dir = DOWN;
+	}
+
+	return std::make_tuple(collisionX && collisionY, dir, glm::vec2(0.0f, 0.0f));
 }
 
 Collision Collider2D::CheckAABBCircleCollision(Collider2D* aabb, Collider2D* circle)
@@ -144,7 +165,7 @@ Collision Collider2D::CollideWith(Collider2D* object)
 	return std::make_tuple(false, UP, glm::vec2(0.0f, 0.0f));
 }
 
-void Collider2D::ResolveAABB(Collider2D* object, CorrectedAxis axis)
+void Collider2D::ResolveAABB(Collider2D* object, Direction axis)
 {
 	glm::vec2 direction = object->position - position;
 
@@ -165,7 +186,7 @@ void Collider2D::ResolveAABB(Collider2D* object, CorrectedAxis axis)
 		}
 	}
 
-	if (axis == X)
+	if (axis == Direction::RIGHT || axis == Direction::LEFT)
 	{
 		if (shortestXDist < shortestYDist && shortestYDist != 0)
 		{
@@ -173,7 +194,7 @@ void Collider2D::ResolveAABB(Collider2D* object, CorrectedAxis axis)
 			position += glm::vec2(shortestXDist, 0) * correctionAxis;
 		}
 	}
-	else if (axis == Y)
+	else if (axis == Direction::UP || axis == Direction::DOWN)
 	{
 		if (shortestXDist > shortestYDist)
 		{
@@ -214,7 +235,6 @@ void Collider2D::ResolveAABBCircle(Collider2D* object, Collision data, ColliderT
 
 	if (ball)
 	{
-
 		// collision resolution
 		Direction dir = std::get<1>(data);
 		glm::vec2 diff_vector = std::get<2>(data);
@@ -281,7 +301,8 @@ void Collider2D::Render(void)
 		return;
 
 	//Camera init
-	glm::vec2 offset = glm::vec2(float(CSettings::GetInstance()->NUM_TILES_XAXIS / 2.f) - 0.5f, float(CSettings::GetInstance()->NUM_TILES_YAXIS / 2.f) - 0.5f);
+	glm::vec2 offset = glm::vec2(float(CSettings::GetInstance()->NUM_TILES_XAXIS / 2.f), float(CSettings::GetInstance()->NUM_TILES_YAXIS / 2.f));
+
 	glm::vec2 cameraPos = Camera2D::GetInstance()->getCurrPos();
 
 	glm::vec2 objCamPos = position - cameraPos + offset;

@@ -11,15 +11,6 @@ public:
 	bool Init() override;
 	void Update(const double dElapsedTime) override;
 
-	//// PreRender
-	//void PreRender(void);
-
-	//// Render
-	//void Render(void);
-
-	//// PostRender
-	//void PostRender(void);
-
 	CPhysics2D& GetPhysics();
 protected:
 	CPhysics2D cPhysics2D;

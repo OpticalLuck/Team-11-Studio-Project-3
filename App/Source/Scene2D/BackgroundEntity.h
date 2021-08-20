@@ -29,9 +29,12 @@ public:
 	// Init
 	bool Init(float scaleX = 2, float scaleY = 2);
 
+	void Render(void);
+
 	//Scale var
 	float scaleX;
 	float scaleY;
-protected:
+
 	std::string textureName;
+protected:
 };

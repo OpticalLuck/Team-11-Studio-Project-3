@@ -29,14 +29,14 @@ class Camera2D;
 // Include Keyboard controller
 #include "Inputs\KeyboardController.h"
 
+#include "Inputs\MouseController.h"
+
 // Include Physics2D
 #include "Physics2D.h"
 
 // Include AnimatedSprites
 #include "Primitives/SpriteAnimation.h"
 
-// Include InventoryManager
-#include "InventoryManager.h"
 
 // Include SoundController
 #include "..\SoundController\SoundController.h"
@@ -46,7 +46,11 @@ class Camera2D;
 #include <map>
 #include <array>
 #include "../KeyboardInputHandler/CKeyboardInputHandler.h"
+
 #include "Inputs/MouseController.h"
+
+#include "InventoryM.h"
+
 class CPlayer2D : public CEntity2D
 {
 public:
@@ -99,13 +103,17 @@ public:
 
 	void SetInputs(std::vector<std::array<bool, KEYBOARD_INPUTS::INPUT_TOTAL>> inputs);
 
+	void ResetToCheckPoint();
+
+	void LockWithinBoundary();
+
 	CPlayer2D* const Clone();
 
 	glm::i32vec2 GetCheckpoint(void);
 
 protected:
 	bool bIsClone;
-
+	
 	enum DIRECTION
 	{
 		LEFT = 0,
@@ -116,7 +124,7 @@ protected:
 	};
 
 	CKeyboardInputHandler* cKeyboardInputHandler;
-	CMouseController* cMouseController;
+
 	std::vector<std::array<bool, KEYBOARD_INPUTS::INPUT_TOTAL>> m_CloneKeyboardInputs;
 
 	int iTempFrameCounter; // move to game manager/scene2D/PlayGameState later
@@ -135,17 +143,12 @@ protected:
 
 	// Keyboard Controller singleton instance
 	CKeyboardController* cKeyboardController;
-
+	CMouseController* cMouseController;
 	//CS: Animated Sprite
 	CSpriteAnimation* animatedSprites;
 
 	// Current color
 	glm::vec4 currentColor;
-
-	// InventoryManager
-	CInventoryManager* cInventoryManager;
-	// InventoryItem
-	CInventoryItem* cInventoryItem;
 
 	// Count the number of jumps
 	int jumpCount;
@@ -165,6 +168,9 @@ protected:
 	// Update the health and lives
 	void UpdateHealthLives(void);
 
-	void MovementUpdate(double dt);
+	void InputUpdate(double dt);
+
+	CInventoryM* cInventoryM;
+	CItem* cItem;
 };
 

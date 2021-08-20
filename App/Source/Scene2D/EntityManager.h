@@ -3,15 +3,15 @@
 //Include Entities
 #include "Player2D.h"
 #include "Enemy2D.h"
-#include "Boss2D.h"
-
-class EnemyBullet2D;
 
 #include <vector>
 #include <iostream>
 #include "Map2D.h"
 //Include keyboard controller
 #include "Inputs/KeyboardController.h"
+#include "InventoryM.h"
+
+class CBoss2D;
 
 //System debug
 #include "System/Debug.h"
@@ -53,6 +53,8 @@ protected:
 	CEnemy2D* cEnemy2D;
 
 	CMap2D* cMap2D;
+
+	CInventoryM* cInventoryM;
 
 	//list of vectors
 	std::vector<CEnemy2D*> m_enemyList;

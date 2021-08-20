@@ -39,17 +39,20 @@ public:
 	void SetForce(const glm::vec2 force);
 	void SetMass(const float mass);
 	void SetVelocity(const glm::vec2 velocity);
-
+	void SetboolGrounded(bool bGrounded);
 	glm::vec2 GetVelocity() const;
+	bool GetboolGrounded() const;
+
+	float MAX_SPEED;
+	float FRICTONAL_COEFFICIENT;
 protected:
 	const glm::vec2 v2Gravity = glm::vec2(0.f, -20.f);
-	//const glm::vec2 v2Gravity = glm::vec2(0.f, 0.f);
-	const float MAX_SPEED = 10.f;
-	const float FRICTONAL_COEFFICIENT = 1.f;
 	glm::vec2 *position;
 	glm::vec2 velocity;
 	glm::vec2 force;
 	float mass;
 	STATUS sCurrentStatus;
+
+	bool bGrounded;
 };
 

@@ -25,6 +25,7 @@
 
 #include <vector>
 #include "../Scene2D/Camera2D.h"
+#include "../Scene2D/BackgroundEntity.h"
 
 struct sCell
 {
@@ -45,11 +46,17 @@ public:
     unsigned int iWorldWidth;
     unsigned int iWorldHeight;
 
-    void Init();
+    glm::vec2 vAllowanceScale;
+    glm::vec2 vUVCoords;
+    std::string backgroundPath;
+    CBackgroundEntity* cBackgroundEntity;
 
+    void Init();
+    
     void PreRender();
     void Render();
     void PostRender();
+    void RenderBackground(void);
 
     // Loading and Creating Functions
     void CreateLevel(std::string levelName, unsigned int iWorldWidth = 32, unsigned int iWorldHeight = 24);  
@@ -57,9 +64,11 @@ public:
     bool LoadLevelByName(std::string levelName);                                                             
     void LoadExistingLevels(void);                                                                           
     bool LevelExists(std::string levelName);                                                                 
+    std::vector<std::vector<sCell>> GetCurrentLevel(void);
+    void SetCurrentLevel(std::vector<std::vector<sCell>> levelArr);
     std::vector<Level> GetLevels(void);      
-    Level GetCurrentLevel(void);
-    bool SaveMap();                                                                                          
+    Level GetCurrentLevelData(void);
+    bool SaveMap(void);
 
     // Resize Map
     bool DecreaseXSize(void);
@@ -68,8 +77,8 @@ public:
     bool DecreaseYSize(void);
 
     // Update Map
-    sCell GetCell(unsigned int x, unsigned int y, bool bInvert = true);                
-    void UpdateCell(unsigned int x, unsigned int y, int TileID, bool bInvert = true);  
+    sCell GetCell(unsigned int x, unsigned int y, bool bInvert = false);                
+    void UpdateCell(unsigned int x, unsigned int y, int TileID, bool bInvert = false);  
 
     // Render Control
     void SetShader(const std::string& _name);
@@ -103,4 +112,6 @@ protected:
 
     CLevelEditor();
     ~CLevelEditor();
+
+    void ResetParams();
 };

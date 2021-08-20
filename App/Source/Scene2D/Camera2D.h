@@ -22,11 +22,13 @@ class Camera2D : public CSingletonTemplate<Camera2D>
 	friend CSingletonTemplate<Camera2D>;
 
 	public:
+
 		Camera2D(void);
 		~Camera2D(void);
 
 		void Update(float dElapsedTime);
 		void UpdateTarget(glm::vec2 target);
+		void MoveTarget(float moveX, float moveY);
 		void UpdateZoom(float fTarget);
 		void UpdatePos(glm::vec2 pos);
 		void Reset(void);
@@ -38,12 +40,21 @@ class Camera2D : public CSingletonTemplate<Camera2D>
 		bool IsFirstTime(void);
 		void ClampCamPos(glm::i32vec2 clampPos);
 
+		glm::vec2 GetCursorPosInWorldSpace(float offset = 0.f);
+
 	private:
+		glm::vec2 vMousePosInWindow;
+		glm::vec2 vMousePosConvertedRatio;
+		glm::vec2 vMousePosWorldSpace;
+		glm::vec2 vMousePosRelativeToCamera;
+
 		bool FirstTime;
 		glm::vec2 pos; //Position set to index space for now because worldspace can suck my ching cheng han ji
 		glm::vec2 targetPos;
 
 		float fZoom;
 		float fTargetZoom;
+
+		void CalculateMousePosInWorldSpace();
 };
 

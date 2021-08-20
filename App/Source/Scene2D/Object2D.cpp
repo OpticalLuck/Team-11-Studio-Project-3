@@ -4,6 +4,7 @@
 CObject2D::CObject2D(void) {
 	value = 0;
 	vTransform = glm::vec2();
+	currentIndex = glm::i32vec2();
 
 	width = height = 1.f; //Default value is 1 x 1
 }
@@ -13,6 +14,8 @@ CObject2D::CObject2D(int value) {
 
 	vTransform = glm::i32vec2();
 	currentIndex = glm::i32vec2();
+
+	width = height = 1.f; //Default value is 1 x 1
 }
 
 CObject2D::~CObject2D(void) {
@@ -38,6 +41,8 @@ bool CObject2D::Init()
 
 void CObject2D::Update(const double dElapsedTime)
 {
+	if (collider2D->position != vTransform)
+		collider2D->position = vTransform;
 }
 
 int CObject2D::Getvalue() const

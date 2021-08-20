@@ -261,6 +261,7 @@ bool Application::Init(void)
 	// Set the active scene
 	CGameStateManager::GetInstance()->SetActiveGameState("IntroState");
 
+
 	cSettings->ImGuiProperties.IsDockingEnabled = false;
 	m_ImGuiWindow->Create(cSettings->ImGuiProperties);
 

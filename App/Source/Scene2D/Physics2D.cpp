@@ -42,6 +42,9 @@ CPhysics2D::CPhysics2D(void)
 	, velocity(glm::vec2(0.f))
 	, force(glm::vec2(0.f))
 	, mass(1)
+	, MAX_SPEED(10.f)
+	, FRICTONAL_COEFFICIENT(0.8f)
+	, bGrounded(false)
 { 
 }
 
@@ -72,7 +75,8 @@ void CPhysics2D::Update(double dElapsedTime)
 	else
 		velocity.x = 0; 
 
-	a += v2Gravity;
+	if(!bGrounded)
+		a += v2Gravity;
 	velocity += a * (float)dElapsedTime;
 
 
@@ -102,7 +106,17 @@ void CPhysics2D::SetVelocity(const glm::vec2 velocity)
 	this->velocity = velocity;
 }
 
+void CPhysics2D::SetboolGrounded(bool bGrounded)
+{
+	this->bGrounded = bGrounded;
+}
+
 glm::vec2 CPhysics2D::GetVelocity() const
 {
 	return velocity;
+}
+
+bool CPhysics2D::GetboolGrounded() const
+{
+	return bGrounded;
 }
