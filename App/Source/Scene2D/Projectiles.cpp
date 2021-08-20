@@ -47,6 +47,7 @@ void Projectiles::Update(double dElapsedTime)
 			int colCheck = vTransform.x + col;
 
 			if (rowCheck < 0 || colCheck < 0 || rowCheck > cMap2D->GetLevelRow() - 1 || colCheck > cMap2D->GetLevelCol() - 1) continue;
+
 			if (cMap2D->GetCObject(colCheck, rowCheck) && cMap2D->GetCObject(colCheck, rowCheck) != this)
 			{
 				CObject2D* obj = cMap2D->GetCObject(colCheck, rowCheck);
