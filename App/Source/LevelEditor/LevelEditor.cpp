@@ -40,6 +40,11 @@ CLevelEditor::~CLevelEditor()
 
     if (cTextureManager)
         cTextureManager = NULL;
+
+    if (cBackgroundEntity)
+        delete cBackgroundEntity;
+
+    cBackgroundEntity = nullptr;
 }
 
 

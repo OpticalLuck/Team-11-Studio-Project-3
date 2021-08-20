@@ -41,11 +41,11 @@ class Camera2D;
 // Include SoundController
 #include "..\SoundController\SoundController.h"
 
-#include "../KeyboardInputHandler/CKeyboardInputHandler.h"
+#include "../InputHandler/CInputHandler.h"
 
 #include <map>
 #include <array>
-#include "../KeyboardInputHandler/CKeyboardInputHandler.h"
+#include "../InputHandler/CInputHandler.h"
 
 #include "InventoryM.h"
 
@@ -101,7 +101,8 @@ public:
 
 	bool IsClone();
 
-	void SetInputs(std::vector<std::array<bool, KEYBOARD_INPUTS::INPUT_TOTAL>> inputs);
+	void SetKeyInputs(std::vector<std::array<KeyInput, KEYBOARD_INPUTS::KEY_TOTAL>> inputs);
+	void SetMouseInputs(std::vector<std::array<MouseInput, MOUSE_INPUTS::MOUSE_TOTAL>> inputs);
 
 	void ResetToCheckPoint();
 
@@ -123,8 +124,9 @@ protected:
 		NUM_DIRECTIONS
 	};
 
-	CKeyboardInputHandler* cKeyboardInputHandler;
-	std::vector<std::array<bool, KEYBOARD_INPUTS::INPUT_TOTAL>> m_CloneKeyboardInputs;
+	CInputHandler* cInputHandler;
+	std::vector<std::array<KeyInput, KEYBOARD_INPUTS::KEY_TOTAL>> m_CloneKeyboardInputs;
+	std::vector<std::array<MouseInput, MOUSE_INPUTS::MOUSE_TOTAL>> m_CloneMouseInputs;
 
 	int iTempFrameCounter; // move to game manager/scene2D/PlayGameState later
 

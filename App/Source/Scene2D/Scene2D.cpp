@@ -18,7 +18,7 @@ CScene2D::CScene2D(void)
 	, cGUI_Scene2D(NULL)
 	, cGameManager(NULL)
 	, cSoundController(NULL)
-	, cKeyboardInputHandler(NULL)
+	, CInputHandler(NULL)
 	, isCompleted(false)
 	, cEntityManager(NULL)
 	, cameraHandler(NULL)
@@ -52,7 +52,7 @@ CScene2D::~CScene2D(void)
 	// We won't delete this since it was created elsewhere
 	cKeyboardController = NULL;
 
-	cKeyboardInputHandler = NULL;
+	CInputHandler = NULL;
 
 	// Destroy the enemies
 	for (unsigned i = 0; i < enemyVector.size(); i++)
@@ -146,7 +146,7 @@ bool CScene2D::Init(void)
 	cSoundController = CSoundController::GetInstance();
 	cSoundController->PlaySoundByID(4);
 
-	cKeyboardInputHandler = CKeyboardInputHandler::GetInstance();
+	CInputHandler = CInputHandler::GetInstance();
 
 	//cInventoryManager = CInventoryManager::GetInstance();
 	cInventoryM = CInventoryM::GetInstance();

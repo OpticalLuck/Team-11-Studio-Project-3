@@ -36,7 +36,7 @@ public:
 	std::vector<CPlayer2D*> GetAllPlayers(void);
 
 protected:
-	CKeyboardInputHandler* cKeyboardInputHandler;
+	CInputHandler* cInputHandler;
 	CKeyboardController* cKeyboardController;
 
 	CPlayer2D* cCloneTemplate;

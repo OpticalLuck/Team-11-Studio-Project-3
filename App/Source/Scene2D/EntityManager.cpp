@@ -9,7 +9,7 @@ CEntityManager::CEntityManager()
 	, cBoss2D(NULL)
 	, cCloneTemplate(NULL)
 	, cKeyboardController(NULL)
-	, cKeyboardInputHandler(NULL)
+	, cInputHandler(NULL)
 {
 }
 
@@ -25,7 +25,7 @@ bool CEntityManager::EntityManagerInit(void)
 	cMap2D->SetShader("2DShader");
 	// Store the keyboard controller singleton instance here
 	cKeyboardController = CKeyboardController::GetInstance();
-	cKeyboardInputHandler = CKeyboardInputHandler::GetInstance();
+	cInputHandler = CInputHandler::GetInstance();
 
 	unsigned int uiRow = -1;
 	unsigned int uiCol = -1;
@@ -100,7 +100,8 @@ bool CEntityManager::Clone(void)
 		std::cout << "Failed to clone Player\n";
 		return false;
 	}
-	clone->SetInputs(cKeyboardInputHandler->GetAllInputs());
+	clone->SetKeyInputs(cInputHandler->GetAllKeyboardInputs());
+	clone->SetMouseInputs(cInputHandler->GetAllMouseInputs());
 	m_cloneList.push_back(clone);
 
 	return true;

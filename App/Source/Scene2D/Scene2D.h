@@ -89,7 +89,7 @@ protected:
 	// Keyboard Controller singleton instance
 	CKeyboardController* cKeyboardController;
 
-	CKeyboardInputHandler* cKeyboardInputHandler;
+	CInputHandler* CInputHandler;
 
 	// A transformation matrix for controlling where to render the entities
 	glm::mat4 transform;

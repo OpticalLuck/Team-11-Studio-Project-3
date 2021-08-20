@@ -24,9 +24,6 @@
     <Filter Include="Manager2D">
       <UniqueIdentifier>{54f8f5f8-2e6a-42e3-9af7-09b8d09de77d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="KeyboardInputHandler">
-      <UniqueIdentifier>{a64d880b-e813-4454-ab71-ba91fdb27dff}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Command">
       <UniqueIdentifier>{9ec58048-9e19-41d9-8642-8e72a3b90c0e}</UniqueIdentifier>
     </Filter>
@@ -44,6 +41,9 @@
     </Filter>
     <Filter Include="LevelEditor">
       <UniqueIdentifier>{ab1fa9a1-e10a-4a02-9838-35d9d16b15a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="InputHandler">
+      <UniqueIdentifier>{a64d880b-e813-4454-ab71-ba91fdb27dff}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -107,9 +107,6 @@
     <ClCompile Include="Source\Scene2D\Interactables.cpp">
       <Filter>Entity2D</Filter>
     </ClCompile>
-    <ClCompile Include="Source\KeyboardInputHandler\CKeyboardInputHandler.cpp">
-      <Filter>KeyboardInputHandler</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Command\Command.cpp">
       <Filter>Command</Filter>
     </ClCompile>
@@ -157,6 +154,9 @@
     </ClCompile>
     <ClCompile Include="Source\Scene2D\Boss2D.cpp">
       <Filter>Entity2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\InputHandler\CInputHandler.cpp">
+      <Filter>InputHandler</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -217,9 +217,6 @@
     <ClInclude Include="Source\Scene2D\Camera2D.h">
       <Filter>Entity2D</Filter>
     </ClInclude>
-    <ClInclude Include="Source\KeyboardInputHandler\CKeyboardInputHandler.h">
-      <Filter>KeyboardInputHandler</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Command\Command.h">
       <Filter>Command</Filter>
     </ClInclude>
@@ -270,6 +267,9 @@
     </ClInclude>
     <ClInclude Include="Source\Scene2D\Boss2D.h">
       <Filter>Entity2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\InputHandler\CInputHandler.h">
+      <Filter>InputHandler</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

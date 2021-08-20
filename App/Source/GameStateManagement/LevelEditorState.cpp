@@ -642,7 +642,6 @@ void CLevelEditorState::ImGuiRender()
 
 	windowFlags =
 		ImGuiWindowFlags_AlwaysAutoResize |
-		ImGuiWindowFlags_NoMove |
 		ImGuiWindowFlags_NoResize |
 		ImGuiWindowFlags_NoCollapse;
 
