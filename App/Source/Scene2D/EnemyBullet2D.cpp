@@ -62,7 +62,9 @@ bool EnemyBullet2D::Init(float angle, glm::vec2 spawnPoint) {
 	collider2D->Init();
 	//Update collider to position
 	collider2D->SetPosition(glm::vec3(vTransform, 0.f));
-	collider2D->SetAngle(mAngle);
+	collider2D->SetAngle(Math::DegreeToRadian(mAngle));
+
+	return true;
 }
 
 void EnemyBullet2D::Update(const double dElapsedTime) {
@@ -71,7 +73,6 @@ void EnemyBullet2D::Update(const double dElapsedTime) {
 
 	//Update collider to position
 	collider2D->SetPosition(glm::vec3(vTransform, 0.f));
-	collider2D->SetAngle(mAngle);
 
 	//Collision code here...
 }

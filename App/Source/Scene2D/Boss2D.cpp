@@ -132,6 +132,7 @@ bool CBoss2D::Init(void) {
 	bulletAng = 0;
 	maxBulletTimer[(int)ATK::A_ATTACK] = int(2.f * float(cSettings->FPS));
 	maxBulletTimer[(int)ATK::A_CIRCLE] = int(0.15f * float(cSettings->FPS));
+	maxBulletTimer[(int)ATK::A_TWIN] = int(0.3f * float(cSettings->FPS));
 
 	bulletTimer = 0;
 
@@ -172,9 +173,9 @@ int CBoss2D::RandomiseTimer(bool atk) {
 	float value = 0; //In terms of seconds first
 
 	if (atk)
-		value = Math::RandFloatMinMax(3, 7.5f);
+		value = Math::RandFloatMinMax(3.5f, 8.f);
 	else
-		value = Math::RandFloatMinMax(1.5f, 4);
+		value = Math::RandFloatMinMax(1.5f, 5.f);
 
 	return int(value * (float)cSettings->FPS); //Convert to in terms of frames
 }
@@ -224,9 +225,14 @@ void CBoss2D::Update(const double dElapsedTime) {
 
 	if (currTarget) {
 		UpdateAttack((float)dElapsedTime);
-		
-		/*if (!WithinProjectedCamera(currTarget))
-			currTarget = nullptr;*/
+		if (arrAtkDuration[roundIndex][fsmIndex] == 0)
+			ShuffleNextAttack();
+
+		if (!WithinProjectedCamera(currTarget)) {
+			ResetCurrTimers();
+			DEBUG_MSG("BOSS: Going pack to passive...");
+			currTarget = nullptr;
+		}
 	}
 	else {
 		//Check if player is near and enable boss fight
@@ -239,15 +245,43 @@ void CBoss2D::Update(const double dElapsedTime) {
 
 }
 
+void CBoss2D::ResetCurrTimers(void) {
+	arrPauseDuration[roundIndex][fsmIndex] = currPauseDuration;
+	arrAtkDuration[roundIndex][fsmIndex] = currAtkDuration;
+}
+
+void CBoss2D::ShuffleNextAttack(void) {
+	ResetCurrTimers();
+	DEBUG_MSG("BOSS: Shuffling to next attack...");
+
+	fsmIndex++;
+	if (arrPauseDuration[roundIndex].size() == fsmIndex) { //Pushback next values
+		arrPauseDuration[roundIndex].push_back(RandomiseTimer(false));
+	}
+
+	if (arrAtkDuration[roundIndex].size() == fsmIndex) {
+		arrAtkDuration[roundIndex].push_back(RandomiseTimer(true));
+	}
+
+	if (arrATK[roundIndex].size() == fsmIndex) {
+		arrATK[roundIndex].push_back(RandomiseAttack());
+	}
+}
+
 void CBoss2D::UpdateAttack(float dElapsedTime) {
 	//Remove pause time if its 
 	if (isSeen == false && arrPauseDuration[roundIndex][fsmIndex] != 0) {
+		DEBUG_MSG("BOSS: Attacking!");
+
 		isSeen = true;
 		arrPauseDuration[roundIndex][fsmIndex] = 0;
 	}
 
 	if (arrPauseDuration[roundIndex][fsmIndex] > 0) {
 		arrPauseDuration[roundIndex][fsmIndex]--;
+
+		if (arrATK[roundIndex][fsmIndex] == ATK::A_ATTACK)
+			bulletAng = GetAngle(currTarget->vTransform);
 		return; //Dont attack if still in pause state
 	}
 
@@ -267,7 +301,9 @@ void CBoss2D::UpdateAttack(float dElapsedTime) {
 				break;
 			}
 
-		case ATK::A_CIRCLE: {
+		case ATK::A_CIRCLE:
+		case ATK::A_TWIN:
+		{
 			float angSpd = 60.f * dElapsedTime;
 
 			bulletAng -= angSpd;
@@ -275,7 +311,7 @@ void CBoss2D::UpdateAttack(float dElapsedTime) {
 		}
 
 		default:
-			std::cout << "WARNING: ARRATK ENUM IS UNRECOGNISED...\n";
+			DEBUG_MSG(" ARRATK ENUM IS UNRECOGNISED...");
 			break;
 	}
 
@@ -285,11 +321,36 @@ void CBoss2D::UpdateAttack(float dElapsedTime) {
 	bulletTimer = maxBulletTimer[(int)arrATK[roundIndex][fsmIndex]];
 
 	//Spawn bullet
-	EnemyBullet2D* bullet = new EnemyBullet2D;
-	bullet->Init(bulletAng, vTransform);
-	bullet->SetShader("2DColorShader");
+	switch (arrATK[roundIndex][fsmIndex]) {
+		case ATK::A_ATTACK: {
+			EnemyBullet2D* bullet = factory.CreateBullet(bulletAng, vTransform);
+			cEntityManager->PushEnemy(bullet);
 
-	cEntityManager->PushEnemy(bullet);
+			break;
+		}
+
+		case ATK::A_CIRCLE: {
+			for (int i = 0; i < 4; i++) {
+				EnemyBullet2D* bullet = factory.CreateBullet(bulletAng + (i * 90), vTransform);
+				cEntityManager->PushEnemy(bullet);
+			}
+
+			break;
+		}
+
+		case ATK::A_TWIN: {
+			for (int i = 0; i < 2; i++) {
+				EnemyBullet2D* bullet = factory.CreateBullet(bulletAng + (i * 180), vTransform);
+				cEntityManager->PushEnemy(bullet);
+			}
+
+			break;
+		}
+
+		default:
+
+			break;
+	}
 }
 
 void CBoss2D::PreRender(void) {

@@ -73,7 +73,10 @@ bool CEntityManager::EntityManagerInit(void)
 }
 
 void CEntityManager::PushEnemy(CEnemy2D* enemy) {
-	m_enemyList.push_back(enemy);
+	if (enemy)
+		m_enemyList.push_back(enemy);
+	else
+		DEBUG_MSG("ENEMY NOT ADDED AS IT IS A NULLPTR.");
 }
 
 bool CEntityManager::Clone(void)
