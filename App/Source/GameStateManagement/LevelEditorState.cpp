@@ -125,6 +125,10 @@ bool CLevelEditorState::Update(const double dElapsedTime)
 	{
 		eProperties.bToggleEditorWindow = !eProperties.bToggleEditorWindow;
 	}
+	if (cKeyboardController->IsKeyPressed(GLFW_KEY_G))
+	{
+		eProperties.bShowGrids = !eProperties.bShowGrids;
+	}
 
 	if (!CImGuiWindow::GetInstance()->WantCaptureMouse())
 	{
@@ -174,9 +178,12 @@ void CLevelEditorState::Render(void)
 	cLevelEditor->Render();
 	cLevelEditor->PostRender();
 
-	cLevelGrid->PreRender();
-	cLevelGrid->Render();
-	cLevelGrid->PostRender();
+	if (eProperties.bShowGrids)
+	{
+		cLevelGrid->PreRender();
+		cLevelGrid->Render();
+		cLevelGrid->PostRender();
+	}
 
 	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	//

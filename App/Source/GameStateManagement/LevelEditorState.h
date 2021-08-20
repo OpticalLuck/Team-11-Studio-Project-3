@@ -31,17 +31,17 @@ struct ActionState
 struct EditorProperties
 {
 	int iUndoCount = 0;
-
+	
+	bool bShowGrids = true;
+	bool bSaved = true;
 	bool bPlacedBlock = false;
 	bool bDeletedBlock = false;
-
-	bool bSaved = true;
 	bool bToggleCloseWindow = false;
 	bool bToggleEditorWindow = true;
 	bool bToggleHistoryWindow = true;
 	bool bHistoryUpdated = false;
-
 	bool bIsSelecting = false;
+	
 	glm::vec2 WideAreaSelectionStart = { 0 , 0 };
 	glm::vec2 WideAreaSelectionEnd = { 0 , 0 };
 
