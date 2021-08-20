@@ -46,6 +46,7 @@ CPlayer2D::CPlayer2D(void)
 	, iTempFrameCounter(0)
 	//, bDamaged(false)
 	, bIsClone(false)
+
 {
 	transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
 
@@ -292,6 +293,7 @@ void CPlayer2D::Update(const double dElapsedTime)
 
 	//COLLISION RESOLUTION ON Y_AXIS AND X_AXIS
 	int range = 3;
+	cPhysics2D.SetboolGrounded(false);
 	for (int i = 0; i < 2; i++)
 	{
 		for (int row = -range; row <= range; row++) //y
@@ -301,8 +303,7 @@ void CPlayer2D::Update(const double dElapsedTime)
 				int rowCheck = vTransform.y + row;
 				int colCheck = vTransform.x + col;
 
-				if (rowCheck < 0 || colCheck < 0 || rowCheck > cMap2D->GetLevelRow() - 1 || colCheck > cMap2D->GetLevelCol() - 1)
-					continue;
+				if (rowCheck < 0 || colCheck < 0 || rowCheck > cMap2D->GetLevelRow() - 1 || colCheck > cMap2D->GetLevelCol() - 1) continue;
 
 				if (cMap2D->GetCObject(colCheck, rowCheck))
 				{
@@ -312,15 +313,25 @@ void CPlayer2D::Update(const double dElapsedTime)
 					{
 						if (obj->GetCollider()->colliderType == Collider2D::COLLIDER_QUAD)
 						{
-							if(i == 0)
-								collider2D->ResolveAABB(obj->GetCollider(), Collider2D::Y);
-							else if (i == 1)
-								collider2D->ResolveAABB(obj->GetCollider(), Collider2D::X);
+							if (i == 0)
+							{
+								collider2D->ResolveAABB(obj->GetCollider(), Direction::UP);
+							}
+							else if (i == 1)								
+							{
+								collider2D->ResolveAABB(obj->GetCollider(), Direction::RIGHT);
+							}
+
+							if (std::get<1>(data) == Direction::UP)
+								cPhysics2D.SetboolGrounded(true);
 						}
 						else if (obj->GetCollider()->colliderType == Collider2D::COLLIDER_CIRCLE)
 						{
 							if(glm::dot(cPhysics2D.GetVelocity(), obj->vTransform - vTransform) > 0)
 								collider2D->ResolveAABBCircle(obj->GetCollider(), data, Collider2D::COLLIDER_QUAD);
+
+							if(std::get<1>(data) == Direction::DOWN)
+								cPhysics2D.SetboolGrounded(true);
 						}
 
 						vTransform = collider2D->position;
@@ -340,7 +351,9 @@ void CPlayer2D::Update(const double dElapsedTime)
 			}
 		}
 	}
-
+	cout << cPhysics2D.GetVelocity().x << ", " << cPhysics2D.GetVelocity().y << " | " << cPhysics2D.GetboolGrounded() << endl;
+	
+	
 	//BOUNDARY CHECK
 	//if (vTransform.y > cMap2D->GetLevelRow() - 1 || vTransform.x > cMap2D->GetLevelCol() - 1 || vTransform.y < -1 || vTransform.x < -1)
 	//{
@@ -509,6 +522,7 @@ void CPlayer2D::InputUpdate(double dt)
 	if (keyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::W])
 	{
 		velocity.y = fMovementSpeed;
+		cPhysics2D.SetboolGrounded(false);
 	}
 	else if (keyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::S])
 	{
@@ -530,6 +544,7 @@ void CPlayer2D::InputUpdate(double dt)
 	if (keyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::SPACE])
 	{
 		velocity.y = fJumpSpeed;
+		cPhysics2D.SetboolGrounded(false);
 	}
 
 	if (glm::length(velocity) > 0.f)
@@ -610,7 +625,9 @@ void CPlayer2D::LockWithinBoundary()
 {
 	glm::vec2 minVal = glm::vec2(0.5f, 0.f) - glm::vec2(collider2D->vec2Dimensions.x, 0);
 	minVal *= -1;
-	glm::vec2 maxVel = glm::vec2(cMap2D->GetLevelCol() - 3, cMap2D->GetLevelRow() - 3) - glm::vec2(0.5f - collider2D->vec2Dimensions.x, 0);
+
+	glm::vec2 mapDimensions = cMap2D->GetLevelLimit();
+	glm::vec2 maxVel = mapDimensions - glm::vec2(3.f, 3.f) + glm::vec2(0.5f - collider2D->vec2Dimensions.x, 0);
 
 	vTransform = glm::clamp(vTransform, minVal, maxVel);
 	collider2D->SetPosition(vTransform);
