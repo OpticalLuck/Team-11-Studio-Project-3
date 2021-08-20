@@ -32,6 +32,9 @@ struct EditorProperties
 {
 	int iUndoCount = 0;
 
+	bool bPlacedBlock = false;
+	bool bDeletedBlock = false;
+
 	bool bSaved = true;
 	bool bToggleCloseWindow = false;
 	bool bToggleEditorWindow = true;
@@ -77,6 +80,9 @@ struct EditorProperties
 		iUndoCount = 0;
 		bSaved = true;
 		bToggleCloseWindow = false;
+
+		bPlacedBlock = false;
+		bDeletedBlock = false;
 
 		bIsSelecting = false;
 		WideAreaSelectionStart = { 0 , 0 };

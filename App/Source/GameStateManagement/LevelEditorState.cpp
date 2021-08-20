@@ -204,6 +204,7 @@ bool CLevelEditorState::KeyboardShortcuts(void)
 		// DEBUG_MSG("Holding LSHIFT");
 		if (cMouseController->IsButtonPressed(CMouseController::LMB))
 		{
+			UpdateHistory();
 			eProperties.bIsSelecting = true;
 			DEBUG_MSG("Start Wide Area Fill");
 			eProperties.WideAreaSelectionStart = vMousePos;
@@ -217,6 +218,7 @@ bool CLevelEditorState::KeyboardShortcuts(void)
 
 		if (cMouseController->IsButtonPressed(CMouseController::RMB))
 		{
+			UpdateHistory();
 			eProperties.bIsSelecting = true;
 			DEBUG_MSG("Start Wide Area Delete");
 			eProperties.WideAreaSelectionStart = vMousePos;
@@ -451,34 +453,44 @@ void CLevelEditorState::MouseInput(double dElapsedTime)
 	{
 		// DEBUG_MSG("x:" << u16vec2FinalMousePosInEditor.x << " y:" << u16vec2FinalMousePosInEditor.y);
 		DEBUG_MSG("[x: " << vMousePos.x << ", y: " << vMousePos.y << "] Cell TileID: " << cLevelEditor->GetCell(vMousePos.x, vMousePos.y, false).iTileID);
-		if (cLevelEditor->GetCell(vMousePos.x, vMousePos.y).iTileID == 0)
+		if (cLevelEditor->GetCell(vMousePos.x, vMousePos.y).iTileID == 0 && activeTile != 0)
 		{
-			if (cMouseController->IsButtonPressed(CMouseController::LMB))
+			if (!eProperties.bPlacedBlock)
 			{
 				UpdateHistory();
 				eProperties.prevActions.push_back("Placed Tile");
+				eProperties.bPlacedBlock = true;
 			}
 
 			eProperties.bSaved = false;
 			cLevelEditor->UpdateCell(vMousePos.x, vMousePos.y, activeTile);
 		}
 	}
+	if (cMouseController->IsButtonReleased(CMouseController::LMB))
+	{
+		eProperties.bPlacedBlock = false;
+	}
 
 	if (cMouseController->IsButtonDown(CMouseController::RMB))
 	{
 		if (cLevelEditor->GetCell(vMousePos.x, vMousePos.y).iTileID != 0)
 		{
-			if (cMouseController->IsButtonPressed(CMouseController::RMB))
+			if (!eProperties.bDeletedBlock)
 			{
 				UpdateHistory();
 				eProperties.prevActions.push_back("Removed Tile");
+				eProperties.bDeletedBlock = true;
 			}
+
 
 			eProperties.bSaved = false;
 			cLevelEditor->UpdateCell(vMousePos.x, vMousePos.y, 0);
 		}
 	}
-
+	if (cMouseController->IsButtonReleased(CMouseController::RMB))
+	{
+		eProperties.bDeletedBlock = false;
+	}
 	if (cMouseController->GetMouseScrollStatus(CMouseController::SCROLL_TYPE_YOFFSET) > 0)
 	{
 		Camera2D::GetInstance()->UpdateZoom(Camera2D::GetInstance()->getTargetZoom() + 0.1);
