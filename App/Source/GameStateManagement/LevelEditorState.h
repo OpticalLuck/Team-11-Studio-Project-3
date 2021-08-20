@@ -24,6 +24,7 @@ struct EditorProperties
 {
 	bool bSaved = true;
 	bool bToggleCloseWindow = false;
+	bool bToggleEditorWindow = true;
 
 	bool bIsSelecting = false;
 	glm::vec2 WideAreaSelectionStart = { 0 , 0 };
@@ -61,6 +62,7 @@ struct EditorProperties
 	{
 		bSaved = true;
 		bToggleCloseWindow = false;
+		bToggleEditorWindow = true;
 
 		bIsSelecting = false;
 		WideAreaSelectionStart = { 0 , 0 };
@@ -119,7 +121,8 @@ protected:
 	void ImGuiRender(void);
 	void RenderCursor(void);
 
-	bool KeyboardShortcuts(void);
+	bool EditorShortcuts(void);
+	bool FileUtilShortcuts(void);
 	void AreaFill(void);
 	void AreaDelete(void);
 	void Undo(void);
