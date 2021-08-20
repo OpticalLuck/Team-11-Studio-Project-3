@@ -68,7 +68,7 @@ public:
 	bool bIsActive;
 
 protected:
-	enum DIRECTION
+	enum class DIRECTION
 	{
 		LEFT = 0,
 		RIGHT = 1,
@@ -126,6 +126,12 @@ protected:
 	// Current FSM
 	FSM sCurrentFSM;
 
+	//Current round
+	int roundIndex;
+
+	//Initial direction for that round
+	DIRECTION roundDir[5];
+
 	// Store health for combat
 	int health;
 
@@ -139,5 +145,8 @@ protected:
 
 	//Check if its within the projected camera of the player entity
 	bool WithinProjectedCamera(CPlayer2D* player);
+
+	//Randomise direction
+	DIRECTION RandomiseDir(void);
 };
 

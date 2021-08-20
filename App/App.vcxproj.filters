@@ -152,6 +152,9 @@
     <ClCompile Include="Source\Scene2D\EnemyBullet2D.cpp">
       <Filter>Entity2D\Enemy2D</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Scene2D\MobEnemy2D.cpp">
+      <Filter>Entity2D\Enemy2D</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h">
@@ -260,6 +263,9 @@
       <Filter>Entity2D\Enemy2D</Filter>
     </ClInclude>
     <ClInclude Include="Source\Scene2D\EnemyBullet2D.h">
+      <Filter>Entity2D\Enemy2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene2D\MobEnemy2D.h">
       <Filter>Entity2D\Enemy2D</Filter>
     </ClInclude>
   </ItemGroup>

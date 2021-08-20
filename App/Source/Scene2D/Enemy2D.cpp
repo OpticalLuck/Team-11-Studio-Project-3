@@ -50,6 +50,12 @@ CEnemy2D::CEnemy2D(void)
 
 	//type = ENEMY;
 	int chance = Math::RandIntMinMax(0, 100);
+
+	//Store initial value of each round
+	for (int i = 0; i < 5; i++) {
+		roundDir[i] = RandomiseDir();
+	}
+	dir = roundDir[0];
 }
 
 /**
@@ -111,11 +117,18 @@ bool CEnemy2D::Init(void)
 	//CS: Create the Quad Mesh using the mesh builder
 	quadMesh = CMeshBuilder::GenerateQuad(glm::vec4(1, 1, 1, 1), cSettings->TILE_WIDTH, cSettings->TILE_HEIGHT);
 
+	roundIndex = 0;
+
 	// Load the enemy2D texture
 	if (LoadTexture("Image/Scene2D_EnemyTile.tga", iTextureID) == false)
 	{
 		std::cout << "Failed to load enemy2D tile texture" << std::endl;
 		return false;
+	}
+
+	//Store initial value of each round
+	for (int i = 0; i < 5; i++) {
+		roundDir[i] = RandomiseDir();
 	}
 
 	//CS: Init the color to white
@@ -158,6 +171,10 @@ CPlayer2D* CEnemy2D::GetNearestTarget(float dist) {
 		nearest = nullptr;
 
 	return nearest;
+}
+
+CEnemy2D::DIRECTION CEnemy2D::RandomiseDir(void) {
+	return (DIRECTION)Math::RandIntMinMax(0, (int)DIRECTION::NUM_DIRECTIONS - 1);
 }
 
 float CEnemy2D::GetAngle(glm::vec2 pos) {
@@ -260,9 +277,26 @@ void CEnemy2D::Render(void)
 	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
 
 	transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-	transform = glm::translate(transform, glm::vec3(vec2UVCoordinate.x,
-													vec2UVCoordinate.y,
-													0.0f));
+
+	//Get camera transforms and use them instead
+	glm::vec2 offset = glm::vec2((cSettings->NUM_TILES_XAXIS / 2.f) - 0.5f, (cSettings->NUM_TILES_YAXIS / 2.f) - 0.5f);
+	glm::vec2 cameraPos = camera->getCurrPos();
+
+	glm::vec2 IndexPos = vTransform;
+
+	glm::vec2 actualPos = IndexPos - cameraPos + offset;
+	actualPos = cSettings->ConvertIndexToUVSpace(actualPos);
+
+	float clampOffset = cSettings->ConvertIndexToUVSpace(CSettings::AXIS::x, 1, false);
+	clampOffset = (clampOffset + 1);
+
+	float clampX = 1.0f + clampOffset;
+	float clampY = 1.0f + clampOffset;
+	if (actualPos.x <= -clampX || actualPos.x >= clampX || actualPos.y <= -clampY || actualPos.y >= clampY)
+		return; //Exit code if enemy is too far to be rendered
+
+	transform = glm::translate(transform, glm::vec3(actualPos.x, actualPos.y, 0.f));
+
 	/*if (facing == LEFT)
 		transform = glm::rotate(transform, glm::radians(180.f), glm::vec3(0.f, 1.f, 0.f));*/
 	// Update the shaders with the latest transform

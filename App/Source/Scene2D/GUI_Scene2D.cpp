@@ -104,7 +104,7 @@ void CGUI_Scene2D::Update(const double dElapsedTime)
 	}
 
 	fInterval++;
-	iSeconds = fInterval / 110;
+	iSeconds = int(fInterval / 110.f);
 
 	// Create an invisible window which covers the entire OpenGL window
 	ImGui::Begin("Invisible window", NULL, window_flags);

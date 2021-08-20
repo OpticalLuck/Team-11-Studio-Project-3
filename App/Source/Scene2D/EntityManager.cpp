@@ -1,6 +1,7 @@
 #include "EntityManager.h"
 
 #include "EnemyBullet2D.h"
+#include "MobEnemy2D.h"
 
 CEntityManager::CEntityManager()
 	: cPlayer2D(NULL)
@@ -45,9 +46,9 @@ bool CEntityManager::EntityManagerInit(void)
 	}
 
 	//enemy init
-	if (cMap2D->FindValue(300, uiRow, uiCol) == true)
+	if (cMap2D->FindValue(300, uiRow, uiCol))
 	{
-		cEnemy2D = new CEnemy2D;
+		cEnemy2D = new CMobEnemy2D;
 		cEnemy2D->SetShader("2DColorShader");
 		m_enemyList.push_back(cEnemy2D);
 		if (cEnemy2D->Init() == false)

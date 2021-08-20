@@ -514,8 +514,8 @@ bool CMap2D::FindValue(const int iValue, unsigned int& uirRow, unsigned int& uir
 	for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++) {
 		CObject2D* obj = arrObject[uiCurLevel][i];
 		if (obj->Getvalue() == iValue) {
-			uirCol = obj->vTransform.x;
-			uirRow = obj->vTransform.y; //For now keep the same
+			uirCol = (unsigned int)obj->vTransform.x;
+			uirRow = (unsigned int)obj->vTransform.y;
 
 			return true;
 		}

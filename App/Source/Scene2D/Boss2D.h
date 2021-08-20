@@ -57,7 +57,6 @@ class CBoss2D : public CEnemy2D
 
 		std::vector<ATK>* arrATK; //Current attack during current round
 		int fsmIndex; //Current index of where its at in the array
-		int roundIndex; //Current round
 
 		int currAtkDuration;
 		int currPauseDuration;
