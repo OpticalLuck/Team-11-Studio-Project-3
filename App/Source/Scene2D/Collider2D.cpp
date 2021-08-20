@@ -17,13 +17,13 @@ Collision Collider2D::CheckAABBCollision(Collider2D* obj, Collider2D* target)
 	bool collisionY = abs(obj->position.y - target->position.y) <= obj->vec2Dimensions.y + target->vec2Dimensions.y;
 
 
-	float diffX = obj->position.x - target->position.x;
-	float diffY = obj->position.y - target->position.y;
+	float diffX = (obj->position.x + obj->vec2Dimensions.x) - (target->position.x + target->vec2Dimensions.x);
+	float diffY = (obj->position.y + obj->vec2Dimensions.y) - (target->position.y + target->vec2Dimensions.y);
 
 	Direction dir;
+	
 	if (abs(diffX) > abs(diffY))
 	{
-
 		if (diffX > 0)
 			dir = RIGHT;
 		else
@@ -32,7 +32,11 @@ Collision Collider2D::CheckAABBCollision(Collider2D* obj, Collider2D* target)
 	else
 	{
 		if (diffY > 0)
+		{
+			if ((collisionX && collisionY))
+				cout << "pain and suffering";
 			dir = UP;
+		}
 		else
 			dir = DOWN;
 	}

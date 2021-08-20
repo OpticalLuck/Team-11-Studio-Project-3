@@ -294,6 +294,9 @@ void CPlayer2D::Update(const double dElapsedTime)
 	//COLLISION RESOLUTION ON Y_AXIS AND X_AXIS
 	int range = 3;
 	cPhysics2D.SetboolGrounded(false);
+
+	vector<tuple<int, CObject2D*, float>> aabbVector;
+
 	for (int i = 0; i < 2; i++)
 	{
 		for (int row = -range; row <= range; row++) //y
@@ -304,53 +307,58 @@ void CPlayer2D::Update(const double dElapsedTime)
 				int colCheck = vTransform.x + col;
 
 				if (rowCheck < 0 || colCheck < 0 || rowCheck > cMap2D->GetLevelRow() - 1 || colCheck > cMap2D->GetLevelCol() - 1) continue;
-
 				if (cMap2D->GetCObject(colCheck, rowCheck))
 				{
-					CObject2D* obj = cMap2D->GetCObject(colCheck, rowCheck);;
-					Collision data = (collider2D->CollideWith(cMap2D->GetCObject(colCheck, rowCheck)->GetCollider()));
-					if (std::get<0>(data))
-					{
-						if (obj->GetCollider()->colliderType == Collider2D::COLLIDER_QUAD)
-						{
-							if (i == 0)
-							{
-								collider2D->ResolveAABB(obj->GetCollider(), Direction::UP);
-							}
-							else if (i == 1)								
-							{
-								collider2D->ResolveAABB(obj->GetCollider(), Direction::RIGHT);
-							}
-
-							if (std::get<1>(data) == Direction::UP)
-								cPhysics2D.SetboolGrounded(true);
-						}
-						else if (obj->GetCollider()->colliderType == Collider2D::COLLIDER_CIRCLE)
-						{
-							if(glm::dot(cPhysics2D.GetVelocity(), obj->vTransform - vTransform) > 0)
-								collider2D->ResolveAABBCircle(obj->GetCollider(), data, Collider2D::COLLIDER_QUAD);
-
-							if(std::get<1>(data) == Direction::DOWN)
-								cPhysics2D.SetboolGrounded(true);
-						}
-
-						vTransform = collider2D->position;
-						obj->vTransform = obj->GetCollider()->position;
-
-						if (obj->type == CObject2D::ENTITY_TYPE::INTERACTABLES)
-						{
-							if (static_cast<Interactables*>(obj)->interactableType == Interactables::INTERACTABLE_TYPE::BOULDER)
-							{
-								glm::vec2 direction = glm::normalize(obj->vTransform - vTransform);
-								static_cast<Boulder2D*>(obj)->GetPhysics().SetForce(glm::vec2(120.f, 0) * direction);
-								cPhysics2D.SetVelocity(glm::vec2(0.f));
-							}
-						}
-					}
+					CObject2D* obj = cMap2D->GetCObject(colCheck, rowCheck);
+					float distance = glm::length( obj->vTransform - vTransform );
+					aabbVector.push_back({ i, obj, distance });
 				}
 			}
 		}
 	}
+	sort(aabbVector.begin(), aabbVector.end(), [](const std::tuple<int, CObject2D*, float>& a, const std::tuple<int, CObject2D*, float>& b)
+	{
+		return std::get<2>(a) < std::get<2>(b);
+	});
+
+	for (auto aabbTuple : aabbVector)
+	{
+		CObject2D* obj = std::get<1>(aabbTuple);
+		Collision data = (collider2D->CollideWith(obj->GetCollider()));
+		if (std::get<0>(data))
+		{
+			if (obj->GetCollider()->colliderType == Collider2D::COLLIDER_QUAD)
+			{
+				collider2D->ResolveAABB(obj->GetCollider(), Direction::UP);
+				collider2D->ResolveAABB(obj->GetCollider(), Direction::RIGHT);
+
+				if (std::get<1>(data) == Direction::UP)
+					cPhysics2D.SetboolGrounded(true);
+			}
+			else if (obj->GetCollider()->colliderType == Collider2D::COLLIDER_CIRCLE)
+			{
+				if (glm::dot(cPhysics2D.GetVelocity(), obj->vTransform - vTransform) > 0)
+					collider2D->ResolveAABBCircle(obj->GetCollider(), data, Collider2D::COLLIDER_QUAD);
+
+				if (std::get<1>(data) == Direction::DOWN)
+					cPhysics2D.SetboolGrounded(true);
+			}
+
+			vTransform = collider2D->position;
+			obj->vTransform = obj->GetCollider()->position;
+
+			if (obj->type == CObject2D::ENTITY_TYPE::INTERACTABLES)
+			{
+				if (static_cast<Interactables*>(obj)->interactableType == Interactables::INTERACTABLE_TYPE::BOULDER)
+				{
+					glm::vec2 direction = glm::normalize(obj->vTransform - vTransform);
+					static_cast<Boulder2D*>(obj)->GetPhysics().SetForce(glm::vec2(120.f, 0) * direction);
+					cPhysics2D.SetVelocity(glm::vec2(0.f));
+				}
+			}
+		}
+	}
+
 	cout << cPhysics2D.GetVelocity().x << ", " << cPhysics2D.GetVelocity().y << " | " << cPhysics2D.GetboolGrounded() << endl;
 	
 	
