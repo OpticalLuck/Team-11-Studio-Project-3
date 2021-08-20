@@ -138,7 +138,7 @@ void CLevelEditor::PostRender()
 /**
 @brief Creates a new level in m_CurrentLevel
 */
-void CLevelEditor::CreateLevel(std::string levelName, uint32_t iWorldWidth, uint32_t iWorldHeight)
+void CLevelEditor::CreateLevel(std::string levelName, unsigned int iWorldWidth, unsigned int iWorldHeight)
 {
     // Reload the level data
     ResetParams();
@@ -270,9 +270,19 @@ std::vector<Level> CLevelEditor::GetLevels(void)
     return m_Levels;
 }
 
-Level CLevelEditor::GetCurrentLevel(void)
+Level CLevelEditor::GetCurrentLevelData(void)
 {
     return currentLevel;
+}
+
+std::vector<std::vector<sCell>> CLevelEditor::GetCurrentLevel(void)
+{
+    return m_CurrentLevel;
+}
+
+void CLevelEditor::SetCurrentLevel(std::vector<std::vector<sCell>> levelArr)
+{
+    m_CurrentLevel = levelArr;
 }
 
 /**

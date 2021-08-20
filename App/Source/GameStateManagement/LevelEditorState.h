@@ -8,9 +8,9 @@
  */
 
 #include "GameStateBase.h"
-#include "../KeyboardInputHandler/CKeyboardInputHandler.h"
 #include "../LevelEditor/LevelEditor.h"
 #include "../LevelEditor/LevelGrid.h"
+#include <Inputs/KeyboardController.h>
 #include "Inputs/MouseController.h"
 
 #ifndef IMGUI_ACTIVE
@@ -19,6 +19,41 @@
 #include "GUI\backends\imgui_impl_opengl3.h"
 #define IMGUI_ACTIVE
 #endif
+
+struct EditorProperties
+{
+	bool bIsSelecting = false;
+	glm::vec2 WideAreaSelectionStart = { 0 , 0 };
+	glm::vec2 WideAreaSelectionEnd = { 0 , 0 };
+
+	std::vector<std::vector<std::vector<sCell>>> undoLevels;
+	std::vector<std::vector<std::vector<sCell>>> redoLevels;
+
+	void RecalculateStartEndIndex(int& startXIndex, int& endXIndex, int& startYIndex, int& endYIndex)
+	{
+		if (this->WideAreaSelectionStart.x < this->WideAreaSelectionEnd.x)
+		{
+			startXIndex = this->WideAreaSelectionStart.x;
+			endXIndex = this->WideAreaSelectionEnd.x;
+		}
+		else
+		{
+			startXIndex = this->WideAreaSelectionEnd.x;
+			endXIndex = this->WideAreaSelectionStart.x;
+		}
+
+		if (this->WideAreaSelectionStart.y < this->WideAreaSelectionEnd.y)
+		{
+			startYIndex = this->WideAreaSelectionStart.y;
+			endYIndex = this->WideAreaSelectionEnd.y;
+		}
+		else
+		{
+			startYIndex = this->WideAreaSelectionEnd.y;
+			endYIndex = this->WideAreaSelectionStart.y;
+		}
+	}
+};
 
 class CLevelEditorState : public CGameStateBase
 {
@@ -39,8 +74,9 @@ public:
 
 protected:
 
-	glm::i32vec2 vMousePos;
+	EditorProperties eProperties;
 
+	glm::i32vec2 vMousePos;
 	glm::mat4 transform;
 
 	unsigned FBO, RBO, textureColorBuffer;
@@ -50,20 +86,26 @@ protected:
 
 	CSettings*					cSettings;
 
-	CKeyboardInputHandler*		cKeyboardInputHandler;
+	CKeyboardController* 		cKeyboardController;
 	CMouseController*			cMouseController;
 	CLevelEditor*				cLevelEditor;
 	CLevelGrid*					cLevelGrid;
 
 	int activeTile;
 
-	void MoveCamera(void);
+	void MoveCamera(double dElapsedTime);
 	void ScaleMap(void);
-	void MouseInput(void);
+	void MouseInput(double dElapsedTime);
 
 	void GenerateQuadVAO(void);
 	void GenerateFBO(void);
 	void RenderQuad(unsigned int iTextureID);
 	void ImGuiRender(void);
 	void RenderCursor(void);
+
+	bool KeyboardShortcuts(void);
+	void AreaFill(void);
+	void AreaDelete(void);
+	void Undo(void);
+	void Redo(void);
 };

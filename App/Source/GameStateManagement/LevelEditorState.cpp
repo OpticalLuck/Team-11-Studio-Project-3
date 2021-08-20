@@ -12,9 +12,6 @@
 // Include CGameStateManager
 #include "GameStateManager.h"
 
-// Include CKeyboardController
-#include "Inputs/KeyboardController.h"
-
 #include "System/Debug.h"
 
 #include "Math/MyMath.h"
@@ -32,7 +29,7 @@ using namespace std;
  @brief Constructor
  */
 CLevelEditorState::CLevelEditorState(void)
-	: cKeyboardInputHandler(NULL)
+	: cKeyboardController(NULL)
 	, cLevelEditor(NULL)
 	, cMouseController(NULL)
 	, cSettings(NULL)
@@ -51,7 +48,7 @@ CLevelEditorState::~CLevelEditorState(void)
 	glDeleteVertexArrays(1, &quadVAO);
 	glDeleteBuffers(1, &quadVBO);
 
-	cKeyboardInputHandler = NULL;
+	cKeyboardController = NULL;
 	cLevelEditor = NULL;
 	cMouseController = NULL;
 	cSettings = NULL;
@@ -93,8 +90,7 @@ bool CLevelEditorState::Init(void)
 
 	cMouseController = CMouseController::GetInstance();
 
-	cKeyboardInputHandler = CKeyboardInputHandler::GetInstance();
-	cKeyboardInputHandler->Init();
+	cKeyboardController = CKeyboardController::GetInstance();
 
 	return true;
 }
@@ -111,10 +107,10 @@ bool CLevelEditorState::Update(const double dElapsedTime)
 	vMousePos.x = Math::Clamp((float)vMousePos.x, 0.f, (float)cLevelEditor->iWorldWidth - 1);
 	vMousePos.y = Math::Clamp((float)vMousePos.y, 0.f, (float)cLevelEditor->iWorldHeight - 1);
 
-	if (CKeyboardController::GetInstance()->IsKeyReleased(GLFW_KEY_ESCAPE))
+	if (cKeyboardController->IsKeyReleased(GLFW_KEY_ESCAPE))
 	{
 		// Reset the CKeyboardController
-		CKeyboardController::GetInstance()->Reset();
+		cKeyboardController->Reset();
 
 		// Load the menu state
 		cout << "Loading PauseState" << endl;
@@ -122,21 +118,36 @@ bool CLevelEditorState::Update(const double dElapsedTime)
 		return true;
 	}
 
-	MoveCamera();
+	if (!CImGuiWindow::GetInstance()->WantCaptureMouse())
+	{
+		if (!KeyboardShortcuts())
+			MouseInput(dElapsedTime);
+
+		if (vMousePos.x - 4 < (Camera2D::GetInstance()->getCurrPos().x - cSettings->NUM_TILES_XAXIS * 0.5) / Camera2D::GetInstance()->getZoom() ||
+			vMousePos.x + 4 > (Camera2D::GetInstance()->getCurrPos().x + cSettings->NUM_TILES_XAXIS * 0.5) / Camera2D::GetInstance()->getZoom())
+		{
+			Camera2D::GetInstance()->MoveTarget((vMousePos.x - Camera2D::GetInstance()->getCurrPos().x) * dElapsedTime * 0.5, 0);
+		}
+
+		if (vMousePos.y - 4 < (Camera2D::GetInstance()->getCurrPos().y - cSettings->NUM_TILES_YAXIS * 0.5) / Camera2D::GetInstance()->getZoom() ||
+			vMousePos.y + 4 > (Camera2D::GetInstance()->getCurrPos().y + cSettings->NUM_TILES_YAXIS * 0.5) / Camera2D::GetInstance()->getZoom())
+		{
+			Camera2D::GetInstance()->MoveTarget(0, (vMousePos.y - Camera2D::GetInstance()->getCurrPos().y) * dElapsedTime * 0.5);
+		}
+	}
+
+	MoveCamera(dElapsedTime);
 	ScaleMap();
 
-	if (CKeyboardController::GetInstance()->IsKeyDown(GLFW_KEY_4))
+	if (cKeyboardController->IsKeyDown(GLFW_KEY_4))
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	}
-	if (CKeyboardController::GetInstance()->IsKeyDown(GLFW_KEY_3))
+	if (cKeyboardController->IsKeyDown(GLFW_KEY_3))
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
 
-
-	if (!CImGuiWindow::GetInstance()->WantCaptureMouse())
-		MouseInput();
 
 	return true;
 }
@@ -178,21 +189,143 @@ void CLevelEditorState::Destroy(void)
 }
 
 
-void CLevelEditorState::MoveCamera(void)
+bool CLevelEditorState::KeyboardShortcuts(void)
 {
-	if (CKeyboardController::GetInstance()->IsKeyDown(GLFW_KEY_W))
+	// CTRL+Z - Undo
+	// CTRL+Y - Redo
+	// CTRL+S - Save
+	// ESCAPE - Close
+
+	if (cKeyboardController->IsKeyDown(GLFW_KEY_LEFT_SHIFT))
+	{
+		// DEBUG_MSG("Holding LSHIFT");
+		if (cMouseController->IsButtonPressed(CMouseController::LMB))
+		{
+			eProperties.bIsSelecting = true;
+			DEBUG_MSG("Start Wide Area Fill");
+			eProperties.WideAreaSelectionStart = vMousePos;
+		}
+		else if (cMouseController->IsButtonReleased(CMouseController::LMB))
+		{
+			eProperties.bIsSelecting = false;
+			DEBUG_MSG("End Wide Area Fill");
+			AreaFill();
+		}
+
+		if (cMouseController->IsButtonPressed(CMouseController::RMB))
+		{
+			eProperties.bIsSelecting = true;
+			DEBUG_MSG("Start Wide Area Delete");
+			eProperties.WideAreaSelectionStart = vMousePos;
+		}
+		else if (cMouseController->IsButtonReleased(CMouseController::RMB))
+		{
+			eProperties.bIsSelecting = false;
+			DEBUG_MSG("End Wide Area Delete");
+			AreaDelete();
+		}
+
+		eProperties.WideAreaSelectionEnd = vMousePos;
+		return true;
+	}
+	else 
+		eProperties.bIsSelecting = false;
+
+	if (cKeyboardController->IsKeyDown(GLFW_KEY_LEFT_CONTROL))
+	{
+		if (cKeyboardController->IsKeyPressed(GLFW_KEY_Z))
+		{
+			Undo();
+		}
+		else if (cKeyboardController->IsKeyPressed(GLFW_KEY_Y))
+		{
+			Redo();
+		}
+		return false;
+	}
+
+	return false;
+}
+
+void CLevelEditorState::AreaFill(void)
+{
+	eProperties.undoLevels.push_back(cLevelEditor->GetCurrentLevel());
+	eProperties.redoLevels.clear();
+
+	int startXIndex = 0;
+	int endXIndex = 0;
+	int startYIndex = 0;
+	int	endYIndex = 0;
+
+	eProperties.RecalculateStartEndIndex(startXIndex, endXIndex, startYIndex, endYIndex);
+
+	for (int iRow = startYIndex; iRow <= endYIndex; ++iRow)
+	{
+		for (int iCol = startXIndex; iCol <= endXIndex; ++iCol)
+		{
+			if (cLevelEditor->GetCell(iCol, iRow).iTileID == 0)
+				cLevelEditor->UpdateCell(iCol, iRow, activeTile);
+		}
+	}
+}
+
+void CLevelEditorState::AreaDelete(void)
+{
+	eProperties.undoLevels.push_back(cLevelEditor->GetCurrentLevel());
+	eProperties.redoLevels.clear();
+
+	int startXIndex = 0;
+	int endXIndex = 0;
+	int startYIndex = 0;
+	int	endYIndex = 0;
+
+	eProperties.RecalculateStartEndIndex(startXIndex, endXIndex, startYIndex, endYIndex);
+
+	for (int iRow = startYIndex; iRow <= endYIndex; ++iRow)
+	{
+		for (int iCol = startXIndex; iCol <= endXIndex; ++iCol)
+		{
+			cLevelEditor->UpdateCell(iCol, iRow, 0);
+		}
+	}
+}
+
+void CLevelEditorState::Undo(void)
+{
+	if (eProperties.undoLevels.size() == 0)
+		return;
+
+	eProperties.redoLevels.push_back(cLevelEditor->GetCurrentLevel());
+	cLevelEditor->SetCurrentLevel(eProperties.undoLevels.back());
+	eProperties.undoLevels.pop_back();
+}
+
+void CLevelEditorState::Redo(void)
+{
+	if (eProperties.redoLevels.size() == 0)
+		return;
+
+	eProperties.undoLevels.push_back(cLevelEditor->GetCurrentLevel());
+	cLevelEditor->SetCurrentLevel(eProperties.redoLevels.back());
+	eProperties.redoLevels.pop_back();
+}
+
+void CLevelEditorState::MoveCamera(double dElapsedTime)
+{
+
+	if (cKeyboardController->IsKeyDown(GLFW_KEY_W))
 	{
 		Camera2D::GetInstance()->UpdateTarget(glm::vec2(Camera2D::GetInstance()->getTarget().x, Camera2D::GetInstance()->getTarget().y + 0.2));
 	}
-	if (CKeyboardController::GetInstance()->IsKeyDown(GLFW_KEY_S))
+	if (cKeyboardController->IsKeyDown(GLFW_KEY_S))
 	{
 		Camera2D::GetInstance()->UpdateTarget(glm::vec2(Camera2D::GetInstance()->getTarget().x, Camera2D::GetInstance()->getTarget().y - 0.2));
 	}
-	if (CKeyboardController::GetInstance()->IsKeyDown(GLFW_KEY_A))
+	if (cKeyboardController->IsKeyDown(GLFW_KEY_A))
 	{
 		Camera2D::GetInstance()->UpdateTarget(glm::vec2(Camera2D::GetInstance()->getTarget().x - 0.2, Camera2D::GetInstance()->getTarget().y));
 	}
-	if (CKeyboardController::GetInstance()->IsKeyDown(GLFW_KEY_D))
+	if (cKeyboardController->IsKeyDown(GLFW_KEY_D))
 	{
 		Camera2D::GetInstance()->UpdateTarget(glm::vec2(Camera2D::GetInstance()->getTarget().x + 0.2, Camera2D::GetInstance()->getTarget().y));
 	}
@@ -226,24 +359,30 @@ void CLevelEditorState::ScaleMap(void)
 
 }
 
-void CLevelEditorState::MouseInput(void)
+void CLevelEditorState::MouseInput(double dElapsedTime)
 {
 	if (cMouseController->IsButtonDown(CMouseController::LMB))
 	{
 		// DEBUG_MSG("x:" << u16vec2FinalMousePosInEditor.x << " y:" << u16vec2FinalMousePosInEditor.y);
 		DEBUG_MSG("[x: " << vMousePos.x << ", y: " << vMousePos.y << "] Cell TileID: " << cLevelEditor->GetCell(vMousePos.x, vMousePos.y, false).iTileID);
-		if (cLevelEditor->GetCell(vMousePos.x, vMousePos.y, false).iTileID == 0)
+		if (cLevelEditor->GetCell(vMousePos.x, vMousePos.y).iTileID == 0)
 		{
-			cLevelEditor->UpdateCell(vMousePos.x, vMousePos.y, activeTile, false);
+			eProperties.undoLevels.push_back(cLevelEditor->GetCurrentLevel());
+			eProperties.redoLevels.clear();
+
+			cLevelEditor->UpdateCell(vMousePos.x, vMousePos.y, activeTile);
 		}
 	}
 
 	if (cMouseController->IsButtonDown(CMouseController::RMB))
 	{
-		// DEBUG_MSG("x:" << u16vec2FinalMousePosInEditor.x << " y:" << u16vec2FinalMousePosInEditor.y);
-		if (cLevelEditor->GetCell(vMousePos.x, vMousePos.y, false).iTileID != 0)
+
+		if (cLevelEditor->GetCell(vMousePos.x, vMousePos.y).iTileID != 0)
 		{
-			cLevelEditor->UpdateCell(vMousePos.x, vMousePos.y, 0, false);
+			eProperties.undoLevels.push_back(cLevelEditor->GetCurrentLevel());
+			eProperties.redoLevels.clear();
+
+			cLevelEditor->UpdateCell(vMousePos.x, vMousePos.y, 0);
 		}
 	}
 
@@ -330,8 +469,8 @@ void CLevelEditorState::ImGuiRender()
 	{
 		if (ImGui::BeginMenu("File"))
 		{
-			std::string saveString = "Save " + cLevelEditor->GetCurrentLevel().LevelName;
-			std::string closeString = "Close " + cLevelEditor->GetCurrentLevel().LevelName;
+			std::string saveString = "Save " + cLevelEditor->GetCurrentLevelData().LevelName;
+			std::string closeString = "Close " + cLevelEditor->GetCurrentLevelData().LevelName;
 
 			if (ImGui::MenuItem(saveString.c_str(), "CTRL+S")) cLevelEditor->SaveMap();
 			if (ImGui::MenuItem(closeString.c_str(), "ESCAPE"))
@@ -458,33 +597,68 @@ void CLevelEditorState::ImGuiRender()
 void CLevelEditorState::RenderCursor()
 {
 	// Activate blending mode
-	glActiveTexture(GL_TEXTURE0);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	glBindVertexArray(quadVAO);
-
-	glm::vec2 offset = glm::vec2(float(CSettings::GetInstance()->NUM_TILES_XAXIS / 2.f), float(CSettings::GetInstance()->NUM_TILES_YAXIS / 2.f));
-	glm::vec2 cameraPos = Camera2D::GetInstance()->getCurrPos();
-
-	glm::vec2 objCamPos = glm::vec2(vMousePos.x, vMousePos.y) - cameraPos + offset;
-	glm::vec2 actualPos = CSettings::GetInstance()->ConvertIndexToUVSpace(objCamPos) * Camera2D::GetInstance()->getZoom();
-
-	transform = glm::mat4(1.f);
-	transform = glm::translate(transform, glm::vec3(actualPos.x, actualPos.y, 0.f));
-	transform = glm::scale(transform, glm::vec3(Camera2D::GetInstance()->getZoom()));
-	transform = glm::scale(transform, glm::vec3(CSettings::GetInstance()->TILE_WIDTH, CSettings::GetInstance()->TILE_HEIGHT, 1.f));
-
-	CShaderManager::GetInstance()->Use("2DColorShader");
-	CShaderManager::GetInstance()->activeShader->setInt("texture1", 0);
-	CShaderManager::GetInstance()->activeShader->setVec4("runtime_color", glm::vec4(1.f, 1.f, 1.f, 0.6f));
-	CShaderManager::GetInstance()->activeShader->setMat4("transform", transform);
-
 	if (activeTile != 0)
-		RenderQuad(CTextureManager::GetInstance()->MapOfTextureIDs.at(activeTile));
-	
-	glBindVertexArray(0);
+	{
+		glActiveTexture(GL_TEXTURE0);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	// Disable blending
-	glDisable(GL_BLEND);
+		glBindVertexArray(quadVAO);
+
+		glm::vec2 offset = glm::vec2(float(CSettings::GetInstance()->NUM_TILES_XAXIS / 2.f), float(CSettings::GetInstance()->NUM_TILES_YAXIS / 2.f));
+		glm::vec2 cameraPos = Camera2D::GetInstance()->getCurrPos();
+
+		if (!eProperties.bIsSelecting)
+		{
+			glm::vec2 objCamPos = glm::vec2(vMousePos.x, vMousePos.y) - cameraPos + offset;
+			glm::vec2 actualPos = CSettings::GetInstance()->ConvertIndexToUVSpace(objCamPos) * Camera2D::GetInstance()->getZoom();
+
+			transform = glm::mat4(1.f);
+			transform = glm::translate(transform, glm::vec3(actualPos.x, actualPos.y, 0.f));
+			transform = glm::scale(transform, glm::vec3(Camera2D::GetInstance()->getZoom()));
+			transform = glm::scale(transform, glm::vec3(CSettings::GetInstance()->TILE_WIDTH, CSettings::GetInstance()->TILE_HEIGHT, 1.f));
+
+			CShaderManager::GetInstance()->Use("2DColorShader");
+			CShaderManager::GetInstance()->activeShader->setInt("texture1", 0);
+			CShaderManager::GetInstance()->activeShader->setVec4("runtime_color", glm::vec4(1.f, 1.f, 1.f, 0.6f));
+			CShaderManager::GetInstance()->activeShader->setMat4("transform", transform);
+			
+			RenderQuad(CTextureManager::GetInstance()->MapOfTextureIDs.at(activeTile));
+		}
+		else
+		{
+			int startXIndex = 0;
+			int endXIndex = 0;
+			int startYIndex = 0;
+			int	endYIndex = 0;
+
+			eProperties.RecalculateStartEndIndex(startXIndex, endXIndex, startYIndex, endYIndex);
+
+			for (int iRow = startYIndex; iRow <= endYIndex; ++iRow)
+			{
+				for (int iCol = startXIndex; iCol <= endXIndex; ++iCol)
+				{
+					glm::vec2 objCamPos = glm::vec2(iCol, iRow) - cameraPos + offset;
+					glm::vec2 actualPos = CSettings::GetInstance()->ConvertIndexToUVSpace(objCamPos) * Camera2D::GetInstance()->getZoom();
+
+					transform = glm::mat4(1.f);
+					transform = glm::translate(transform, glm::vec3(actualPos.x, actualPos.y, 0.f));
+					transform = glm::scale(transform, glm::vec3(Camera2D::GetInstance()->getZoom()));
+					transform = glm::scale(transform, glm::vec3(CSettings::GetInstance()->TILE_WIDTH, CSettings::GetInstance()->TILE_HEIGHT, 1.f));
+
+					CShaderManager::GetInstance()->Use("2DColorShader");
+					CShaderManager::GetInstance()->activeShader->setInt("texture1", 0);
+					CShaderManager::GetInstance()->activeShader->setVec4("runtime_color", glm::vec4(1.f, 1.f, 1.f, 0.6f));
+					CShaderManager::GetInstance()->activeShader->setMat4("transform", transform);
+
+					RenderQuad(CTextureManager::GetInstance()->MapOfTextureIDs.at(activeTile));
+				}
+			}
+		}
+
+		glBindVertexArray(0);
+
+		// Disable blending
+		glDisable(GL_BLEND);
+	}
 }

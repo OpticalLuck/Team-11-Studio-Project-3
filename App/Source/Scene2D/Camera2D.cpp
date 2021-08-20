@@ -46,6 +46,12 @@ void Camera2D::UpdateTarget(glm::vec2 target) {
 	targetPos = target;
 }
 
+void Camera2D::MoveTarget(float moveX, float moveY)
+{
+	targetPos.x += moveX;
+	targetPos.y += moveY;
+}
+
 void Camera2D::UpdateZoom(float fTarget)
 {
 	fTargetZoom = fTarget;
