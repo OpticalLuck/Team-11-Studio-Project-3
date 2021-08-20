@@ -211,23 +211,18 @@ void CEntityManager::Update(const double dElapsedTime)
 
 	// Call all the cEnemy2D's update method before Map2D 
 	// as we want to capture the updates before map2D update
-	for (unsigned i = 0; i < m_enemyList.size(); i++)
-	{
-		if (static_cast<CEnemy2D*>(m_enemyList[i])->GetHealth() < 0)
-		{
-			delete m_enemyList[i];
-			m_enemyList.erase(m_enemyList.begin() + i);
-		}
-	}
-
 	for (unsigned i = 0; i < m_enemyList.size(); i++) {
 		m_enemyList[i]->Update(dElapsedTime);
 
 		EnemyBullet2D* bullet = dynamic_cast<EnemyBullet2D*>(m_enemyList[i]);
 
+		//Delete conditions
 		if (bullet && bullet->OutOfWorld()) {
 			delete m_enemyList[i];
-			bullet = nullptr;
+			m_enemyList[i] = nullptr;
+		}
+		else if (m_enemyList[i]->GetHealth() <= 0) {
+			delete m_enemyList[i];
 			m_enemyList[i] = nullptr;
 		}
 	}

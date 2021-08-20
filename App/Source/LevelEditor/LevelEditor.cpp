@@ -129,10 +129,10 @@ void CLevelEditor::CreateLevel(std::string levelName, unsigned int iWorldWidth, 
     this->iWorldHeight = iWorldHeight;
 
     // Create a Dynamic Array with World Width and Height
-    for (int iRow = 0; iRow < iWorldHeight; ++iRow)
+    for (unsigned iRow = 0; iRow < iWorldHeight; ++iRow)
     {
         m_CurrentLevel.push_back(std::vector<sCell>());
-        for (int iCol = 0; iCol < iWorldWidth; ++iCol)
+        for (unsigned iCol = 0; iCol < iWorldWidth; ++iCol)
         {
             sCell cell;
             m_CurrentLevel[iRow].push_back(cell);
@@ -165,11 +165,11 @@ bool CLevelEditor::LoadLevel(const char* filePath)
     currentLevel.LevelPath = filePath;
 
     // Iterate through the Level Editor Map and set the values of the corresponding indexes
-    for (int iRow = 0; iRow < iWorldHeight; ++iRow)
+    for (unsigned iRow = 0; iRow < iWorldHeight; ++iRow)
     {
         m_CurrentLevel.push_back(std::vector<sCell>());
         std::vector<std::string> row = doc.GetRow<std::string>(iRow);
-        for (int iCol = 0; iCol < iWorldWidth; ++iCol)
+        for (unsigned iCol = 0; iCol < iWorldWidth; ++iCol)
         {
             sCell cell;
             m_CurrentLevel[iRow].push_back(cell);
@@ -279,7 +279,7 @@ bool CLevelEditor::IncreaseXSize()
     ++iWorldWidth;
  
     sCell cell;
-    for (int i = 0; i < iWorldHeight; ++i)
+    for (unsigned i = 0; i < iWorldHeight; ++i)
     {
         m_CurrentLevel[i].push_back(cell);
     }
@@ -291,7 +291,7 @@ bool CLevelEditor::DecreaseYSize(void)
     if (iWorldHeight == 24)
         return false;
 
-    for (int i = 0; i < iWorldWidth; ++i)
+    for (unsigned i = 0; i < iWorldWidth; ++i)
     {
         if (m_CurrentLevel.back()[i].iTileID > 0)
             return false;
@@ -307,14 +307,14 @@ bool CLevelEditor::DecreaseXSize()
     if (iWorldWidth == 32)
         return false;
 
-    for (int i = 0; i < iWorldHeight; ++i)
+    for (unsigned i = 0; i < iWorldHeight; ++i)
     {
         if (m_CurrentLevel[i].back().iTileID > 0)
             return false;
     }
 
     --iWorldWidth;
-    for (int i = 0; i < iWorldHeight; ++i)
+    for (unsigned i = 0; i < iWorldHeight; ++i)
     {
         m_CurrentLevel[i].pop_back();
     }
@@ -327,7 +327,7 @@ bool CLevelEditor::IncreaseYSize(void)
 
     sCell cell;
     std::vector<sCell> newRow;
-    for (int i = 0; i < iWorldWidth; ++i)
+    for (unsigned i = 0; i < iWorldWidth; ++i)
     {
         newRow.push_back(cell);
     }

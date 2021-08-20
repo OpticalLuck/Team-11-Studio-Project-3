@@ -61,12 +61,6 @@ public:
 	// Set the indices of the enemy2D
 	void SetTransform(const int iIndex_XAxis, const int iIndex_YAxis);
 
-	// Set the number of microsteps of the enemy2D
-	void Seti32vec2NumMicroSteps(const int iNumMicroSteps_XAxis, const int iNumMicroSteps_YAxis);
-
-	// Set the handle to cPlayer to this class instance
-	void SetPlayer2D(CPlayer2D* cPlayer2D);
-
 	// Get Health
 	int GetHealth() const;
 
@@ -120,9 +114,6 @@ protected:
 
 	// Current color
 	glm::vec4 currentColor;
-
-	// Handle to the CPlayer2D
-	CPlayer2D* cPlayer2D;
 
 	//Player target and arrays handling it...
 	CPlayer2D* currTarget;

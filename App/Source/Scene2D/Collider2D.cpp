@@ -7,7 +7,7 @@
 #include "GameControl/Settings.h"
 #include "Camera2D.h"
 
-//#include "DesignPatterns/SingletonTemplate.h"
+#include "Math/MyMath.h"
 
 Collision Collider2D::CheckAABBCollision(Collider2D* obj, Collider2D* target)
 {
@@ -60,22 +60,46 @@ Collider2D::~Collider2D()
 
 bool Collider2D::Init()
 {
-	float vertices[] = {
-		-vec2Dimensions.x, -vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
-		vec2Dimensions.x, -vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
-		vec2Dimensions.x, vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
-		vec2Dimensions.x, vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
-		-vec2Dimensions.x, vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
-		-vec2Dimensions.x, -vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
-	};
-
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
 
 	glBindVertexArray(VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	if (colliderType == ColliderType::COLLIDER_QUAD) {
+		float vertices[] = {
+		-vec2Dimensions.x, -vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
+		vec2Dimensions.x, -vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
+		vec2Dimensions.x, vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
+		vec2Dimensions.x, vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
+		-vec2Dimensions.x, vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
+		-vec2Dimensions.x, -vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
+		};
+
+		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	}
+	else {
+		std::vector<float> vertices;
+		const float max = Math::PI * 2;
+		const float inc = 12;
+		const float r = vec2Dimensions.x;
+
+		float angle = 0;
+
+		for (int i = 0; i < inc; i++) {
+			vertices.push_back(r * cos(angle));
+			vertices.push_back(r * sin(angle));
+
+			vertices.push_back(vec4Colour.x);
+			vertices.push_back(vec4Colour.y);
+			vertices.push_back(vec4Colour.z);
+
+			angle += max / inc;
+		}
+
+		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_STATIC_DRAW);
+	}
 
 	// position attribute
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
@@ -279,7 +303,10 @@ void Collider2D::Render(void)
 
 		// render box
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_LINE_LOOP, 0, 6);
+		if (colliderType == COLLIDER_QUAD)
+			glDrawArrays(GL_LINE_LOOP, 0, 6);
+		else
+			glDrawArrays(GL_LINE_LOOP, 0, 12);
 	}
 }
 

@@ -165,7 +165,7 @@ bool CScene2D::Update(const double dElapsedTime)
 
 	if (fCooldown > 0)
 	{
-		fCooldown -= dElapsedTime;
+		fCooldown -= (float)dElapsedTime;
 	}
 
 	// Get keyboard updates

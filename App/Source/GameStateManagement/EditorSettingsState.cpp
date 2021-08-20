@@ -119,7 +119,7 @@ bool CEditorSettingsState::Update(const double dElapsedTime)
 	{
 		ImGui::BeginChild("Levels");
 
-		for (int i = 0; i < cLevelEditor->GetLevels().size(); ++i)
+		for (unsigned i = 0; i < cLevelEditor->GetLevels().size(); ++i)
 		{
 			if (ImGui::Button(cLevelEditor->GetLevels()[i].LevelName.c_str()))
 			{

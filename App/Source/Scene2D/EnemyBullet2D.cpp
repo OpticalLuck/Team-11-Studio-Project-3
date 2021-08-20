@@ -58,11 +58,11 @@ bool EnemyBullet2D::Init(float angle, glm::vec2 spawnPoint) {
 	// If this class is initialised properly, then set the bIsActive to true
 	bIsActive = true;
 
-	collider2D->vec2Dimensions = glm::vec2(0.25f, 0.25f);
+	collider2D->vec2Dimensions = glm::vec2(mScale / 2, mScale / 2);
+	collider2D->colliderType = Collider2D::ColliderType::COLLIDER_CIRCLE;
 	collider2D->Init();
 	//Update collider to position
 	collider2D->SetPosition(glm::vec3(vTransform, 0.f));
-	collider2D->SetAngle(Math::DegreeToRadian(mAngle));
 
 	return true;
 }
@@ -75,6 +75,51 @@ void EnemyBullet2D::Update(const double dElapsedTime) {
 	collider2D->SetPosition(glm::vec3(vTransform, 0.f));
 
 	//Collision code here...
+	CollisionCheck();
+
+	vTransform = collider2D->GetPosition();
+}
+
+void EnemyBullet2D::CollisionCheck(void) {
+	glm::i32vec2 mapPos = glm::i32vec2(round(vTransform.x), round(vTransform.y)); // Position in terms of map (INDEX)
+	int range = 2;
+
+	for (int row = -range; row <= range; row++) { //y
+		for (int col = -range; col <= range; col++) { //x
+			int rowCheck = mapPos.y + row;
+			int colCheck = mapPos.x + col;
+
+			if (rowCheck < 0 || colCheck < 0 || rowCheck > cMap2D->GetLevelRow() - 1 || colCheck > cMap2D->GetLevelCol() - 1)
+				continue;
+
+			if (cMap2D->GetCObject(colCheck, rowCheck)) { //If object is in map
+				CObject2D* obj = cMap2D->GetCObject(colCheck, rowCheck);
+				Collision data = (collider2D->CollideWith(cMap2D->GetCObject(colCheck, rowCheck)->GetCollider()));
+				if (std::get<0>(data))
+				{
+					health = 0; //If health = 0, bullet will no longer be rendered
+					return; 
+				}
+			}
+		}
+	}
+
+	//Player collision
+	std::vector<CPlayer2D*> arrPlayer = cEntityManager->GetAllPlayers();
+	
+	for (unsigned i = 0; i < arrPlayer.size(); i++) {
+		Collider2D* playerCollider = arrPlayer[i]->GetCollider();
+		Collision data = (collider2D->CollideWith(playerCollider));
+
+		if (std::get<0>(data)) {
+			//DEBUG_MSG("PLAYER HIT BY BULLET!");
+			//Player collision code below
+
+			//Remove bullet from worldspace
+			health = 0;
+			return;
+		}
+	}
 }
 
 void EnemyBullet2D::Render(void) {
@@ -117,7 +162,6 @@ void EnemyBullet2D::Render(void) {
 	glBindTexture(GL_TEXTURE_2D, iTextureID);
 
 	// Render the tile
-	//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	quadMesh->Render();
 
 	glBindVertexArray(0);

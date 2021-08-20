@@ -130,7 +130,6 @@ inline void CScene2D::LoadEnemy()
 		// Initialise the instance
 		if (cEnemy2D->Init() == true)
 		{
-			cEnemy2D->SetPlayer2D(cPlayer2D);
 			enemyVector.push_back(cEnemy2D);
 		}
 		else

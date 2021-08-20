@@ -36,7 +36,6 @@ CEnemy2D::CEnemy2D(void)
 	: bIsActive(false)
 	, cMap2D(NULL)
 	, cSettings(NULL)
-	, cPlayer2D(NULL)
 	, quadMesh(nullptr)
 	, sCurrentFSM(FSM::IDLE)
 	,dir(DIRECTION::LEFT)
@@ -68,7 +67,7 @@ CEnemy2D::~CEnemy2D(void)
 	cSettings = nullptr;
 	cEntityManager = nullptr;
 
-	cPlayer2D = currTarget = nullptr;
+	currTarget = nullptr;
 	for (unsigned i = 0; i < arrPlayer.size(); i++)
 		arrPlayer[i] = nullptr;
 	arrPlayer.clear();
@@ -302,18 +301,6 @@ void CEnemy2D::SetTransform(const int iIndex_XAxis, const int iIndex_YAxis)
 {
 	this->vTransform.x = (float)iIndex_XAxis;
 	this->vTransform.y = (float)iIndex_YAxis;
-}
-
-/**
- @brief Set the handle to cPlayer to this class instance
- @param cPlayer2D A CPlayer2D* variable which contains the pointer to the CPlayer2D instance
- */
-void CEnemy2D::SetPlayer2D(CPlayer2D* cPlayer2D)
-{
-	this->cPlayer2D = cPlayer2D;
-
-	// Update the enemy's direction
-	//UpdateDirection();
 }
 
 int CEnemy2D::GetHealth() const

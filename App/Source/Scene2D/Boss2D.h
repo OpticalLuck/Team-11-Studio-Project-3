@@ -59,8 +59,8 @@ class CBoss2D : public CEnemy2D
 		int fsmIndex; //Current index of where its at in the array
 		int roundIndex; //Current round
 
-		float currAtkDuration;
-		float currPauseDuration;
+		int currAtkDuration;
+		int currPauseDuration;
 
 		std::vector<int>* arrAtkDuration;
 		std::vector<int>* arrPauseDuration;

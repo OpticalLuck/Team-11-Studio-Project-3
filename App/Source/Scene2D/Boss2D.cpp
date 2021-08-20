@@ -54,9 +54,6 @@ CBoss2D::~CBoss2D(void) {
 	arrPlayer.clear();
 
 	// We won't delete this since it was created elsewhere
-	cPlayer2D = NULL;
-
-	// We won't delete this since it was created elsewhere
 	cMap2D = NULL;
 
 	camera = nullptr;
@@ -237,7 +234,7 @@ void CBoss2D::Update(const double dElapsedTime) {
 	else {
 		//Check if player is near and enable boss fight
 		isSeen = false;
-		currTarget = GetNearestTarget(cMap2D->GetLevelLimit().x);
+		currTarget = GetNearestTarget((float)cMap2D->GetLevelLimit().x);
 
 		if (currTarget)
 			bulletAng = GetAngle(currTarget->vTransform); 
