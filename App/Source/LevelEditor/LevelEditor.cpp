@@ -42,6 +42,8 @@ CLevelEditor::~CLevelEditor()
         cTextureManager = NULL;
 }
 
+
+
 void CLevelEditor::ResetParams()
 {
     m_CurrentLevel.clear();

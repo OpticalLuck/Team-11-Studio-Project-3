@@ -105,7 +105,7 @@ protected:
 	// Handler to the CSoundController
 	CSoundController* cSoundController;
 
-	CInventoryManager* cInventoryManager;
+	CInventoryM* cInventoryM;
 
 	//Handler for camera
 	Camera2D* cameraHandler;

@@ -11,7 +11,6 @@ Date: May 2021
 
 #include <map>
 #include <string>
-#include "InventoryItem.h"
 
 class CGameManager : public CSingletonTemplate<CGameManager>
 {

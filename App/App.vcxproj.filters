@@ -116,9 +116,6 @@
     <ClCompile Include="Source\Scene2D\Collider2D.cpp">
       <Filter>Entity2D</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Scene2D\Boss2D.cpp">
-      <Filter>Entity2D</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Factory\ObjectFactory.cpp">
       <Filter>Factory</Filter>
     </ClCompile>
@@ -127,12 +124,6 @@
     </ClCompile>
     <ClCompile Include="Source\Scene2D\Boulder2D.cpp">
       <Filter>Entity2D\Object2D</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Scene2D\InventoryItem.cpp">
-      <Filter>Items</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Scene2D\InventoryManager.cpp">
-      <Filter>Items</Filter>
     </ClCompile>
     <ClCompile Include="Source\Scene2D\EntityManager.cpp">
       <Filter>Manager2D</Filter>
@@ -154,6 +145,18 @@
     </ClCompile>
     <ClCompile Include="Source\GameStateManagement\EditorSettingsState.cpp">
       <Filter>GameStateManagement</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene2D\Item.cpp">
+      <Filter>Items</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene2D\InventoryM.cpp">
+      <Filter>Items</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene2D\Inventory.cpp">
+      <Filter>Items</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene2D\Boss2D.cpp">
+      <Filter>Entity2D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -226,9 +229,6 @@
     <ClInclude Include="Source\Scene2D\Collider2D.h">
       <Filter>Entity2D</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Scene2D\Boss2D.h">
-      <Filter>Entity2D</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Factory\ObjectFactory.h">
       <Filter>Factory</Filter>
     </ClInclude>
@@ -237,12 +237,6 @@
     </ClInclude>
     <ClInclude Include="Source\Scene2D\Boulder2D.h">
       <Filter>Entity2D\Object2D</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Scene2D\InventoryItem.h">
-      <Filter>Items</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Scene2D\InventoryManager.h">
-      <Filter>Items</Filter>
     </ClInclude>
     <ClInclude Include="Source\Scene2D\EntityManager.h">
       <Filter>Manager2D</Filter>
@@ -264,6 +258,18 @@
     </ClInclude>
     <ClInclude Include="Source\GameStateManagement\LevelEditorState.h">
       <Filter>GameStateManagement</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene2D\Item.h">
+      <Filter>Items</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene2D\InventoryM.h">
+      <Filter>Items</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene2D\Inventory.h">
+      <Filter>Items</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene2D\Boss2D.h">
+      <Filter>Entity2D</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

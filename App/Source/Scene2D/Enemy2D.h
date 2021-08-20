@@ -32,7 +32,6 @@ class CMap2D;
 
 //#include "EntityManager.h"
 
-
 class CEnemy2D : public CEntity2D
 {
 public:

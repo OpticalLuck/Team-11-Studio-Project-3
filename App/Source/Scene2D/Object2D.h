@@ -1,8 +1,5 @@
 #pragma once
 
-// Include Singleton template
-#include "DesignPatterns\SingletonTemplate.h"
-
 // Include GLEW
 #ifndef GLEW_STATIC
 #include <GL/glew.h>
@@ -20,6 +17,8 @@
 enum OBJECT_TYPE
 {
 	ITEM_SHURIKEN = 2,
+	ITEM_POTION = 3,
+	ITEM_HOOK = 4,
 	ITEM_LIVES = 10,
 	INTERACTABLE_SWITCH1_OFF = 11,
 	INTERACTABLE_SWITCH1_ON = 12,

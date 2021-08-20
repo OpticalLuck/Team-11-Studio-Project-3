@@ -37,8 +37,6 @@ class Camera2D;
 // Include AnimatedSprites
 #include "Primitives/SpriteAnimation.h"
 
-// Include InventoryManager
-#include "InventoryManager.h"
 
 // Include SoundController
 #include "..\SoundController\SoundController.h"
@@ -48,6 +46,8 @@ class Camera2D;
 #include <map>
 #include <array>
 #include "../KeyboardInputHandler/CKeyboardInputHandler.h"
+
+#include "InventoryM.h"
 
 class CPlayer2D : public CEntity2D
 {
@@ -113,7 +113,7 @@ public:
 
 protected:
 	bool bIsClone;
-
+	
 	enum DIRECTION
 	{
 		LEFT = 0,
@@ -149,11 +149,6 @@ protected:
 	// Current color
 	glm::vec4 currentColor;
 
-	// InventoryManager
-	CInventoryManager* cInventoryManager;
-	// InventoryItem
-	CInventoryItem* cInventoryItem;
-
 	// Count the number of jumps
 	int jumpCount;
 	float fMovementSpeed;
@@ -173,5 +168,8 @@ protected:
 	void UpdateHealthLives(void);
 
 	void InputUpdate(double dt);
+
+	CInventoryM* cInventoryM;
+	CItem* cItem;
 };
 

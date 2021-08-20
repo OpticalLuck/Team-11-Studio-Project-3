@@ -55,9 +55,9 @@ void Projectiles::Update(double dElapsedTime)
 						if (obj->GetCollider()->colliderType == Collider2D::COLLIDER_QUAD)
 						{
 							if (i == 0)
-								collider2D->ResolveAABB(obj->GetCollider(), Collider2D::Y);
-							else if (i == 1)
-								collider2D->ResolveAABB(obj->GetCollider(), Collider2D::X);
+								collider2D->ResolveAABB(obj->GetCollider(), Direction::UP);
+							else if (i == 1)								
+								collider2D->ResolveAABB(obj->GetCollider(), Direction::RIGHT);
 						}
 
 						vTransform = collider2D->position;

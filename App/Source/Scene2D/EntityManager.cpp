@@ -1,5 +1,6 @@
 #include "EntityManager.h"
 
+#include "Boss2D.h"
 
 CEntityManager::CEntityManager()
 	: cPlayer2D(NULL)
@@ -144,19 +145,22 @@ CPlayer2D* CEntityManager::GetPlayer()
 	return cPlayer2D;
 }
 
-std::vector<CPlayer2D*> CEntityManager::GetAllPlayers(void) {
+std::vector<CPlayer2D*> CEntityManager::GetAllPlayers(void) 
+{
 	std::vector<CPlayer2D*> arr;
 	
 	arr.push_back(cPlayer2D); //Add controllable player
 
-	for (unsigned i = 0; i < m_cloneList.size(); i++) { //Add the other clones to the vector
+	for (unsigned i = 0; i < m_cloneList.size(); i++) 
+	{ //Add the other clones to the vector
 		arr.push_back(static_cast<CPlayer2D*>(m_cloneList[i])); 
 	}
 
 	return arr;
 }
 
-int CEntityManager::GetCurrRound(void) {
+int CEntityManager::GetCurrRound(void) 
+{
 	return currRound;
 }
 
