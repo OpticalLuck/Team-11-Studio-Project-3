@@ -113,7 +113,7 @@ public:
 
 protected:
 	bool bIsClone;
-
+	
 	enum DIRECTION
 	{
 		LEFT = 0,
