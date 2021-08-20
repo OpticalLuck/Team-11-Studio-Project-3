@@ -121,12 +121,12 @@ bool CLevelEditorState::Update(const double dElapsedTime)
 			MouseInput(dElapsedTime);
 
 		// Mouse X Scroll
-		if (vMousePos.x - 4 < (Camera2D::GetInstance()->getCurrPos().x - cSettings->NUM_TILES_XAXIS * 0.5) / Camera2D::GetInstance()->getZoom() || vMousePos.x + 4 > (Camera2D::GetInstance()->getCurrPos().x + cSettings->NUM_TILES_XAXIS * 0.5) / Camera2D::GetInstance()->getZoom())
-			Camera2D::GetInstance()->MoveTarget((vMousePos.x - Camera2D::GetInstance()->getCurrPos().x) * dElapsedTime * 0.5, 0);
+		if (cMouseController->GetMousePositionX() < 100 || cMouseController->GetMousePositionX() > cSettings->iWindowWidth - 100)
+			Camera2D::GetInstance()->MoveTarget(-(cSettings->iWindowWidth * 0.5 - cMouseController->GetMousePositionX()) * dElapsedTime * 0.025, 0);
 		
 		// Mouse Y Scroll
-		if (vMousePos.y - 4 < (Camera2D::GetInstance()->getCurrPos().y - cSettings->NUM_TILES_YAXIS * 0.5) / Camera2D::GetInstance()->getZoom() || vMousePos.y + 4 > (Camera2D::GetInstance()->getCurrPos().y + cSettings->NUM_TILES_YAXIS * 0.5) / Camera2D::GetInstance()->getZoom())
-			Camera2D::GetInstance()->MoveTarget(0, (vMousePos.y - Camera2D::GetInstance()->getCurrPos().y) * dElapsedTime * 0.5);
+		if (cMouseController->GetMousePositionY() < 100 || cMouseController->GetMousePositionY() > cSettings->iWindowHeight - 100)
+			Camera2D::GetInstance()->MoveTarget(0, (cSettings->iWindowHeight * 0.5 - cMouseController->GetMousePositionY()) * dElapsedTime * 0.025);
 	}
 
 	MoveCamera(dElapsedTime);
@@ -544,8 +544,12 @@ void CLevelEditorState::ImGuiRender()
 		ImGui::TextColored(ImVec4(1.f, 1.f, 0, 1.f), "Map Size");
 		std::string xSize = "X: " + std::to_string(cLevelEditor->iWorldWidth);
 		std::string ySize = "Y: " + std::to_string(cLevelEditor->iWorldHeight);
-		ImGui::Text(xSize.c_str());
+		ImGui::Text(xSize.c_str()); 
+		ImGui::SameLine(); if (ImGui::Button("-##X")) if (cLevelEditor->DecreaseXSize()) cLevelGrid->iWorldWidth--;
+		ImGui::SameLine(); if (ImGui::Button("+##X")) if (cLevelEditor->IncreaseXSize()) cLevelGrid->iWorldWidth++;
 		ImGui::Text(ySize.c_str());
+		ImGui::SameLine(); if (ImGui::Button("-##Y")) if (cLevelEditor->DecreaseYSize()) cLevelGrid->iWorldHeight--;
+		ImGui::SameLine(); if (ImGui::Button("+##Y")) if (cLevelEditor->IncreaseYSize()) cLevelGrid->iWorldHeight++;
 
 		ImGui::NewLine();
 
@@ -575,14 +579,14 @@ void CLevelEditorState::ImGuiRender()
 
 		ImGui::PushItemWidth(150);
 		ImGui::TextColored(ImVec4(1.f, 1.f, 0, 1.f), "Parallax Allowance");
-		ImGui::SliderFloat("Parallax X", &cLevelEditor->vAllowanceScale.x, 0.f, 1.f);
-		ImGui::SliderFloat("Parallax Y", &cLevelEditor->vAllowanceScale.y, 0.f, 1.f);
+		ImGui::SliderFloat("X##Parallax", &cLevelEditor->vAllowanceScale.x, 0.f, 1.f);
+		ImGui::SliderFloat("Y##Parallax", &cLevelEditor->vAllowanceScale.y, 0.f, 1.f);
 
 		ImGui::NewLine();
 
 		ImGui::TextColored(ImVec4(1, 1, 0, 1), "BG Size");
-		ImGui::SliderFloat("BG X", &cLevelEditor->vUVCoords.x, 2.f, 5.f);
-		ImGui::SliderFloat("BG Y", &cLevelEditor->vUVCoords.y, 2.f, 5.f);
+		ImGui::SliderFloat("X##BG", &cLevelEditor->vUVCoords.x, 2.f, 5.f);
+		ImGui::SliderFloat("BG##BGY", &cLevelEditor->vUVCoords.y, 2.f, 5.f);
 		ImGui::PopItemWidth();
 
 		if (ImGui::BeginChild("Tile List"))
