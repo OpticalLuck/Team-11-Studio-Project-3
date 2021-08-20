@@ -263,6 +263,9 @@ void CBoss2D::ShuffleNextAttack(void) {
 	if (arrATK[roundIndex].size() == fsmIndex) {
 		arrATK[roundIndex].push_back(RandomiseAttack());
 	}
+
+	currAtkDuration = arrAtkDuration[roundIndex][fsmIndex];
+	currPauseDuration = arrPauseDuration[roundIndex][fsmIndex];
 }
 
 void CBoss2D::UpdateAttack(float dElapsedTime) {
@@ -271,7 +274,6 @@ void CBoss2D::UpdateAttack(float dElapsedTime) {
 		DEBUG_MSG("BOSS: Attacking!");
 
 		isSeen = true;
-		arrPauseDuration[roundIndex][fsmIndex] = 0;
 	}
 
 	if (arrPauseDuration[roundIndex][fsmIndex] > 0) {
