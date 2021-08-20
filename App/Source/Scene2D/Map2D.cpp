@@ -337,7 +337,7 @@ void CMap2D::UpdateGridInfo(const unsigned int uiRow, const unsigned uiCol, CObj
 
 	if (newSpot == nullptr)
 	{
-		if (obj == target)
+		if (obj == target && target)
 		{
 			if (bInvert)
 			{
@@ -560,8 +560,8 @@ bool CMap2D::FindValue(const int iValue, unsigned int& uirRow, unsigned int& uir
 	for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++) {
 		CObject2D* obj = arrObject[uiCurLevel][i];
 		if (obj->Getvalue() == iValue) {
-			uirCol = obj->vTransform.x;
-			uirRow = obj->vTransform.y; //For now keep the same
+			uirCol = (unsigned int)obj->vTransform.x;
+			uirRow = (unsigned int)obj->vTransform.y;
 
 			return true;
 		}
@@ -590,7 +590,7 @@ unsigned int CMap2D::GetCurrentLevel(void) const
 }
 
 
-void CMap2D::RenderTile(const CObject2D obj) {
+void CMap2D::RenderTile(const CObject2D& obj) {
 	glBindTexture(GL_TEXTURE_2D, cTextureManager->MapOfTextureIDs.at(obj.Getvalue()));
 
 	glBindVertexArray(VAO);

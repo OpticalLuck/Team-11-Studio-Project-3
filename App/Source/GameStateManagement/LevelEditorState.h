@@ -80,6 +80,7 @@ struct EditorProperties
 		iUndoCount = 0;
 		bSaved = true;
 		bToggleCloseWindow = false;
+		bToggleEditorWindow = true;
 
 		bPlacedBlock = false;
 		bDeletedBlock = false;
@@ -142,7 +143,8 @@ protected:
 	void ImGuiRender(void);
 	void RenderCursor(void);
 
-	bool KeyboardShortcuts(void);
+	bool EditorShortcuts(void);
+	bool FileUtilShortcuts(void);
 	void AreaFill(void);
 	void AreaDelete(void);
 	void Undo(int count);

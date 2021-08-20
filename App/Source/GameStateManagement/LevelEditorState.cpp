@@ -121,22 +121,27 @@ bool CLevelEditorState::Update(const double dElapsedTime)
 	{
 		Close();
 	}
+	if (cKeyboardController->IsKeyPressed(GLFW_KEY_TAB))
+	{
+		eProperties.bToggleEditorWindow = !eProperties.bToggleEditorWindow;
+	}
 
 	if (!CImGuiWindow::GetInstance()->WantCaptureMouse())
 	{
 		// Disable default mouse events if currently using shortcuts
-		if (!KeyboardShortcuts())
+		if (!EditorShortcuts())
 			MouseInput(dElapsedTime);
 
 		// Mouse X Scroll
-		if (vMousePos.x - 4 < (Camera2D::GetInstance()->getCurrPos().x - cSettings->NUM_TILES_XAXIS * 0.5) / Camera2D::GetInstance()->getZoom() || vMousePos.x + 4 > (Camera2D::GetInstance()->getCurrPos().x + cSettings->NUM_TILES_XAXIS * 0.5) / Camera2D::GetInstance()->getZoom())
-			Camera2D::GetInstance()->MoveTarget((vMousePos.x - Camera2D::GetInstance()->getCurrPos().x) * dElapsedTime * 0.5, 0);
+		if (cMouseController->GetMousePositionX() < 100 || cMouseController->GetMousePositionX() > cSettings->iWindowWidth - 100)
+			Camera2D::GetInstance()->MoveTarget(-(cSettings->iWindowWidth * 0.5 - cMouseController->GetMousePositionX()) * dElapsedTime * 0.025, 0);
 		
 		// Mouse Y Scroll
-		if (vMousePos.y - 4 < (Camera2D::GetInstance()->getCurrPos().y - cSettings->NUM_TILES_YAXIS * 0.5) / Camera2D::GetInstance()->getZoom() || vMousePos.y + 4 > (Camera2D::GetInstance()->getCurrPos().y + cSettings->NUM_TILES_YAXIS * 0.5) / Camera2D::GetInstance()->getZoom())
-			Camera2D::GetInstance()->MoveTarget(0, (vMousePos.y - Camera2D::GetInstance()->getCurrPos().y) * dElapsedTime * 0.5);
+		if (cMouseController->GetMousePositionY() < 100 || cMouseController->GetMousePositionY() > cSettings->iWindowHeight - 100)
+			Camera2D::GetInstance()->MoveTarget(0, (cSettings->iWindowHeight * 0.5 - cMouseController->GetMousePositionY()) * dElapsedTime * 0.025);
 	}
 
+	FileUtilShortcuts();
 	MoveCamera(dElapsedTime);
 	ScaleMap();
 
@@ -190,7 +195,7 @@ void CLevelEditorState::Destroy(void)
 }
 
 
-bool CLevelEditorState::KeyboardShortcuts(void)
+bool CLevelEditorState::EditorShortcuts(void)
 {
 	// SHIFT+LMB - Area Fill
 	// SHIFT+RMB - Area Delete
@@ -236,6 +241,17 @@ bool CLevelEditorState::KeyboardShortcuts(void)
 	else 
 		eProperties.bIsSelecting = false;
 
+	if (cMouseController->IsButtonPressed(CMouseController::MMB))
+	{
+		CopyBlock();
+		return false;
+	}
+
+	return false;
+}
+
+bool CLevelEditorState::FileUtilShortcuts(void)
+{
 	if (cKeyboardController->IsKeyDown(GLFW_KEY_LEFT_CONTROL))
 	{
 		if (cKeyboardController->IsKeyPressed(GLFW_KEY_Z))
@@ -250,16 +266,8 @@ bool CLevelEditorState::KeyboardShortcuts(void)
 		{
 			Save();
 		}
-		return false;
 	}
-
-	if (cMouseController->IsButtonPressed(CMouseController::MMB))
-	{
-		CopyBlock();
-		return false;
-	}
-
-	return false;
+	return true;
 }
 
 void CLevelEditorState::AreaFill(void)
@@ -622,8 +630,11 @@ void CLevelEditorState::ImGuiRender()
 		ImGuiWindowFlags_NoMove |
 		ImGuiWindowFlags_NoResize;
 
+	ImGui::SetNextWindowCollapsed(!eProperties.bToggleEditorWindow);
+	eProperties.bToggleEditorWindow = false;
 	if (ImGui::Begin("Editor", NULL, windowFlags))
 	{
+		eProperties.bToggleEditorWindow = true;
 		ImGui::TextColored(ImVec4(1.f, 1.f, 0, 1.f), "Map Size");
 		std::string xSize = "X: " + std::to_string(cLevelEditor->iWorldWidth);
 		std::string ySize = "Y: " + std::to_string(cLevelEditor->iWorldHeight);
@@ -778,7 +789,6 @@ void CLevelEditorState::ImGuiRender()
 
 	windowFlags =
 		ImGuiWindowFlags_AlwaysAutoResize |
-		ImGuiWindowFlags_NoMove |
 		ImGuiWindowFlags_NoResize |
 		ImGuiWindowFlags_NoCollapse;
 
@@ -805,6 +815,7 @@ void CLevelEditorState::ImGuiRender()
 			ImGui::End();
 		}
 	}
+
 
 }
 

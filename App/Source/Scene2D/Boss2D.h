@@ -15,6 +15,9 @@ class CEntityManager;
 //Include Player2D
 class CPlayer2D;
 
+//Factory 
+#include "../App/Source/Factory/ObjectFactory.h"
+
 // Include Settings
 #include "GameControl\Settings.h"
 
@@ -47,34 +50,36 @@ class CBoss2D : public CEnemy2D
 	protected:
 		enum class ATK {
 			A_CIRCLE, //Attacks in a circular pattern.
+			A_TWIN, //Circular pattern but only 2
 			A_ATTACK, //Shoots at the player normally
 			A_TOTAL
 		};
 
-		std::vector<ATK>* arrFSM; //Current attack during current round
+		std::vector<ATK>* arrATK; //Current attack during current round
 		int fsmIndex; //Current index of where its at in the array
-		int roundIndex; //Current round
 
-		//float atkDuration;
-		//float pauseDuration;
+		int currAtkDuration;
+		int currPauseDuration;
 
 		std::vector<int>* arrAtkDuration;
 		std::vector<int>* arrPauseDuration;
 
+		bool isSeen;
+
 		float bulletAng; //Angle of which where the bullet will come from
+		int maxBulletTimer[(int)ATK::A_TOTAL]; //Timer in terms of frames
+		int bulletTimer;
 
 		//Rendering
 		//Mesh
 		CMesh* quadMesh;
 
+		//Factory
+		ObjectFactory factory;
+
 		// Current color
 		glm::vec4 currentColor;
 		bool bIsActive;
-
-		//Handlers
-		CMap2D* cMap2D;
-		Camera2D* camera;
-		CEntityManager* cEntityManager;
 
 		//Functions
 		// Load a texture
@@ -88,5 +93,11 @@ class CBoss2D : public CEnemy2D
 
 		//Update attacks
 		void UpdateAttack(float dElapsedTime);
+
+		//Shuffle to next attack
+		void ShuffleNextAttack(void);
+
+		//Reset current values
+		void ResetCurrTimers(void);
 };
 
