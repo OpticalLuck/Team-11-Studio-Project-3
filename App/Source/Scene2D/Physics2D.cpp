@@ -88,6 +88,11 @@ void CPhysics2D::Update(double dElapsedTime)
 	force = glm::vec2(0.f);
 }
 
+void CPhysics2D::DoBounce(glm::vec2 normal, float bounciness)
+{
+	velocity -= (1 + bounciness) * glm::dot(velocity, normal) * normal;
+}
+
 void CPhysics2D::SetForce(const glm::vec2 force)
 {
 	this->force = force;

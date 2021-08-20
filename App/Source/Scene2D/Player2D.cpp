@@ -314,22 +314,19 @@ void CPlayer2D::Update(const double dElapsedTime)
 
 	//Stores nearby objects and its dist to player into a vector 
 	vector<pair<CObject2D*, float>> aabbVector;
-	for (int i = 0; i < 2; i++)
+	for (int row = -range; row <= range; row++) //y
 	{
-		for (int row = -range; row <= range; row++) //y
+		for (int col = -range; col <= range; col++) //x
 		{
-			for (int col = -range; col <= range; col++) //x
-			{
-				int rowCheck = vTransform.y + row;
-				int colCheck = vTransform.x + col;
+			int rowCheck = vTransform.y + row;
+			int colCheck = vTransform.x + col;
 
-				if (rowCheck < 0 || colCheck < 0 || rowCheck > cMap2D->GetLevelRow() - 1 || colCheck > cMap2D->GetLevelCol() - 1) continue;
-				if (cMap2D->GetCObject(colCheck, rowCheck))
-				{
-					CObject2D* obj = cMap2D->GetCObject(colCheck, rowCheck);
-					float distance = glm::length( obj->vTransform - vTransform );
-					aabbVector.push_back({obj, distance });
-				}
+			if (rowCheck < 0 || colCheck < 0 || rowCheck > cMap2D->GetLevelRow() - 1 || colCheck > cMap2D->GetLevelCol() - 1) continue;
+			if (cMap2D->GetCObject(colCheck, rowCheck))
+			{
+				CObject2D* obj = cMap2D->GetCObject(colCheck, rowCheck);
+				float distance = glm::length( obj->vTransform - vTransform );
+				aabbVector.push_back({ obj, distance });
 			}
 		}
 	}
@@ -338,7 +335,7 @@ void CPlayer2D::Update(const double dElapsedTime)
 	{
 		return a.second < b.second;
 	});
-
+	aabbVector.erase(std::unique(aabbVector.begin(), aabbVector.end()), aabbVector.end());
 	// Detects and Resolves Collsion
 	for (auto aabbTuple : aabbVector)
 	{
@@ -548,8 +545,8 @@ void CPlayer2D::InputUpdate(double dt)
 
 	if (keyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::W])
 	{
-		//velocity.y = fMovementSpeed;
-		//cPhysics2D.SetboolGrounded(false);
+		velocity.y = fMovementSpeed;
+		cPhysics2D.SetboolGrounded(false);
 	}
 	else if (keyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::S])
 	{
@@ -626,7 +623,8 @@ void CPlayer2D::InputUpdate(double dt)
 				CObject2D* shuriken = cMap2D->GetCObject((int)vTransform.x, (int)vTransform.y);
 				shuriken->vTransform = vTransform;
 
-				static_cast<Projectiles*>(shuriken)->GetPhysics().SetForce(distance * 200.f);
+				glm::vec2 force = glm::clamp(distance * 200.f, glm::vec2(-2000.f, -2000.f), glm::vec2(2000.f,2000.f));
+				static_cast<Projectiles*>(shuriken)->GetPhysics().SetForce(force);
 				cInventoryItem->Remove(1);
 			}
 		}

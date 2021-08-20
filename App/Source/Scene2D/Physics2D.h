@@ -36,6 +36,8 @@ public:
 	// Update
 	void Update(double dElapsedTime);
 
+	void DoBounce(glm::vec2 normal, float bounciness = 1.f);
+
 	void SetForce(const glm::vec2 force);
 	void SetMass(const float mass);
 	void SetVelocity(const glm::vec2 velocity);

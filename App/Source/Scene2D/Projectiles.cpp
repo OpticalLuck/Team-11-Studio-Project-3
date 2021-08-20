@@ -1,7 +1,7 @@
 #include "Projectiles.h"
 
 #include "Map2D.h"
-
+#include <vector>
 Projectiles::Projectiles()
 	: animatedSprites(NULL)
 	, currentColor(glm::vec4())
@@ -33,40 +33,64 @@ void Projectiles::Update(double dElapsedTime)
 	collider2D->SetPosition(vTransform);
 
 	CMap2D* cMap2D = CMap2D::GetInstance();
+
+	bool physicsChange = false;
+
 	int range = 2;
-	for (int i = 0; i < 2; i++)
+	cPhysics2D.SetboolGrounded(false);
+	vector<pair<CObject2D*, float>> aabbVector;
+	for (int row = -range; row <= range; row++) //y
 	{
-		for (int row = -range; row <= range; row++) //y
+		for (int col = -range; col <= range; col++) //x
 		{
-			for (int col = -range; col <= range; col++) //x
+			int rowCheck = vTransform.y + row;
+			int colCheck = vTransform.x + col;
+
+			if (rowCheck < 0 || colCheck < 0 || rowCheck > cMap2D->GetLevelRow() - 1 || colCheck > cMap2D->GetLevelCol() - 1) continue;
+			if (cMap2D->GetCObject(colCheck, rowCheck) && cMap2D->GetCObject(colCheck, rowCheck) != this)
 			{
-				int rowCheck = vTransform.y + row;
-				int colCheck = vTransform.x + col;
-
-				if (rowCheck < 0 || colCheck < 0 || rowCheck > cMap2D->GetLevelRow() - 1 || colCheck > cMap2D->GetLevelCol() - 1)
-					continue;
-
-				if (cMap2D->GetCObject(colCheck, rowCheck) && cMap2D->GetCObject(colCheck, rowCheck) != this)
-				{
-					CObject2D* obj = cMap2D->GetCObject(colCheck, rowCheck);
-					Collision data = (collider2D->CollideWith(cMap2D->GetCObject(colCheck, rowCheck)->GetCollider()));
-					if (std::get<0>(data))
-					{
-						if (obj->GetCollider()->colliderType == Collider2D::COLLIDER_QUAD)
-						{
-							if (i == 0)
-								collider2D->ResolveAABB(obj->GetCollider(), Direction::UP);
-							else if (i == 1)								
-								collider2D->ResolveAABB(obj->GetCollider(), Direction::RIGHT);
-						}
-
-						vTransform = collider2D->position;
-					}
-				}
+				CObject2D* obj = cMap2D->GetCObject(colCheck, rowCheck);
+				float distance = glm::length(obj->vTransform - vTransform);
+				aabbVector.push_back({ obj, distance });
 			}
 		}
 	}
+	//Sorts vector based on shortest dist from player to object
+	sort(aabbVector.begin(), aabbVector.end(), [](const std::pair<CObject2D*, float>& a, const std::pair<CObject2D*, float>& b)
+	{
+		return a.second < b.second;
+	});
+	aabbVector.erase(std::unique(aabbVector.begin(), aabbVector.end()), aabbVector.end());
+	for (auto aabbTuple : aabbVector)
+	{
+		CObject2D* obj = aabbTuple.first;
+		Collision data = (collider2D->CollideWith(obj->GetCollider()));
+		if (std::get<0>(data))
+		{
+			if (obj->GetCollider()->colliderType == Collider2D::COLLIDER_QUAD)
+			{
+				collider2D->ResolveAABB(obj->GetCollider(), Direction::UP);
+				collider2D->ResolveAABB(obj->GetCollider(), Direction::RIGHT);
 
+				if (std::get<1>(data) == Direction::UP)
+					cPhysics2D.SetboolGrounded(true);
+			}
+			else if (obj->GetCollider()->colliderType == Collider2D::COLLIDER_CIRCLE)
+			{
+				if (glm::dot(cPhysics2D.GetVelocity(), obj->vTransform - vTransform) > 0)
+					collider2D->ResolveAABBCircle(obj->GetCollider(), data, Collider2D::COLLIDER_QUAD);
+
+				if (std::get<1>(data) == Direction::DOWN)
+					cPhysics2D.SetboolGrounded(true);
+			}
+
+			vTransform = collider2D->position;
+
+			//How the object interacts 
+			glm::vec2 normal = Collider2D::ConvertDirectionToVec2(std::get<1>(data));
+			cPhysics2D.DoBounce(normal, 0.f);
+		}
+	}
 
 	//Update Map index
 	glm::i32vec2 newindex((int)vTransform.x, CMap2D::GetInstance()->GetLevelRow() - (int)vTransform.y - 1);

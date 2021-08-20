@@ -61,6 +61,7 @@ void Boulder2D::Update(const double dElapsedTime)
 								collider2D->ResolveAABB(obj->GetCollider(), Direction::UP);
 							else if (i == 1)
 								collider2D->ResolveAABB(obj->GetCollider(), Direction::RIGHT);
+
 						}
 						
 					}

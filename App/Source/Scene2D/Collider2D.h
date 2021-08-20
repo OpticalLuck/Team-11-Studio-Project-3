@@ -15,6 +15,11 @@
 #include <string>
 #include <tuple>
 
+#include "../Library/Source/GameControl/Settings.h"
+
+//#include "GameControl/Settings.h"
+//class CSettings;
+
 enum Direction {
 	UP,
 	RIGHT,
@@ -24,8 +29,6 @@ enum Direction {
 
 typedef std::tuple<bool, Direction, glm::vec2> Collision;
 
-class CSettings;
-
 class Collider2D
 {
 private:
@@ -33,27 +36,7 @@ private:
 	static Collision CheckAABBCircleCollision(Collider2D* aabb, Collider2D* circle);
 
 	// calculates which direction a vector is facing (N,E,S or W)
-	static Direction VectorDirection(glm::vec2 target)
-	{
-		glm::vec2 compass[] = {
-			glm::vec2(0.0f, 1.0f),	// up
-			glm::vec2(1.0f, 0.0f),	// right
-			glm::vec2(0.0f, -1.0f),	// down
-			glm::vec2(-1.0f, 0.0f)	// left
-		};
-		float max = 0.0f;
-		unsigned int best_match = -1;
-		for (unsigned int i = 0; i < 4; i++)
-		{
-			float dot_product = glm::dot(glm::normalize(target), compass[i]);
-			if (dot_product > max)
-			{
-				max = dot_product;
-				best_match = i;
-			}
-		}
-		return (Direction)best_match;
-	}
+	static Direction VectorDirection(glm::vec2 target);
 public:
 	enum ColliderType
 	{
@@ -83,14 +66,6 @@ public:
 
 	virtual void SetLineShader(const std::string & name);
 
-	Collision CollideWith(Collider2D* object);
-
-	//Just Here if want to use
-	// NOT RECOMMENDED IF THERE IS MULTIPLE ENTITIES CLOSE TO EACHOTHER
-	void ResolveAABB(Collider2D* object, Direction axis);
-
-	void ResolveAABBCircle(Collider2D* object, Collision data, ColliderType target = COLLIDER_CIRCLE);
-
 	// PreRender
 	virtual void PreRender(void);
 	// Render
@@ -98,12 +73,21 @@ public:
 	// PostRender
 	virtual void PostRender(void);
 
+	Collision CollideWith(Collider2D* object);
+
+	//Just Here if want to use
+	// NOT RECOMMENDED IF THERE IS MULTIPLE ENTITIES CLOSE TO EACHOTHER
+	void ResolveAABB(Collider2D* object, Direction axis);
+	void ResolveAABBCircle(Collider2D* object, Collision data, ColliderType target = COLLIDER_CIRCLE);
+
 
 	bool GetbEnabled() const;
 	void SetbEnabled(bool bEnabled);
 
 	glm::vec2 GetPosition() const;
 	void SetPosition(glm::vec2 position);
+	
+	static glm::vec2 ConvertDirectionToVec2(Direction direction);
 protected:
 	std::string sLineShaderName;
 	unsigned int VAO, VBO;
