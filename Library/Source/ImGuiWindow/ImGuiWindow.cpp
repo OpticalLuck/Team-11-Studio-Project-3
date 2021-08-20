@@ -33,7 +33,6 @@ void CImGuiWindow::Create(const sImGuiWindowProperties& props)
 	ImGui_ImplGlfw_InitForOpenGL(CSettings::GetInstance()->pWindow, true);
 	const char* glsl_version = "#version 330";
 	ImGui_ImplOpenGL3_Init(glsl_version);
-
 }
 
 void CImGuiWindow::Shutdown()
@@ -55,16 +54,9 @@ bool CImGuiWindow::WantCaptureKeyboard()
 
 void CImGuiWindow::Update(const sImGuiWindowProperties& props)
 {
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
-	io.ConfigWindowsMoveFromTitleBarOnly = props.MoveFromTitleBarOnly;
-	if (props.IsDockingEnabled)
-	{
-		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-	}
-	if (props.IsViewportEnabled)
-	{
-		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
-	}
+	Shutdown();
+	Create(props);
+	PreRender(props);
 }
 
 void CImGuiWindow::PreRender(const sImGuiWindowProperties& props)

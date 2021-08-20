@@ -73,6 +73,7 @@ bool CLevelEditorState::Init(void)
 
 	cSettings = CSettings::GetInstance();
 	cSettings->screenSize = CSettings::SSIZE_1024x768;
+	// cSettings->m_ImGuiWindow->Update(cSettings->ImGuiProperties);
 	CSettings::GetInstance()->UpdateWindowSize();
 
 	glGenVertexArrays(1, &quadVAO);
@@ -87,11 +88,18 @@ bool CLevelEditorState::Init(void)
 	cLevelGrid = CLevelGrid::GetInstance();
 	cLevelGrid->Init(cLevelEditor->iWorldWidth, cLevelEditor->iWorldHeight);
 
+	ActionState currentState;
+	currentState.m_ThisActionLevel = cLevelEditor->GetCurrentLevel();
+	currentState.iWorldWidth = cLevelEditor->iWorldWidth;
+	currentState.iWorldHeight = cLevelEditor->iWorldHeight;
+
+	eProperties.undoStates.push_back(currentState);
+	eProperties.redoStates.clear();
+
 	Camera2D::GetInstance()->Reset();
 	Camera2D::GetInstance()->UpdateTarget(glm::vec2(cSettings->NUM_TILES_XAXIS * 0.5, cSettings->NUM_TILES_YAXIS * 0.5));
 
 	cMouseController = CMouseController::GetInstance();
-
 	cKeyboardController = CKeyboardController::GetInstance();
 
 	return true;
@@ -191,15 +199,6 @@ bool CLevelEditorState::KeyboardShortcuts(void)
 	// CTRL+S - Save
 	// ESCAPE - Close
 
-	if (cMouseController->IsButtonPressed(CMouseController::LMB) || cMouseController->IsButtonPressed(CMouseController::RMB))
-	{
-		if (!eProperties.bSaved)
-		{
-			eProperties.undoLevels.push_back(cLevelEditor->GetCurrentLevel());
-			eProperties.redoLevels.clear();
-		}
-	}
-
 	if (cKeyboardController->IsKeyDown(GLFW_KEY_LEFT_SHIFT))
 	{
 		// DEBUG_MSG("Holding LSHIFT");
@@ -239,11 +238,11 @@ bool CLevelEditorState::KeyboardShortcuts(void)
 	{
 		if (cKeyboardController->IsKeyPressed(GLFW_KEY_Z))
 		{
-			Undo();
+			Undo(1);
 		}
 		else if (cKeyboardController->IsKeyPressed(GLFW_KEY_Y))
 		{
-			Redo();
+			Redo(1);
 		}
 		else if (cKeyboardController->IsKeyPressed(GLFW_KEY_S))
 		{
@@ -263,6 +262,9 @@ bool CLevelEditorState::KeyboardShortcuts(void)
 
 void CLevelEditorState::AreaFill(void)
 {
+	eProperties.prevActions.push_back("Area Fill");
+	eProperties.bSaved = false;
+
 	int startXIndex = 0;
 	int endXIndex = 0;
 	int startYIndex = 0;
@@ -282,6 +284,9 @@ void CLevelEditorState::AreaFill(void)
 
 void CLevelEditorState::AreaDelete(void)
 {
+	eProperties.prevActions.push_back("Area Delete");
+	eProperties.bSaved = false;
+
 	int startXIndex = 0;
 	int endXIndex = 0;
 	int startYIndex = 0;
@@ -298,24 +303,73 @@ void CLevelEditorState::AreaDelete(void)
 	}
 }
 
-void CLevelEditorState::Undo(void)
+void CLevelEditorState::Undo(int count)
 {
-	if (eProperties.undoLevels.size() == 0)
+	if (eProperties.undoStates.size() == 1)
 		return;
 
-	eProperties.redoLevels.push_back(cLevelEditor->GetCurrentLevel());
-	cLevelEditor->SetCurrentLevel(eProperties.undoLevels.back());
-	eProperties.undoLevels.pop_back();
+	eProperties.bSaved = false;
+	eProperties.iUndoCount += count;
+
+	for (int i = 0; i < count; ++i)
+	{
+		ActionState currentState;
+		currentState.m_ThisActionLevel = cLevelEditor->GetCurrentLevel();
+		currentState.iWorldWidth = cLevelEditor->iWorldWidth;
+		currentState.iWorldHeight = cLevelEditor->iWorldHeight;
+
+		eProperties.redoStates.push_back(currentState);
+
+		cLevelEditor->SetCurrentLevel(eProperties.undoStates.back().m_ThisActionLevel);
+		cLevelGrid->iWorldWidth = eProperties.undoStates.back().iWorldWidth;
+		cLevelGrid->iWorldHeight = eProperties.undoStates.back().iWorldHeight;
+
+		if (cLevelGrid->iWorldWidth < currentState.iWorldWidth)
+			cLevelEditor->DecreaseXSize();
+		if (cLevelGrid->iWorldWidth > currentState.iWorldWidth)
+			cLevelEditor->IncreaseXSize();
+		if (cLevelGrid->iWorldHeight < currentState.iWorldHeight)
+			cLevelEditor->DecreaseYSize();
+		if (cLevelGrid->iWorldHeight > currentState.iWorldHeight)
+			cLevelEditor->IncreaseYSize();
+
+		eProperties.undoStates.pop_back();
+	}
 }
 
-void CLevelEditorState::Redo(void)
+void CLevelEditorState::Redo(int count)
 {
-	if (eProperties.redoLevels.size() == 0)
+	if (eProperties.redoStates.size() == 0)
 		return;
 
-	eProperties.undoLevels.push_back(cLevelEditor->GetCurrentLevel());
-	cLevelEditor->SetCurrentLevel(eProperties.redoLevels.back());
-	eProperties.redoLevels.pop_back();
+	eProperties.bSaved = false;
+	eProperties.iUndoCount -= count;
+
+
+	for (int i = 0; i < count; ++i)
+	{
+		ActionState currentState;
+		currentState.m_ThisActionLevel = cLevelEditor->GetCurrentLevel();
+		currentState.iWorldWidth = cLevelEditor->iWorldWidth;
+		currentState.iWorldHeight = cLevelEditor->iWorldHeight;
+
+		eProperties.undoStates.push_back(currentState);
+
+		cLevelEditor->SetCurrentLevel(eProperties.redoStates.back().m_ThisActionLevel);
+		cLevelGrid->iWorldWidth = eProperties.redoStates.back().iWorldWidth;
+		cLevelGrid->iWorldHeight = eProperties.redoStates.back().iWorldHeight;
+
+		if (currentState.iWorldWidth < eProperties.redoStates.back().iWorldWidth)
+			cLevelEditor->DecreaseXSize();
+		if (currentState.iWorldWidth > eProperties.redoStates.back().iWorldWidth)
+			cLevelEditor->IncreaseXSize();
+		if (currentState.iWorldHeight < eProperties.redoStates.back().iWorldHeight)
+			cLevelEditor->DecreaseYSize();
+		if (currentState.iWorldHeight > eProperties.redoStates.back().iWorldHeight)
+			cLevelEditor->DecreaseYSize();
+
+		eProperties.redoStates.pop_back();
+	}
 }
 
 void CLevelEditorState::CopyBlock(void)
@@ -336,6 +390,9 @@ void CLevelEditorState::Close()
 	else
 	{
 		DEBUG_MSG("Closing Editor");
+		//cSettings->ImGuiProperties.IsViewportEnabled = false;
+		//cSettings->m_ImGuiWindow->Update(cSettings->ImGuiProperties);
+
 		cKeyboardController->Reset();
 		cMouseController->Reset();
 		CGameStateManager::GetInstance()->SetActiveGameState("MenuState");
@@ -371,23 +428,19 @@ void CLevelEditorState::ScaleMap(void)
 {
 	if (CKeyboardController::GetInstance()->IsKeyPressed(GLFW_KEY_RIGHT))
 	{
-		if (cLevelEditor->IncreaseXSize())
-			cLevelGrid->iWorldWidth++;
+		IncreaseXSize();
 	}
 	else if (CKeyboardController::GetInstance()->IsKeyPressed(GLFW_KEY_LEFT))
 	{
-		if (cLevelEditor->DecreaseXSize())
-			cLevelGrid->iWorldWidth--;
+		DecreaseXSize();
 	}
 	if (CKeyboardController::GetInstance()->IsKeyPressed(GLFW_KEY_UP))
 	{
-		if (cLevelEditor->IncreaseYSize())
-			cLevelGrid->iWorldHeight++;
+		IncreaseYSize();
 	}
 	else if (CKeyboardController::GetInstance()->IsKeyPressed(GLFW_KEY_DOWN))
 	{
-		if (cLevelEditor->DecreaseYSize())
-			cLevelGrid->iWorldHeight--;
+		DecreaseYSize();
 	}
 
 }
@@ -400,6 +453,12 @@ void CLevelEditorState::MouseInput(double dElapsedTime)
 		DEBUG_MSG("[x: " << vMousePos.x << ", y: " << vMousePos.y << "] Cell TileID: " << cLevelEditor->GetCell(vMousePos.x, vMousePos.y, false).iTileID);
 		if (cLevelEditor->GetCell(vMousePos.x, vMousePos.y).iTileID == 0)
 		{
+			if (cMouseController->IsButtonPressed(CMouseController::LMB))
+			{
+				UpdateHistory();
+				eProperties.prevActions.push_back("Placed Tile");
+			}
+
 			eProperties.bSaved = false;
 			cLevelEditor->UpdateCell(vMousePos.x, vMousePos.y, activeTile);
 		}
@@ -409,6 +468,12 @@ void CLevelEditorState::MouseInput(double dElapsedTime)
 	{
 		if (cLevelEditor->GetCell(vMousePos.x, vMousePos.y).iTileID != 0)
 		{
+			if (cMouseController->IsButtonPressed(CMouseController::RMB))
+			{
+				UpdateHistory();
+				eProperties.prevActions.push_back("Removed Tile");
+			}
+
 			eProperties.bSaved = false;
 			cLevelEditor->UpdateCell(vMousePos.x, vMousePos.y, 0);
 		}
@@ -505,6 +570,12 @@ void CLevelEditorState::ImGuiRender()
 
 			ImGui::EndMenu();
 		}
+		if (ImGui::BeginMenu("View"))
+		{
+			if (ImGui::MenuItem("History")) eProperties.bToggleHistoryWindow = !eProperties.bToggleHistoryWindow;
+
+			ImGui::EndMenu();
+		}
 
 		if (!eProperties.bSaved)
 		{
@@ -531,7 +602,7 @@ void CLevelEditorState::ImGuiRender()
 		ImGui::EndMainMenuBar();
 	}
 
-	ImGui::SetNextWindowPos(ImVec2(0, 0 + 19));
+	ImGui::SetNextWindowPos(ImVec2(0, 19));
 	ImGui::SetNextWindowSize(ImVec2(250, cSettings->iWindowHeight));
 
 	ImGuiWindowFlags windowFlags =
@@ -544,8 +615,13 @@ void CLevelEditorState::ImGuiRender()
 		ImGui::TextColored(ImVec4(1.f, 1.f, 0, 1.f), "Map Size");
 		std::string xSize = "X: " + std::to_string(cLevelEditor->iWorldWidth);
 		std::string ySize = "Y: " + std::to_string(cLevelEditor->iWorldHeight);
-		ImGui::Text(xSize.c_str());
-		ImGui::Text(ySize.c_str());
+
+		ImGui::Text(xSize.c_str()); 
+		ImGui::SameLine(); if (ImGui::Button("-##X")) DecreaseXSize();
+		ImGui::SameLine(); if (ImGui::Button("+##X")) IncreaseXSize();
+		ImGui::Text(ySize.c_str());					  
+		ImGui::SameLine(); if (ImGui::Button("-##Y")) DecreaseYSize();
+		ImGui::SameLine(); if (ImGui::Button("+##Y")) IncreaseYSize();
 
 		ImGui::NewLine();
 
@@ -575,14 +651,15 @@ void CLevelEditorState::ImGuiRender()
 
 		ImGui::PushItemWidth(150);
 		ImGui::TextColored(ImVec4(1.f, 1.f, 0, 1.f), "Parallax Allowance");
-		ImGui::SliderFloat("Parallax X", &cLevelEditor->vAllowanceScale.x, 0.f, 1.f);
-		ImGui::SliderFloat("Parallax Y", &cLevelEditor->vAllowanceScale.y, 0.f, 1.f);
+		ImGui::SliderFloat("X##Parallax", &cLevelEditor->vAllowanceScale.x, 0.f, 1.f);
+		ImGui::SliderFloat("Y##Parallax", &cLevelEditor->vAllowanceScale.y, 0.f, 1.f);
 
 		ImGui::NewLine();
 
 		ImGui::TextColored(ImVec4(1, 1, 0, 1), "BG Size");
-		ImGui::SliderFloat("BG X", &cLevelEditor->vUVCoords.x, 2.f, 5.f);
-		ImGui::SliderFloat("BG Y", &cLevelEditor->vUVCoords.y, 2.f, 5.f);
+		ImGui::SliderFloat("X##BG", &cLevelEditor->vUVCoords.x, 2.f, 5.f);
+		ImGui::SliderFloat("Y##BG", &cLevelEditor->vUVCoords.y, 2.f, 5.f);
+
 		ImGui::PopItemWidth();
 
 		if (ImGui::BeginChild("Tile List"))
@@ -639,6 +716,53 @@ void CLevelEditorState::ImGuiRender()
 	}
 	ImGui::End();
 
+	windowFlags = 0;
+
+	ImGui::SetNextWindowSize(ImVec2(150, 250), ImGuiCond_Once);
+	ImGui::SetNextWindowPos(ImVec2(cSettings->iWindowWidth - 150, 19), ImGuiCond_Once);
+	if (eProperties.bToggleHistoryWindow)
+	{
+		if (ImGui::Begin("History", &eProperties.bToggleHistoryWindow, windowFlags))
+		{
+			if (ImGui::BeginChild("ActionHistory"))
+			{
+				ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.1, 0.5));
+				ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.f);
+				for (int i = 0; i < eProperties.prevActions.size(); ++i)
+				{
+					if (i < eProperties.prevActions.size() - eProperties.iUndoCount)
+						ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.26f, 0.59f, 0.98f, 0.40f));
+					else
+						ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+
+					if (ImGui::Button((eProperties.prevActions[i] + "##" + std::to_string(i)).c_str(), ImVec2(ImGui::GetContentRegionAvailWidth(), 25)))
+					{
+
+						// eProperties.iUndoCount = eProperties.prevActions.size() - i;
+						// Undo
+						if ((i + 1) < eProperties.prevActions.size() - eProperties.iUndoCount)
+							Undo(eProperties.prevActions.size() - (i + 1) - eProperties.iUndoCount);
+
+						// Redo
+						else if ((i + 1) > eProperties.prevActions.size() - eProperties.iUndoCount)
+							Redo((i + 1) - (eProperties.prevActions.size() - eProperties.iUndoCount));
+					}
+
+					ImGui::PopStyleColor();
+				}
+				ImGui::PopStyleVar(2);
+
+				if (eProperties.bHistoryUpdated)
+				{
+					eProperties.bHistoryUpdated = false;
+					ImGui::SetScrollHereY(1.f);
+				}
+
+			}
+			ImGui::EndChild();
+		}
+		ImGui::End();
+	}
 
 	windowFlags =
 		ImGuiWindowFlags_AlwaysAutoResize |
@@ -739,4 +863,65 @@ void CLevelEditorState::RenderCursor()
 		// Disable blending
 		glDisable(GL_BLEND);
 	}
+}
+
+
+void CLevelEditorState::IncreaseXSize(void)
+{
+	if (cLevelEditor->IncreaseXSize())
+	{
+		UpdateHistory();
+		eProperties.prevActions.push_back("Increase Level Width");
+		cLevelGrid->iWorldWidth++;
+	}
+}
+
+void CLevelEditorState::DecreaseXSize(void)
+{
+	if (cLevelEditor->DecreaseXSize())
+	{
+		UpdateHistory();
+		eProperties.prevActions.push_back("Decrease Level Width");
+		cLevelGrid->iWorldWidth--;
+	}
+}
+
+void CLevelEditorState::IncreaseYSize(void)
+{
+	if (cLevelEditor->IncreaseYSize())
+	{
+		UpdateHistory();
+		eProperties.prevActions.push_back("Increase Level Height");
+		cLevelGrid->iWorldHeight++;
+	}
+}
+
+void CLevelEditorState::DecreaseYSize(void)
+{
+	if (cLevelEditor->DecreaseYSize())
+	{
+		UpdateHistory();
+		eProperties.prevActions.push_back("Decrease Level Height");
+		cLevelGrid->iWorldHeight--;
+	}
+}
+
+void CLevelEditorState::UpdateHistory(void)
+{
+	eProperties.bHistoryUpdated = true;
+
+	for (int i = 0; i < eProperties.iUndoCount; ++i)
+	{
+		eProperties.prevActions.pop_back();
+	}
+
+	eProperties.iUndoCount = 0;
+
+	ActionState currentState;
+	currentState.m_ThisActionLevel = cLevelEditor->GetCurrentLevel();
+	currentState.iWorldWidth = cLevelGrid->iWorldWidth;
+	currentState.iWorldHeight = cLevelGrid->iWorldHeight;
+
+	eProperties.undoStates.push_back(currentState);
+	eProperties.redoStates.clear();
 }
