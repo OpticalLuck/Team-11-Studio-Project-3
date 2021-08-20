@@ -111,31 +111,22 @@ bool CLevelEditorState::Update(const double dElapsedTime)
 
 	if (cKeyboardController->IsKeyReleased(GLFW_KEY_ESCAPE))
 	{
-		// Reset the CKeyboardController
-		cKeyboardController->Reset();
-
-		// Load the menu state
-		cout << "Loading PauseState" << endl;
-		CGameStateManager::GetInstance()->SetPauseGameState("PauseState");
-		return true;
+		Close();
 	}
 
 	if (!CImGuiWindow::GetInstance()->WantCaptureMouse())
 	{
+		// Disable default mouse events if currently using shortcuts
 		if (!KeyboardShortcuts())
 			MouseInput(dElapsedTime);
 
-		if (vMousePos.x - 4 < (Camera2D::GetInstance()->getCurrPos().x - cSettings->NUM_TILES_XAXIS * 0.5) / Camera2D::GetInstance()->getZoom() ||
-			vMousePos.x + 4 > (Camera2D::GetInstance()->getCurrPos().x + cSettings->NUM_TILES_XAXIS * 0.5) / Camera2D::GetInstance()->getZoom())
-		{
+		// Mouse X Scroll
+		if (vMousePos.x - 4 < (Camera2D::GetInstance()->getCurrPos().x - cSettings->NUM_TILES_XAXIS * 0.5) / Camera2D::GetInstance()->getZoom() || vMousePos.x + 4 > (Camera2D::GetInstance()->getCurrPos().x + cSettings->NUM_TILES_XAXIS * 0.5) / Camera2D::GetInstance()->getZoom())
 			Camera2D::GetInstance()->MoveTarget((vMousePos.x - Camera2D::GetInstance()->getCurrPos().x) * dElapsedTime * 0.5, 0);
-		}
-
-		if (vMousePos.y - 4 < (Camera2D::GetInstance()->getCurrPos().y - cSettings->NUM_TILES_YAXIS * 0.5) / Camera2D::GetInstance()->getZoom() ||
-			vMousePos.y + 4 > (Camera2D::GetInstance()->getCurrPos().y + cSettings->NUM_TILES_YAXIS * 0.5) / Camera2D::GetInstance()->getZoom())
-		{
+		
+		// Mouse Y Scroll
+		if (vMousePos.y - 4 < (Camera2D::GetInstance()->getCurrPos().y - cSettings->NUM_TILES_YAXIS * 0.5) / Camera2D::GetInstance()->getZoom() || vMousePos.y + 4 > (Camera2D::GetInstance()->getCurrPos().y + cSettings->NUM_TILES_YAXIS * 0.5) / Camera2D::GetInstance()->getZoom())
 			Camera2D::GetInstance()->MoveTarget(0, (vMousePos.y - Camera2D::GetInstance()->getCurrPos().y) * dElapsedTime * 0.5);
-		}
 	}
 
 	MoveCamera(dElapsedTime);
@@ -254,6 +245,10 @@ bool CLevelEditorState::KeyboardShortcuts(void)
 		{
 			Redo();
 		}
+		else if (cKeyboardController->IsKeyPressed(GLFW_KEY_S))
+		{
+			Save();
+		}
 		return false;
 	}
 
@@ -341,6 +336,8 @@ void CLevelEditorState::Close()
 	else
 	{
 		DEBUG_MSG("Closing Editor");
+		cKeyboardController->Reset();
+		cMouseController->Reset();
 		CGameStateManager::GetInstance()->SetActiveGameState("MenuState");
 	}
 
@@ -643,27 +640,34 @@ void CLevelEditorState::ImGuiRender()
 	ImGui::End();
 
 
+	windowFlags =
+		ImGuiWindowFlags_AlwaysAutoResize |
+		ImGuiWindowFlags_NoMove |
+		ImGuiWindowFlags_NoResize |
+		ImGuiWindowFlags_NoCollapse;
+
+	ImGui::SetNextWindowPos(ImVec2((cSettings->iWindowWidth - 250) * 0.5, (cSettings->iWindowHeight - 105) * 0.5));
+	ImGui::SetNextWindowSize(ImVec2(250, 105));
 	if (eProperties.bToggleCloseWindow)
 	{
-		windowFlags =
-			ImGuiWindowFlags_AlwaysAutoResize |
-			ImGuiWindowFlags_NoMove |
-			ImGuiWindowFlags_NoResize |
-			ImGuiWindowFlags_NoCollapse;
-		
-		ImGui::SetNextWindowPos(ImVec2((cSettings->iWindowWidth - 250) * 0.5, (cSettings->iWindowHeight - 105) * 0.5));
-		ImGui::SetNextWindowSize(ImVec2(250, 105));
-		if (ImGui::Begin("Alert", NULL, windowFlags))
+		if (ImGui::Begin("Alert", &(eProperties.bToggleCloseWindow), windowFlags))
 		{
 			DEBUG_MSG(ImGui::GetWindowSize().x << " " << ImGui::GetWindowSize().y);
 			ImGui::TextWrapped("You have unsaved changes. Do you want to discard them or cancel?");
 
 			ImGui::NewLine();
 
-			if (ImGui::Button("Discard")) eProperties.bSaved = true; Close(); ImGui::SameLine();
+			if (ImGui::Button("Discard"))
+			{
+				eProperties.bSaved = true;
+				Close();
+			}
+
+			ImGui::SameLine();
+
 			if (ImGui::Button("Cancel")) eProperties.bToggleCloseWindow = false;
+			ImGui::End();
 		}
-		ImGui::End();
 	}
 
 }
