@@ -295,8 +295,8 @@ void CPlayer2D::Update(const double dElapsedTime)
 	int range = 3;
 	cPhysics2D.SetboolGrounded(false);
 
+	//Stores nearby objects and its dist to player into a vector 
 	vector<pair<CObject2D*, float>> aabbVector;
-
 	for (int i = 0; i < 2; i++)
 	{
 		for (int row = -range; row <= range; row++) //y
@@ -316,11 +316,13 @@ void CPlayer2D::Update(const double dElapsedTime)
 			}
 		}
 	}
+	//Sorts vector based on shortest dist from player to object
 	sort(aabbVector.begin(), aabbVector.end(), [](const std::pair<CObject2D*, float>& a, const std::pair<CObject2D*, float>& b)
 	{
 		return a.second < b.second;
 	});
 
+	// Detects and Resolves Collsion
 	for (auto aabbTuple : aabbVector)
 	{
 		CObject2D* obj = aabbTuple.first;
