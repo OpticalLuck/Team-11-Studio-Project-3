@@ -59,7 +59,7 @@ void CInventoryM::AddItem(std::string sItemName, int iID)
 	}
 
 	cout << "Added item " << sItemName << " and the size of map is " << m_Items.size()<<'\n';
-	cout << "Vector size is \n" << m_potion.size();
+	cout << "Vector size is \n" << m_potion.size() << std::endl;
 }
 
 

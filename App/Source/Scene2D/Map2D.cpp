@@ -337,7 +337,7 @@ void CMap2D::UpdateGridInfo(const unsigned int uiRow, const unsigned uiCol, CObj
 
 	if (newSpot == nullptr)
 	{
-		if (obj == target)
+		if (obj == target && target)
 		{
 			if (bInvert)
 			{
