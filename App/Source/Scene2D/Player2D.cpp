@@ -365,11 +365,6 @@ void CPlayer2D::Update(const double dElapsedTime)
 	//cout << cPhysics2D.GetVelocity().x << ", " << cPhysics2D.GetVelocity().y << " | " << cPhysics2D.GetboolGrounded() << endl;
 	
 	//BOUNDARY CHECK
-	//if (vTransform.y > cMap2D->GetLevelRow() - 1 || vTransform.x > cMap2D->GetLevelCol() - 1 || vTransform.y < -1 || vTransform.x < -1)
-	//{
-		//Reset to checkpoint option
-		//ResetToCheckPoint();
-	//}
 	LockWithinBoundary();
 	//animation States
 	switch (state)

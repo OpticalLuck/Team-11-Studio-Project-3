@@ -11,8 +11,15 @@
 //Manager
 #include "RenderControl/ShaderManager.h"
 
+//Interactables
+#include "Interactables.h"
+#include "Boulder2D.h"
+
 CMobEnemy2D::CMobEnemy2D(void) {
 	animatedSprites = nullptr;
+	mSpd = 0;
+	oldVTransform = glm::vec2();
+	clampSides = true;
 }
 
 CMobEnemy2D::~CMobEnemy2D(void) {
@@ -42,6 +49,7 @@ bool CMobEnemy2D::Init(void) {
 
 	// Set the start position of the Player to iRow and iCol
 	vTransform = glm::i32vec2(uiCol, uiRow);
+	oldVTransform = vTransform;
 
 	roundIndex = 0;
 	health = 5;
@@ -75,8 +83,6 @@ bool CMobEnemy2D::Init(void) {
 	cEntityManager = CEntityManager::GetInstance();
 
 	// Set the Physics to fall status by default
-	//cPhysics2D.Init();
-	//cPhysics2D.SetStatus(CPhysics2D::STATUS::FALL);
 
 	//Collider2D
 	collider2D->Init();
@@ -89,16 +95,180 @@ bool CMobEnemy2D::Init(void) {
 
 	animatedSprites->PlayAnimation("move", -1, 0.6f);
 
+	//Physics initialisation
+	cPhysics2D.Init(&vTransform);
+	mSpd = 5;
+
 	// If this class is initialised properly, then set the bIsActive to true
 	bIsActive = true;
+	clampSides = true;
 
 	return true;
 }
 
 void CMobEnemy2D::Update(const double dElapsedTime) {
-	//Collision and stuff (Refer to Jeryl's new branch)
+	// Store the old position
+	oldVTransform = vTransform;
+
+	//Clamping of position
+	ClampPos();
+
+	//Physics
+	UpdateMovement();
+	cPhysics2D.Update(dElapsedTime);
+
+	//Collision with world's object
+	collider2D->position = vTransform;
+	CollisionUpdate();
+
+	if (vTransform == oldVTransform) {
+		if (dir == DIRECTION::LEFT)
+			dir = DIRECTION::RIGHT;
+		else
+			dir = DIRECTION::LEFT;
+	}
 
 	animatedSprites->Update(dElapsedTime);
+}
+
+void CMobEnemy2D::ClampPos(void) {
+	if (!clampSides)
+		return; //Do not clamp sides if option is not set
+
+	glm::vec2 tileCheck = glm::vec2(round(vTransform.x), round(vTransform.y));
+	tileCheck.y--; //Going one tile down to check object below player
+
+	float xCheck = vTransform.x;
+	xCheck = xCheck - floorf(xCheck);
+
+	float dist = 0.1f; //Checks how near player should be at the edge before its activated
+
+	if (1 - xCheck < xCheck)
+		xCheck = 1 - xCheck;
+
+	if (xCheck > dist)
+		return; //If its not near the edge, dont activate yet
+
+	switch (dir) {
+		case DIRECTION::LEFT: {
+			tileCheck.x--;
+			CObject2D* obj = cMap2D->GetCObject(tileCheck.x, tileCheck.y);
+
+			if (!obj) {
+				dir = DIRECTION::RIGHT;
+				vTransform = glm::vec2(round(vTransform.x), round(vTransform.y));
+			}
+			break;
+		}
+
+		case DIRECTION::RIGHT: {
+			tileCheck.x++;
+			CObject2D* obj = cMap2D->GetCObject(tileCheck.x, tileCheck.y);
+
+			if (!obj) {
+				dir = DIRECTION::LEFT;
+				vTransform = glm::vec2(round(vTransform.x), round(vTransform.y));
+			}
+
+			break;
+		}
+
+		default:
+			DEBUG_MSG("ERROR IN CLAMPING, CMOBENEMY2D DIRECTION SEEMS TO BE INVALID. PLEASE FIX!");
+			break;
+	}
+}
+
+void CMobEnemy2D::CollisionUpdate(void) {
+	int range = 3;
+	cPhysics2D.SetboolGrounded(false);
+
+	//Collision for loop
+	for (int i = 0; i < 2; i++)
+	{
+		for (int row = -range; row <= range; row++) //y
+		{
+			for (int col = -range; col <= range; col++) //x
+			{
+				int rowCheck = vTransform.y + row;
+				int colCheck = vTransform.x + col;
+
+				if (rowCheck < 0 || colCheck < 0 || rowCheck > cMap2D->GetLevelRow() - 1 || colCheck > cMap2D->GetLevelCol() - 1) continue;
+
+				if (cMap2D->GetCObject(colCheck, rowCheck))
+				{
+					CObject2D* obj = cMap2D->GetCObject(colCheck, rowCheck);;
+					Collision data = (collider2D->CollideWith(cMap2D->GetCObject(colCheck, rowCheck)->GetCollider()));
+					if (std::get<0>(data))
+					{
+						if (obj->GetCollider()->colliderType == Collider2D::COLLIDER_QUAD)
+						{
+							if (i == 0)
+							{
+								collider2D->ResolveAABB(obj->GetCollider(), Direction::UP);
+							}
+							else if (i == 1)
+							{
+								collider2D->ResolveAABB(obj->GetCollider(), Direction::RIGHT);
+							}
+
+							if (std::get<1>(data) == Direction::UP)
+								cPhysics2D.SetboolGrounded(true);
+						}
+						else if (obj->GetCollider()->colliderType == Collider2D::COLLIDER_CIRCLE)
+						{
+							if (glm::dot(cPhysics2D.GetVelocity(), obj->vTransform - vTransform) > 0)
+								collider2D->ResolveAABBCircle(obj->GetCollider(), data, Collider2D::COLLIDER_QUAD);
+
+							if (std::get<1>(data) == Direction::DOWN)
+								cPhysics2D.SetboolGrounded(true);
+						}
+
+						//Clamping movement...
+						vTransform = collider2D->position;
+						obj->vTransform = obj->GetCollider()->position;
+
+						if (obj->type == CObject2D::ENTITY_TYPE::INTERACTABLES)
+						{
+							if (static_cast<Interactables*>(obj)->interactableType == Interactables::INTERACTABLE_TYPE::BOULDER)
+							{
+								glm::vec2 direction = glm::normalize(obj->vTransform - vTransform);
+								static_cast<Boulder2D*>(obj)->GetPhysics().SetForce(glm::vec2(120.f, 0) * direction);
+								cPhysics2D.SetVelocity(glm::vec2(0.f));
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	//Player collision
+	std::vector<CPlayer2D*> arrPlayer = cEntityManager->GetAllPlayers();
+
+	for (unsigned i = 0; i < arrPlayer.size(); i++) {
+		Collider2D* playerCollider = arrPlayer[i]->GetCollider();
+		Collision data = (collider2D->CollideWith(playerCollider));
+
+		if (std::get<0>(data)) {
+			//DEBUG_MSG("PLAYER HIT BY MOBENEMY!");
+			//What happens when player collides with enemy code below
+			
+			return;
+		}
+	}
+}
+
+void CMobEnemy2D::UpdateMovement(void) {
+	float force = mSpd;
+
+	if (dir == DIRECTION::LEFT)
+		force *= -1;
+
+	glm::vec2 velocity = cPhysics2D.GetVelocity();
+	velocity.x = force;
+
+	cPhysics2D.SetVelocity(velocity);
 }
 
 void CMobEnemy2D::Render(void) {
