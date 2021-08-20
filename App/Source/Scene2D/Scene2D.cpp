@@ -150,7 +150,7 @@ bool CScene2D::Init(void)
 
 	//cInventoryManager = CInventoryManager::GetInstance();
 	cInventoryM = CInventoryM::GetInstance();
-	//cInventoryMain->Init();
+	cInventoryM->Init();
 	return true;
 }
 
@@ -250,6 +250,11 @@ bool CScene2D::Update(const double dElapsedTime)
 	{
 		cInventoryM->UseItem();
 		fCooldown = .5f;
+	}
+
+	if (cKeyboardController->IsKeyPressed(GLFW_KEY_G))
+	{
+		cInventoryM->AddItem("Shuriken", ITEM_SHURIKEN);
 	}
 
 	return true;

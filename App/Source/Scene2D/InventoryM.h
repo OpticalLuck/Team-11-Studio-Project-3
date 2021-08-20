@@ -28,12 +28,12 @@ public:
 	//use the item when requested
 	void UseItem();
 
+	void AddItem(std::string sItemName, int iID); //add item into the map of items
 
 private:
 	std::map<std::string, CItem>m_Items; //stores the list of items into the map
 	std::map<std::string, CInventory>m_Inventory; //store a list of inventory for clone/player
 	int iItemIndex;
 
-protected:
-	void AddItem(std::string sItemName, int iID); //add item into the map of items
+
 };

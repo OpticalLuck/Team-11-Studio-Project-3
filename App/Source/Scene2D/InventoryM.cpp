@@ -15,7 +15,7 @@ CInventoryM::~CInventoryM()
 
 void CInventoryM::Init()
 {
-	AddItem("Shuriken", ITEM_SHURIKEN);
+	//AddItem("Shuriken", ITEM_SHURIKEN);
 	AddItem("Potion", ITEM_POTION);
 	AddItem("Hook", ITEM_HOOK);
 
@@ -45,6 +45,7 @@ void CInventoryM::NavigateIndex(std::string direction)
 void CInventoryM::AddItem(std::string sItemName, int iID)
 {
 	m_Items.insert(std::make_pair(sItemName, CItem(iID, sItemName)));
+	cout << "Added item " << sItemName << " and the size of map is " << m_Items.size()<<'\n';
 }
 
 int CInventoryM::GetItemIndex(void)
