@@ -47,6 +47,8 @@ class Camera2D;
 #include <array>
 #include "../InputHandler/CInputHandler.h"
 
+#include "Inputs/MouseController.h"
+
 #include "InventoryM.h"
 
 class CPlayer2D : public CEntity2D
@@ -69,8 +71,6 @@ public:
 
 	// Constructor
 	CPlayer2D(void);
-
-	CPlayer2D(string cloneName);
 
 	// Destructor
 	virtual ~CPlayer2D(void);

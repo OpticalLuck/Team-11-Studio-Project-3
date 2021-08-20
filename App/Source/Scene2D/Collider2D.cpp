@@ -7,7 +7,7 @@
 #include "GameControl/Settings.h"
 #include "Camera2D.h"
 
-//#include "DesignPatterns/SingletonTemplate.h"
+#include "Math/MyMath.h"
 
 Collision Collider2D::CheckAABBCollision(Collider2D* obj, Collider2D* target)
 {
@@ -64,6 +64,7 @@ Collider2D::Collider2D()
 	, fLineWidth(1.0f)
 	, cSettings(NULL)
 	, bEnabled(true)
+	, angle(0.f)
 {
 	sLineShaderName = "LineShader";
 	colliderType = COLLIDER_QUAD;
@@ -71,26 +72,55 @@ Collider2D::Collider2D()
 
 Collider2D::~Collider2D()
 {
+	cSettings = nullptr;
+
+	//Delete buffers when done
+	glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(1, &VBO);
 }
 
 bool Collider2D::Init()
 {
-	float vertices[] = {
-		-vec2Dimensions.x, -vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
-		vec2Dimensions.x, -vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
-		vec2Dimensions.x, vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
-		vec2Dimensions.x, vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
-		-vec2Dimensions.x, vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
-		-vec2Dimensions.x, -vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
-	};
-
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
 
 	glBindVertexArray(VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	if (colliderType == ColliderType::COLLIDER_QUAD) {
+		float vertices[] = {
+		-vec2Dimensions.x, -vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
+		vec2Dimensions.x, -vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
+		vec2Dimensions.x, vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
+		vec2Dimensions.x, vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
+		-vec2Dimensions.x, vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
+		-vec2Dimensions.x, -vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
+		};
+
+		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	}
+	else {
+		std::vector<float> vertices;
+		const float max = Math::PI * 2;
+		const float inc = 12;
+		const float r = vec2Dimensions.x;
+
+		float angle = 0;
+
+		for (int i = 0; i < inc; i++) {
+			vertices.push_back(r * cos(angle));
+			vertices.push_back(r * sin(angle));
+
+			vertices.push_back(vec4Colour.x);
+			vertices.push_back(vec4Colour.y);
+			vertices.push_back(vec4Colour.z);
+
+			angle += max / inc;
+		}
+
+		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_STATIC_DRAW);
+	}
 
 	// position attribute
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
@@ -102,6 +132,8 @@ bool Collider2D::Init()
 	glLineWidth(fLineWidth);
 
 	cSettings = CSettings::GetInstance();
+
+	angle = 0;
 	 
 	return true;
 }
@@ -109,6 +141,10 @@ bool Collider2D::Init()
 void Collider2D::SetLineShader(const std::string& name)
 {
 	sLineShaderName = name;
+}
+
+void Collider2D::SetAngle(float ang) {
+	angle = ang;
 }
 
 Collision Collider2D::CollideWith(Collider2D* object)
@@ -264,7 +300,6 @@ void Collider2D::Render(void)
 	if (!bIsDisplayed)
 		return;
 
-
 	//Camera init
 	glm::vec2 offset = glm::vec2(float(CSettings::GetInstance()->NUM_TILES_XAXIS / 2.f), float(CSettings::GetInstance()->NUM_TILES_YAXIS / 2.f));
 
@@ -283,12 +318,16 @@ void Collider2D::Render(void)
 	{
 		transform = glm::mat4(1.f);
 		transform = glm::translate(transform, glm::vec3(actualPos.x, actualPos.y, 0.f));
+		transform = glm::rotate(transform, angle, glm::vec3(0, 0, 1));
 		transform = glm::scale(transform, glm::vec3(CSettings::GetInstance()->TILE_WIDTH, CSettings::GetInstance()->TILE_HEIGHT, 1.f));
 		CShaderManager::GetInstance()->activeShader->setMat4("transform", transform);
 
 		// render box
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_LINE_LOOP, 0, 6);
+		if (colliderType == COLLIDER_QUAD)
+			glDrawArrays(GL_LINE_LOOP, 0, 6);
+		else
+			glDrawArrays(GL_LINE_LOOP, 0, 12);
 	}
 }
 

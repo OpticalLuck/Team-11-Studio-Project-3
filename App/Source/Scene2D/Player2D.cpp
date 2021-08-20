@@ -59,15 +59,16 @@ CPlayer2D::CPlayer2D(void)
 	currentColor = glm::vec4();
 }
 
-CPlayer2D::CPlayer2D(string cloneName) : CEntity2D() {
-	
-}
-
 /**
  @brief Destructor This destructor has protected access modifier as this class will be a Singleton
  */
 CPlayer2D::~CPlayer2D(void)
 {
+	if (collider2D) {
+		delete collider2D;
+		collider2D = nullptr;
+	}
+
 	// We won't delete this since it was created elsewhere
 	cSoundController = NULL;
 
@@ -242,8 +243,8 @@ bool CPlayer2D::Init(glm::i32vec2 spawnpoint)
 
 	cInputHandler = CInputHandler::GetInstance();
 
+	collider2D->vec2Dimensions = glm::vec2(0.20000f, 0.50000f);
 	collider2D->Init();
-	collider2D->SetPosition(vTransform);
 
 	cPhysics2D.Init(&vTransform);
 
@@ -360,8 +361,8 @@ void CPlayer2D::Update(const double dElapsedTime)
 			}
 		}
 	}
-	cout << cPhysics2D.GetVelocity().x << ", " << cPhysics2D.GetVelocity().y << " | " << cPhysics2D.GetboolGrounded() << endl;
-	
+
+	//cout << cPhysics2D.GetVelocity().x << ", " << cPhysics2D.GetVelocity().y << " | " << cPhysics2D.GetboolGrounded() << endl;
 	
 	//BOUNDARY CHECK
 	//if (vTransform.y > cMap2D->GetLevelRow() - 1 || vTransform.x > cMap2D->GetLevelCol() - 1 || vTransform.y < -1 || vTransform.x < -1)

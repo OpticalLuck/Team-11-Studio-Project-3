@@ -1,7 +1,9 @@
 #pragma once 
 
+//Include Entities
 #include "Player2D.h"
 #include "Enemy2D.h"
+
 #include <vector>
 #include <iostream>
 #include "Map2D.h"
@@ -11,8 +13,12 @@
 
 class CBoss2D;
 
+//System debug
+#include "System/Debug.h"
+
 class CEntityManager : public CEntity2D , public CSingletonTemplate<CEntityManager>
 {
+	friend class CSingletonTemplate<CEntityManager>;
 public:
 	CEntityManager();
 	~CEntityManager();
@@ -33,13 +39,14 @@ public:
 	CPlayer2D* GetPlayer();
 	int GetCurrRound(void);
 
+	void PushEnemy(CEnemy2D*);
+
 	std::vector<CPlayer2D*> GetAllPlayers(void);
 
 protected:
 	CInputHandler* cInputHandler;
 	CKeyboardController* cKeyboardController;
 
-	CPlayer2D* cCloneTemplate;
 	CPlayer2D* cPlayer2D;
 
 	CBoss2D* cBoss2D;
