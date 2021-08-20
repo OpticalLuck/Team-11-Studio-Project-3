@@ -295,7 +295,7 @@ void CPlayer2D::Update(const double dElapsedTime)
 	int range = 3;
 	cPhysics2D.SetboolGrounded(false);
 
-	vector<tuple<int, CObject2D*, float>> aabbVector;
+	vector<pair<CObject2D*, float>> aabbVector;
 
 	for (int i = 0; i < 2; i++)
 	{
@@ -311,19 +311,19 @@ void CPlayer2D::Update(const double dElapsedTime)
 				{
 					CObject2D* obj = cMap2D->GetCObject(colCheck, rowCheck);
 					float distance = glm::length( obj->vTransform - vTransform );
-					aabbVector.push_back({ i, obj, distance });
+					aabbVector.push_back({obj, distance });
 				}
 			}
 		}
 	}
-	sort(aabbVector.begin(), aabbVector.end(), [](const std::tuple<int, CObject2D*, float>& a, const std::tuple<int, CObject2D*, float>& b)
+	sort(aabbVector.begin(), aabbVector.end(), [](const std::pair<CObject2D*, float>& a, const std::pair<CObject2D*, float>& b)
 	{
-		return std::get<2>(a) < std::get<2>(b);
+		return a.second < b.second;
 	});
 
 	for (auto aabbTuple : aabbVector)
 	{
-		CObject2D* obj = std::get<1>(aabbTuple);
+		CObject2D* obj = aabbTuple.first;
 		Collision data = (collider2D->CollideWith(obj->GetCollider()));
 		if (std::get<0>(data))
 		{
