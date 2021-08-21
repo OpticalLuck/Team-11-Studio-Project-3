@@ -185,6 +185,7 @@ bool CPlayer2D::Init(glm::i32vec2 spawnpoint)
 	// Reset all keys since we are starting a new game
 	cKeyboardController->Reset();
 
+	cMouseController = CMouseController::GetInstance();
 	// Get the handler to the CSettings instance
 	cSettings = CSettings::GetInstance();
 
@@ -239,8 +240,9 @@ bool CPlayer2D::Init(glm::i32vec2 spawnpoint)
 
 	cKeyboardInputHandler = CKeyboardInputHandler::GetInstance();
 
-	collider2D->Init();
 	collider2D->SetPosition(vTransform);
+	collider2D->vec2Dimensions = glm::vec2(0.20000f, 0.50000f);
+	collider2D->Init();
 
 	cPhysics2D.Init(&vTransform);
 
@@ -571,9 +573,7 @@ void CPlayer2D::InputUpdate(double dt)
 		if (timerArr[A_JUMP].second < 0.1)
 		{
 			timerArr[A_JUMP].first = true;
-			cout << timerArr[A_JUMP].second << endl;
 			force.y = 500;
-			cout << "Applying Force" << endl;
 			cPhysics2D.SetboolGrounded(false);
 		}
 		else
@@ -595,21 +595,33 @@ void CPlayer2D::InputUpdate(double dt)
 		}
 	}
 
+	if (cKeyboardController->IsKeyPressed(GLFW_KEY_V))
+	{
+		cInventoryItem = cInventoryManager->GetItem("Shuriken");
+		if (cInventoryItem->GetCount() > 0)
+		{
+			if (cMap2D->InsertMapInfo((int)vTransform.y, (int)vTransform.x, 2))
+			{
+				CObject2D* shuriken = cMap2D->GetCObject((int)vTransform.x, (int)vTransform.y);
+				shuriken->vTransform = vTransform;
+
+				glm::vec2 force(0.f);
+				if(facing == LEFT)
+					force = glm::vec2(-1,0) * glm::vec2(10.f, 0.f);
+				else if (facing == RIGHT)
+					force = glm::vec2(1, 0) * glm::vec2(10.f, 0.f);
+
+				static_cast<Projectiles*>(shuriken)->GetPhysics().SetVelocity(force);
+				cInventoryItem->Remove(1);
+			}
+		}
+	}
 
 	if (glm::length(velocity) > 0.f)
 		cPhysics2D.SetVelocity(velocity);
 
 	if (glm::length(force) > 0.f)
 		cPhysics2D.SetForce(force);
-
-	if (cKeyboardController->IsKeyPressed(GLFW_KEY_V))
-	{
-		if (state != S_ATTACK)
-		{
-			cSoundController->PlaySoundByID(6);
-			state = S_ATTACK;
-		}
-	}
 
 	if (cMouseController->IsButtonPressed(0))
 	{

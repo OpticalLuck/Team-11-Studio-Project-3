@@ -21,8 +21,10 @@ bool Projectiles::Init()
 	cPhysics2D.FRICTONAL_COEFFICIENT = 0.8f;
 	collider2D->colliderType = Collider2D::ColliderType::COLLIDER_CIRCLE;
 	collider2D->position = vTransform;
+	collider2D->vec2Dimensions = glm::vec2(0.2f);
 	collider2D->Init();
 
+	cPhysics2D.SetGravity(0.f);
 	return false;
 }
 
@@ -62,34 +64,37 @@ void Projectiles::Update(double dElapsedTime)
 		return a.second < b.second;
 	});
 	aabbVector.erase(std::unique(aabbVector.begin(), aabbVector.end()), aabbVector.end());
+	bool destroyed = false;
 	for (auto aabbTuple : aabbVector)
 	{
 		CObject2D* obj = aabbTuple.first;
 		Collision data = (collider2D->CollideWith(obj->GetCollider()));
 		if (std::get<0>(data))
 		{
-			if (obj->GetCollider()->colliderType == Collider2D::COLLIDER_QUAD)
-			{
-				collider2D->ResolveAABB(obj->GetCollider(), Direction::UP);
-				collider2D->ResolveAABB(obj->GetCollider(), Direction::RIGHT);
+			destroyed = true;
+			
+			//if (obj->GetCollider()->colliderType == Collider2D::COLLIDER_QUAD)
+			//{
+			//	collider2D->ResolveAABB(obj->GetCollider(), Direction::UP);
+			//	collider2D->ResolveAABB(obj->GetCollider(), Direction::RIGHT);
 
-				if (std::get<1>(data) == Direction::UP)
-					cPhysics2D.SetboolGrounded(true);
-			}
-			else if (obj->GetCollider()->colliderType == Collider2D::COLLIDER_CIRCLE)
-			{
-				if (glm::dot(cPhysics2D.GetVelocity(), obj->vTransform - vTransform) > 0)
-					collider2D->ResolveAABBCircle(obj->GetCollider(), data, Collider2D::COLLIDER_QUAD);
+			//	if (std::get<1>(data) == Direction::UP)
+			//		cPhysics2D.SetboolGrounded(true);
+			//}
+			//else if (obj->GetCollider()->colliderType == Collider2D::COLLIDER_CIRCLE)
+			//{
+			//	if (glm::dot(cPhysics2D.GetVelocity(), obj->vTransform - vTransform) > 0)
+			//		collider2D->ResolveAABBCircle(obj->GetCollider(), data, Collider2D::COLLIDER_QUAD);
 
-				if (std::get<1>(data) == Direction::DOWN)
-					cPhysics2D.SetboolGrounded(true);
-			}
+			//	if (std::get<1>(data) == Direction::DOWN)
+			//		cPhysics2D.SetboolGrounded(true);
+			//}
 
-			vTransform = collider2D->position;
+			//vTransform = collider2D->position;
 
-			//How the object interacts 
-			glm::vec2 normal = Collider2D::ConvertDirectionToVec2(std::get<1>(data));
-			cPhysics2D.DoBounce(normal, 0.f);
+			////How the object interacts 
+			//glm::vec2 normal = Collider2D::ConvertDirectionToVec2(std::get<1>(data));
+			//cPhysics2D.DoBounce(normal, 0.f);
 		}
 	}
 
@@ -98,6 +103,11 @@ void Projectiles::Update(double dElapsedTime)
 	if (newindex != currentIndex)
 	{
 		CMap2D::GetInstance()->UpdateGridInfo(newindex.y, newindex.x, this, false);
+	}
+
+	if (destroyed)
+	{
+		cMap2D->SetMapInfo(currentIndex.y, currentIndex.x, 0, false);
 	}
 }
 

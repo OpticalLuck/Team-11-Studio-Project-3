@@ -13,7 +13,6 @@ class CPhysics2D
 {
 private:
 	glm::vec2 CalculateAcceleration();
-	glm::vec2 CalculateFriction(float coefficient);
 public:	
 	enum STATUS
 	{
@@ -36,6 +35,8 @@ public:
 	// Update
 	void Update(double dElapsedTime);
 
+	glm::vec2 CalculateFriction(float coefficient);
+
 	void DoBounce(glm::vec2 normal, float bounciness = 1.f);
 
 	void SetForce(const glm::vec2 force);
@@ -45,10 +46,12 @@ public:
 	glm::vec2 GetVelocity() const;
 	bool GetboolGrounded() const;
 
+	void SetGravity(float gravity);
+
 	float MAX_SPEED;
 	float FRICTONAL_COEFFICIENT;
 protected:
-	const glm::vec2 v2Gravity = glm::vec2(0.f, -20.f);
+	glm::vec2 v2Gravity = glm::vec2(0.f, -20.f);
 	glm::vec2 *position;
 	glm::vec2 velocity;
 	glm::vec2 force;

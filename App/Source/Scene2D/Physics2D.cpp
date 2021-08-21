@@ -39,6 +39,7 @@ glm::vec2 CPhysics2D::CalculateFriction(float coefficient)
  */
 CPhysics2D::CPhysics2D(void)
 	: position(NULL)
+	, v2Gravity(glm::vec2(0.f,-20.f))
 	, velocity(glm::vec2(0.f))
 	, force(glm::vec2(0.f))
 	, mass(1)
@@ -121,4 +122,9 @@ glm::vec2 CPhysics2D::GetVelocity() const
 bool CPhysics2D::GetboolGrounded() const
 {
 	return bGrounded;
+}
+
+void CPhysics2D::SetGravity(float gravity)
+{
+	v2Gravity.y = gravity;
 }
