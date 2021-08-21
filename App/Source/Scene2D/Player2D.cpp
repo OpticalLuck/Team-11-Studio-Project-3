@@ -301,6 +301,14 @@ bool CPlayer2D::Reset()
  */
 void CPlayer2D::Update(const double dElapsedTime)
 {
+	// Only update the inputs if the instance is not a clone
+	// Clone will have a fixed input that is created on initialisation
+	if (!bIsClone)
+	{
+		m_KeyboardInputs = cInputHandler->GetAllKeyboardInputs();
+		m_MouseInputs = cInputHandler->GetAllMouseInputs();
+	}
+
 	// Store the old position
 	vOldTransform = vTransform;
 
@@ -530,36 +538,36 @@ void CPlayer2D::InputUpdate(double dt)
 {
 	state = S_IDLE;
 	
-	std::vector<std::array<KeyInput, KEYBOARD_INPUTS::KEY_TOTAL>> keyboardInputs = (bIsClone) ? m_CloneKeyboardInputs : cInputHandler->GetAllKeyboardInputs();
-	std::vector<std::array<MouseInput, MOUSE_INPUTS::MOUSE_TOTAL>> mouseInputs = (bIsClone) ? m_CloneMouseInputs : cInputHandler->GetAllMouseInputs();
+	// std::vector<std::array<KeyInput, KEYBOARD_INPUTS::KEY_TOTAL>> keyboardInputs = (bIsClone) ? m_CloneKeyboardInputs : cInputHandler->GetAllKeyboardInputs();
+	// std::vector<std::array<MouseInput, MOUSE_INPUTS::MOUSE_TOTAL>> mouseInputs = (bIsClone) ? m_CloneMouseInputs : cInputHandler->GetAllMouseInputs();
 
-	if ((unsigned)iTempFrameCounter >= keyboardInputs.size())
+	if ((unsigned)iTempFrameCounter >= m_KeyboardInputs.size())
 		return;
 
 	glm::vec2 velocity = cPhysics2D.GetVelocity();
-	if (keyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::W].bKeyDown)
+	if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::W].bKeyDown)
 	{
 		velocity.y = fMovementSpeed;
 		cPhysics2D.SetboolGrounded(false);
 	}
-	else if (keyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::S].bKeyDown)
+	else if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::S].bKeyDown)
 	{
 		velocity.y = -fMovementSpeed;
 	}
-	if (keyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::D].bKeyDown)
+	if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::D].bKeyDown)
 	{
 		velocity.x = fMovementSpeed;
 		state = S_MOVE;
 		facing = RIGHT;
 	}
-	else if (keyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::A].bKeyDown)
+	else if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::A].bKeyDown)
 	{
 		velocity.x = -fMovementSpeed;
 		state = S_MOVE;
 		facing = LEFT;
 	}
 
-	if (keyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::SPACE].bKeyDown)
+	if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::SPACE].bKeyDown)
 	{
 		velocity.y = fJumpSpeed;
 		cPhysics2D.SetboolGrounded(false);
@@ -612,12 +620,12 @@ bool CPlayer2D::IsClone()
 
 void CPlayer2D::SetKeyInputs(std::vector<std::array<KeyInput, KEYBOARD_INPUTS::KEY_TOTAL>> inputs)
 {
-	m_CloneKeyboardInputs = inputs;
+	m_KeyboardInputs = inputs;
 }
 
 void CPlayer2D::SetMouseInputs(std::vector<std::array<MouseInput, MOUSE_INPUTS::MOUSE_TOTAL>> inputs)
 {
-	m_CloneMouseInputs = inputs;
+	m_MouseInputs = inputs;
 }
 
 void CPlayer2D::ResetToCheckPoint()
