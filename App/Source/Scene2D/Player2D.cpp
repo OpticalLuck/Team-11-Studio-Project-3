@@ -538,9 +538,6 @@ void CPlayer2D::InputUpdate(double dt)
 {
 	state = S_IDLE;
 	
-	// std::vector<std::array<KeyInput, KEYBOARD_INPUTS::KEY_TOTAL>> keyboardInputs = (bIsClone) ? m_CloneKeyboardInputs : cInputHandler->GetAllKeyboardInputs();
-	// std::vector<std::array<MouseInput, MOUSE_INPUTS::MOUSE_TOTAL>> mouseInputs = (bIsClone) ? m_CloneMouseInputs : cInputHandler->GetAllMouseInputs();
-
 	if ((unsigned)iTempFrameCounter >= m_KeyboardInputs.size())
 		return;
 
@@ -576,9 +573,10 @@ void CPlayer2D::InputUpdate(double dt)
 	if (glm::length(velocity) > 0.f)
 		cPhysics2D.SetVelocity(velocity);
 
-	if (cMouseController->IsButtonPressed(0))
+	if (m_MouseInputs[iTempFrameCounter][MOUSE_INPUTS::LMB].bButtonPressed)
 	{
-		CItem& shuriken = CInventoryManager::GetInstance()->Get("Player")->GetItem(0);
+		CInventoryManager::GetInstance()->Use(cInventory->sName);
+		CItem& shuriken = CInventoryManager::GetInstance()->Get(cInventory->sName)->GetItem(0);
 		if (shuriken.iCount > 0)
 		{
 			shuriken.Use();
@@ -603,7 +601,7 @@ void CPlayer2D::InputUpdate(double dt)
 			state = S_ATTACK;
 		}
 	}
-	cInventory->Update(dt);
+	cInventory->Update(dt, iTempFrameCounter ,m_KeyboardInputs, m_MouseInputs);
 }
 
 /**

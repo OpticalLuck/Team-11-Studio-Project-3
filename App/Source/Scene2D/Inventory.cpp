@@ -7,10 +7,10 @@
 
 #include "Inventory.h"
 #include "InventoryManager.h"
-#include "..\InputHandler\CInputHandler.h"
 #include "Math/MyMath.h"
 #include "GLFW/glfw3.h"
 #include "Object2D.h"
+#include "Map2D.h"
 
 CInventory::CInventory(std::string sName)
 	: fCooldown(0.f)
@@ -38,41 +38,38 @@ void CInventory::AddItem(int iIndex, int iID, int iCount)
 
 }
 
-void CInventory::Update(double dElapsedTime)
+void CInventory::Update(double dElapsedTime, int iTempFrameCounter, std::vector<std::array<KeyInput, KEYBOARD_INPUTS::KEY_TOTAL>> m_KeyboardInputs, std::vector<std::array<MouseInput, MOUSE_INPUTS::MOUSE_TOTAL>> m_MouseInputs)
 {
-	CKeyboardController* cKeyboardController = CKeyboardController::GetInstance();
 	CInventoryManager* cInventoryManager = CInventoryManager::GetInstance();
 	cInventoryManager->Use(sName);
-
 
 	if (fCooldown > 0)
 	{
 		fCooldown -= (float)dElapsedTime;
 	}
-
-	if (cKeyboardController->IsKeyPressed(GLFW_KEY_UP) && fCooldown <= 0)
+	if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::ARROW_UP].bKeyPressed && fCooldown <= 0)
 	{
 		cInventoryManager->NavigateIndex("UP");
 		std::cout << "index is : " << iCurrentIndex << std::endl;
 		fCooldown = .5f;
 	}
-	if (cKeyboardController->IsKeyPressed(GLFW_KEY_DOWN) && fCooldown <= 0)
+	if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::ARROW_DOWN].bKeyPressed && fCooldown <= 0)
 	{
 		cInventoryManager->NavigateIndex("DOWN");
 		std::cout << "index is : " << iCurrentIndex << std::endl;
 		fCooldown = .5f;
 	}
 
-	if (cKeyboardController->IsKeyPressed(GLFW_KEY_ENTER) && fCooldown <= 0)
+	if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::ENTER].bKeyPressed && fCooldown <= 0)
 	{
 		cInventoryManager->UseItem();
 		fCooldown = .5f;
 	}
 
-	if (cKeyboardController->IsKeyPressed(GLFW_KEY_G))
-	{
-		//cInventoryM->AddItem("Shuriken", ITEM_SHURIKEN);
-	}
+	//if (cKeyboardController->IsKeyPressed(GLFW_KEY_G))
+	//{
+	//	//cInventoryM->AddItem("Shuriken", ITEM_SHURIKEN);
+	//}
 }
 
 void CInventory::Init()
