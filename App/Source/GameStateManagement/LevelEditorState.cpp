@@ -134,7 +134,10 @@ bool CLevelEditorState::Update(const double dElapsedTime)
 	{
 		// Disable default mouse events if currently using shortcuts
 		if (!EditorShortcuts())
+		{
 			MouseInput(dElapsedTime);
+			ScaleMap();
+		}
 
 		// Mouse X Scroll
 		if (cMouseController->GetMousePositionX() < 100 || cMouseController->GetMousePositionX() > cSettings->iWindowWidth - 100)
@@ -147,7 +150,6 @@ bool CLevelEditorState::Update(const double dElapsedTime)
 
 	FileUtilShortcuts();
 	MoveCamera(dElapsedTime);
-	ScaleMap();
 
 	if (cKeyboardController->IsKeyDown(GLFW_KEY_4))
 	{
@@ -320,7 +322,7 @@ void CLevelEditorState::AreaDelete(void)
 	}
 }
 
-void CLevelEditorState::Undo(int count)
+void CLevelEditorState::Undo(const int count)
 {
 	if (eProperties.undoStates.size() == 1)
 		return;
@@ -337,10 +339,6 @@ void CLevelEditorState::Undo(int count)
 
 		eProperties.redoStates.push_back(currentState);
 
-		cLevelEditor->SetCurrentLevel(eProperties.undoStates.back().m_ThisActionLevel);
-		cLevelGrid->iWorldWidth = eProperties.undoStates.back().iWorldWidth;
-		cLevelGrid->iWorldHeight = eProperties.undoStates.back().iWorldHeight;
-
 		if (cLevelGrid->iWorldWidth < currentState.iWorldWidth)
 			cLevelEditor->DecreaseXSize();
 		if (cLevelGrid->iWorldWidth > currentState.iWorldWidth)
@@ -350,11 +348,15 @@ void CLevelEditorState::Undo(int count)
 		if (cLevelGrid->iWorldHeight > currentState.iWorldHeight)
 			cLevelEditor->IncreaseYSize();
 
+		cLevelEditor->SetCurrentLevel(eProperties.undoStates.back().m_ThisActionLevel);
+		cLevelGrid->iWorldWidth = eProperties.undoStates.back().iWorldWidth;
+		cLevelGrid->iWorldHeight = eProperties.undoStates.back().iWorldHeight;
+
 		eProperties.undoStates.pop_back();
 	}
 }
 
-void CLevelEditorState::Redo(int count)
+void CLevelEditorState::Redo(const int count)
 {
 	if (eProperties.redoStates.size() == 0)
 		return;
@@ -372,10 +374,6 @@ void CLevelEditorState::Redo(int count)
 
 		eProperties.undoStates.push_back(currentState);
 
-		cLevelEditor->SetCurrentLevel(eProperties.redoStates.back().m_ThisActionLevel);
-		cLevelGrid->iWorldWidth = eProperties.redoStates.back().iWorldWidth;
-		cLevelGrid->iWorldHeight = eProperties.redoStates.back().iWorldHeight;
-
 		if (currentState.iWorldWidth < eProperties.redoStates.back().iWorldWidth)
 			cLevelEditor->DecreaseXSize();
 		if (currentState.iWorldWidth > eProperties.redoStates.back().iWorldWidth)
@@ -384,6 +382,11 @@ void CLevelEditorState::Redo(int count)
 			cLevelEditor->DecreaseYSize();
 		if (currentState.iWorldHeight > eProperties.redoStates.back().iWorldHeight)
 			cLevelEditor->DecreaseYSize();
+
+		cLevelEditor->SetCurrentLevel(eProperties.redoStates.back().m_ThisActionLevel);
+		cLevelGrid->iWorldWidth = eProperties.redoStates.back().iWorldWidth;
+		cLevelGrid->iWorldHeight = eProperties.redoStates.back().iWorldHeight;
+
 
 		eProperties.redoStates.pop_back();
 	}
@@ -594,6 +597,13 @@ void CLevelEditorState::ImGuiRender()
 
 			if (ImGui::MenuItem(saveString.c_str(), "CTRL+S")) Save();
 			if (ImGui::MenuItem(closeString.c_str(), "ESCAPE")) Close();
+
+			ImGui::EndMenu();
+		}
+		if (ImGui::BeginMenu("Edit"))
+		{
+			if (ImGui::MenuItem("Undo", "CTRL+Z")) Undo(1);
+			if (ImGui::MenuItem("Redo", "CTRL+Y")) Redo(1);
 
 			ImGui::EndMenu();
 		}

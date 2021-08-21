@@ -147,8 +147,8 @@ protected:
 	bool FileUtilShortcuts(void);
 	void AreaFill(void);
 	void AreaDelete(void);
-	void Undo(int count);
-	void Redo(int count);
+	void Undo(const int count);
+	void Redo(const int count);
 	void CopyBlock(void);
 	void Save();
 	void Close();
