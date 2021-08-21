@@ -58,10 +58,10 @@ bool CEntityManager::EntityManagerInit(void)
 
 	//Boss initialisation
 	if (cMap2D->FindValue(305, uiRow, uiCol)) {
-		cBoss2D = new CBoss2D;
-		cBoss2D->SetShader("2DColorShader");
-		if (cBoss2D->Init() == false) {
-			cout << "Failed to load CBoss2D" << endl;
+		cBoss2D = dynamic_cast<CBoss2D*>(enemyFactory.CreateEnemy(305));
+
+		if (cMap2D->FindValue(305, uiRow, uiCol)) {
+			DEBUG_MSG("ERROR: TOO MANY BOSS IN LEVEL. THERE SHOULD ONLY BE ONE BOSS");
 			return false;
 		}
 	}

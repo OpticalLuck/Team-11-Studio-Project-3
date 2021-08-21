@@ -19,6 +19,10 @@ class CMobEnemy2D : public CEnemy2D
 		//Set clamp sides
 		void SetClampSlides(bool clamp);
 
+		//Setter and getter of animated sprites
+		void SetAnimatedSprites(CSpriteAnimation* animatedSprites);
+		CSpriteAnimation* GetAnimatedSprites(void);
+
 	protected:
 		glm::vec2 oldVTransform;
 		float mSpd;
@@ -27,6 +31,7 @@ class CMobEnemy2D : public CEnemy2D
 		CPhysics2D cPhysics2D;
 
 		bool clampSides; //check if enemy can jump off cliff and stuff
+		bool inView;
 
 		void UpdateMovement(void);
 		void CollisionUpdate(void);

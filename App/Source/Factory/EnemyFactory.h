@@ -5,6 +5,13 @@
 class EnemyFactory
 {
 	public:
+		//Constructor
+		EnemyFactory(void);
+
 		CEnemy2D* CreateEnemy(int type);
+
+	protected:
+		//Handlers
+		CSettings* cSettings;
 };
 

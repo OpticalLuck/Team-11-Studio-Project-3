@@ -66,6 +66,9 @@ public:
 	// boolean flag to indicate if this enemy is active
 	bool bIsActive;
 
+	//Set texture
+	void SetTexture(const char* fileName);
+
 protected:
 	enum class DIRECTION
 	{
@@ -121,6 +124,8 @@ protected:
 	//Get angle from enemy to position
 	float GetAngle(glm::vec2 pos);
 
+	// Load a texture
+	bool LoadTexture(const char* filename, GLuint& iTextureID);
 
 	// Current FSM
 	FSM sCurrentFSM;
@@ -133,9 +138,6 @@ protected:
 
 	// Store health for combat
 	int health;
-
-	// Load a texture
-	bool LoadTexture(const char* filename, GLuint& iTextureID);
 
 	//Get nearest player. NOTE: TARGET HAS TO BE VALID AND BE WITHIN RANGE FIRST. DEFAULT ACCEPTABLE RANGE IS WITHIN HALF CAMERA WIDTH
 	CPlayer2D* GetNearestTarget(float dist = 16.f);

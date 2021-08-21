@@ -52,6 +52,7 @@ class CBoss2D : public CEnemy2D
 			A_CIRCLE, //Attacks in a circular pattern.
 			A_TWIN, //Circular pattern but only 2
 			A_ATTACK, //Shoots at the player normally
+			A_MACHINEGUN, //Constantly targets the player like a machine gun would
 			A_TOTAL
 		};
 

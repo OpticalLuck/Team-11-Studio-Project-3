@@ -108,13 +108,6 @@ bool CBoss2D::Init(void) {
 	if (!quadMesh)
 		quadMesh = CMeshBuilder::GenerateQuad(glm::vec4(1, 1, 1, 1), cSettings->TILE_WIDTH, cSettings->TILE_HEIGHT);
 
-	// Load the enemy2D texture
-	if (LoadTexture("Image/Scene2D_EnemyTile.tga", iTextureID) == false)
-	{
-		std::cout << "Failed to load enemy2D tile texture" << std::endl;
-		return false;
-	}
-
 	//CS: Init the color to white
 	currentColor = glm::vec4(1.0, 1.0, 1.0, 1.0);
 
@@ -130,6 +123,7 @@ bool CBoss2D::Init(void) {
 	maxBulletTimer[(int)ATK::A_ATTACK] = int(2.f * float(cSettings->FPS));
 	maxBulletTimer[(int)ATK::A_CIRCLE] = int(0.15f * float(cSettings->FPS));
 	maxBulletTimer[(int)ATK::A_TWIN] = int(0.3f * float(cSettings->FPS));
+	maxBulletTimer[(int)ATK::A_MACHINEGUN] = int(0.15f * float(cSettings->FPS));
 
 	bulletTimer = 0;
 
@@ -289,6 +283,7 @@ void CBoss2D::UpdateAttack(float dElapsedTime) {
 
 	//Rotate direction that bullet will move towards
 	switch (arrATK[roundIndex][fsmIndex]) {
+		case ATK::A_MACHINEGUN:
 		case ATK::A_ATTACK: {
 				float targetEnemyAng = GetAngle(currTarget->vTransform);
 				float angSpd = 60.f * dElapsedTime;
@@ -321,6 +316,7 @@ void CBoss2D::UpdateAttack(float dElapsedTime) {
 
 	//Spawn bullet
 	switch (arrATK[roundIndex][fsmIndex]) {
+		case ATK::A_MACHINEGUN:
 		case ATK::A_ATTACK: {
 			EnemyBullet2D* bullet = factory.CreateBullet(bulletAng, vTransform);
 			cEntityManager->PushEnemy(bullet);

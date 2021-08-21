@@ -20,6 +20,7 @@ CMobEnemy2D::CMobEnemy2D(void) {
 	mSpd = 0;
 	oldVTransform = glm::vec2();
 	clampSides = true;
+	inView = false;
 }
 
 CMobEnemy2D::~CMobEnemy2D(void) {
@@ -65,13 +66,6 @@ bool CMobEnemy2D::Init(void) {
 	//CS: Create the Quad Mesh using the mesh builder
 	quadMesh = CMeshBuilder::GenerateQuad(glm::vec4(1, 1, 1, 1), cSettings->TILE_WIDTH, cSettings->TILE_HEIGHT);
 
-	// Load the enemy2D texture
-	if (LoadTexture("Image/Enemy/Mushroom.png", iTextureID) == false)
-	{
-		std::cout << "Failed to load mobenemy2D tile texture" << std::endl;
-		return false;
-	}
-
 	//Store initial value of each round
 	for (int i = 0; i < 5; i++) {
 		roundDir[i] = RandomiseDir();
@@ -95,10 +89,10 @@ bool CMobEnemy2D::Init(void) {
 	collider2D->SetPosition(glm::vec3(vTransform, 0.f));
 
 	//Animation
-	animatedSprites = CMeshBuilder::GenerateSpriteAnimation(4, 3, cSettings->TILE_WIDTH, cSettings->TILE_HEIGHT);
-	animatedSprites->AddAnimation("move", 0, 2);
+	/*animatedSprites = CMeshBuilder::GenerateSpriteAnimation(4, 3, cSettings->TILE_WIDTH, cSettings->TILE_HEIGHT);
+	animatedSprites->AddAnimation("idle", 0, 2);
 
-	animatedSprites->PlayAnimation("move", -1, 0.6f);
+	animatedSprites->PlayAnimation("idle", -1, 0.6f);*/
 
 	//Physics initialisation
 	cPhysics2D.Init(&vTransform);
@@ -106,8 +100,17 @@ bool CMobEnemy2D::Init(void) {
 
 	// If this class is initialised properly, then set the bIsActive to true
 	bIsActive = true;
+	inView = false;
 
 	return true;
+}
+
+void CMobEnemy2D::SetAnimatedSprites(CSpriteAnimation* animatedSprites) {
+	this->animatedSprites = animatedSprites;
+}
+
+CSpriteAnimation* CMobEnemy2D::GetAnimatedSprites(void) {
+	return animatedSprites;
 }
 
 void CMobEnemy2D::SetClampSlides(bool clamp) {
@@ -115,6 +118,13 @@ void CMobEnemy2D::SetClampSlides(bool clamp) {
 }
 
 void CMobEnemy2D::Update(const double dElapsedTime) {
+	if (!inView) { //Do not activate if enemy is out of view
+		if (WithinProjectedCamera(cEntityManager->GetPlayer()))
+			inView = true;
+
+		return;
+	}
+
 	// Store the old position
 	oldVTransform = vTransform;
 

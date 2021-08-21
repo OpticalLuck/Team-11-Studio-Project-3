@@ -29,6 +29,8 @@ using namespace std;
 // Include math.h
 #include <math.h>
 
+#include "System/Debug.h"
+
 /**
  @brief Constructor This constructor has protected access modifier as this class will be a Singleton
  */
@@ -148,6 +150,12 @@ bool CEnemy2D::Init(void)
 	bIsActive = true;
 
 	return true;
+}
+
+void CEnemy2D::SetTexture(const char* fileName) {
+	if (!LoadTexture(fileName, iTextureID)) {
+		DEBUG_MSG("ERROR: FAILED TO SET TEXTURE ON ENEMY. INVALID FILENAME.");
+	}
 }
 
 CPlayer2D* CEnemy2D::GetNearestTarget(float dist) {
