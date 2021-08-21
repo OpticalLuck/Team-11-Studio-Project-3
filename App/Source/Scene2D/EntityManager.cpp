@@ -13,7 +13,6 @@ CEntityManager::CEntityManager()
 	, cKeyboardController(NULL)
 	, cInputHandler(NULL)
 	, currRound(0)
-	, cInventoryM(NULL)
 {
 }
 
@@ -104,20 +103,20 @@ bool CEntityManager::EntityManagerInit(void)
 	}
 
 	//clone init
-	cCloneTemplate = new CPlayer2D();
-	if (cCloneTemplate->Init(cPlayer2D->GetCheckpoint(),m_cloneList.size()) == false)
-	{
-		cout << "Failed to load clone" << endl;
-		return false;
-	}
-	// initialise all default values
-	cCloneTemplate->SetClone(true);
-	cCloneTemplate->SetShader("2DColorShader");
-	// find position to spawn in map
-	if (cMap2D->FindValue(1, uiRow, uiCol) == true)
-	{
-		cCloneTemplate->vTransform = glm::vec2(uiCol, uiRow);
-	}
+	//cCloneTemplate = new CPlayer2D();
+	//if (cCloneTemplate->Init(cPlayer2D->GetCheckpoint(),m_cloneList.size()) == false)
+	//{
+	//	cout << "Failed to load clone" << endl;
+	//	return false;
+	//}
+	//// initialise all default values
+	//cCloneTemplate->SetClone(true);
+	//cCloneTemplate->SetShader("2DColorShader");
+	//// find position to spawn in map
+	//if (cMap2D->FindValue(1, uiRow, uiCol) == true)
+	//{
+	//	cCloneTemplate->vTransform = glm::vec2(uiCol, uiRow);
+	//}
 	currRound = 0;
 
 	return true;
