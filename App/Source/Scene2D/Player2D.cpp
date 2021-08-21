@@ -576,6 +576,25 @@ void CPlayer2D::InputUpdate(double dt)
 	if (glm::length(velocity) > 0.f)
 		cPhysics2D.SetVelocity(velocity);
 
+	if (cMouseController->IsButtonPressed(0))
+	{
+		CItem& shuriken = CInventoryManager::GetInstance()->Get("Player")->GetItem(0);
+		if (shuriken.iCount > 0)
+		{
+			shuriken.Use();
+			if (cMap2D->InsertMapInfo((int)vTransform.y, (int)vTransform.x, 2))
+			{
+				glm::vec2 distance = Camera2D::GetInstance()->GetCursorPosInWorldSpace() - vTransform;
+
+				CObject2D* shuriken = cMap2D->GetCObject((int)vTransform.x, (int)vTransform.y);
+				shuriken->vTransform = vTransform;
+
+				glm::vec2 force = glm::clamp(distance * 200.f, glm::vec2(-2000.f, -2000.f), glm::vec2(2000.f, 2000.f));
+				static_cast<Projectiles*>(shuriken)->GetPhysics().SetForce(force);
+			}
+		}
+	}
+
 	if (cKeyboardController->IsKeyPressed(GLFW_KEY_V))
 	{
 		if (state != S_ATTACK)
