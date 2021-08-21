@@ -7,7 +7,7 @@
 
 #include "Inventory.h"
 #include "InventoryManager.h"
-#include "..\KeyboardInputHandler\CKeyboardInputHandler.h"
+#include "..\InputHandler\CInputHandler.h"
 #include "Math/MyMath.h"
 #include "GLFW/glfw3.h"
 #include "Object2D.h"
