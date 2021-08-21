@@ -18,7 +18,7 @@ CScene2D::CScene2D(void)
 	, cGUI_Scene2D(NULL)
 	, cGameManager(NULL)
 	, cSoundController(NULL)
-	, cKeyboardInputHandler(NULL)
+	, CInputHandler(NULL)
 	, isCompleted(false)
 	, cEntityManager(NULL)
 	, cameraHandler(NULL)
@@ -52,7 +52,7 @@ CScene2D::~CScene2D(void)
 	// We won't delete this since it was created elsewhere
 	cKeyboardController = NULL;
 
-	cKeyboardInputHandler = NULL;
+	CInputHandler = NULL;
 
 	// Destroy the enemies
 	for (unsigned i = 0; i < enemyVector.size(); i++)
@@ -146,7 +146,7 @@ bool CScene2D::Init(void)
 	cSoundController = CSoundController::GetInstance();
 	cSoundController->PlaySoundByID(4);
 
-	cKeyboardInputHandler = CKeyboardInputHandler::GetInstance();
+	CInputHandler = CInputHandler::GetInstance();
 
 	//cInventoryManager = CInventoryManager::GetInstance();
 	cInventoryM = CInventoryManager::GetInstance();
@@ -166,7 +166,7 @@ bool CScene2D::Update(const double dElapsedTime)
 
 	if (fCooldown > 0)
 	{
-		fCooldown -= dElapsedTime;
+		fCooldown -= (float)dElapsedTime;
 	}
 
 	// Get keyboard updates
@@ -232,7 +232,6 @@ bool CScene2D::Update(const double dElapsedTime)
 		cSoundController->PlaySoundByID(2);
 		return false;
 	}
-
 	return true;
 }
 
@@ -260,6 +259,7 @@ void CScene2D::Render(void)
 	//Call the Map's background (If there's any)
 	cMap2D->RenderBackground();
 
+	cEntityManager->RenderBullets();
 	cEntityManager->RenderEnemy();
 	cEntityManager->RenderClone();
 	cEntityManager->RenderPlayer();

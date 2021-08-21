@@ -64,8 +64,10 @@ public:
     bool LoadLevelByName(std::string levelName);                                                             
     void LoadExistingLevels(void);                                                                           
     bool LevelExists(std::string levelName);                                                                 
+    std::vector<std::vector<sCell>> GetCurrentLevel(void);
+    void SetCurrentLevel(std::vector<std::vector<sCell>> levelArr);
     std::vector<Level> GetLevels(void);      
-    Level GetCurrentLevel(void);
+    Level GetCurrentLevelData(void);
     bool SaveMap(void);
 
     // Resize Map
@@ -75,8 +77,8 @@ public:
     bool DecreaseYSize(void);
 
     // Update Map
-    sCell GetCell(unsigned int x, unsigned int y, bool bInvert = true);                
-    void UpdateCell(unsigned int x, unsigned int y, int TileID, bool bInvert = true);  
+    sCell GetCell(unsigned int x, unsigned int y, bool bInvert = false);                
+    void UpdateCell(unsigned int x, unsigned int y, int TileID, bool bInvert = false);  
 
     // Render Control
     void SetShader(const std::string& _name);

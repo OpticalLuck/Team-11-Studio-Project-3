@@ -1,0 +1,28 @@
+Editor
+Map Size
+X: 86 [ - ] [ + ]
+Y: 41 [ - ] [ + ]
+Background Mesh
+E:\urmom\1v5xuewo7n961.png
+[ Change Background ]
+Parallax Allowance
+{ 0.778 } X
+{ 0.778 } Y
+BG Size
+{ 3.059 } X
+{ 2.093 } BG
+Tiles Interactables Enemies
+Editor
+Map Size
+X: 86 [ - ] [ + ]
+Y: 41 [ - ] [ + ]
+Background Mesh
+E:\urmom\1v5xuewo7n961.png
+[ Change Background ]
+Parallax Allowance
+{ 0.778 } X
+{ 0.778 } Y
+BG Size
+{ 3.059 } X
+{ 2.093 } BG
+Tiles Interactables Enemies

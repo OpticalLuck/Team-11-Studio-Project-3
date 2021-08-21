@@ -1,4 +1,5 @@
 #include "Object2D.h"
+#include <iostream>
 
 CObject2D::CObject2D(void) {
 	value = 0;
@@ -23,6 +24,9 @@ CObject2D::~CObject2D(void) {
 
 bool CObject2D::Init()
 {
+	if (!collider2D)
+		collider2D = new Collider2D;
+
 	//Collider2D initialisation
 	collider2D->Init();
 	collider2D->SetPosition(vTransform);
