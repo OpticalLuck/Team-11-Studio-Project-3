@@ -33,6 +33,7 @@ public:
 	void RenderEnemy(void);
 	void RenderClone(void);
 	void RenderPlayer(void);
+	void RenderBullets(void);
 
 	void Update(const double dElapsedTime);
 	bool Clone(void);
@@ -43,6 +44,7 @@ public:
 	int GetCurrRound(void);
 
 	void PushEnemy(CEnemy2D*);
+	void PushBullet(EnemyBullet2D*);
 
 	std::vector<CPlayer2D*> GetAllPlayers(void);
 
@@ -61,6 +63,7 @@ protected:
 
 	//list of vectors
 	std::vector<CEnemy2D*> m_enemyList;
+	std::vector<EnemyBullet2D*> m_eBulletList;
 	std::vector<CEntity2D*> m_cloneList;
 
 	int currRound; //Current round in game. First is 0 and last is 4 (Will be storing enemies prev attacks etc using this)

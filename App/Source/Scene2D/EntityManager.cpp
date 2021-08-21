@@ -12,11 +12,40 @@ CEntityManager::CEntityManager()
 	, cBoss2D(NULL)
 	, cKeyboardController(NULL)
 	, cInputHandler(NULL)
+	, currRound(0)
+	, cInventoryM(NULL)
 {
 }
 
 CEntityManager::~CEntityManager()
 {
+	if (cPlayer2D) {
+		delete cPlayer2D;
+		cPlayer2D = nullptr;
+	}
+
+	if (cBoss2D) {
+		delete cBoss2D;
+		cBoss2D = nullptr;
+	}
+
+	for (unsigned i = 0; i < m_enemyList.size(); i++) {
+		delete m_enemyList[i];
+		m_enemyList[i] = nullptr;
+	}
+	m_enemyList.clear();
+
+	for (unsigned i = 0; i < m_cloneList.size(); i++) {
+		delete m_cloneList[i];
+		m_cloneList[i] = nullptr;
+	}
+	m_cloneList.clear();
+
+	for (unsigned i = 0; i < m_eBulletList.size(); i++) {
+		delete m_eBulletList[i];
+		m_eBulletList[i] = nullptr;
+	}
+	m_eBulletList.clear();
 }
 
 bool CEntityManager::EntityManagerInit(void)
@@ -54,6 +83,14 @@ bool CEntityManager::EntityManagerInit(void)
 
 	while (cMap2D->FindValue(301, uiRow, uiCol)) {
 		m_enemyList.push_back(enemyFactory.CreateEnemy(301));
+	}
+
+	while (cMap2D->FindValue(303, uiRow, uiCol)) {
+		m_enemyList.push_back(enemyFactory.CreateEnemy(303));
+	}
+
+	while (cMap2D->FindValue(304, uiRow, uiCol)) {
+		m_enemyList.push_back(enemyFactory.CreateEnemy(304));
 	}
 
 	//Boss initialisation
@@ -174,6 +211,16 @@ void CEntityManager::RenderEnemy(void)
 	}
 }
 
+void CEntityManager::RenderBullets(void) {
+	for (unsigned i = 0; i < m_eBulletList.size(); i++) {
+		m_eBulletList[i]->PreRender();
+		m_eBulletList[i]->Render();
+		m_eBulletList[i]->PostRender();
+		
+		m_eBulletList[i]->RenderCollider();
+	}
+}
+
 void CEntityManager::RenderClone(void)
 {
 	for (unsigned i = 0; i < m_cloneList.size(); ++i)
@@ -216,14 +263,8 @@ void CEntityManager::Update(const double dElapsedTime)
 	for (unsigned i = 0; i < m_enemyList.size(); i++) {
 		m_enemyList[i]->Update(dElapsedTime);
 
-		EnemyBullet2D* bullet = dynamic_cast<EnemyBullet2D*>(m_enemyList[i]);
-
 		//Delete conditions
-		if (bullet && bullet->OutOfWorld()) {
-			delete m_enemyList[i];
-			m_enemyList[i] = nullptr;
-		}
-		else if (m_enemyList[i]->GetHealth() <= 0) {
+		if (m_enemyList[i]->GetHealth() <= 0) {
 			delete m_enemyList[i];
 			m_enemyList[i] = nullptr;
 		}
@@ -231,14 +272,27 @@ void CEntityManager::Update(const double dElapsedTime)
 
 	m_enemyList.erase(std::remove(m_enemyList.begin(), m_enemyList.end(), nullptr), m_enemyList.end()); //Remove any nullptrs in the array
 
-	//DEBUG_MSG("SIZE: " + std::to_string(m_enemyList.size()));
+	//Call enemy bullets
+	for (unsigned i = 0; i < m_eBulletList.size(); i++) {
+		m_eBulletList[i]->Update(dElapsedTime);
 
+		if (m_eBulletList[i]->OutOfWorld() || m_eBulletList[i]->GetHealth() <= 0) {
+			delete m_eBulletList[i];
+			m_eBulletList[i] = nullptr;
+		}
+	}
+
+	//Remove any nullptrs in bullet array
+	m_eBulletList.erase(std::remove(m_eBulletList.begin(), m_eBulletList.end(), nullptr), m_eBulletList.end());
+
+	
+	//Keyboard inputs
 	if (cKeyboardController->IsKeyPressed(GLFW_KEY_C))
 	{
 		Clone();
 	}
 }
 
-
-
-
+void CEntityManager::PushBullet(EnemyBullet2D* bullet) {
+	m_eBulletList.push_back(bullet);
+}

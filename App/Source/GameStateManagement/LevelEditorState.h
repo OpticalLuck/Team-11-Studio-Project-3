@@ -37,24 +37,24 @@ struct EditorProperties
 	{
 		if (this->WideAreaSelectionStart.x < this->WideAreaSelectionEnd.x)
 		{
-			startXIndex = this->WideAreaSelectionStart.x;
-			endXIndex = this->WideAreaSelectionEnd.x;
+			startXIndex = (int)this->WideAreaSelectionStart.x;
+			endXIndex = (int)this->WideAreaSelectionEnd.x;
 		}
 		else
 		{
-			startXIndex = this->WideAreaSelectionEnd.x;
-			endXIndex = this->WideAreaSelectionStart.x;
+			startXIndex = (int)this->WideAreaSelectionEnd.x;
+			endXIndex = (int)this->WideAreaSelectionStart.x;
 		}
 
 		if (this->WideAreaSelectionStart.y < this->WideAreaSelectionEnd.y)
 		{
-			startYIndex = this->WideAreaSelectionStart.y;
-			endYIndex = this->WideAreaSelectionEnd.y;
+			startYIndex = (int)this->WideAreaSelectionStart.y;
+			endYIndex = (int)this->WideAreaSelectionEnd.y;
 		}
 		else
 		{
-			startYIndex = this->WideAreaSelectionEnd.y;
-			endYIndex = this->WideAreaSelectionStart.y;
+			startYIndex = (int)this->WideAreaSelectionEnd.y;
+			endYIndex = (int)this->WideAreaSelectionStart.y;
 		}
 	}
 

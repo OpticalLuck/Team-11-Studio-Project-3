@@ -30,6 +30,14 @@ class CPlayer2D;
 class CBoss2D : public CEnemy2D
 {
 	public :
+		enum class ATK {
+			A_CIRCLE, //Attacks in a circular pattern.
+			A_TWIN, //Circular pattern but only 2
+			A_ATTACK, //Shoots at the player normally
+			A_MACHINEGUN, //Constantly targets the player like a machine gun would
+			A_TOTAL
+		};
+
 		CBoss2D(void);
 		virtual ~CBoss2D(void);
 
@@ -47,14 +55,17 @@ class CBoss2D : public CEnemy2D
 		// PostRender
 		void PostRender(void);
 
+		//Set how many types of attacks the enemy can do
+		void SetAtkTypes(std::vector<ATK> atkTypes);
+
+		//Set pauseenabled
+		void SetPauseEnabled(bool pauseEnabled);
+
+		//Set id
+		void SetID(int id);
+
 	protected:
-		enum class ATK {
-			A_CIRCLE, //Attacks in a circular pattern.
-			A_TWIN, //Circular pattern but only 2
-			A_ATTACK, //Shoots at the player normally
-			A_MACHINEGUN, //Constantly targets the player like a machine gun would
-			A_TOTAL
-		};
+		int id;
 
 		std::vector<ATK>* arrATK; //Current attack during current round
 		int fsmIndex; //Current index of where its at in the array
@@ -70,6 +81,9 @@ class CBoss2D : public CEnemy2D
 		float bulletAng; //Angle of which where the bullet will come from
 		int maxBulletTimer[(int)ATK::A_TOTAL]; //Timer in terms of frames
 		int bulletTimer;
+
+		bool pauseEnabled;
+		std::vector<ATK> atkTypes; //How many attack types does it store
 
 		//Rendering
 		//Mesh

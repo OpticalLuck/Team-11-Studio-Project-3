@@ -77,7 +77,7 @@ protected:
 		NUM_DIRECTIONS
 	};
 
-	enum FSM
+	enum class FSM
 	{
 		IDLE = 0,
 		PATROL,

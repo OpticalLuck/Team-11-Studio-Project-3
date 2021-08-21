@@ -36,7 +36,7 @@ CEnemy2D* EnemyFactory::CreateEnemy(int type) {
 		}
 
 		case 301: {
-			CMobEnemy2D*enemy = new CMobEnemy2D;
+			CMobEnemy2D* enemy = new CMobEnemy2D;
 			enemy->SetShader("2DColorShader");
 			enemy->SetClampSlides(false);
 			if (enemy->Init() == false) {
@@ -57,6 +57,56 @@ CEnemy2D* EnemyFactory::CreateEnemy(int type) {
 			return enemy;
 		}
 
+		case 303: {
+			CBoss2D* mcgun = new CBoss2D;
+			mcgun->SetShader("2DColorShader");
+
+			//Custom code for boss type
+			std::vector<CBoss2D::ATK> atk;
+			atk.push_back(CBoss2D::ATK::A_MACHINEGUN);
+			mcgun->SetAtkTypes(atk);
+			mcgun->SetPauseEnabled(true);
+
+			mcgun->SetID(303);
+
+			if (!mcgun->Init()) {
+				delete mcgun;
+				mcgun = nullptr;
+			}
+			else {
+				mcgun->SetTexture("Image/Enemy/PauseMachineGun.png");
+
+				//If you want to change any values like the fire rate, the timers etc, change it here, after initialisation
+			}
+
+			return mcgun;
+		}
+
+		case 304: {
+			CBoss2D* mcgun = new CBoss2D;
+			mcgun->SetShader("2DColorShader");
+
+			//Custom code for boss type
+			std::vector<CBoss2D::ATK> atk;
+			atk.push_back(CBoss2D::ATK::A_MACHINEGUN);
+			mcgun->SetAtkTypes(atk);
+			mcgun->SetPauseEnabled(false);
+
+			mcgun->SetID(304);
+
+			if (!mcgun->Init()) {
+				delete mcgun;
+				mcgun = nullptr;
+			}
+			else {
+				mcgun->SetTexture("Image/Enemy/MachineGun.png");
+
+				//If you want to change any values like the fire rate, the timers etc, change it here, after initialisation
+			}
+
+			return mcgun;
+		}
+
 		case 305: {
 			CBoss2D* boss = new CBoss2D;
 			boss->SetShader("2DColorShader");
@@ -66,6 +116,8 @@ CEnemy2D* EnemyFactory::CreateEnemy(int type) {
 			}
 			else {
 				boss->SetTexture("Image/Scene2D_EnemyTile.tga");
+
+				//If you want to change any values like the fire rate, the timers etc, change it here, after initialisation
 			}
 
 			return boss;

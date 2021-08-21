@@ -307,7 +307,7 @@ void CMap2D::UpdateGridInfo(const unsigned int uiRow, const unsigned uiCol, CObj
 	}
 	else
 	{
-		if (uiRow < GetLevelRow() && uiCol < GetLevelCol() && uiRow >= 0 && uiCol >= 0)
+		if (uiRow < (unsigned int)GetLevelRow() && uiCol < (unsigned int)GetLevelCol() && uiRow >= 0 && uiCol >= 0)
 		{
 			obj = arrGrid[uiCurLevel][target->GetCurrentIndex().y][target->GetCurrentIndex().x];
 			newSpot = arrGrid[uiCurLevel][uiRow][uiCol];
