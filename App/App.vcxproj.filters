@@ -188,6 +188,9 @@
     <ClCompile Include="Source\GameStateManagement\EditorSettingsState.cpp">
       <Filter>GameStateManagement</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Factory\EnemyFactory.cpp">
+      <Filter>Factory</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h">
@@ -324,6 +327,9 @@
     </ClInclude>
     <ClInclude Include="Source\GameStateManagement\LevelEditorState.h">
       <Filter>GameStateManagement</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Factory\EnemyFactory.h">
+      <Filter>Factory</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

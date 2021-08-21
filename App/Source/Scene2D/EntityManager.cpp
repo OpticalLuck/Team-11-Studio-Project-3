@@ -48,16 +48,12 @@ bool CEntityManager::EntityManagerInit(void)
 	}
 
 	//enemy init
-	if (cMap2D->FindValue(300, uiRow, uiCol))
-	{
-		cEnemy2D = new CMobEnemy2D;
-		cEnemy2D->SetShader("2DColorShader");
-		m_enemyList.push_back(cEnemy2D);
-		if (cEnemy2D->Init() == false)
-		{
-			cout << "Failed to load CEnemy2D" << endl;
-			return false;
-		}
+	while (cMap2D->FindValue(300, uiRow, uiCol)) {
+		m_enemyList.push_back(enemyFactory.CreateEnemy(300));
+	}
+
+	while (cMap2D->FindValue(301, uiRow, uiCol)) {
+		m_enemyList.push_back(enemyFactory.CreateEnemy(301));
 	}
 
 	//Boss initialisation

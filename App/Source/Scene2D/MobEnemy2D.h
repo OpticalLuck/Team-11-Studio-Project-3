@@ -16,6 +16,9 @@ class CMobEnemy2D : public CEnemy2D
 		//Render
 		void Render(void);
 
+		//Set clamp sides
+		void SetClampSlides(bool clamp);
+
 	protected:
 		glm::vec2 oldVTransform;
 		float mSpd;

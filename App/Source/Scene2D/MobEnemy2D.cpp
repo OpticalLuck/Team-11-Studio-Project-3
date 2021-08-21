@@ -41,7 +41,12 @@ bool CMobEnemy2D::Init(void) {
 	// Find the indices for the player in arrMapInfo, and assign it to cPlayer2D
 	unsigned int uiRow = -1;
 	unsigned int uiCol = -1;
-	if (cMap2D->FindValue(300, uiRow, uiCol) == false)
+
+	int id = 300;
+	if (!clampSides)
+		id = 301;
+
+	if (cMap2D->FindValue(id, uiRow, uiCol) == false)
 		return false;	// Unable to find the start position of the player, so quit this game
 
 	// Erase the value of the player in the arrMapInfo
@@ -101,9 +106,12 @@ bool CMobEnemy2D::Init(void) {
 
 	// If this class is initialised properly, then set the bIsActive to true
 	bIsActive = true;
-	clampSides = true;
 
 	return true;
+}
+
+void CMobEnemy2D::SetClampSlides(bool clamp) {
+	clampSides = clamp;
 }
 
 void CMobEnemy2D::Update(const double dElapsedTime) {

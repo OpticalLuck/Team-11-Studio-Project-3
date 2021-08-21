@@ -639,7 +639,7 @@ void CPlayer2D::LockWithinBoundary()
 	minVal *= -1;
 
 	glm::vec2 mapDimensions = cMap2D->GetLevelLimit();
-	glm::vec2 maxVel = mapDimensions - glm::vec2(3.f, 3.f) + glm::vec2(0.5f - collider2D->vec2Dimensions.x, 0);
+	glm::vec2 maxVel = mapDimensions - glm::vec2(1.f, 1.f) + glm::vec2(0.5f - collider2D->vec2Dimensions.x, 0);
 
 	vTransform = glm::clamp(vTransform, minVal, maxVel);
 	collider2D->SetPosition(vTransform);

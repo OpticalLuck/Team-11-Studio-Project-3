@@ -11,6 +11,9 @@
 #include "Inputs/KeyboardController.h"
 #include "InventoryM.h"
 
+//Factories
+#include "../App/Source/Factory/EnemyFactory.h"
+
 class CBoss2D;
 
 //System debug
@@ -61,4 +64,7 @@ protected:
 	std::vector<CEntity2D*> m_cloneList;
 
 	int currRound; //Current round in game. First is 0 and last is 4 (Will be storing enemies prev attacks etc using this)
+
+	//Factories
+	EnemyFactory enemyFactory;
 };
