@@ -39,6 +39,12 @@ CBoss2D::CBoss2D(void) {
 	pauseEnabled = true;
 	isSeen = false;
 
+	minAtkDuration = 3.5f;
+	maxAtkDuration = 8.f;
+
+	minPauseDuration = 1.5f;
+	maxPauseDuration = 5.f;
+
 	id = 305;
 }
 
@@ -173,6 +179,14 @@ bool CBoss2D::Init(void) {
 	return true;
 }
 
+void CBoss2D::SetMaxAtkDuration(float val) {
+	maxAtkDuration = val;
+}
+
+void CBoss2D::SetMinAtkDuration(float val) {
+	minAtkDuration = val;
+}
+
 void CBoss2D::SetID(int id) {
 	this->id = id;
 }
@@ -191,11 +205,19 @@ int CBoss2D::RandomiseTimer(bool atk) {
 		return value;
 
 	if (atk)
-		value = Math::RandFloatMinMax(3.5f, 8.f);
+		value = Math::RandFloatMinMax(minAtkDuration, maxAtkDuration);
 	else
-		value = Math::RandFloatMinMax(1.5f, 5.f);
+		value = Math::RandFloatMinMax(minPauseDuration, maxPauseDuration);
 
 	return int(value * (float)cSettings->FPS); //Convert to in terms of frames
+}
+
+void CBoss2D::SetMaxPauseDuration(float val) {
+	maxPauseDuration = val;
+}
+
+void CBoss2D::SetMinPauseDuration(float val) {
+	minPauseDuration = val;
 }
 
 void CBoss2D::SetAtkTypes(std::vector<CBoss2D::ATK> atkTypes) {

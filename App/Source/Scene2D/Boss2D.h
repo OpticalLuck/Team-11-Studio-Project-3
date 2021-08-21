@@ -64,14 +64,31 @@ class CBoss2D : public CEnemy2D
 		//Set id
 		void SetID(int id);
 
+		//Set min and max AtkDuration
+		void SetMaxAtkDuration(float val);
+		void SetMinAtkDuration(float val);
+
+		//Set min and max pauseDuration
+		void SetMaxPauseDuration(float val);
+		void SetMinPauseDuration(float val);
+
 	protected:
 		int id;
 
 		std::vector<ATK>* arrATK; //Current attack during current round
 		int fsmIndex; //Current index of where its at in the array
 
+		//AtkDuration (Based on frames)
 		int currAtkDuration;
+		//Min and max of atkDuration (Based on seconds)
+		float minAtkDuration;
+		float maxAtkDuration;
+
+		//pauseDuration (Based on frames)
 		int currPauseDuration;
+		//Min and max of pauseDuration (Based on seconds)
+		float minPauseDuration;
+		float maxPauseDuration;
 
 		std::vector<int>* arrAtkDuration;
 		std::vector<int>* arrPauseDuration;

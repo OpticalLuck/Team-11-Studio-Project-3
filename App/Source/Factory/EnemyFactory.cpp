@@ -69,14 +69,18 @@ CEnemy2D* EnemyFactory::CreateEnemy(int type) {
 
 			mcgun->SetID(303);
 
+			//Changing values of default timers...
+			mcgun->SetMinAtkDuration(2.75f);
+			mcgun->SetMaxAtkDuration(5.5);
+
+			mcgun->SetMaxPauseDuration(3.5f);
+
 			if (!mcgun->Init()) {
 				delete mcgun;
 				mcgun = nullptr;
 			}
 			else {
 				mcgun->SetTexture("Image/Enemy/PauseMachineGun.png");
-
-				//If you want to change any values like the fire rate, the timers etc, change it here, after initialisation
 			}
 
 			return mcgun;
@@ -94,14 +98,18 @@ CEnemy2D* EnemyFactory::CreateEnemy(int type) {
 
 			mcgun->SetID(304);
 
+			//Changing values of default timers...
+			mcgun->SetMinAtkDuration(2.75f);
+			mcgun->SetMaxAtkDuration(5.5);
+
+			mcgun->SetMaxPauseDuration(3.5f);
+
 			if (!mcgun->Init()) {
 				delete mcgun;
 				mcgun = nullptr;
 			}
 			else {
 				mcgun->SetTexture("Image/Enemy/MachineGun.png");
-
-				//If you want to change any values like the fire rate, the timers etc, change it here, after initialisation
 			}
 
 			return mcgun;
@@ -116,8 +124,6 @@ CEnemy2D* EnemyFactory::CreateEnemy(int type) {
 			}
 			else {
 				boss->SetTexture("Image/Scene2D_EnemyTile.tga");
-
-				//If you want to change any values like the fire rate, the timers etc, change it here, after initialisation
 			}
 
 			return boss;
