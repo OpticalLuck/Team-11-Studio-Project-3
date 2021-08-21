@@ -70,7 +70,7 @@ bool CEntityManager::EntityManagerInit(void)
 
 	//clone init
 	cCloneTemplate = new CPlayer2D();
-	if (cCloneTemplate->Init(cPlayer2D->GetCheckpoint()) == false)
+	if (cCloneTemplate->Init(cPlayer2D->GetCheckpoint(),m_cloneList.size()) == false)
 	{
 		cout << "Failed to load clone" << endl;
 		return false;
@@ -95,7 +95,7 @@ bool CEntityManager::Clone(void)
 	CPlayer2D* clone = new CPlayer2D(*cCloneTemplate);
 	clone->SetShader("2DColorShader");
 
-	if (!clone->Init(cPlayer2D->GetCheckpoint()))
+	if (!clone->Init(cPlayer2D->GetCheckpoint(),m_cloneList.size()))
 	{
 		std::cout << "Failed to clone Player\n";
 		return false;

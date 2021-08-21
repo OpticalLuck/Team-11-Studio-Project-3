@@ -7,7 +7,7 @@
 #include "Map2D.h"
 //Include keyboard controller
 #include "Inputs/KeyboardController.h"
-#include "InventoryM.h"
+#include "InventoryManager.h"
 
 class CBoss2D;
 
@@ -47,7 +47,7 @@ protected:
 
 	CMap2D* cMap2D;
 
-	CInventoryM* cInventoryM;
+	CInventoryManager* CInventoryManager;
 
 	//list of vectors
 	std::vector<CEnemy2D*> m_enemyList;

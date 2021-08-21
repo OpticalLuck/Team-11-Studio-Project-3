@@ -37,7 +37,7 @@
     <ClCompile Include="Source\Scene2D\GUI_Scene2D.cpp" />
     <ClCompile Include="Source\Scene2D\Interactables.cpp" />
     <ClCompile Include="Source\Scene2D\Inventory.cpp" />
-    <ClCompile Include="Source\Scene2D\InventoryM.cpp" />
+    <ClCompile Include="Source\Scene2D\InventoryManager.cpp" />
     <ClCompile Include="Source\Scene2D\Item.cpp" />
     <ClCompile Include="Source\Scene2D\Map2D.cpp" />
     <ClCompile Include="Source\Scene2D\Object2D.cpp" />
@@ -76,7 +76,7 @@
     <ClInclude Include="Source\Scene2D\GUI_Scene2D.h" />
     <ClInclude Include="Source\Scene2D\Interactables.h" />
     <ClInclude Include="Source\Scene2D\Inventory.h" />
-    <ClInclude Include="Source\Scene2D\InventoryM.h" />
+    <ClInclude Include="Source\Scene2D\InventoryManager.h" />
     <ClInclude Include="Source\Scene2D\Item.h" />
     <ClInclude Include="Source\Scene2D\Map2D.h" />
     <ClInclude Include="Source\Scene2D\Object2D.h" />

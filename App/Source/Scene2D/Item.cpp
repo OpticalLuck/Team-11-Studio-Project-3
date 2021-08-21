@@ -1,4 +1,5 @@
 #include "Item.h"
+#include "Object2D.h"
 
 CItem::CItem(int ID)
 	: iID(ID)
@@ -30,9 +31,37 @@ int CItem::set_ID(int _ID)
 	return iID;
 }
 
+std::string CItem::GetName()
+{
+	return sName;
+}
+
 void CItem::set_Name(std::string _name)
 {
 	sName = _name;
+}
+
+void CItem::Use(void)
+{
+	if (iCount > iMinCount)
+	{
+		iCount--;
+		switch (iID)
+		{
+		case OBJECT_TYPE::ITEM_POTION:
+			cout << "You are using potion\n";
+			cout << "iCount is " << iCount << '\n';
+			break;
+		case OBJECT_TYPE::ITEM_HOOK:
+			cout << "You are using Item hook\n";
+			cout << "iCount is " << iCount << '\n';
+			break;
+		case OBJECT_TYPE::ITEM_SHURIKEN:
+			cout << "You are using Item shuriken\n";
+			cout << "iCount is " << iCount << '\n';
+			break;
+		}
+	}
 }
 
 

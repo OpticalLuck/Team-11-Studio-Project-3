@@ -6,6 +6,7 @@
 #include "Player2D.h"
 
 #include <iostream>
+#include <sstream>
 using namespace std;
 
 // Include Shader Manager
@@ -44,6 +45,7 @@ CPlayer2D::CPlayer2D(void)
 	, iTempFrameCounter(0)
 	//, bDamaged(false)
 	, bIsClone(false)
+	, cInventory(NULL)
 
 {
 	transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
@@ -174,14 +176,17 @@ bool CPlayer2D::Init(void)
 	collider2D->vec2Dimensions = glm::vec2(0.20000f,0.50000f);
 	collider2D->Init();
 
-	cInventoryM = CInventoryM::GetInstance();
+	//cInventoryManager = CInventoryManager::GetInstance();
+
+	CInventoryManager::GetInstance()->Add("Player");
+	cInventory = CInventoryManager::GetInstance()->Get("Player");
 
 
 	cPhysics2D.Init(&vTransform);
 	return true;
 }
 
-bool CPlayer2D::Init(glm::i32vec2 spawnpoint)
+bool CPlayer2D::Init(glm::i32vec2 spawnpoint, int iCloneIndex)
 {
 	// Store the keyboard controller singleton instance here
 	cKeyboardController = CKeyboardController::GetInstance();
@@ -246,6 +251,12 @@ bool CPlayer2D::Init(glm::i32vec2 spawnpoint)
 	collider2D->SetPosition(vTransform);
 
 	cPhysics2D.Init(&vTransform);
+
+	std::stringstream ss;
+	ss << "Clone" << iCloneIndex;
+
+	CInventoryManager::GetInstance()->Add(ss.str().c_str());
+	cInventory = CInventoryManager::GetInstance()->Get(ss.str().c_str());
 
 	return true;
 }
@@ -568,23 +579,24 @@ void CPlayer2D::InputUpdate(double dt)
 		}
 	}
 
-	if (cMouseController->IsButtonPressed(0))
-	{
-		cInventoryM->GetItem("Shuriken");
-		if (cInventoryM->m_shuriken.size()>0)
-		{
-			if (cMap2D->InsertMapInfo((int)vTransform.y, (int)vTransform.x, 2))
-			{
-				glm::vec2 distance = Camera2D::GetInstance()->GetCursorPosInWorldSpace() - vTransform;
+	//if (mouseInputs[iTempFrameCounter][MOUSE_INPUTS::LMB].bButtonPressed)
+	//{
+	//	cInventory->Get("Shuriken");
+	//	if (cInventory->m_shuriken.size()>0)
+	//	{
+	//		if (cMap2D->InsertMapInfo((int)vTransform.y, (int)vTransform.x, 2))
+	//		{
+	//			glm::vec2 distance = Camera2D::GetInstance()->GetCursorPosInWorldSpace() - vTransform;
 
-				CObject2D* shuriken = cMap2D->GetCObject((int)vTransform.x, (int)vTransform.y);
-				shuriken->vTransform = vTransform;
+	//			CObject2D* shuriken = cMap2D->GetCObject((int)vTransform.x, (int)vTransform.y);
+	//			shuriken->vTransform = vTransform;
 
-				static_cast<Projectiles*>(shuriken)->GetPhysics().SetForce(distance * 200.f);
-				cInventoryM->m_shuriken.erase(cInventoryM->m_shuriken.begin());
-			}
-		}
-	}
+	//			static_cast<Projectiles*>(shuriken)->GetPhysics().SetForce(distance * 200.f);
+	//			cInventoryM->m_shuriken.erase(cInventoryM->m_shuriken.begin());
+	//		}
+	//	}
+	//}
+	cInventory->Update(dt);
 }
 
 /**

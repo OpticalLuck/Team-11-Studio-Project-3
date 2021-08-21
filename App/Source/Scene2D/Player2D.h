@@ -47,7 +47,7 @@ class Camera2D;
 #include <array>
 #include "../KeyboardInputHandler/CKeyboardInputHandler.h"
 
-#include "InventoryM.h"
+#include "InventoryManager.h"
 
 class CPlayer2D : public CEntity2D
 {
@@ -78,7 +78,7 @@ public:
 	// Init
 	bool Init(void);
 
-	bool Init(glm::i32vec2 spawnpoint);
+	bool Init(glm::i32vec2 spawnpoint, int iCloneIndex);
 
 	// Reset
 	bool Reset(void);
@@ -169,7 +169,6 @@ protected:
 
 	void InputUpdate(double dt);
 
-	CInventoryM* cInventoryM;
-	CItem* cItem;
+	CInventory* cInventory;
 };
 
