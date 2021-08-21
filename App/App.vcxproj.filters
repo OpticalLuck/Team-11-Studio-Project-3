@@ -196,6 +196,7 @@
     </ClCompile>
     <ClCompile Include="Source\Scene2D\Boss2D.cpp">
       <Filter>Entity2D</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Factory\EnemyFactory.cpp">
       <Filter>Factory</Filter>
     </ClCompile>
@@ -347,6 +348,7 @@
     </ClInclude>
     <ClInclude Include="Source\Scene2D\Boss2D.h">
       <Filter>Entity2D</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Factory\EnemyFactory.h">
       <Filter>Factory</Filter>
     </ClInclude>
