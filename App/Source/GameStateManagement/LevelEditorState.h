@@ -12,6 +12,7 @@
 #include "../LevelEditor/LevelGrid.h"
 #include <Inputs/KeyboardController.h>
 #include "Inputs/MouseController.h"
+#include <deque>
 
 #ifndef IMGUI_ACTIVE
 #include "GUI\imgui.h"
@@ -20,18 +21,34 @@
 #define IMGUI_ACTIVE
 #endif
 
+struct ActionState
+{
+	std::vector<std::vector<sCell>> m_ThisActionLevel;
+	unsigned int iWorldWidth = 32;
+	unsigned int iWorldHeight = 24;
+};
+
 struct EditorProperties
 {
+	int iUndoCount = 0;
+	
+	bool bShowGrids = true;
 	bool bSaved = true;
+	bool bPlacedBlock = false;
+	bool bDeletedBlock = false;
 	bool bToggleCloseWindow = false;
 	bool bToggleEditorWindow = true;
-
+	bool bToggleHistoryWindow = true;
+	bool bHistoryUpdated = false;
 	bool bIsSelecting = false;
+	
 	glm::vec2 WideAreaSelectionStart = { 0 , 0 };
 	glm::vec2 WideAreaSelectionEnd = { 0 , 0 };
 
-	std::vector<std::vector<std::vector<sCell>>> undoLevels;
-	std::vector<std::vector<std::vector<sCell>>> redoLevels;
+	std::deque<ActionState> undoStates;
+	std::deque<ActionState> redoStates;
+
+	std::vector<std::string> prevActions;
 
 	void RecalculateStartEndIndex(int& startXIndex, int& endXIndex, int& startYIndex, int& endYIndex)
 	{
@@ -60,16 +77,21 @@ struct EditorProperties
 
 	void Reset()
 	{
+		iUndoCount = 0;
 		bSaved = true;
 		bToggleCloseWindow = false;
 		bToggleEditorWindow = true;
+
+		bPlacedBlock = false;
+		bDeletedBlock = false;
 
 		bIsSelecting = false;
 		WideAreaSelectionStart = { 0 , 0 };
 		WideAreaSelectionEnd = { 0 , 0 };
 
-		undoLevels.clear();
-		redoLevels.clear();
+		undoStates.clear();
+		redoStates.clear();
+		prevActions.clear();
 	}
 };
 
@@ -125,9 +147,16 @@ protected:
 	bool FileUtilShortcuts(void);
 	void AreaFill(void);
 	void AreaDelete(void);
-	void Undo(void);
-	void Redo(void);
+	void Undo(const int count);
+	void Redo(const int count);
 	void CopyBlock(void);
 	void Save();
 	void Close();
+
+	void IncreaseXSize(void);
+	void DecreaseXSize(void);
+	void IncreaseYSize(void);
+	void DecreaseYSize(void);
+
+	void UpdateHistory(void);
 };
