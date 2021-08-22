@@ -2,10 +2,10 @@
 #include "Physics2D.h"
 #include "Interactables.h"
 
-class Boulder2D : public Interactables
+class Boulder2D : public CObject2D
 {
 public:
-	Boulder2D();
+	Boulder2D(int iTextureID = OBJECT_TYPE::OBSTACLE_BOULDER);
 	virtual ~Boulder2D();
 
 	bool Init() override;
@@ -14,6 +14,5 @@ public:
 	CPhysics2D& GetPhysics();
 protected:
 	CPhysics2D cPhysics2D;
-
 };
 

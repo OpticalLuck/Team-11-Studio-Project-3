@@ -56,7 +56,7 @@ bool CTextureManager::Init(void)
         std::cout << "Failed to load wall_2 tile texture" << std::endl;
         return false;
     }
-    if (LoadTexture("Image/Boulder.png", TILE_BOULDER) == false)
+    if (LoadTexture("Image/Boulder.png", OBSTACLE_BOULDER) == false)
     {
         std::cout << "Failed to load Boulder tile texture" << std::endl;
         return false;

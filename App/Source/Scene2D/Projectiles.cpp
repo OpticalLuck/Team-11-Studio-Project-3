@@ -2,16 +2,19 @@
 
 #include "Map2D.h"
 #include <vector>
-Projectiles::Projectiles()
+
+Projectiles::Projectiles(int iTextureID)
 	: animatedSprites(NULL)
 	, currentColor(glm::vec4())
 {
 	projectileType = PROJ_SHURIKEN;
-	textureID = 2; //Shuriken by default
+	this->iTextureID = iTextureID;
 }
 
 Projectiles::~Projectiles()
 {
+	if (animatedSprites)
+		delete animatedSprites;
 }
 
 bool Projectiles::Init()
@@ -19,12 +22,9 @@ bool Projectiles::Init()
 	cPhysics2D.Init(&vTransform);
 	cPhysics2D.MAX_SPEED = 50.f;
 	cPhysics2D.FRICTONAL_COEFFICIENT = 0.8f;
-	collider2D->colliderType = Collider2D::ColliderType::COLLIDER_CIRCLE;
-	collider2D->position = vTransform;
-	collider2D->vec2Dimensions = glm::vec2(0.2f);
-	collider2D->Init();
 
-	cPhysics2D.SetGravity(0.f);
+	collider2D->Init(vTransform, glm::vec2(0.2f), Collider2D::ColliderType::COLLIDER_CIRCLE);
+
 	return false;
 }
 
@@ -105,7 +105,7 @@ void Projectiles::Update(double dElapsedTime)
 
 	if (destroyed)
 	{
-		cMap2D->SetMapInfo(currentIndex.y, currentIndex.x, 0, false);
+		cMap2D->SetMapInfo(currentIndex.y, currentIndex.x, 0, CLASS_ID::CID_NONE, false);
 	}
 }
 

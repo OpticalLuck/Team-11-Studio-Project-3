@@ -10,7 +10,7 @@ class Bullet2D : public CObject2D
 {
 public:
 
-	Bullet2D();
+	Bullet2D(int iTextureID = OBJECT_TYPE::ITEM_KUNAI);
 	virtual ~Bullet2D();
 
 	bool Init() override;

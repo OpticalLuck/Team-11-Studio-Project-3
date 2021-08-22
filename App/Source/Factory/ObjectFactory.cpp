@@ -29,6 +29,8 @@ CObject2D* ObjectFactory::CreateObject(int iTextureID, CLASS_ID eClassID)
         newObj = new CObject2D(iTextureID);
         break;
     }
+
+    return newObj;
 }
 
 EnemyBullet2D* ObjectFactory::CreateBullet(float angle, glm::vec2 vTransform) {

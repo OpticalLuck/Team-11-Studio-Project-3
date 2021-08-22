@@ -120,7 +120,7 @@ bool CPlayer2D::Init(void)
 		return false;	// Unable to find the start position of the player, so quit this game
 
 	// Erase the value of the player in the arrMapInfo
-	cMap2D->SetMapInfo(uiRow, uiCol, 0);
+	cMap2D->SetMapInfo(uiRow, uiCol, 0, CLASS_ID::CID_NONE);
 
 	// Set checkpoint position to start position
 	checkpoint = glm::vec2(uiCol, uiRow);
@@ -181,16 +181,12 @@ bool CPlayer2D::Init(void)
 
 	cInputHandler = CInputHandler::GetInstance();
 
-	collider2D->vec2Dimensions = glm::vec2(0.20000f,0.50000f);
-	collider2D->Init();
-
-	//cInventoryManager = CInventoryManager::GetInstance();
+	collider2D->Init(vTransform, glm::vec2(0.2f,0.5f));
+	cPhysics2D.Init(&vTransform);
 
 	CInventoryManager::GetInstance()->Add("Player");
 	cInventory = CInventoryManager::GetInstance()->Get("Player");
 
-
-	cPhysics2D.Init(&vTransform);
 	return true;
 }
 
@@ -256,9 +252,7 @@ bool CPlayer2D::Init(glm::i32vec2 spawnpoint, int iCloneIndex)
 
 	cInputHandler = CInputHandler::GetInstance();
 
-	collider2D->SetPosition(vTransform);
-	collider2D->vec2Dimensions = glm::vec2(0.20000f, 0.50000f);
-	collider2D->Init();
+	collider2D->Init(vTransform, glm::vec2(0.2f, 0.5f));
 
 	cPhysics2D.Init(&vTransform);
 
@@ -286,7 +280,7 @@ bool CPlayer2D::Reset()
 		return false;	// Unable to find the start position of the player, so quit this game
 
 	// Erase the value of the player in the arrMapInfo
-	cMap2D->SetMapInfo(uiRow, uiCol, 0);
+	cMap2D->SetMapInfo(uiRow, uiCol, 0, CLASS_ID::CID_NONE);
 
 	// Set checkpoint to start position
 	checkpoint = glm::i32vec2(uiCol, uiRow);
@@ -393,9 +387,9 @@ void CPlayer2D::Update(const double dElapsedTime)
 			vTransform = collider2D->position;
 			obj->vTransform = obj->GetCollider()->position;
 
-			if (obj->type == CObject2D::ENTITY_TYPE::INTERACTABLES)
+			if (obj->type == ENTITY_TYPE::TILE)
 			{
-				if (static_cast<Interactables*>(obj)->interactableType == Interactables::INTERACTABLE_TYPE::BOULDER)
+				if (dynamic_cast<Boulder2D*>(obj))
 				{
 					glm::vec2 direction = glm::normalize(obj->vTransform - vTransform);
 					static_cast<Boulder2D*>(obj)->GetPhysics().SetForce(glm::vec2(120.f, 0) * direction);
@@ -654,7 +648,7 @@ void CPlayer2D::InputUpdate(double dt)
 		if (shuriken.iCount > 0)
 		{
 			shuriken.Use();
-			if (cMap2D->InsertMapInfo((int)vTransform.y, (int)vTransform.x, OBJECT_TYPE::ITEM_SHURIKEN))
+			if (cMap2D->InsertMapInfo((int)vTransform.y, (int)vTransform.x, OBJECT_TYPE::ITEM_SHURIKEN, CLASS_ID::CID_PROJECTILES))
 			{ 
 				glm::vec2 distance = Camera2D::GetInstance()->GetCursorPosInWorldSpace() - vTransform;
 
@@ -674,7 +668,7 @@ void CPlayer2D::InputUpdate(double dt)
 		if (shuriken.iCount > 0)
 		{
 			shuriken.Use();
-			if (cMap2D->InsertMapInfo((int)vTransform.y, (int)vTransform.x, OBJECT_TYPE::ITEM_KUNAI))
+			if (cMap2D->InsertMapInfo((int)vTransform.y, (int)vTransform.x, OBJECT_TYPE::ITEM_KUNAI, CLASS_ID::CID_BULLETS))
 			{
 				CObject2D* shuriken = cMap2D->GetCObject((int)vTransform.x, (int)vTransform.y);
 				shuriken->vTransform = vTransform;

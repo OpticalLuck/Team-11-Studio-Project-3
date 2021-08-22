@@ -35,6 +35,7 @@ public:
 	enum ENTITY_TYPE
 	{
 		NONE = 0,
+		TILE,
 		PLAYER,
 		CLONE,
 		ENEMY,
@@ -44,9 +45,6 @@ public:
 	ENTITY_TYPE type;
 
 	CEntity2D(ENTITY_TYPE type = NONE);
-
-	// Constructor
-	//CEntity2D(void);
 
 	// Destructor
 	virtual ~CEntity2D(void);
@@ -73,11 +71,15 @@ public:
 
 	Collider2D* GetCollider();
 
+	void SetTextureID(int iTextureID);
+
+	int GetTextureID() const;
+
 	// The i32vec2 which stores the indices of an Entity2D in the Map2D
 	glm::vec2 vTransform;
 
 	//For rotation purposes (Anti clockwise)
-	float vRotate;
+	float fRotate;
 
 	bool collidable;
 

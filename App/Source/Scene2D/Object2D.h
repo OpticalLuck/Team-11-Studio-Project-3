@@ -37,28 +37,23 @@ enum OBJECT_TYPE
 	TILE_LEFT_GRASS = 104,
 	TILE_RIGHT_GRASS = 105,
 	TILE_TOP_RIGHT_GROUND = 106,
-	TILE_BOULDER = 150,
+	OBSTACLE_BOULDER = 150,
 	OBJECT_TOTAL,
 };
 
 class CObject2D : public CEntity2D
 {
 	public:
-		CObject2D(void);
-		CObject2D(int objectID = 0);
-		~CObject2D(void); //Do nothing for now
+		CObject2D(int itextureID = 0);
+		virtual ~CObject2D(void);
 		
 		bool Init() override;
 		void Update(const double dElapsedTime) override;
 
-		int GetTextureID() const;
-		void SetTextureID(int value);
-
 		glm::i32vec2 GetCurrentIndex() const;
 		void SetCurrentIndex(glm::i32vec2 currentIndex);
-	protected:
-		int textureID;
 
+	protected:
 		float width;
 		float height;
 

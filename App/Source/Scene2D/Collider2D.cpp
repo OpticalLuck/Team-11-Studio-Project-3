@@ -101,8 +101,12 @@ Collider2D::~Collider2D()
 	glDeleteBuffers(1, &VBO);
 }
 
-bool Collider2D::Init()
+bool Collider2D::Init(glm::vec2 position, glm::vec2 vec2Dimensions, ColliderType colliderType)
 {
+	this->colliderType = colliderType;
+	this->position = position;
+	this->vec2Dimensions = vec2Dimensions;
+
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
 

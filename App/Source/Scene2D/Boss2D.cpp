@@ -114,7 +114,7 @@ bool CBoss2D::Init(void) {
 		return false;	// Unable to find the start position of the boss, so quit this game
 
 	// Erase the value of the boss in the arrMapInfo
-	cMap2D->SetMapInfo(uiRow, uiCol, 0);
+	cMap2D->SetMapInfo(uiRow, uiCol, 0, CLASS_ID::CID_NONE);
 
 	vTransform = glm::i32vec2(uiCol, uiRow);
 
@@ -131,7 +131,7 @@ bool CBoss2D::Init(void) {
 	// If this class is initialised properly, then set the bIsActive to true
 	bIsActive = true;
 
-	collider2D->Init();
+	collider2D->Init(vTransform);
 	//Update collider to Boss position
 	collider2D->SetPosition(glm::vec3(vTransform, 0.f));
 

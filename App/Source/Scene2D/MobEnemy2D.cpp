@@ -51,7 +51,7 @@ bool CMobEnemy2D::Init(void) {
 		return false;	// Unable to find the start position of the player, so quit this game
 
 	// Erase the value of the player in the arrMapInfo
-	cMap2D->SetMapInfo(uiRow, uiCol, 0);
+	cMap2D->SetMapInfo(uiRow, uiCol, 0, CLASS_ID::CID_NONE);
 
 	// Set the start position of the Player to iRow and iCol
 	vTransform = glm::i32vec2(uiCol, uiRow);
@@ -84,9 +84,7 @@ bool CMobEnemy2D::Init(void) {
 	// Set the Physics to fall status by default
 
 	//Collider2D
-	collider2D->Init();
-	//Update collider to Boss position
-	collider2D->SetPosition(glm::vec3(vTransform, 0.f));
+	collider2D->Init(vTransform);
 
 	//Animation
 	/*animatedSprites = CMeshBuilder::GenerateSpriteAnimation(4, 3, cSettings->TILE_WIDTH, cSettings->TILE_HEIGHT);
@@ -246,9 +244,9 @@ void CMobEnemy2D::CollisionUpdate(void) {
 						vTransform = collider2D->position;
 						obj->vTransform = obj->GetCollider()->position;
 
-						if (obj->type == CObject2D::ENTITY_TYPE::INTERACTABLES)
+						if (obj->type == ENTITY_TYPE::TILE)
 						{
-							if (static_cast<Interactables*>(obj)->interactableType == Interactables::INTERACTABLE_TYPE::BOULDER)
+							if (dynamic_cast<Boulder2D*>(obj))
 							{
 								glm::vec2 direction = glm::normalize(obj->vTransform - vTransform);
 								static_cast<Boulder2D*>(obj)->GetPhysics().SetForce(glm::vec2(120.f, 0) * direction);

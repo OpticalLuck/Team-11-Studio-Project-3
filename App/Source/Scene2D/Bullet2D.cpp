@@ -2,28 +2,27 @@
 
 #include "Map2D.h"
 #include <vector>
-Bullet2D::Bullet2D()
+Bullet2D::Bullet2D(int iTextureID)
 	: animatedSprites(NULL)
 	, currentColor(glm::vec4())
 {
-	iTextureID = OBJECT_TYPE::ITEM_KUNAI; //Shuriken also by default
+	this->iTextureID = iTextureID; //Shuriken also by default
 }
 
 Bullet2D::~Bullet2D()
 {
+	if (animatedSprites)
+		delete animatedSprites;
 }
 
 bool Bullet2D::Init()
 {
 	cPhysics2D.Init(&vTransform);
+	cPhysics2D.SetGravity(0.f);
 	cPhysics2D.MAX_SPEED = 50.f;
 	cPhysics2D.FRICTONAL_COEFFICIENT = 0.8f;
-	collider2D->colliderType = Collider2D::ColliderType::COLLIDER_CIRCLE;
-	collider2D->position = vTransform;
-	collider2D->vec2Dimensions = glm::vec2(0.2f);
-	collider2D->Init();
 
-	cPhysics2D.SetGravity(0.f);
+	collider2D->Init(vTransform, glm::vec2(0.2f), Collider2D::ColliderType::COLLIDER_CIRCLE);
 	return false;
 }
 
@@ -35,9 +34,9 @@ void Bullet2D::Update(double dElapsedTime)
 	CMap2D* cMap2D = CMap2D::GetInstance();
 
 	if (cPhysics2D.GetVelocity().x < 0)
-		vRotate = 180;
+		fRotate = 180;
 	else
-		vRotate = 0;
+		fRotate = 0;
 
 	int range = 2;
 	cPhysics2D.SetboolGrounded(false);
@@ -86,7 +85,7 @@ void Bullet2D::Update(double dElapsedTime)
 	}
 	if (destroyed)
 	{
-		cMap2D->SetMapInfo(currentIndex.y, currentIndex.x, 0, false);
+		cMap2D->SetMapInfo(currentIndex.y, currentIndex.x, 0, CLASS_ID::CID_NONE, false);
 	}
 }
 

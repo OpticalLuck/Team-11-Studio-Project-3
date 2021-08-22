@@ -12,10 +12,6 @@ public:
 
 	enum INTERACTABLE_TYPE
 	{
-		//Collidables
-		BOULDER = 110,
-
-		//Non-collidables
 		BUTTON = 201,
 		LEVER = 202,
 		PRESSURE_PLATE = 203,

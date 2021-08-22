@@ -59,7 +59,7 @@ public:
 	Collider2D();
 	virtual ~Collider2D();
 
-	bool Init();
+	bool Init(glm::vec2 position, glm::vec2 vec2Dimensions = glm::vec2(0.5f,0.5f), ColliderType colliderType = Collider2D::ColliderType::COLLIDER_QUAD);
 
 	virtual void SetLineShader(const std::string & name);
 
@@ -87,6 +87,7 @@ public:
 	static glm::vec2 ConvertDirectionToVec2(Direction direction);
 	void SetAngle(float ang);
 protected:
+
 	std::string sLineShaderName;
 	unsigned int VAO, VBO;
 

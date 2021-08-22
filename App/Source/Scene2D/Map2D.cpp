@@ -176,7 +176,7 @@ void CMap2D::Render(void)
 
 		transform = glm::mat4(1.f);
 		transform = glm::translate(transform, glm::vec3(actualPos.x, actualPos.y, 0.f));
-		transform = glm::rotate(transform, glm::radians(currObj->vRotate), glm::vec3(0.f, 0.f, 1.f));
+		transform = glm::rotate(transform, glm::radians(currObj->fRotate), glm::vec3(0.f, 0.f, 1.f));
 
 		// Update the shaders with the latest transform
 		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
@@ -221,7 +221,7 @@ glm::i32vec2 CMap2D::GetLevelLimit(void) {
  @param iCol A const int variable containing the column index of the element to set to
  @param iValue A const int variable containing the value to assign to this arrMapInfo
  */
-void CMap2D::SetMapInfo(unsigned int uiRow, unsigned int uiCol, const int iValue, const bool bInvert)
+void CMap2D::SetMapInfo(unsigned int uiRow, unsigned int uiCol, const int iTextureID, const CLASS_ID ClassID, const bool bInvert)
 {
 	if (bInvert)
 	{
@@ -231,7 +231,7 @@ void CMap2D::SetMapInfo(unsigned int uiRow, unsigned int uiCol, const int iValue
 	//Check if its not a nullptr
 	if (!arrGrid[uiCurLevel][uiRow][uiCol]) 
 	{
-		CObject2D* currObj = objFactory.CreateObject(iValue);
+		CObject2D* currObj = objFactory.CreateObject(iTextureID, ClassID);
 		currObj->SetCurrentIndex(glm::i32vec2(uiCol, uiRow));
 		currObj->vTransform = glm::i32vec2(uiCol, GetLevelRow() - uiRow - 1);
 		currObj->Init();
@@ -252,10 +252,10 @@ void CMap2D::SetMapInfo(unsigned int uiRow, unsigned int uiCol, const int iValue
 				arrObject[uiCurLevel][i] = nullptr;
 				arrObject[uiCurLevel].erase(arrObject[uiCurLevel].begin() + i);
 
-				if (iValue > 0)
+				if (iTextureID > 0)
 				{
 					//Pushes in new Object
-					currObj = objFactory.CreateObject(iValue);
+					currObj = objFactory.CreateObject(iTextureID, ClassID);
 					currObj->SetCurrentIndex(glm::i32vec2(uiCol, uiRow));
 					currObj->vTransform = glm::i32vec2(uiCol, GetLevelRow() - uiRow - 1);
 					currObj->Init();
@@ -272,7 +272,7 @@ void CMap2D::SetMapInfo(unsigned int uiRow, unsigned int uiCol, const int iValue
 	}
 }
 
-bool CMap2D::InsertMapInfo(unsigned int uiRow, unsigned int uiCol, const int iValue, const bool bInvert)
+bool CMap2D::InsertMapInfo(unsigned int uiRow, unsigned int uiCol, const int iTextureID, const CLASS_ID ClassID, const bool bInvert)
 {
 	if (bInvert)
 	{
@@ -282,7 +282,7 @@ bool CMap2D::InsertMapInfo(unsigned int uiRow, unsigned int uiCol, const int iVa
 	//Check if its not a nullptr
 	if (!arrGrid[uiCurLevel][uiRow][uiCol])
 	{
-		CObject2D* currObj = objFactory.CreateObject(iValue);
+		CObject2D* currObj = objFactory.CreateObject(iTextureID, ClassID);
 		currObj->SetCurrentIndex(glm::i32vec2(uiCol, uiRow));
 		currObj->vTransform = glm::i32vec2(uiCol, GetLevelRow() - uiRow - 1);
 		currObj->Init();
@@ -472,7 +472,8 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 			arrGrid[uiCurLevel][uiRow].push_back(nullptr);
 
 			if (currTexture > 0) {
-				CObject2D* currObj = new CObject2D(currTexture, currObjID);
+				CObject2D* currObj = objFactory.CreateObject(currTexture, static_cast<CLASS_ID>(currObjID));
+
 				currObj->SetCurrentIndex(glm::i32vec2(uiCol, uiRow));
 
 				//Position of values
