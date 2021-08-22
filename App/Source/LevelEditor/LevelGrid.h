@@ -18,8 +18,8 @@ class CLevelGrid : public CSingletonTemplate<CLevelGrid>
 	friend CSingletonTemplate<CLevelGrid>;
 public:
 
-	uint32_t iWorldWidth;
-	uint32_t iWorldHeight;
+	unsigned int iWorldWidth;
+	unsigned int iWorldHeight;
 
 	CLevelGrid();
 	~CLevelGrid();

@@ -18,6 +18,7 @@
 
 // Include the Map2D as we will use it to check the player's movements and actions
 class CMap2D;
+class CEntityManager;
 
 // Include Settings
 #include "GameControl\Settings.h"
@@ -32,7 +33,6 @@ class CMap2D;
 
 //#include "EntityManager.h"
 
-
 class CEnemy2D : public CEntity2D
 {
 public:
@@ -43,7 +43,7 @@ public:
 	virtual ~CEnemy2D(void);
 
 	// Init
-	bool Init(void);
+	virtual bool Init(void);
 
 	// Update
 	virtual void Update(const double dElapsedTime);
@@ -60,27 +60,24 @@ public:
 	// Set the indices of the enemy2D
 	void SetTransform(const int iIndex_XAxis, const int iIndex_YAxis);
 
-	// Set the number of microsteps of the enemy2D
-	void Seti32vec2NumMicroSteps(const int iNumMicroSteps_XAxis, const int iNumMicroSteps_YAxis);
-
-	// Set the handle to cPlayer to this class instance
-	void SetPlayer2D(CPlayer2D* cPlayer2D);
-
 	// Get Health
 	int GetHealth() const;
 
 	// boolean flag to indicate if this enemy is active
 	bool bIsActive;
 
+	//Set texture
+	void SetTexture(const char* fileName);
+
 protected:
-	enum DIRECTION
+	enum class DIRECTION
 	{
 		LEFT = 0,
 		RIGHT = 1,
 		NUM_DIRECTIONS
 	};
 
-	enum FSM
+	enum class FSM
 	{
 		IDLE = 0,
 		PATROL,
@@ -94,14 +91,16 @@ protected:
 	//Direction
 	DIRECTION dir;
 
-	//CS: Animated Sprite
-	CSpriteAnimation* animatedSprites;
-
 	//CS: The quadMesh for drawing the tiles
 	CMesh* quadMesh;
 
 	// Handler to the CMap2D instance
 	CMap2D* cMap2D;
+
+	//Handler to camera
+	Camera2D* camera;
+
+	CEntityManager* cEntityManager;
 
 	// A transformation matrix for controlling where to render the entities
 	glm::mat4 transform;
@@ -118,24 +117,37 @@ protected:
 	// Current color
 	glm::vec4 currentColor;
 
-	// Handle to the CPlayer2D
-	CPlayer2D* cPlayer2D;
-
 	//Player target and arrays handling it...
 	CPlayer2D* currTarget;
 	std::vector<CPlayer2D*> arrPlayer;
 
-
-	// Current FSM
-	FSM sCurrentFSM;
-
-	// Store health for combat
-	int health;
+	//Get angle from enemy to position
+	float GetAngle(glm::vec2 pos);
 
 	// Load a texture
 	bool LoadTexture(const char* filename, GLuint& iTextureID);
 
-	//Get nearest player. NOTE: TARGET HAS TO BE VALID AND BE WITHIN RANGE FIRST
-	CPlayer2D* GetNearestTarget(void);
+	// Current FSM
+	FSM sCurrentFSM;
+
+	//Current round
+	int roundIndex;
+
+	//Initial direction for that round
+	DIRECTION roundDir[5];
+
+	// Store health for combat
+	int health;
+
+	//Get nearest player. NOTE: TARGET HAS TO BE VALID AND BE WITHIN RANGE FIRST. DEFAULT ACCEPTABLE RANGE IS WITHIN HALF CAMERA WIDTH
+	CPlayer2D* GetNearestTarget(float dist = 16.f);
+
+	float GetDistanceBetweenPlayer(CPlayer2D* player);
+
+	//Check if its within the projected camera of the player entity
+	bool WithinProjectedCamera(CPlayer2D* player);
+
+	//Randomise direction
+	DIRECTION RandomiseDir(void);
 };
 

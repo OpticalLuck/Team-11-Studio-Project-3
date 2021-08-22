@@ -1,145 +1,63 @@
 #include "InventoryManager.h"
-#include <stdexcept>      // std::invalid_argument
-
-/**
-@brief Constructor
-*/
-CInventoryManager::CInventoryManager(void) 
-	: iItemIndex(1)
+#include "Math/MyMath.h"
+CInventoryManager::CInventoryManager()
+	:cActiveInventory(NULL)
 {
 }
 
-/**
-@brief Destructor
-*/
-CInventoryManager::~CInventoryManager(void)
+CInventoryManager::~CInventoryManager()
 {
-	// Clear the memory
-	Exit();
+	m_Inventory.clear();
 }
 
-/**
-@brief Exit by deleting the items
-*/
-void CInventoryManager::Exit(void)
+void CInventoryManager::Add(std::string sName)
 {
-	// Delete all scenes stored and empty the entire map
-	//inventoryMap->Release();
-	//inventoryMap = nullptr;
-	std::map<std::string, CInventoryItem*>::iterator it, end;
-	end = inventoryMap.end();
-	for (it = inventoryMap.begin(); it != end; ++it)
+	if (m_Inventory.find(sName) == m_Inventory.end()) //if the inventory doesn't exist 
 	{
-		delete it->second;
-		it->second = nullptr;
+		CInventory newInventory = CInventory(sName);
+		newInventory.Init();
+		std::pair<std::string, CInventory> pairInventory = std::pair<std::string, CInventory>(sName, newInventory);
+		m_Inventory.insert(pairInventory);
 	}
-	inventoryMap.clear();
 }
 
-/**
-@brief Add a Scene to this Inventory Manager
-*/
-CInventoryItem* CInventoryManager::Add(	const std::string& _name,
-								const char* imagePath,
-								const int iItemMaxCount,
-								const int iItemCount)
+void CInventoryManager::Use(std::string sName)
 {
-	if (Check(_name))
+	if (m_Inventory.find(sName) != m_Inventory.end()) //if the inventory exist 
 	{
-		// Item name already exist here, unable to proceed
-		throw std::exception("Duplicate item name provided");
-		return NULL;
+		cActiveInventory = &m_Inventory.at(sName);
 	}
-
-	CInventoryItem* cNewItem = new CInventoryItem(imagePath);
-	cNewItem->iItemMaxCount = iItemMaxCount;
-	cNewItem->iItemCount = iItemCount;
-
-	// Nothing wrong, add the scene to our map
-	inventoryMap[_name] = cNewItem;
-
-																
-
-	return cNewItem;
+	else
+		std::cout << "Inventory does not exist\n";
 }
 
-/**
-@brief Remove an item from this Inventory Manager
-*/
-bool CInventoryManager::Remove(const std::string& _name)
+CInventory* CInventoryManager::Get(std::string sName)
 {
-	// Does nothing if it does not exist
-	if (Check(_name))
+	if (m_Inventory.find(sName) != m_Inventory.end()) //if the inventory exist 
 	{
-		// Item is not available, unable to proceed
-		throw std::exception("Unknown item name provided");
-		return false;
+		return &m_Inventory.at(sName);
 	}
-
-	CInventoryItem* target = inventoryMap[_name];
-
-	// Delete and remove from our map
-	delete target;
-	inventoryMap.erase(_name);
-
-
-	return true;
+	else
+	{
+		std::cout << "Inventory does not exist\n";
+		return nullptr;
+	}
 }
 
-/**
-@brief Check if a item exists in this Inventory Manager
-*/
-bool CInventoryManager::Check(const std::string& _name)
-{
-	return inventoryMap.count(_name) != 0;
-}
-
-/**
-@brief Get an item by its name
-*/ 
-CInventoryItem* CInventoryManager::GetItem(const std::string& _name)
-{
-	// Does nothing if it does not exist
-	if (!Check(_name))
-		return NULL;
-
-	// Find and return the item
-	return inventoryMap[_name];
-}
-
-/**
-@brief Get the number of items
-*/
-int CInventoryManager::GetNumItems(void) const
-{
-	return inventoryMap.size();
-}
-
-
-
-int CInventoryManager::GetItemIndex(void)
-{
-	return iItemIndex;
-}
-
-void CInventoryManager::NavigateIndex(string direction)
+void CInventoryManager::NavigateIndex(std::string direction)
 {
 	if (direction == "DOWN")
 	{
-		iItemIndex += 1;
-		if (iItemIndex > 2)
-			iItemIndex = 1;
+		cActiveInventory->iCurrentIndex++;
 	}
 	if (direction == "UP")
 	{
-		iItemIndex -= 1;
-		if (iItemIndex <= 0)
-			iItemIndex = 2;
+		cActiveInventory->iCurrentIndex--;
 	}
-
+	cActiveInventory->iCurrentIndex = Math::Clamp(cActiveInventory->iCurrentIndex, 0, 2);
 }
-
-
-
-
+void CInventoryManager::UseItem(void)
+{
+	cActiveInventory->UseItem();
+}
 

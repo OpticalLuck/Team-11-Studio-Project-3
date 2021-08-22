@@ -7,6 +7,8 @@
 #include <GLFW/glfw3native.h>
 #include "../GameControl/Settings.h"
 #include <tchar.h>
+#include <ostream>
+#include <iostream>
 
 namespace FileDialog
 {
@@ -66,4 +68,4 @@ namespace FileDialog
 			return std::string();
 		}
 	}
-};
+}

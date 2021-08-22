@@ -261,7 +261,9 @@ bool Application::Init(void)
 	// Set the active scene
 	CGameStateManager::GetInstance()->SetActiveGameState("IntroState");
 
+
 	cSettings->ImGuiProperties.IsDockingEnabled = false;
+	// cSettings->ImGuiProperties.IsViewportEnabled = true;
 	m_ImGuiWindow->Create(cSettings->ImGuiProperties);
 
 	return true;
@@ -289,13 +291,11 @@ void Application::Run(void)
 			dElapsedTime = 0.0166666666666667;
 
 		m_ImGuiWindow->PreRender(cSettings->ImGuiProperties);
-
 		// Call the active Game State's Update method
 		if (CGameStateManager::GetInstance()->Update(0.0166666666666667) == false)
 		{
 			break;
 		}
-
 
 		// Call the active Game State's Render method
 		CGameStateManager::GetInstance()->Render();

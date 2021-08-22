@@ -12,9 +12,6 @@
 // Include CGameStateManager
 #include "GameStateManager.h"
 
-// Include CKeyboardController
-#include "Inputs/KeyboardController.h"
-
 #include "System/Debug.h"
 
 #include "Math/MyMath.h"
@@ -32,7 +29,7 @@ using namespace std;
  @brief Constructor
  */
 CLevelEditorState::CLevelEditorState(void)
-	: cKeyboardInputHandler(NULL)
+	: cKeyboardController(NULL)
 	, cLevelEditor(NULL)
 	, cMouseController(NULL)
 	, cSettings(NULL)
@@ -51,7 +48,7 @@ CLevelEditorState::~CLevelEditorState(void)
 	glDeleteVertexArrays(1, &quadVAO);
 	glDeleteBuffers(1, &quadVBO);
 
-	cKeyboardInputHandler = NULL;
+	cKeyboardController = NULL;
 	cLevelEditor = NULL;
 	cMouseController = NULL;
 	cSettings = NULL;
@@ -72,8 +69,11 @@ bool CLevelEditorState::Init(void)
 {
 	cout << "CLevelEditorState::Init()\n" << endl;
 
+	eProperties.Reset();
+
 	cSettings = CSettings::GetInstance();
 	cSettings->screenSize = CSettings::SSIZE_1024x768;
+	// cSettings->m_ImGuiWindow->Update(cSettings->ImGuiProperties);
 	CSettings::GetInstance()->UpdateWindowSize();
 
 	glGenVertexArrays(1, &quadVAO);
@@ -88,13 +88,19 @@ bool CLevelEditorState::Init(void)
 	cLevelGrid = CLevelGrid::GetInstance();
 	cLevelGrid->Init(cLevelEditor->iWorldWidth, cLevelEditor->iWorldHeight);
 
+	ActionState currentState;
+	currentState.m_ThisActionLevel = cLevelEditor->GetCurrentLevel();
+	currentState.iWorldWidth = cLevelEditor->iWorldWidth;
+	currentState.iWorldHeight = cLevelEditor->iWorldHeight;
+
+	eProperties.undoStates.push_back(currentState);
+	eProperties.redoStates.clear();
+
 	Camera2D::GetInstance()->Reset();
 	Camera2D::GetInstance()->UpdateTarget(glm::vec2(cSettings->NUM_TILES_XAXIS * 0.5, cSettings->NUM_TILES_YAXIS * 0.5));
 
 	cMouseController = CMouseController::GetInstance();
-
-	cKeyboardInputHandler = CKeyboardInputHandler::GetInstance();
-	cKeyboardInputHandler->Init();
+	cKeyboardController = CKeyboardController::GetInstance();
 
 	return true;
 }
@@ -111,32 +117,49 @@ bool CLevelEditorState::Update(const double dElapsedTime)
 	vMousePos.x = Math::Clamp((float)vMousePos.x, 0.f, (float)cLevelEditor->iWorldWidth - 1);
 	vMousePos.y = Math::Clamp((float)vMousePos.y, 0.f, (float)cLevelEditor->iWorldHeight - 1);
 
-	if (CKeyboardController::GetInstance()->IsKeyReleased(GLFW_KEY_ESCAPE))
+	if (cKeyboardController->IsKeyReleased(GLFW_KEY_ESCAPE))
 	{
-		// Reset the CKeyboardController
-		CKeyboardController::GetInstance()->Reset();
-
-		// Load the menu state
-		cout << "Loading PauseState" << endl;
-		CGameStateManager::GetInstance()->SetPauseGameState("PauseState");
-		return true;
+		Close();
+	}
+	if (cKeyboardController->IsKeyPressed(GLFW_KEY_TAB))
+	{
+		eProperties.bToggleEditorWindow = !eProperties.bToggleEditorWindow;
+	}
+	if (cKeyboardController->IsKeyPressed(GLFW_KEY_G))
+	{
+		eProperties.bShowGrids = !eProperties.bShowGrids;
 	}
 
-	MoveCamera();
-	ScaleMap();
+	if (!CImGuiWindow::GetInstance()->WantCaptureMouse())
+	{
+		// Disable default mouse events if currently using shortcuts
+		if (!EditorShortcuts())
+		{
+			MouseInput(dElapsedTime);
+			ScaleMap();
+		}
 
-	if (CKeyboardController::GetInstance()->IsKeyDown(GLFW_KEY_4))
+		// Mouse X Scroll
+		if (cMouseController->GetMousePositionX() < 100 || cMouseController->GetMousePositionX() > cSettings->iWindowWidth - 100)
+			Camera2D::GetInstance()->MoveTarget(-(cSettings->iWindowWidth * 0.5 - cMouseController->GetMousePositionX()) * dElapsedTime * 0.025, 0);
+		
+		// Mouse Y Scroll
+		if (cMouseController->GetMousePositionY() < 100 || cMouseController->GetMousePositionY() > cSettings->iWindowHeight - 100)
+			Camera2D::GetInstance()->MoveTarget(0, (cSettings->iWindowHeight * 0.5 - cMouseController->GetMousePositionY()) * dElapsedTime * 0.025);
+	}
+
+	FileUtilShortcuts();
+	MoveCamera(dElapsedTime);
+
+	if (cKeyboardController->IsKeyDown(GLFW_KEY_4))
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	}
-	if (CKeyboardController::GetInstance()->IsKeyDown(GLFW_KEY_3))
+	if (cKeyboardController->IsKeyDown(GLFW_KEY_3))
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
 
-
-	if (!CImGuiWindow::GetInstance()->WantCaptureMouse())
-		MouseInput();
 
 	return true;
 }
@@ -157,9 +180,12 @@ void CLevelEditorState::Render(void)
 	cLevelEditor->Render();
 	cLevelEditor->PostRender();
 
-	cLevelGrid->PreRender();
-	cLevelGrid->Render();
-	cLevelGrid->PostRender();
+	if (eProperties.bShowGrids)
+	{
+		cLevelGrid->PreRender();
+		cLevelGrid->Render();
+		cLevelGrid->PostRender();
+	}
 
 	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	//
@@ -178,21 +204,238 @@ void CLevelEditorState::Destroy(void)
 }
 
 
-void CLevelEditorState::MoveCamera(void)
+bool CLevelEditorState::EditorShortcuts(void)
 {
-	if (CKeyboardController::GetInstance()->IsKeyDown(GLFW_KEY_W))
+	// SHIFT+LMB - Area Fill
+	// SHIFT+RMB - Area Delete
+	// CTRL+Z - Undo
+	// CTRL+Y - Redo
+	// CTRL+S - Save
+	// ESCAPE - Close
+
+	if (cKeyboardController->IsKeyDown(GLFW_KEY_LEFT_SHIFT))
+	{
+		// DEBUG_MSG("Holding LSHIFT");
+		if (cMouseController->IsButtonPressed(CMouseController::LMB))
+		{
+			UpdateHistory();
+			eProperties.bIsSelecting = true;
+			DEBUG_MSG("Start Wide Area Fill");
+			eProperties.WideAreaSelectionStart = vMousePos;
+		}
+		else if (cMouseController->IsButtonReleased(CMouseController::LMB))
+		{
+			eProperties.bIsSelecting = false;
+			DEBUG_MSG("End Wide Area Fill");
+			AreaFill();
+		}
+
+		if (cMouseController->IsButtonPressed(CMouseController::RMB))
+		{
+			UpdateHistory();
+			eProperties.bIsSelecting = true;
+			DEBUG_MSG("Start Wide Area Delete");
+			eProperties.WideAreaSelectionStart = vMousePos;
+		}
+		else if (cMouseController->IsButtonReleased(CMouseController::RMB))
+		{
+			eProperties.bIsSelecting = false;
+			DEBUG_MSG("End Wide Area Delete");
+			AreaDelete();
+		}
+
+		eProperties.WideAreaSelectionEnd = vMousePos;
+		return true;
+	}
+	else 
+		eProperties.bIsSelecting = false;
+
+	if (cMouseController->IsButtonPressed(CMouseController::MMB))
+	{
+		CopyBlock();
+		return false;
+	}
+
+	return false;
+}
+
+bool CLevelEditorState::FileUtilShortcuts(void)
+{
+	if (cKeyboardController->IsKeyDown(GLFW_KEY_LEFT_CONTROL))
+	{
+		if (cKeyboardController->IsKeyPressed(GLFW_KEY_Z))
+		{
+			Undo(1);
+		}
+		else if (cKeyboardController->IsKeyPressed(GLFW_KEY_Y))
+		{
+			Redo(1);
+		}
+		else if (cKeyboardController->IsKeyPressed(GLFW_KEY_S))
+		{
+			Save();
+		}
+	}
+	return true;
+}
+
+void CLevelEditorState::AreaFill(void)
+{
+	eProperties.prevActions.push_back("Area Fill");
+	eProperties.bSaved = false;
+
+	int startXIndex = 0;
+	int endXIndex = 0;
+	int startYIndex = 0;
+	int	endYIndex = 0;
+
+	eProperties.RecalculateStartEndIndex(startXIndex, endXIndex, startYIndex, endYIndex);
+
+	for (int iRow = startYIndex; iRow <= endYIndex; ++iRow)
+	{
+		for (int iCol = startXIndex; iCol <= endXIndex; ++iCol)
+		{
+			if (cLevelEditor->GetCell(iCol, iRow).iTileID == 0)
+				cLevelEditor->UpdateCell(iCol, iRow, activeTile);
+		}
+	}
+}
+
+void CLevelEditorState::AreaDelete(void)
+{
+	eProperties.prevActions.push_back("Area Delete");
+	eProperties.bSaved = false;
+
+	int startXIndex = 0;
+	int endXIndex = 0;
+	int startYIndex = 0;
+	int	endYIndex = 0;
+
+	eProperties.RecalculateStartEndIndex(startXIndex, endXIndex, startYIndex, endYIndex);
+
+	for (int iRow = startYIndex; iRow <= endYIndex; ++iRow)
+	{
+		for (int iCol = startXIndex; iCol <= endXIndex; ++iCol)
+		{
+			cLevelEditor->UpdateCell(iCol, iRow, 0);
+		}
+	}
+}
+
+void CLevelEditorState::Undo(const int count)
+{
+	if (eProperties.undoStates.size() == 1)
+		return;
+
+	eProperties.bSaved = false;
+	eProperties.iUndoCount += count;
+
+	for (int i = 0; i < count; ++i)
+	{
+		ActionState currentState;
+		currentState.m_ThisActionLevel = cLevelEditor->GetCurrentLevel();
+		currentState.iWorldWidth = cLevelEditor->iWorldWidth;
+		currentState.iWorldHeight = cLevelEditor->iWorldHeight;
+
+		eProperties.redoStates.push_back(currentState);
+
+		if (cLevelGrid->iWorldWidth < currentState.iWorldWidth)
+			cLevelEditor->DecreaseXSize();
+		if (cLevelGrid->iWorldWidth > currentState.iWorldWidth)
+			cLevelEditor->IncreaseXSize();
+		if (cLevelGrid->iWorldHeight < currentState.iWorldHeight)
+			cLevelEditor->DecreaseYSize();
+		if (cLevelGrid->iWorldHeight > currentState.iWorldHeight)
+			cLevelEditor->IncreaseYSize();
+
+		cLevelEditor->SetCurrentLevel(eProperties.undoStates.back().m_ThisActionLevel);
+		cLevelGrid->iWorldWidth = eProperties.undoStates.back().iWorldWidth;
+		cLevelGrid->iWorldHeight = eProperties.undoStates.back().iWorldHeight;
+
+		eProperties.undoStates.pop_back();
+	}
+}
+
+void CLevelEditorState::Redo(const int count)
+{
+	if (eProperties.redoStates.size() == 0)
+		return;
+
+	eProperties.bSaved = false;
+	eProperties.iUndoCount -= count;
+
+
+	for (int i = 0; i < count; ++i)
+	{
+		ActionState currentState;
+		currentState.m_ThisActionLevel = cLevelEditor->GetCurrentLevel();
+		currentState.iWorldWidth = cLevelEditor->iWorldWidth;
+		currentState.iWorldHeight = cLevelEditor->iWorldHeight;
+
+		eProperties.undoStates.push_back(currentState);
+
+		if (currentState.iWorldWidth < eProperties.redoStates.back().iWorldWidth)
+			cLevelEditor->DecreaseXSize();
+		if (currentState.iWorldWidth > eProperties.redoStates.back().iWorldWidth)
+			cLevelEditor->IncreaseXSize();
+		if (currentState.iWorldHeight < eProperties.redoStates.back().iWorldHeight)
+			cLevelEditor->DecreaseYSize();
+		if (currentState.iWorldHeight > eProperties.redoStates.back().iWorldHeight)
+			cLevelEditor->DecreaseYSize();
+
+		cLevelEditor->SetCurrentLevel(eProperties.redoStates.back().m_ThisActionLevel);
+		cLevelGrid->iWorldWidth = eProperties.redoStates.back().iWorldWidth;
+		cLevelGrid->iWorldHeight = eProperties.redoStates.back().iWorldHeight;
+
+
+		eProperties.redoStates.pop_back();
+	}
+}
+
+void CLevelEditorState::CopyBlock(void)
+{
+	activeTile = cLevelEditor->GetCell(vMousePos.x, vMousePos.y).iTileID;
+}
+
+void CLevelEditorState::Save()
+{
+	eProperties.bSaved = true;
+	cLevelEditor->SaveMap();
+}
+
+void CLevelEditorState::Close()
+{
+	if (!eProperties.bSaved)
+		eProperties.bToggleCloseWindow = true;
+	else
+	{
+		DEBUG_MSG("Closing Editor");
+		//cSettings->ImGuiProperties.IsViewportEnabled = false;
+		//cSettings->m_ImGuiWindow->Update(cSettings->ImGuiProperties);
+
+		cKeyboardController->Reset();
+		cMouseController->Reset();
+		CGameStateManager::GetInstance()->SetActiveGameState("MenuState");
+	}
+
+}
+
+void CLevelEditorState::MoveCamera(double dElapsedTime)
+{
+
+	if (cKeyboardController->IsKeyDown(GLFW_KEY_W))
 	{
 		Camera2D::GetInstance()->UpdateTarget(glm::vec2(Camera2D::GetInstance()->getTarget().x, Camera2D::GetInstance()->getTarget().y + 0.2));
 	}
-	if (CKeyboardController::GetInstance()->IsKeyDown(GLFW_KEY_S))
+	if (cKeyboardController->IsKeyDown(GLFW_KEY_S))
 	{
 		Camera2D::GetInstance()->UpdateTarget(glm::vec2(Camera2D::GetInstance()->getTarget().x, Camera2D::GetInstance()->getTarget().y - 0.2));
 	}
-	if (CKeyboardController::GetInstance()->IsKeyDown(GLFW_KEY_A))
+	if (cKeyboardController->IsKeyDown(GLFW_KEY_A))
 	{
 		Camera2D::GetInstance()->UpdateTarget(glm::vec2(Camera2D::GetInstance()->getTarget().x - 0.2, Camera2D::GetInstance()->getTarget().y));
 	}
-	if (CKeyboardController::GetInstance()->IsKeyDown(GLFW_KEY_D))
+	if (cKeyboardController->IsKeyDown(GLFW_KEY_D))
 	{
 		Camera2D::GetInstance()->UpdateTarget(glm::vec2(Camera2D::GetInstance()->getTarget().x + 0.2, Camera2D::GetInstance()->getTarget().y));
 	}
@@ -205,48 +448,67 @@ void CLevelEditorState::ScaleMap(void)
 {
 	if (CKeyboardController::GetInstance()->IsKeyPressed(GLFW_KEY_RIGHT))
 	{
-		if (cLevelEditor->IncreaseXSize())
-			cLevelGrid->iWorldWidth++;
+		IncreaseXSize();
 	}
 	else if (CKeyboardController::GetInstance()->IsKeyPressed(GLFW_KEY_LEFT))
 	{
-		if (cLevelEditor->DecreaseXSize())
-			cLevelGrid->iWorldWidth--;
+		DecreaseXSize();
 	}
 	if (CKeyboardController::GetInstance()->IsKeyPressed(GLFW_KEY_UP))
 	{
-		if (cLevelEditor->IncreaseYSize())
-			cLevelGrid->iWorldHeight++;
+		IncreaseYSize();
 	}
 	else if (CKeyboardController::GetInstance()->IsKeyPressed(GLFW_KEY_DOWN))
 	{
-		if (cLevelEditor->DecreaseYSize())
-			cLevelGrid->iWorldHeight--;
+		DecreaseYSize();
 	}
 
 }
 
-void CLevelEditorState::MouseInput(void)
+void CLevelEditorState::MouseInput(double dElapsedTime)
 {
 	if (cMouseController->IsButtonDown(CMouseController::LMB))
 	{
 		// DEBUG_MSG("x:" << u16vec2FinalMousePosInEditor.x << " y:" << u16vec2FinalMousePosInEditor.y);
 		DEBUG_MSG("[x: " << vMousePos.x << ", y: " << vMousePos.y << "] Cell TileID: " << cLevelEditor->GetCell(vMousePos.x, vMousePos.y, false).iTileID);
-		if (cLevelEditor->GetCell(vMousePos.x, vMousePos.y, false).iTileID == 0)
+		if (cLevelEditor->GetCell(vMousePos.x, vMousePos.y).iTileID == 0 && activeTile != 0)
 		{
-			cLevelEditor->UpdateCell(vMousePos.x, vMousePos.y, activeTile, false);
+			if (!eProperties.bPlacedBlock)
+			{
+				UpdateHistory();
+				eProperties.prevActions.push_back("Placed Tile");
+				eProperties.bPlacedBlock = true;
+			}
+
+			eProperties.bSaved = false;
+			cLevelEditor->UpdateCell(vMousePos.x, vMousePos.y, activeTile);
 		}
+	}
+	if (cMouseController->IsButtonReleased(CMouseController::LMB))
+	{
+		eProperties.bPlacedBlock = false;
 	}
 
 	if (cMouseController->IsButtonDown(CMouseController::RMB))
 	{
-		// DEBUG_MSG("x:" << u16vec2FinalMousePosInEditor.x << " y:" << u16vec2FinalMousePosInEditor.y);
-		if (cLevelEditor->GetCell(vMousePos.x, vMousePos.y, false).iTileID != 0)
+		if (cLevelEditor->GetCell(vMousePos.x, vMousePos.y).iTileID != 0)
 		{
-			cLevelEditor->UpdateCell(vMousePos.x, vMousePos.y, 0, false);
+			if (!eProperties.bDeletedBlock)
+			{
+				UpdateHistory();
+				eProperties.prevActions.push_back("Removed Tile");
+				eProperties.bDeletedBlock = true;
+			}
+
+
+			eProperties.bSaved = false;
+			cLevelEditor->UpdateCell(vMousePos.x, vMousePos.y, 0);
 		}
 	}
-
+	if (cMouseController->IsButtonReleased(CMouseController::RMB))
+	{
+		eProperties.bDeletedBlock = false;
+	}
 	if (cMouseController->GetMouseScrollStatus(CMouseController::SCROLL_TYPE_YOFFSET) > 0)
 	{
 		Camera2D::GetInstance()->UpdateZoom(Camera2D::GetInstance()->getTargetZoom() + 0.1);
@@ -330,22 +592,54 @@ void CLevelEditorState::ImGuiRender()
 	{
 		if (ImGui::BeginMenu("File"))
 		{
-			std::string saveString = "Save " + cLevelEditor->GetCurrentLevel().LevelName;
-			std::string closeString = "Close " + cLevelEditor->GetCurrentLevel().LevelName;
+			std::string saveString = "Save " + cLevelEditor->GetCurrentLevelData().LevelName;
+			std::string closeString = "Close " + cLevelEditor->GetCurrentLevelData().LevelName;
 
-			if (ImGui::MenuItem(saveString.c_str(), "CTRL+S")) cLevelEditor->SaveMap();
-			if (ImGui::MenuItem(closeString.c_str(), "ESCAPE"))
-			{
-				DEBUG_MSG("Closing Editor");
-				CGameStateManager::GetInstance()->SetActiveGameState("MenuState");
-			}
+			if (ImGui::MenuItem(saveString.c_str(), "CTRL+S")) Save();
+			if (ImGui::MenuItem(closeString.c_str(), "ESCAPE")) Close();
 
 			ImGui::EndMenu();
 		}
+		if (ImGui::BeginMenu("Edit"))
+		{
+			if (ImGui::MenuItem("Undo", "CTRL+Z")) Undo(1);
+			if (ImGui::MenuItem("Redo", "CTRL+Y")) Redo(1);
+
+			ImGui::EndMenu();
+		}
+		if (ImGui::BeginMenu("View"))
+		{
+			if (ImGui::MenuItem("History")) eProperties.bToggleHistoryWindow = !eProperties.bToggleHistoryWindow;
+
+			ImGui::EndMenu();
+		}
+
+		if (!eProperties.bSaved)
+		{
+			ImGuiWindowFlags TextWindowFlags = ImGuiWindowFlags_NoTitleBar |
+				ImGuiWindowFlags_NoResize |
+				ImGuiWindowFlags_NoMove |
+				ImGuiWindowFlags_NoScrollbar |
+				ImGuiWindowFlags_NoScrollWithMouse |
+				ImGuiWindowFlags_NoCollapse |
+				ImGuiWindowFlags_AlwaysAutoResize |
+				ImGuiWindowFlags_NoBackground |
+				ImGuiWindowFlags_NoSavedSettings |
+				ImGuiWindowFlags_NoFocusOnAppearing |
+				ImGuiWindowFlags_NoBringToFrontOnFocus |
+				ImGuiWindowFlags_NoNavInputs |
+				ImGuiWindowFlags_NoNavFocus;
+
+			ImGuiIO& io = ImGui::GetIO();
+
+			ImGui::SetCursorPos(ImVec2(cSettings->iWindowWidth - 110, 0));
+			ImGui::TextColored(ImVec4(1, 1, 0, 1), "Unsaved Changes");
+		}
+
 		ImGui::EndMainMenuBar();
 	}
 
-	ImGui::SetNextWindowPos(ImVec2(0, 0 + 19));
+	ImGui::SetNextWindowPos(ImVec2(0, 19));
 	ImGui::SetNextWindowSize(ImVec2(250, cSettings->iWindowHeight));
 
 	ImGuiWindowFlags windowFlags =
@@ -353,13 +647,21 @@ void CLevelEditorState::ImGuiRender()
 		ImGuiWindowFlags_NoMove |
 		ImGuiWindowFlags_NoResize;
 
+	ImGui::SetNextWindowCollapsed(!eProperties.bToggleEditorWindow);
+	eProperties.bToggleEditorWindow = false;
 	if (ImGui::Begin("Editor", NULL, windowFlags))
 	{
+		eProperties.bToggleEditorWindow = true;
 		ImGui::TextColored(ImVec4(1.f, 1.f, 0, 1.f), "Map Size");
 		std::string xSize = "X: " + std::to_string(cLevelEditor->iWorldWidth);
 		std::string ySize = "Y: " + std::to_string(cLevelEditor->iWorldHeight);
-		ImGui::Text(xSize.c_str());
-		ImGui::Text(ySize.c_str());
+
+		ImGui::Text(xSize.c_str()); 
+		ImGui::SameLine(); if (ImGui::Button("-##X")) DecreaseXSize();
+		ImGui::SameLine(); if (ImGui::Button("+##X")) IncreaseXSize();
+		ImGui::Text(ySize.c_str());					  
+		ImGui::SameLine(); if (ImGui::Button("-##Y")) DecreaseYSize();
+		ImGui::SameLine(); if (ImGui::Button("+##Y")) IncreaseYSize();
 
 		ImGui::NewLine();
 
@@ -389,14 +691,15 @@ void CLevelEditorState::ImGuiRender()
 
 		ImGui::PushItemWidth(150);
 		ImGui::TextColored(ImVec4(1.f, 1.f, 0, 1.f), "Parallax Allowance");
-		ImGui::SliderFloat("Parallax X", &cLevelEditor->vAllowanceScale.x, 0.f, 1.f);
-		ImGui::SliderFloat("Parallax Y", &cLevelEditor->vAllowanceScale.y, 0.f, 1.f);
+		ImGui::SliderFloat("X##Parallax", &cLevelEditor->vAllowanceScale.x, 0.f, 1.f);
+		ImGui::SliderFloat("Y##Parallax", &cLevelEditor->vAllowanceScale.y, 0.f, 1.f);
 
 		ImGui::NewLine();
 
 		ImGui::TextColored(ImVec4(1, 1, 0, 1), "BG Size");
-		ImGui::SliderFloat("BG X", &cLevelEditor->vUVCoords.x, 2.f, 5.f);
-		ImGui::SliderFloat("BG Y", &cLevelEditor->vUVCoords.y, 2.f, 5.f);
+		ImGui::SliderFloat("X##BG", &cLevelEditor->vUVCoords.x, 2.f, 5.f);
+		ImGui::SliderFloat("Y##BG", &cLevelEditor->vUVCoords.y, 2.f, 5.f);
+
 		ImGui::PopItemWidth();
 
 		if (ImGui::BeginChild("Tile List"))
@@ -453,38 +756,212 @@ void CLevelEditorState::ImGuiRender()
 	}
 	ImGui::End();
 
+	windowFlags = 0;
+
+	ImGui::SetNextWindowSize(ImVec2(150, 250), ImGuiCond_Once);
+	ImGui::SetNextWindowPos(ImVec2(cSettings->iWindowWidth - 150, 19), ImGuiCond_Once);
+	if (eProperties.bToggleHistoryWindow)
+	{
+		if (ImGui::Begin("History", &eProperties.bToggleHistoryWindow, windowFlags))
+		{
+			if (ImGui::BeginChild("ActionHistory"))
+			{
+				ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.1, 0.5));
+				ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.f);
+				for (int i = 0; i < eProperties.prevActions.size(); ++i)
+				{
+					if (i < eProperties.prevActions.size() - eProperties.iUndoCount)
+						ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.26f, 0.59f, 0.98f, 0.40f));
+					else
+						ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+
+					if (ImGui::Button((eProperties.prevActions[i] + "##" + std::to_string(i)).c_str(), ImVec2(ImGui::GetContentRegionAvailWidth(), 25)))
+					{
+
+						// eProperties.iUndoCount = eProperties.prevActions.size() - i;
+						// Undo
+						if ((i + 1) < eProperties.prevActions.size() - eProperties.iUndoCount)
+							Undo(eProperties.prevActions.size() - (i + 1) - eProperties.iUndoCount);
+
+						// Redo
+						else if ((i + 1) > eProperties.prevActions.size() - eProperties.iUndoCount)
+							Redo((i + 1) - (eProperties.prevActions.size() - eProperties.iUndoCount));
+					}
+
+					ImGui::PopStyleColor();
+				}
+				ImGui::PopStyleVar(2);
+
+				if (eProperties.bHistoryUpdated)
+				{
+					eProperties.bHistoryUpdated = false;
+					ImGui::SetScrollHereY(1.f);
+				}
+
+			}
+			ImGui::EndChild();
+		}
+		ImGui::End();
+	}
+
+	windowFlags =
+		ImGuiWindowFlags_AlwaysAutoResize |
+		ImGuiWindowFlags_NoResize |
+		ImGuiWindowFlags_NoCollapse;
+
+	ImGui::SetNextWindowPos(ImVec2((cSettings->iWindowWidth - 250) * 0.5, (cSettings->iWindowHeight - 105) * 0.5));
+	ImGui::SetNextWindowSize(ImVec2(250, 105));
+	if (eProperties.bToggleCloseWindow)
+	{
+		if (ImGui::Begin("Alert", &(eProperties.bToggleCloseWindow), windowFlags))
+		{
+			DEBUG_MSG(ImGui::GetWindowSize().x << " " << ImGui::GetWindowSize().y);
+			ImGui::TextWrapped("You have unsaved changes. Do you want to discard them or cancel?");
+
+			ImGui::NewLine();
+
+			if (ImGui::Button("Discard"))
+			{
+				eProperties.bSaved = true;
+				Close();
+			}
+
+			ImGui::SameLine();
+
+			if (ImGui::Button("Cancel")) eProperties.bToggleCloseWindow = false;
+			ImGui::End();
+		}
+	}
+
+
 }
 
 void CLevelEditorState::RenderCursor()
 {
 	// Activate blending mode
-	glActiveTexture(GL_TEXTURE0);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	glBindVertexArray(quadVAO);
-
-	glm::vec2 offset = glm::vec2(float(CSettings::GetInstance()->NUM_TILES_XAXIS / 2.f), float(CSettings::GetInstance()->NUM_TILES_YAXIS / 2.f));
-	glm::vec2 cameraPos = Camera2D::GetInstance()->getCurrPos();
-
-	glm::vec2 objCamPos = glm::vec2(vMousePos.x, vMousePos.y) - cameraPos + offset;
-	glm::vec2 actualPos = CSettings::GetInstance()->ConvertIndexToUVSpace(objCamPos) * Camera2D::GetInstance()->getZoom();
-
-	transform = glm::mat4(1.f);
-	transform = glm::translate(transform, glm::vec3(actualPos.x, actualPos.y, 0.f));
-	transform = glm::scale(transform, glm::vec3(Camera2D::GetInstance()->getZoom()));
-	transform = glm::scale(transform, glm::vec3(CSettings::GetInstance()->TILE_WIDTH, CSettings::GetInstance()->TILE_HEIGHT, 1.f));
-
-	CShaderManager::GetInstance()->Use("2DColorShader");
-	CShaderManager::GetInstance()->activeShader->setInt("texture1", 0);
-	CShaderManager::GetInstance()->activeShader->setVec4("runtime_color", glm::vec4(1.f, 1.f, 1.f, 0.6f));
-	CShaderManager::GetInstance()->activeShader->setMat4("transform", transform);
-
 	if (activeTile != 0)
-		RenderQuad(CTextureManager::GetInstance()->MapOfTextureIDs.at(activeTile));
-	
-	glBindVertexArray(0);
+	{
+		glActiveTexture(GL_TEXTURE0);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	// Disable blending
-	glDisable(GL_BLEND);
+		glBindVertexArray(quadVAO);
+
+		glm::vec2 offset = glm::vec2(float(CSettings::GetInstance()->NUM_TILES_XAXIS / 2.f), float(CSettings::GetInstance()->NUM_TILES_YAXIS / 2.f));
+		glm::vec2 cameraPos = Camera2D::GetInstance()->getCurrPos();
+
+		if (!eProperties.bIsSelecting)
+		{
+			glm::vec2 objCamPos = glm::vec2(vMousePos.x, vMousePos.y) - cameraPos + offset;
+			glm::vec2 actualPos = CSettings::GetInstance()->ConvertIndexToUVSpace(objCamPos) * Camera2D::GetInstance()->getZoom();
+
+			transform = glm::mat4(1.f);
+			transform = glm::translate(transform, glm::vec3(actualPos.x, actualPos.y, 0.f));
+			transform = glm::scale(transform, glm::vec3(Camera2D::GetInstance()->getZoom()));
+			transform = glm::scale(transform, glm::vec3(CSettings::GetInstance()->TILE_WIDTH, CSettings::GetInstance()->TILE_HEIGHT, 1.f));
+
+			CShaderManager::GetInstance()->Use("2DColorShader");
+			CShaderManager::GetInstance()->activeShader->setInt("texture1", 0);
+			CShaderManager::GetInstance()->activeShader->setVec4("runtime_color", glm::vec4(1.f, 1.f, 1.f, 0.6f));
+			CShaderManager::GetInstance()->activeShader->setMat4("transform", transform);
+			
+			RenderQuad(CTextureManager::GetInstance()->MapOfTextureIDs.at(activeTile));
+		}
+		else
+		{
+			int startXIndex = 0;
+			int endXIndex = 0;
+			int startYIndex = 0;
+			int	endYIndex = 0;
+
+			eProperties.RecalculateStartEndIndex(startXIndex, endXIndex, startYIndex, endYIndex);
+
+			for (int iRow = startYIndex; iRow <= endYIndex; ++iRow)
+			{
+				for (int iCol = startXIndex; iCol <= endXIndex; ++iCol)
+				{
+					glm::vec2 objCamPos = glm::vec2(iCol, iRow) - cameraPos + offset;
+					glm::vec2 actualPos = CSettings::GetInstance()->ConvertIndexToUVSpace(objCamPos) * Camera2D::GetInstance()->getZoom();
+
+					transform = glm::mat4(1.f);
+					transform = glm::translate(transform, glm::vec3(actualPos.x, actualPos.y, 0.f));
+					transform = glm::scale(transform, glm::vec3(Camera2D::GetInstance()->getZoom()));
+					transform = glm::scale(transform, glm::vec3(CSettings::GetInstance()->TILE_WIDTH, CSettings::GetInstance()->TILE_HEIGHT, 1.f));
+
+					CShaderManager::GetInstance()->Use("2DColorShader");
+					CShaderManager::GetInstance()->activeShader->setInt("texture1", 0);
+					CShaderManager::GetInstance()->activeShader->setVec4("runtime_color", glm::vec4(1.f, 1.f, 1.f, 0.6f));
+					CShaderManager::GetInstance()->activeShader->setMat4("transform", transform);
+
+					RenderQuad(CTextureManager::GetInstance()->MapOfTextureIDs.at(activeTile));
+				}
+			}
+		}
+
+		glBindVertexArray(0);
+
+		// Disable blending
+		glDisable(GL_BLEND);
+	}
+}
+
+
+void CLevelEditorState::IncreaseXSize(void)
+{
+	if (cLevelEditor->IncreaseXSize())
+	{
+		UpdateHistory();
+		eProperties.prevActions.push_back("Increase Level Width");
+		cLevelGrid->iWorldWidth++;
+	}
+}
+
+void CLevelEditorState::DecreaseXSize(void)
+{
+	if (cLevelEditor->DecreaseXSize())
+	{
+		UpdateHistory();
+		eProperties.prevActions.push_back("Decrease Level Width");
+		cLevelGrid->iWorldWidth--;
+	}
+}
+
+void CLevelEditorState::IncreaseYSize(void)
+{
+	if (cLevelEditor->IncreaseYSize())
+	{
+		UpdateHistory();
+		eProperties.prevActions.push_back("Increase Level Height");
+		cLevelGrid->iWorldHeight++;
+	}
+}
+
+void CLevelEditorState::DecreaseYSize(void)
+{
+	if (cLevelEditor->DecreaseYSize())
+	{
+		UpdateHistory();
+		eProperties.prevActions.push_back("Decrease Level Height");
+		cLevelGrid->iWorldHeight--;
+	}
+}
+
+void CLevelEditorState::UpdateHistory(void)
+{
+	eProperties.bHistoryUpdated = true;
+
+	for (int i = 0; i < eProperties.iUndoCount; ++i)
+	{
+		eProperties.prevActions.pop_back();
+	}
+
+	eProperties.iUndoCount = 0;
+
+	ActionState currentState;
+	currentState.m_ThisActionLevel = cLevelEditor->GetCurrentLevel();
+	currentState.iWorldWidth = cLevelGrid->iWorldWidth;
+	currentState.iWorldHeight = cLevelGrid->iWorldHeight;
+
+	eProperties.undoStates.push_back(currentState);
+	eProperties.redoStates.clear();
 }

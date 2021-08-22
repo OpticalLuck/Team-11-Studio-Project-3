@@ -37,17 +37,19 @@ class Camera2D;
 // Include AnimatedSprites
 #include "Primitives/SpriteAnimation.h"
 
-// Include InventoryManager
-#include "InventoryManager.h"
 
 // Include SoundController
 #include "..\SoundController\SoundController.h"
 
-#include "../KeyboardInputHandler/CKeyboardInputHandler.h"
+#include "../InputHandler/CInputHandler.h"
 
 #include <map>
 #include <array>
-#include "../KeyboardInputHandler/CKeyboardInputHandler.h"
+#include "../InputHandler/CInputHandler.h"
+
+#include "Inputs/MouseController.h"
+
+#include "InventoryManager.h"
 
 class CPlayer2D : public CEntity2D
 {
@@ -78,15 +80,13 @@ public:
 	// Constructor
 	CPlayer2D(void);
 
-	CPlayer2D(string cloneName);
-
 	// Destructor
 	virtual ~CPlayer2D(void);
 
 	// Init
 	bool Init(void);
 
-	bool Init(glm::i32vec2 spawnpoint);
+	bool Init(glm::i32vec2 spawnpoint, int iCloneIndex);
 
 	// Reset
 	bool Reset(void);
@@ -109,7 +109,8 @@ public:
 
 	bool IsClone();
 
-	void SetInputs(std::vector<std::array<bool, KEYBOARD_INPUTS::INPUT_TOTAL>> inputs);
+	void SetKeyInputs(std::vector<std::array<KeyInput, KEYBOARD_INPUTS::KEY_TOTAL>> inputs);
+	void SetMouseInputs(std::vector<std::array<MouseInput, MOUSE_INPUTS::MOUSE_TOTAL>> inputs);
 
 	void ResetToCheckPoint();
 
@@ -134,8 +135,9 @@ protected:
 		NUM_DIRECTIONS
 	};
 
-	CKeyboardInputHandler* cKeyboardInputHandler;
-	std::vector<std::array<bool, KEYBOARD_INPUTS::INPUT_TOTAL>> m_CloneKeyboardInputs;
+	CInputHandler* cInputHandler;
+	std::vector<std::array<KeyInput, KEYBOARD_INPUTS::KEY_TOTAL>> m_KeyboardInputs;
+	std::vector<std::array<MouseInput, MOUSE_INPUTS::MOUSE_TOTAL>> m_MouseInputs;
 
 	int iTempFrameCounter; // move to game manager/scene2D/PlayGameState later
 
@@ -160,11 +162,6 @@ protected:
 	// Current color
 	glm::vec4 currentColor;
 
-	// InventoryManager
-	CInventoryManager* cInventoryManager;
-	// InventoryItem
-	CInventoryItem* cInventoryItem;
-
 	// Count the number of jumps
 	int jumpCount;
 	float fMovementSpeed;
@@ -184,5 +181,7 @@ protected:
 	void UpdateHealthLives(void);
 
 	void InputUpdate(double dt);
+
+	CInventory* cInventory;
 };
 

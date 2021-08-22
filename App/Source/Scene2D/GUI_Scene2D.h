@@ -14,8 +14,10 @@
 // FPS Counter
 #include "TimeControl\FPSCounter.h"
 
-// Include CInventoryManager
+
 #include "InventoryManager.h"
+
+#include "..\TextureManager\TextureManager.h"
 
 //Include math
 #include "Math/MyMath.h"
@@ -89,12 +91,8 @@ protected:
 	int iSeconds;
 
 	CSettings* cSettings;
-
-	// The handler containing the instance of CInventoryManager
-	CInventoryManager* cInventoryManager;
-	// The handler containing the instance of CInventoryItem
-	CInventoryItem* cInventoryItem;
-
+	CTextureManager* cTextureManager;
+	CInventory* cPlayerInventory;
 
 	CKeyboardController* cKeyboardController;
 };

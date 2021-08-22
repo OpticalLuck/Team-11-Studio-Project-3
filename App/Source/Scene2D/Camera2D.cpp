@@ -46,6 +46,12 @@ void Camera2D::UpdateTarget(glm::vec2 target) {
 	targetPos = target;
 }
 
+void Camera2D::MoveTarget(float moveX, float moveY)
+{
+	targetPos.x += moveX;
+	targetPos.y += moveY;
+}
+
 void Camera2D::UpdateZoom(float fTarget)
 {
 	fTargetZoom = fTarget;
@@ -91,14 +97,14 @@ void Camera2D::ClampCamPos(glm::i32vec2 clampPos) {
 	//Clamping of X axis
 	if (pos.x < xOffset)
 		pos.x = xOffset;
-	else if (pos.x > clampPos.x - xOffset - 2)
-		pos.x = clampPos.x - xOffset - 2;
+	else if (pos.x > clampPos.x - xOffset)
+		pos.x = clampPos.x - xOffset;
 
 	//Clamping of Y axis
 	if (pos.y < yOffset)
 		pos.y = yOffset;
-	else if (pos.y > clampPos.y - yOffset - 2)
-		pos.y = clampPos.y - yOffset - 2;
+	else if (pos.y > clampPos.y - yOffset)
+		pos.y = clampPos.y - yOffset;
 
 
 }

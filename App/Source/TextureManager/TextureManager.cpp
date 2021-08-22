@@ -64,7 +64,17 @@ bool CTextureManager::Init(void)
 
     if (LoadTexture("Image/Collectibles/shuriken.png", ITEM_SHURIKEN) == false)
     {
-        std::cout << "Failed to load tree tile texture" << std::endl;
+        std::cout << "Failed to load shuriken tile texture" << std::endl;
+        return false;
+    }
+    if (LoadTexture("Image/items/potion.png", ITEM_POTION) == false)
+    {
+        std::cout << "Failed to load potion tile texture" << std::endl;
+        return false;
+    }
+    if (LoadTexture("Image/items/grappling_hook.png", ITEM_HOOK) == false)
+    {
+        std::cout << "Failed to load grappling hook tile texture" << std::endl;
         return false;
     }
 

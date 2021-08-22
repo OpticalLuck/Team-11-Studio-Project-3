@@ -4,8 +4,10 @@
  Date: May 2021
  */
 #include "GUI_Scene2D.h"
+#include "../TextureManager/TextureManager.h"
 
 #include <iostream>
+#include <sstream>
 using namespace std;
 
 /**
@@ -14,8 +16,6 @@ using namespace std;
 CGUI_Scene2D::CGUI_Scene2D(void)
 	: cSettings(NULL)
 	, m_fProgressBar(0.0f)
-	, cInventoryManager(NULL)
-	, cInventoryItem(NULL)
 {
 }
 
@@ -24,11 +24,11 @@ CGUI_Scene2D::CGUI_Scene2D(void)
  */
 CGUI_Scene2D::~CGUI_Scene2D(void)
 {
-	if (cInventoryManager)
-	{
-		cInventoryManager->Destroy();
-		cInventoryManager = NULL;
-	}
+	//if (cInventoryManager)
+	//{
+	//	cInventoryManager->Destroy();
+	//	cInventoryManager = NULL;
+	//}
 
 	// Show the mouse pointer
 	if (cSettings->bDisableMousePointer == true)
@@ -53,6 +53,8 @@ bool CGUI_Scene2D::Init(void)
 	// Store the CFPSCounter singleton instance here
 	cFPSCounter = CFPSCounter::GetInstance();
 
+
+
 	// Define the window flags
 	window_flags = 0;
 	window_flags |= ImGuiWindowFlags_NoBackground;
@@ -64,25 +66,40 @@ bool CGUI_Scene2D::Init(void)
 	//// Show the mouse pointer
 	//glfwSetInputMode(CSettings::GetInstance()->pWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
-	// Initialise the cInventoryManager
-	cInventoryManager = CInventoryManager::GetInstance();
+	cPlayerInventory = CInventoryManager::GetInstance()->Get("Player");
 
+	
+	//cInventoryMain = CInventoryMain::GetInstance();
+	cTextureManager = CTextureManager::GetInstance();
+	cTextureManager->Init();
+
+
+	
+
+	//// Add a Tree as one of the inventory items
+	//cInventoryItem = cInventoryManager->Add("Shuriken", "Image/Collectibles/shuriken.png", 999, 0);
+	//cInventoryItem->vec2Size = glm::vec2(25, 25);
+	//cInventoryItem = cInventoryManager->Add("Potion", "Image/items/potion.png", 2, 0);
+	//cInventoryItem->vec2Size = glm::vec2(25, 25);
+	//cInventoryItem = cInventoryManager->Add("Hook", "Image/items/grappling_hook.png", 2, 0);
+	//cInventoryItem->vec2Size = glm::vec2(25, 25);
 
 	// Add a Lives icon as one of the inventory items
-	cInventoryItem = cInventoryManager->Add("Lives", "Image/Collectibles/Scene2D_Lives.tga", 5, 3);
-	cInventoryItem->vec2Size = glm::vec2(25, 25);
+	// cInventoryItem = cInventoryManager->Add("Lives", "Image/Collectibles/Scene2D_Lives.tga", 5, 3);
+	// cInventoryItem->vec2Size = glm::vec2(25, 25);
 
 	// Add a Health icon as one of the inventory items
-	cInventoryItem = cInventoryManager->Add("Health", "Image/Scene2D_Health.tga", 100, 100);
-	cInventoryItem->vec2Size = glm::vec2(25, 25);
+	// cInventoryItem = cInventoryManager->Add("Health", "Image/Scene2D_Health.tga", 100, 100);
+	// cInventoryItem->vec2Size = glm::vec2(25, 25);
 
 	// Add a Tree as one of the inventory items
-	cInventoryItem = cInventoryManager->Add("Shuriken", "Image/Collectibles/shuriken.png", 999, 5);
-	cInventoryItem->vec2Size = glm::vec2(25, 25);
-	cInventoryItem = cInventoryManager->Add("Potion", "Image/items/potion.png", 2, 0);
-	cInventoryItem->vec2Size = glm::vec2(25, 25);
-	cInventoryItem = cInventoryManager->Add("Hook", "Image/items/grappling_hook.png", 2, 0);
-	cInventoryItem->vec2Size = glm::vec2(25, 25);
+	// cInventoryItem = cInventoryManager->Add("Shuriken", "Image/Collectibles/shuriken.png", 999, 5);
+	// cInventoryItem->vec2Size = glm::vec2(25, 25);
+	// cInventoryItem = cInventoryManager->Add("Potion", "Image/items/potion.png", 2, 0);
+	// cInventoryItem->vec2Size = glm::vec2(25, 25);
+	// cInventoryItem = cInventoryManager->Add("Hook", "Image/items/grappling_hook.png", 2, 0);
+	// cInventoryItem->vec2Size = glm::vec2(25, 25);
+
 
 	fInterval = 0;
 	iMinutes = 0;
@@ -112,7 +129,7 @@ void CGUI_Scene2D::Update(const double dElapsedTime)
 	}
 
 	fInterval++;
-	iSeconds = fInterval / 110;
+	iSeconds = int(fInterval / 110.f);
 
 	// Create an invisible window which covers the entire OpenGL window
 	ImGui::Begin("Invisible window", NULL, window_flags);
@@ -125,7 +142,7 @@ void CGUI_Scene2D::Update(const double dElapsedTime)
 	ImGui::TextColored(ImVec4(1, 1, 1, 1),"Timer = %d : %d",iMinutes,iSeconds);
 
 	// Render the inventory items
-	cInventoryItem = cInventoryManager->GetItem("Shuriken");
+	
 	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 1.0f, 1.0f));  // Set a background color
 	ImGuiWindowFlags inventoryWindowFlags = ImGuiWindowFlags_AlwaysAutoResize |
 		ImGuiWindowFlags_NoTitleBar |
@@ -133,74 +150,40 @@ void CGUI_Scene2D::Update(const double dElapsedTime)
 		ImGuiWindowFlags_NoResize |
 		ImGuiWindowFlags_NoCollapse |
 		ImGuiWindowFlags_NoScrollbar;
-	/*ImGui::Begin("Shuriken", NULL, inventoryWindowFlags);
-	ImGui::SetWindowPos(ImVec2(cSettings->iWindowWidth * 0.03f, cSettings->iWindowHeight * 0.92f));
-	ImGui::SetWindowSize(ImVec2(200.0f * relativeScale_x, 25.0f * relativeScale_y));
-	ImGui::Image((void*)(intptr_t)cInventoryItem->GetTextureID(),
-		ImVec2(cInventoryItem->vec2Size.x * relativeScale_x, cInventoryItem->vec2Size.y * relativeScale_y),
-		ImVec2(0, 1), ImVec2(1, 0));
-	ImGui::SameLine();
-	ImGui::SetWindowFontScale(1.5f * relativeScale_y);
-	ImGui::TextColored(ImVec4(1, 1, 0, 1), "Shuriken: %d", cInventoryItem->GetCount());
-	ImGui::End();*/
 	ImGui::PopStyleColor();
 
-
-	//potion 1
+	//looping to render the invetory cgui
+	for (int i = 0; i < cPlayerInventory->GetNumofUniqueItems(); i++)
 	{
-		////if selected
-		cInventoryItem = cInventoryManager->GetItem("Potion");
 		ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 1.0f, 1.0f));
-		//ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1.f, 0.f, 0.f, 1.f));
-		//ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1.f, 0.f, 0.f, 1.f));
-		if (cInventoryManager->GetItemIndex() == 1)
+		if (cPlayerInventory->iCurrentIndex == i)
 		{
 			ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1.f, 0.f, 0.f, 1.f));
 		}
-		ImGui::Begin("Testing : ", NULL, inventoryWindowFlags);
-		ImGui::SetWindowPos(ImVec2(cSettings->iWindowWidth * 0.01f, cSettings->iWindowHeight * 0.065f));
+
+		std::stringstream title;
+		title.str("");
+		title << "Inventory" << i;
+		ImGui::Begin(title.str().c_str(), NULL, inventoryWindowFlags);
+		ImGui::SetWindowPos(ImVec2(cSettings->iWindowWidth * 0.01f, cSettings->iWindowHeight * (0.065f * i + 0.05)));
 		ImGui::SetWindowSize(ImVec2(200.0f * relativeScale_x, 25.0f * relativeScale_y));
-		ImGui::Image((void*)(intptr_t)cInventoryItem->GetTextureID(),
-			ImVec2(cInventoryItem->vec2Size.x * relativeScale_x, cInventoryItem->vec2Size.y * relativeScale_y),
+		ImGui::Image((void*)(intptr_t)cTextureManager->MapOfTextureIDs.at(cPlayerInventory->GetItem(i).get_ID()),
+			ImVec2(25 * relativeScale_x, 25 * relativeScale_y),
 			ImVec2(0, 1), ImVec2(1, 0));
 		ImGui::SameLine();
 		ImGui::SetWindowFontScale(1.5f * relativeScale_y);
-		ImGui::TextColored(ImVec4(1, 1, 0, 1), "Potion: %d",cInventoryItem->GetCount());
+		std::stringstream ss;
+		ss.str("");
+		ss << cPlayerInventory->GetItem(i).GetName() << ": %d";
+		ImGui::TextColored(ImVec4(1, 1, 0, 1), ss.str().c_str(), cPlayerInventory->GetItem(i));
 		ImGui::End();
 		ImGui::PopStyleColor();
-		if (cInventoryManager->GetItemIndex() == 1)
+		if (cPlayerInventory->iCurrentIndex == i)
 		{
 			ImGui::PopStyleColor();
 		}
 
 	}
-
-	//hook
-	{
-		cInventoryItem = cInventoryManager->GetItem("Hook");
-		ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 1.0f, 1.0f));
-		//ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1.f, 0.f, 0.f, 1.f));
-		if (cInventoryManager->GetItemIndex() == 2)
-		{
-			ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1.f, 0.f, 0.f, 1.f));
-		}
-		ImGui::Begin("Testing2 : ", NULL, inventoryWindowFlags);
-		ImGui::SetWindowPos(ImVec2(cSettings->iWindowWidth * 0.01f, cSettings->iWindowHeight * 0.140f));
-		ImGui::SetWindowSize(ImVec2(200.0f * relativeScale_x, 60.0f * relativeScale_y));
-		ImGui::Image((void*)(intptr_t)cInventoryItem->GetTextureID(),
-			ImVec2(cInventoryItem->vec2Size.x * relativeScale_x, cInventoryItem->vec2Size.y * relativeScale_y),
-			ImVec2(0, 1), ImVec2(1, 0));
-		ImGui::SameLine();
-		ImGui::SetWindowFontScale(1.9f * relativeScale_y);
-		ImGui::TextColored(ImVec4(1, 1, 0, 1), "Hook: %d", cInventoryItem->GetCount());
-		ImGui::End();
-		ImGui::PopStyleColor();
-		if (cInventoryManager->GetItemIndex() == 2)
-		{
-			ImGui::PopStyleColor();
-		}
-	}
-
 	ImGui::End();
 }
 

@@ -1,55 +1,30 @@
-/**
-CInventoryManager: This class manages all the shaders used in this project.
-By: Toh Da Jun
-Date: Mar 2020
-*/
 #pragma once
-
-// Include SingletonTemplate
 #include "DesignPatterns\SingletonTemplate.h"
-
-#include <map>
+#include "Inventory.h"
 #include <string>
-#include "InventoryItem.h"
 
 class CInventoryManager : public CSingletonTemplate<CInventoryManager>
 {
 	friend CSingletonTemplate<CInventoryManager>;
 public:
-	void Exit(void);
+	CInventoryManager();
+	~CInventoryManager();
 
-	// Add a new item
-	CInventoryItem* Add(	const std::string& _name,
-							const char* imagePath, 
-							const int iItemMaxCount, 
-							const int iItemCount = 0);
-	// Remove an item
-	bool Remove(const std::string& _name);
-	// Check if an item exists in inventoryMap
-	bool Check(const std::string& _name);
+	void Add(std::string sName);
 
-	// Get an item by its name
-	CInventoryItem* GetItem(const std::string& _name);
-	// Get the number of items
-	int GetNumItems(void) const;
+	void Use(std::string sName);
 
-	int GetItemIndex(void);
-
-	void NavigateIndex(string direction);
-
-	// The map containing all the items
-	std::map<std::string, CInventoryItem*> inventoryMap;
-
-protected:
-	// Constructor
-	CInventoryManager(void);
-
-	// Destructor
-	virtual ~CInventoryManager(void);
-
-	int iItemIndex;
+	CInventory* Get(std::string sName);
 
 
+	//navigate the item
+	void NavigateIndex(std::string direction);
 
+	
+	void UseItem(void);
+
+private:
+	std::map<std::string, CInventory>m_Inventory; //store a list of inventory for clone/player
+	CInventory* cActiveInventory;
+	
 };
-

@@ -24,7 +24,7 @@ using namespace std;
  */
 CPlayGameState::CPlayGameState(void)
 	: cScene2D(NULL)
-	, cKeyboardInputHandler(NULL)
+	, cInputHandler(NULL)
 {
 
 }
@@ -52,8 +52,8 @@ bool CPlayGameState::Init(void)
 		return false;
 	}
 
-	cKeyboardInputHandler = CKeyboardInputHandler::GetInstance();
-	cKeyboardInputHandler->Init();
+	cInputHandler = CInputHandler::GetInstance();
+	cInputHandler->Init();
 
 	return true;
 }
@@ -63,7 +63,7 @@ bool CPlayGameState::Init(void)
  */
 bool CPlayGameState::Update(const double dElapsedTime)
 {
-	cKeyboardInputHandler->Update(dElapsedTime);
+	cInputHandler->Update(dElapsedTime);
 	if (CKeyboardController::GetInstance()->IsKeyReleased(GLFW_KEY_ESCAPE))
 	{
 		// Reset the CKeyboardController
@@ -131,5 +131,10 @@ void CPlayGameState::Destroy(void)
 	{
 		cScene2D->Destroy();
 		cScene2D = NULL;
+	}
+	if (cInputHandler)
+	{
+		cInputHandler->Destroy();
+		cInputHandler = NULL;
 	}
 }

@@ -8,7 +8,7 @@
  */
 
 #include "GameStateBase.h"
-#include "../KeyboardInputHandler/CKeyboardInputHandler.h"
+#include "../InputHandler/CInputHandler.h"
 #include "..\Scene2D\Scene2D.h"
 
 class CPlayGameState : public CGameStateBase
@@ -31,5 +31,5 @@ public:
 protected:
 	// The handler to the CScene2D instance
 	CScene2D* cScene2D;
-	CKeyboardInputHandler* cKeyboardInputHandler;
+	CInputHandler* cInputHandler;
 };

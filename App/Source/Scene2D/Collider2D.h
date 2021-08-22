@@ -88,9 +88,12 @@ public:
 	void SetPosition(glm::vec2 position);
 	
 	static glm::vec2 ConvertDirectionToVec2(Direction direction);
+	void SetAngle(float ang);
 protected:
 	std::string sLineShaderName;
 	unsigned int VAO, VBO;
+
+	float angle;
 
 	//Handlers
 	CSettings* cSettings;
