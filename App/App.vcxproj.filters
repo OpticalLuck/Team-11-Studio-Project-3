@@ -131,7 +131,7 @@
     <ClCompile Include="Source\Scene2D\Item.cpp">
       <Filter>Items</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Scene2D\InventoryM.cpp">
+    <ClCompile Include="Source\Scene2D\InventoryManager.cpp">
       <Filter>Items</Filter>
     </ClCompile>
     <ClCompile Include="Source\Scene2D\EntityManager.cpp">
@@ -188,8 +188,20 @@
     <ClCompile Include="Source\GameStateManagement\EditorSettingsState.cpp">
       <Filter>GameStateManagement</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Scene2D\Item.cpp">
+      <Filter>Items</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene2D\Inventory.cpp">
+      <Filter>Items</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene2D\Boss2D.cpp">
+      <Filter>Entity2D</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Factory\EnemyFactory.cpp">
       <Filter>Factory</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene2D\Enemy2D.cpp">
+      <Filter>Entity2D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -274,7 +286,7 @@
     <ClInclude Include="Source\Scene2D\Item.h">
       <Filter>Items</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Scene2D\InventoryM.h">
+    <ClInclude Include="Source\Scene2D\InventoryManager.h">
       <Filter>Items</Filter>
     </ClInclude>
     <ClInclude Include="Source\Scene2D\Inventory.h">
@@ -328,8 +340,20 @@
     <ClInclude Include="Source\GameStateManagement\LevelEditorState.h">
       <Filter>GameStateManagement</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Scene2D\Item.h">
+      <Filter>Items</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene2D\Inventory.h">
+      <Filter>Items</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene2D\Boss2D.h">
+      <Filter>Entity2D</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Factory\EnemyFactory.h">
       <Filter>Factory</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene2D\Enemy2D.h">
+      <Filter>Entity2D</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

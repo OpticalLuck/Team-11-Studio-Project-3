@@ -49,7 +49,7 @@ class Camera2D;
 
 #include "Inputs/MouseController.h"
 
-#include "InventoryM.h"
+#include "InventoryManager.h"
 
 class CPlayer2D : public CEntity2D
 {
@@ -78,7 +78,7 @@ public:
 	// Init
 	bool Init(void);
 
-	bool Init(glm::i32vec2 spawnpoint);
+	bool Init(glm::i32vec2 spawnpoint, int iCloneIndex);
 
 	// Reset
 	bool Reset(void);
@@ -125,8 +125,8 @@ protected:
 	};
 
 	CInputHandler* cInputHandler;
-	std::vector<std::array<KeyInput, KEYBOARD_INPUTS::KEY_TOTAL>> m_CloneKeyboardInputs;
-	std::vector<std::array<MouseInput, MOUSE_INPUTS::MOUSE_TOTAL>> m_CloneMouseInputs;
+	std::vector<std::array<KeyInput, KEYBOARD_INPUTS::KEY_TOTAL>> m_KeyboardInputs;
+	std::vector<std::array<MouseInput, MOUSE_INPUTS::MOUSE_TOTAL>> m_MouseInputs;
 
 	int iTempFrameCounter; // move to game manager/scene2D/PlayGameState later
 
@@ -171,7 +171,6 @@ protected:
 
 	void InputUpdate(double dt);
 
-	CInventoryM* cInventoryM;
-	CItem* cItem;
+	CInventory* cInventory;
 };
 

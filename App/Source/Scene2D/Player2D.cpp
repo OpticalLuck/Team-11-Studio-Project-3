@@ -6,6 +6,7 @@
 #include "Player2D.h"
 
 #include <iostream>
+#include <sstream>
 using namespace std;
 
 // Include Shader Manager
@@ -44,6 +45,7 @@ CPlayer2D::CPlayer2D(void)
 	, iTempFrameCounter(0)
 	//, bDamaged(false)
 	, bIsClone(false)
+	, cInventory(NULL)
 
 {
 	transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
@@ -175,14 +177,17 @@ bool CPlayer2D::Init(void)
 	collider2D->vec2Dimensions = glm::vec2(0.20000f,0.50000f);
 	collider2D->Init();
 
-	cInventoryM = CInventoryM::GetInstance();
+	//cInventoryManager = CInventoryManager::GetInstance();
+
+	CInventoryManager::GetInstance()->Add("Player");
+	cInventory = CInventoryManager::GetInstance()->Get("Player");
 
 
 	cPhysics2D.Init(&vTransform);
 	return true;
 }
 
-bool CPlayer2D::Init(glm::i32vec2 spawnpoint)
+bool CPlayer2D::Init(glm::i32vec2 spawnpoint, int iCloneIndex)
 {
 	// Store the keyboard controller singleton instance here
 	cKeyboardController = CKeyboardController::GetInstance();
@@ -248,6 +253,12 @@ bool CPlayer2D::Init(glm::i32vec2 spawnpoint)
 
 	cPhysics2D.Init(&vTransform);
 
+	std::stringstream ss;
+	ss << "Clone" << iCloneIndex;
+
+	CInventoryManager::GetInstance()->Add(ss.str().c_str());
+	cInventory = CInventoryManager::GetInstance()->Get(ss.str().c_str());
+
 	return true;
 }
 
@@ -290,6 +301,14 @@ bool CPlayer2D::Reset()
  */
 void CPlayer2D::Update(const double dElapsedTime)
 {
+	// Only update the inputs if the instance is not a clone
+	// Clone will have a fixed input that is created on initialisation
+	if (!bIsClone)
+	{
+		m_KeyboardInputs = cInputHandler->GetAllKeyboardInputs();
+		m_MouseInputs = cInputHandler->GetAllMouseInputs();
+	}
+
 	// Store the old position
 	vOldTransform = vTransform;
 
@@ -519,36 +538,33 @@ void CPlayer2D::InputUpdate(double dt)
 {
 	state = S_IDLE;
 	
-	std::vector<std::array<KeyInput, KEYBOARD_INPUTS::KEY_TOTAL>> keyboardInputs = (bIsClone) ? m_CloneKeyboardInputs : cInputHandler->GetAllKeyboardInputs();
-	std::vector<std::array<MouseInput, MOUSE_INPUTS::MOUSE_TOTAL>> mouseInputs = (bIsClone) ? m_CloneMouseInputs : cInputHandler->GetAllMouseInputs();
-
-	if ((unsigned)iTempFrameCounter >= keyboardInputs.size())
+	if ((unsigned)iTempFrameCounter >= m_KeyboardInputs.size())
 		return;
 
 	glm::vec2 velocity = cPhysics2D.GetVelocity();
-	if (keyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::W].bKeyDown)
+	if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::W].bKeyDown)
 	{
 		velocity.y = fMovementSpeed;
 		cPhysics2D.SetboolGrounded(false);
 	}
-	else if (keyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::S].bKeyDown)
+	else if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::S].bKeyDown)
 	{
 		velocity.y = -fMovementSpeed;
 	}
-	if (keyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::D].bKeyDown)
+	if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::D].bKeyDown)
 	{
 		velocity.x = fMovementSpeed;
 		state = S_MOVE;
 		facing = RIGHT;
 	}
-	else if (keyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::A].bKeyDown)
+	else if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::A].bKeyDown)
 	{
 		velocity.x = -fMovementSpeed;
 		state = S_MOVE;
 		facing = LEFT;
 	}
 
-	if (keyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::SPACE].bKeyDown)
+	if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::SPACE].bKeyDown)
 	{
 		velocity.y = fJumpSpeed;
 		cPhysics2D.SetboolGrounded(false);
@@ -556,6 +572,26 @@ void CPlayer2D::InputUpdate(double dt)
 
 	if (glm::length(velocity) > 0.f)
 		cPhysics2D.SetVelocity(velocity);
+
+	if (m_MouseInputs[iTempFrameCounter][MOUSE_INPUTS::LMB].bButtonPressed)
+	{
+		CInventoryManager::GetInstance()->Use(cInventory->sName);
+		CItem& shuriken = CInventoryManager::GetInstance()->Get(cInventory->sName)->GetItem(0);
+		if (shuriken.iCount > 0)
+		{
+			shuriken.Use();
+			if (cMap2D->InsertMapInfo((int)vTransform.y, (int)vTransform.x, 2))
+			{
+				glm::vec2 distance = Camera2D::GetInstance()->GetCursorPosInWorldSpace() - vTransform;
+
+				CObject2D* shuriken = cMap2D->GetCObject((int)vTransform.x, (int)vTransform.y);
+				shuriken->vTransform = vTransform;
+
+				glm::vec2 force = glm::clamp(distance * 200.f, glm::vec2(-2000.f, -2000.f), glm::vec2(2000.f, 2000.f));
+				static_cast<Projectiles*>(shuriken)->GetPhysics().SetForce(force);
+			}
+		}
+	}
 
 	if (cKeyboardController->IsKeyPressed(GLFW_KEY_V))
 	{
@@ -565,24 +601,7 @@ void CPlayer2D::InputUpdate(double dt)
 			state = S_ATTACK;
 		}
 	}
-
-	if (mouseInputs[iTempFrameCounter][MOUSE_INPUTS::LMB].bButtonPressed)
-	{
-		cInventoryM->GetItem("Shuriken");
-		if (cInventoryM->m_shuriken.size()>0)
-		{
-			if (cMap2D->InsertMapInfo((int)vTransform.y, (int)vTransform.x, 2))
-			{
-				glm::vec2 distance = Camera2D::GetInstance()->GetCursorPosInWorldSpace() - vTransform;
-
-				CObject2D* shuriken = cMap2D->GetCObject((int)vTransform.x, (int)vTransform.y);
-				shuriken->vTransform = vTransform;
-
-				static_cast<Projectiles*>(shuriken)->GetPhysics().SetForce(distance * 200.f);
-				cInventoryM->m_shuriken.erase(cInventoryM->m_shuriken.begin());
-			}
-		}
-	}
+	cInventory->Update(dt, iTempFrameCounter ,m_KeyboardInputs, m_MouseInputs);
 }
 
 /**
@@ -618,12 +637,12 @@ bool CPlayer2D::IsClone()
 
 void CPlayer2D::SetKeyInputs(std::vector<std::array<KeyInput, KEYBOARD_INPUTS::KEY_TOTAL>> inputs)
 {
-	m_CloneKeyboardInputs = inputs;
+	m_KeyboardInputs = inputs;
 }
 
 void CPlayer2D::SetMouseInputs(std::vector<std::array<MouseInput, MOUSE_INPUTS::MOUSE_TOTAL>> inputs)
 {
-	m_CloneMouseInputs = inputs;
+	m_MouseInputs = inputs;
 }
 
 void CPlayer2D::ResetToCheckPoint()

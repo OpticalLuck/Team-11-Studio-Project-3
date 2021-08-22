@@ -15,7 +15,9 @@
 #include "TimeControl\FPSCounter.h"
 
 
-#include "InventoryM.h"
+#include "InventoryManager.h"
+
+#include "..\TextureManager\TextureManager.h"
 
 //Include math
 #include "Math/MyMath.h"
@@ -89,11 +91,8 @@ protected:
 	int iSeconds;
 
 	CSettings* cSettings;
-
-	CInventoryM* cInventoryM;
-	CItem* cItem;
 	CTextureManager* cTextureManager;
-
+	CInventory* cPlayerInventory;
 
 	CKeyboardController* cKeyboardController;
 };

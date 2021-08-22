@@ -149,8 +149,8 @@ bool CScene2D::Init(void)
 	CInputHandler = CInputHandler::GetInstance();
 
 	//cInventoryManager = CInventoryManager::GetInstance();
-	cInventoryM = CInventoryM::GetInstance();
-	cInventoryM->Init();
+	cInventoryM = CInventoryManager::GetInstance();
+		
 	return true;
 }
 
@@ -232,31 +232,6 @@ bool CScene2D::Update(const double dElapsedTime)
 		cSoundController->PlaySoundByID(2);
 		return false;
 	}
-
-	if (cKeyboardController->IsKeyPressed(GLFW_KEY_UP) && fCooldown <= 0)
-	{
-		cInventoryM->NavigateIndex("UP");
-		std::cout << "index is : " << cInventoryM->GetItemIndex() << std::endl;
-		fCooldown = .5f;
-	}
-	if (cKeyboardController->IsKeyPressed(GLFW_KEY_DOWN) && fCooldown <= 0)
-	{
-		cInventoryM->NavigateIndex("DOWN");
-		std::cout << "index is : " << cInventoryM->GetItemIndex() << std::endl;
-		fCooldown = .5f;
-	}
-
-	if (cKeyboardController->IsKeyPressed(GLFW_KEY_ENTER) && fCooldown <= 0)
-	{
-		cInventoryM->UseItem();
-		fCooldown = .5f;
-	}
-
-	if (cKeyboardController->IsKeyPressed(GLFW_KEY_G))
-	{
-		//cInventoryM->AddItem("Shuriken", ITEM_SHURIKEN);
-	}
-
 	return true;
 }
 

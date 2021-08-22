@@ -1,8 +1,8 @@
 #pragma once
 #include <vector>
-#include "iostream"
+#include <iostream>
 #include <string>
-#include "..\TextureManager\TextureManager.h"
+
 
 class CItem
 {
@@ -12,9 +12,14 @@ public:
 	CItem();
 	~CItem();
 	int get_ID();
-	int set_ID(int _ID);
+	int set_ID(int _ID);;
+	std::string GetName();
 	void set_Name(std::string _name);
+	void Use(void);
 
+	int iCount; 
+	int iMinCount;
+	int iMaxCount;
 private:
 	unsigned int iID;
 	std::string sName;
