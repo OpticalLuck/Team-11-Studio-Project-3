@@ -39,6 +39,7 @@ glm::vec2 CPhysics2D::CalculateFriction(float coefficient)
  */
 CPhysics2D::CPhysics2D(void)
 	: position(NULL)
+	, v2Gravity(glm::vec2(0.f,-20.f))
 	, velocity(glm::vec2(0.f))
 	, force(glm::vec2(0.f))
 	, mass(1)
@@ -80,20 +81,30 @@ void CPhysics2D::Update(double dElapsedTime)
 	velocity += a * (float)dElapsedTime;
 
 
-	//if (velocity.x < 0.1f && velocity.x > -0.1f)
-	//	velocity.x = 0;
-
 	velocity.x = Math::Clamp(velocity.x, -MAX_SPEED, MAX_SPEED);
 	velocity.y = Math::Clamp(velocity.y, -MAX_SPEED, MAX_SPEED);
+
+	if (bGrounded)
+		velocity.y = 0;
 
 	*position += velocity * (float)dElapsedTime;
 
 	force = glm::vec2(0.f);
 }
 
+void CPhysics2D::DoBounce(glm::vec2 normal, float bounciness)
+{
+	velocity -= (1 + bounciness) * glm::dot(velocity, normal) * normal;
+}
+
 void CPhysics2D::SetForce(const glm::vec2 force)
 {
 	this->force = force;
+}
+
+glm::vec2 CPhysics2D::GetForce() const
+{
+	return force;
 }
 
 void CPhysics2D::SetMass(const float mass)
@@ -119,4 +130,9 @@ glm::vec2 CPhysics2D::GetVelocity() const
 bool CPhysics2D::GetboolGrounded() const
 {
 	return bGrounded;
+}
+
+void CPhysics2D::SetGravity(float gravity)
+{
+	v2Gravity.y = gravity;
 }

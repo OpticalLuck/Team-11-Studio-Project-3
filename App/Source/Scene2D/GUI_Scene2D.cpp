@@ -53,16 +53,6 @@ bool CGUI_Scene2D::Init(void)
 	// Store the CFPSCounter singleton instance here
 	cFPSCounter = CFPSCounter::GetInstance();
 
-
-
-	// Define the window flags
-	window_flags = 0;
-	window_flags |= ImGuiWindowFlags_NoBackground;
-	window_flags |= ImGuiWindowFlags_NoTitleBar;
-	window_flags |= ImGuiWindowFlags_NoMove;
-	window_flags |= ImGuiWindowFlags_NoResize;
-	window_flags |= ImGuiWindowFlags_NoCollapse;
-
 	//// Show the mouse pointer
 	//glfwSetInputMode(CSettings::GetInstance()->pWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
@@ -72,33 +62,6 @@ bool CGUI_Scene2D::Init(void)
 	//cInventoryMain = CInventoryMain::GetInstance();
 	cTextureManager = CTextureManager::GetInstance();
 	cTextureManager->Init();
-
-
-	
-
-	//// Add a Tree as one of the inventory items
-	//cInventoryItem = cInventoryManager->Add("Shuriken", "Image/Collectibles/shuriken.png", 999, 0);
-	//cInventoryItem->vec2Size = glm::vec2(25, 25);
-	//cInventoryItem = cInventoryManager->Add("Potion", "Image/items/potion.png", 2, 0);
-	//cInventoryItem->vec2Size = glm::vec2(25, 25);
-	//cInventoryItem = cInventoryManager->Add("Hook", "Image/items/grappling_hook.png", 2, 0);
-	//cInventoryItem->vec2Size = glm::vec2(25, 25);
-
-	// Add a Lives icon as one of the inventory items
-	// cInventoryItem = cInventoryManager->Add("Lives", "Image/Collectibles/Scene2D_Lives.tga", 5, 3);
-	// cInventoryItem->vec2Size = glm::vec2(25, 25);
-
-	// Add a Health icon as one of the inventory items
-	// cInventoryItem = cInventoryManager->Add("Health", "Image/Scene2D_Health.tga", 100, 100);
-	// cInventoryItem->vec2Size = glm::vec2(25, 25);
-
-	// Add a Tree as one of the inventory items
-	// cInventoryItem = cInventoryManager->Add("Shuriken", "Image/Collectibles/shuriken.png", 999, 5);
-	// cInventoryItem->vec2Size = glm::vec2(25, 25);
-	// cInventoryItem = cInventoryManager->Add("Potion", "Image/items/potion.png", 2, 0);
-	// cInventoryItem->vec2Size = glm::vec2(25, 25);
-	// cInventoryItem = cInventoryManager->Add("Hook", "Image/items/grappling_hook.png", 2, 0);
-	// cInventoryItem->vec2Size = glm::vec2(25, 25);
 
 
 	fInterval = 0;

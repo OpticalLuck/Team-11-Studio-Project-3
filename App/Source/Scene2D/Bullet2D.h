@@ -6,25 +6,19 @@
 
 // Include AnimatedSprites
 #include "Primitives/SpriteAnimation.h"
-
-class Projectiles : public CObject2D
+class Bullet2D : public CObject2D
 {
 public:
-	enum PROJECTILE_TYPE
-	{
-		PROJ_SHURIKEN,
-		PROJ_TOTAL
-	};
-	PROJECTILE_TYPE projectileType;
 
-	Projectiles(int iTextureID = OBJECT_TYPE::ITEM_SHURIKEN);
-	virtual ~Projectiles();
+	Bullet2D(int iTextureID = OBJECT_TYPE::ITEM_KUNAI);
+	virtual ~Bullet2D();
 
 	bool Init() override;
 	void Update(double dElapsedTime) override;
 
 	CPhysics2D& GetPhysics();
-protected:
+
+private:
 	CSpriteAnimation* animatedSprites;
 
 	// Current color

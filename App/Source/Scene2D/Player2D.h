@@ -69,6 +69,14 @@ public:
 	};
 	STATE m_playerState;
 
+	enum ACTION
+	{
+		A_JUMP = 0,
+		A_ATTACK,
+		A_TOTAL,
+	};
+
+
 	// Constructor
 	CPlayer2D(void);
 
@@ -115,6 +123,9 @@ public:
 protected:
 	bool bIsClone;
 	
+	//Timer for actions that need cooldown
+	std::pair<bool, double> timerArr[A_TOTAL];
+
 	enum DIRECTION
 	{
 		LEFT = 0,

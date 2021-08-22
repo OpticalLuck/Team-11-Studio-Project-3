@@ -60,7 +60,7 @@ bool EnemyBullet2D::Init(float angle, glm::vec2 spawnPoint) {
 
 	collider2D->vec2Dimensions = glm::vec2(mScale / 2, mScale / 2);
 	collider2D->colliderType = Collider2D::ColliderType::COLLIDER_CIRCLE;
-	collider2D->Init();
+	collider2D->Init(vTransform, glm::vec2(mScale/2), Collider2D::ColliderType::COLLIDER_CIRCLE);
 	//Update collider to position
 	collider2D->SetPosition(glm::vec3(vTransform, 0.f));
 

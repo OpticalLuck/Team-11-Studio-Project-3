@@ -17,13 +17,13 @@ Collision Collider2D::CheckAABBCollision(Collider2D* obj, Collider2D* target)
 	bool collisionY = abs(obj->position.y - target->position.y) <= obj->vec2Dimensions.y + target->vec2Dimensions.y;
 
 
-	float diffX = obj->position.x - target->position.x;
-	float diffY = obj->position.y - target->position.y;
+	float diffX = (obj->position.x + obj->vec2Dimensions.x) - (target->position.x + target->vec2Dimensions.x);
+	float diffY = (obj->position.y + obj->vec2Dimensions.y) - (target->position.y + target->vec2Dimensions.y);
 
 	Direction dir;
+	
 	if (abs(diffX) > abs(diffY))
 	{
-
 		if (diffX > 0)
 			dir = Direction::RIGHT;
 		else
@@ -56,6 +56,28 @@ Collision Collider2D::CheckAABBCircleCollision(Collider2D* aabb, Collider2D* cir
 		return std::make_tuple(false, Direction::UP, glm::vec2(0.0f, 0.0f));
 }
 
+Direction Collider2D::VectorDirection(glm::vec2 target)
+{
+	glm::vec2 compass[] = {
+			glm::vec2(0.0f, 1.0f),	// up
+			glm::vec2(1.0f, 0.0f),	// right
+			glm::vec2(0.0f, -1.0f),	// down
+			glm::vec2(-1.0f, 0.0f)	// left
+	};
+	float max = 0.0f;
+	unsigned int best_match = -1;
+	for (unsigned int i = 0; i < 4; i++)
+	{
+		float dot_product = glm::dot(glm::normalize(target), compass[i]);
+		if (dot_product > max)
+		{
+			max = dot_product;
+			best_match = i;
+		}
+	}
+	return (Direction)best_match;
+}
+
 Collider2D::Collider2D()
 	: vec2Dimensions(glm::vec2(0.5f, 0.5f))
 	, position(glm::vec3(1.f))
@@ -79,8 +101,12 @@ Collider2D::~Collider2D()
 	glDeleteBuffers(1, &VBO);
 }
 
-bool Collider2D::Init()
+bool Collider2D::Init(glm::vec2 position, glm::vec2 vec2Dimensions, ColliderType colliderType)
 {
+	this->colliderType = colliderType;
+	this->position = position;
+	this->vec2Dimensions = vec2Dimensions;
+
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
 
@@ -353,4 +379,17 @@ glm::vec2 Collider2D::GetPosition() const
 void Collider2D::SetPosition(glm::vec2 position)
 {
 	this->position = position;
+}
+
+glm::vec2 Collider2D::ConvertDirectionToVec2(Direction direction)
+{
+	glm::vec2 compass[] = {
+			glm::vec2(0.0f, 1.0f),	// up
+			glm::vec2(1.0f, 0.0f),	// right
+			glm::vec2(0.0f, -1.0f),	// down
+			glm::vec2(-1.0f, 0.0f)	// left
+	};
+
+
+	return compass[static_cast<int>(direction)];
 }

@@ -1,10 +1,9 @@
 #include "Boulder2D.h"
 #include "Map2D.h"
 
-Boulder2D::Boulder2D()
+Boulder2D::Boulder2D(int iTextureID)
 {
-	interactableType = Interactables::BOULDER;
-	textureID = 150;
+	this->iTextureID = iTextureID;
 }
 
 Boulder2D::~Boulder2D()
@@ -13,18 +12,10 @@ Boulder2D::~Boulder2D()
 
 bool Boulder2D::Init()
 {
-	//Collider2D initialisation
-	collider2D->Init();
-	collider2D->colliderType = Collider2D::ColliderType::COLLIDER_CIRCLE;
-	collider2D->position = vTransform + glm::vec2(0.5f, 0.5f);
-
-	if (textureID >= 100 && textureID < 300)
-		collider2D->SetbEnabled(true);
-	else
-		collider2D->SetbEnabled(false);
-
 	cPhysics2D.Init(&vTransform);
 	cPhysics2D.SetMass(10);
+
+	collider2D->Init(vTransform, glm::vec2(0.5f), Collider2D::ColliderType::COLLIDER_CIRCLE);
 	return true;
 }
 
@@ -61,6 +52,7 @@ void Boulder2D::Update(const double dElapsedTime)
 								collider2D->ResolveAABB(obj->GetCollider(), Direction::UP);
 							else if (i == 1)
 								collider2D->ResolveAABB(obj->GetCollider(), Direction::RIGHT);
+
 						}
 						
 					}
