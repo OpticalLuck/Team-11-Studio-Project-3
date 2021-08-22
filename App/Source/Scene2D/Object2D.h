@@ -45,7 +45,7 @@ class CObject2D : public CEntity2D
 {
 	public:
 		CObject2D(void);
-		CObject2D(int,int objectID = 0);
+		CObject2D(int objectID = 0);
 		~CObject2D(void); //Do nothing for now
 		
 		bool Init() override;
@@ -58,7 +58,6 @@ class CObject2D : public CEntity2D
 		void SetCurrentIndex(glm::i32vec2 currentIndex);
 	protected:
 		int textureID;
-		int objectID;
 
 		float width;
 		float height;

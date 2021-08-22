@@ -3,7 +3,6 @@
 
 CObject2D::CObject2D(void) {
 	textureID = 0;
-	objectID = 0;
 
 	vTransform = glm::vec2();
 	currentIndex = glm::i32vec2();
@@ -11,9 +10,8 @@ CObject2D::CObject2D(void) {
 	width = height = 1.f; //Default value is 1 x 1
 }
 
-CObject2D::CObject2D(int value, int objectID) {
-	this->textureID = value;
-	this->objectID = objectID;
+CObject2D::CObject2D(int iTextureID) {
+	this->textureID = iTextureID;
 
 	vTransform = glm::i32vec2();
 	currentIndex = glm::i32vec2();

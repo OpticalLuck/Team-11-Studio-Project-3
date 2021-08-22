@@ -6,7 +6,7 @@ Bullet2D::Bullet2D()
 	: animatedSprites(NULL)
 	, currentColor(glm::vec4())
 {
-	value = OBJECT_TYPE::ITEM_KUNAI; //Shuriken also by default
+	iTextureID = OBJECT_TYPE::ITEM_KUNAI; //Shuriken also by default
 }
 
 Bullet2D::~Bullet2D()
