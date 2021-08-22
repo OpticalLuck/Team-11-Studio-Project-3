@@ -166,6 +166,14 @@ protected:
 	// Load a texture
 	bool LoadTexture(const char* filename, GLuint& iTextureID);
 
+	//Health and stuff
+	int pHealth;
+	int pMaxHealth;
+	int pShield; //Current time of how long player will be protected for (in terms of frames)
+	int pMaxShield; //Maximum time of how long player will be protected for (in terms of frames)
+
+	int pBlinkInterval; //Interval of the flashing color
+
 	// Update the health and lives
 	void UpdateHealthLives(void);
 

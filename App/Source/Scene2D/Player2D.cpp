@@ -59,6 +59,11 @@ CPlayer2D::CPlayer2D(void)
 	camera = nullptr;
 	checkpoint  = glm::i32vec2();
 	currentColor = glm::vec4();
+
+	pHealth = pShield = 0;
+	pMaxShield = 0;
+	pMaxHealth = 5;
+	pBlinkInterval = 0;
 }
 
 /**
@@ -158,6 +163,8 @@ bool CPlayer2D::Init(void)
 	//cInventoryItem = cInventoryManager->Add("Health", 2, 100, 100);
 	//cInventoryItem->vec2Size = glm::vec2(25, 25);
 
+	pHealth = pMaxHealth;
+	pShield = 0;
 
 	jumpCount = 0;
 
@@ -239,6 +246,11 @@ bool CPlayer2D::Init(glm::i32vec2 spawnpoint, int iCloneIndex)
 	jumpCount = 0;
 
 	camera = Camera2D::GetInstance();
+
+	pHealth = pMaxHealth;
+	pShield = 0;
+
+	jumpCount = 0;
 
 	fMovementSpeed = 5.f;
 	fJumpSpeed = 5.f;
@@ -609,20 +621,7 @@ void CPlayer2D::InputUpdate(double dt)
  */
 void CPlayer2D::UpdateHealthLives(void)
 {
-	// Update health and lives
-	// Check if a life is lost
-	//if (cInventoryItem->GetCount() <= 0)
-	//{
-	//	state = S_DEATH;
-	//	cSoundController->PlaySoundByID(9);
-
-	//	// Check if there is no lives left...
-	//	if (cInventoryItem->GetCount() < 0)
-	//	{
-	//		// Player loses the game
-	//		CGameManager::GetInstance()->bPlayerLost = true;
-	//	}
-	//}
+	
 }
 
 void CPlayer2D::SetClone(bool bIsClone)
