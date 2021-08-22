@@ -44,7 +44,7 @@ public:
 	bool bUse4XAntiliasing = true;
 
 	// Windows Information
-	enum SCREENSIZE
+	enum class SCREENSIZE
 	{
 		SSIZE_800x600 = 0,
 		SSIZE_1024x768,
