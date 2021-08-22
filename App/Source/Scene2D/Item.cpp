@@ -48,15 +48,15 @@ void CItem::Use(void)
 		iCount--;
 		switch (iID)
 		{
-		case TEXTURE_TYPE::ITEM_POTION:
+		case OBJECT_TYPE::ITEM_POTION:
 			cout << "You are using potion\n";
 			cout << "iCount is " << iCount << '\n';
 			break;
-		case TEXTURE_TYPE::ITEM_HOOK:
+		case OBJECT_TYPE::ITEM_HOOK:
 			cout << "You are using Item hook\n";
 			cout << "iCount is " << iCount << '\n';
 			break;
-		case TEXTURE_TYPE::ITEM_SHURIKEN:
+		case OBJECT_TYPE::ITEM_SHURIKEN:
 			cout << "You are using Item shuriken\n";
 			cout << "iCount is " << iCount << '\n';
 			break;

@@ -483,6 +483,8 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 				currObj->vTransform = currIndex;
 
 				currObj->Init();
+				if (currObjID == (int)CLASS_ID::CID_BACKGROUND)
+					currObj->GetCollider()->SetbEnabled(false);
 
 				arrObject[uiCurLevel].push_back(currObj);
 				//Add in new CObj pointer if available

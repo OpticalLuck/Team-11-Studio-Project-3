@@ -14,7 +14,7 @@
 // Include CEntity2D
 #include "Primitives/Entity2D.h"
 
-enum TEXTURE_TYPE
+enum OBJECT_TYPE
 {
 	ITEM_SHURIKEN = 2,
 	ITEM_POTION = 3,
