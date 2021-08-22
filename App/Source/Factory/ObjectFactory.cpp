@@ -25,6 +25,9 @@ CObject2D* ObjectFactory::CreateObject(int iTextureID, CLASS_ID eClassID)
     case CLASS_ID::CID_BOULDER:
         newObj = new Boulder2D(iTextureID);
         break;
+    case CLASS_ID::CID_BACKGROUND:
+        newObj = new CObject2D(iTextureID);
+        break;
     default:
         newObj = new CObject2D(iTextureID);
         break;

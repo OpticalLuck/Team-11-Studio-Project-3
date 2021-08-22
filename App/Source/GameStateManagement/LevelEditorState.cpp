@@ -72,7 +72,7 @@ bool CLevelEditorState::Init(void)
 	eProperties.Reset();
 
 	cSettings = CSettings::GetInstance();
-	cSettings->screenSize = CSettings::SSIZE_1024x768;
+	cSettings->screenSize = CSettings::SCREENSIZE::SSIZE_1024x768;
 	// cSettings->m_ImGuiWindow->Update(cSettings->ImGuiProperties);
 	CSettings::GetInstance()->UpdateWindowSize();
 
@@ -114,8 +114,10 @@ bool CLevelEditorState::Update(const double dElapsedTime)
 
 	vMousePos = Camera2D::GetInstance()->GetCursorPosInWorldSpace(0);
 
-	vMousePos.x = Math::Clamp((float)vMousePos.x, 0.f, (float)cLevelEditor->iWorldWidth - 1);
-	vMousePos.y = Math::Clamp((float)vMousePos.y, 0.f, (float)cLevelEditor->iWorldHeight - 1);
+	float mouseX = (float)Math::Clamp((float)vMousePos.x, 0.f, (float)cLevelEditor->iWorldWidth - 1.f);
+	float mouseY = (float)Math::Clamp((float)vMousePos.y, 0.f, (float)cLevelEditor->iWorldHeight - 1.f);
+
+	vMousePos = glm::i32vec2(mouseX, mouseY);
 
 	if (cKeyboardController->IsKeyReleased(GLFW_KEY_ESCAPE))
 	{
@@ -771,7 +773,7 @@ bool CLevelEditorState::ImGuiRender()
 			{
 				ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.1, 0.5));
 				ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.f);
-				for (int i = 0; i < eProperties.prevActions.size(); ++i)
+				for (unsigned i = 0; i < eProperties.prevActions.size(); ++i)
 				{
 					if (i < eProperties.prevActions.size() - eProperties.iUndoCount)
 						ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.26f, 0.59f, 0.98f, 0.40f));
