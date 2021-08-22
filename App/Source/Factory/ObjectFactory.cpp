@@ -12,19 +12,19 @@ CObject2D* ObjectFactory::CreateObject(int id)
 	if (id >= 150 && id < 160)
 	{
 		CObject2D* newobj = new Boulder2D();
-		newobj->SetValue(id);
+		newobj->SetTextureID(id);
 		return newobj;
 	}
 	else if (id >= 2 && id < 10)
 	{
 		CObject2D* newobj = new Projectiles();
-		newobj->SetValue(id);
+		newobj->SetTextureID(id);
 		return newobj;
 	}
 	else
 	{
 		CObject2D* newobj = new CObject2D();
-		newobj->SetValue(id);
+		newobj->SetTextureID(id);
 		return newobj;
 	}
 
