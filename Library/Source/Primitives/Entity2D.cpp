@@ -154,6 +154,7 @@ void CEntity2D::Render(void)
 	transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
 	transform = glm::translate(transform, glm::vec3(glm::vec2(vTransform.x, vTransform.y),
 		0.0f));
+	transform = glm::rotate(transform, glm::radians(vRotate), glm::vec3(0.f, 0.f, 1.f));
 	// Update the shaders with the latest transform
 	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
 

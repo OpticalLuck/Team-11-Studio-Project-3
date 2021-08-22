@@ -31,6 +31,7 @@ using namespace std;
 
 //Items
 #include "Projectiles.h"
+#include "Bullet2D.h"
 
 
 /**
@@ -333,9 +334,7 @@ void CPlayer2D::Update(const double dElapsedTime)
 
 	// Get keyboard & Mouse updates
 	InputUpdate(dElapsedTime);
-	
 	cPhysics2D.Update(dElapsedTime);
-
 	// Update Collider2D Position
 	collider2D->position = vTransform;
 
@@ -592,10 +591,14 @@ void CPlayer2D::InputUpdate(double dt)
 
 	if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::SPACE].bKeyDown)
 	{
-		if (timerArr[A_JUMP].second < 0.1)
+		if (timerArr[A_JUMP].second < 0.2)
 		{
 			timerArr[A_JUMP].first = true;
-			force.y = 500;
+			if(cPhysics2D.GetVelocity().y <= 0)
+				force.y = 80;
+			else
+				velocity.y = 8.4;
+
 			cPhysics2D.SetboolGrounded(false);
 		}
 		else
@@ -616,7 +619,6 @@ void CPlayer2D::InputUpdate(double dt)
 			timerArr[A_JUMP].second = 0;
 		}
 	}
-
 	/*if (cKeyboardController->IsKeyPressed(GLFW_KEY_V))
 	{
 		cInventoryItem = cInventoryManager->GetItem("Shuriken");
@@ -652,8 +654,8 @@ void CPlayer2D::InputUpdate(double dt)
 		if (shuriken.iCount > 0)
 		{
 			shuriken.Use();
-			if (cMap2D->InsertMapInfo((int)vTransform.y, (int)vTransform.x, 2))
-			{
+			if (cMap2D->InsertMapInfo((int)vTransform.y, (int)vTransform.x, OBJECT_TYPE::ITEM_SHURIKEN))
+			{ 
 				glm::vec2 distance = Camera2D::GetInstance()->GetCursorPosInWorldSpace() - vTransform;
 
 				CObject2D* shuriken = cMap2D->GetCObject((int)vTransform.x, (int)vTransform.y);
@@ -665,12 +667,26 @@ void CPlayer2D::InputUpdate(double dt)
 		}
 	}
 
-	if (cKeyboardController->IsKeyPressed(GLFW_KEY_V))
+	if (m_MouseInputs[iTempFrameCounter][MOUSE_INPUTS::RMB].bButtonPressed)
 	{
-		if (state != S_ATTACK)
+		CInventoryManager::GetInstance()->Use(cInventory->sName);
+		CItem& shuriken = CInventoryManager::GetInstance()->Get(cInventory->sName)->GetItem(0);
+		if (shuriken.iCount > 0)
 		{
-			cSoundController->PlaySoundByID(6);
-			state = S_ATTACK;
+			shuriken.Use();
+			if (cMap2D->InsertMapInfo((int)vTransform.y, (int)vTransform.x, OBJECT_TYPE::ITEM_KUNAI))
+			{
+				CObject2D* shuriken = cMap2D->GetCObject((int)vTransform.x, (int)vTransform.y);
+				shuriken->vTransform = vTransform;
+
+				glm::vec2 direction(0.f, 0.f);
+				if (facing == LEFT)
+					direction = glm::vec2(-1.f, 0);
+				else
+					direction = glm::vec2(1.f, 0);
+				glm::vec2 force = glm::clamp(direction * 200.f, glm::vec2(-2000.f, -2000.f), glm::vec2(2000.f, 2000.f));
+				static_cast<Bullet2D*>(shuriken)->GetPhysics().SetForce(force);
+			}
 		}
 	}
 	cInventory->Update(dt, iTempFrameCounter ,m_KeyboardInputs, m_MouseInputs);

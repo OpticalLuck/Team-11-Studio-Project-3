@@ -77,6 +77,11 @@ bool CTextureManager::Init(void)
         std::cout << "Failed to load grappling hook tile texture" << std::endl;
         return false;
     }
+    if (LoadTexture("Image/Collectibles/kunai.png", ITEM_KUNAI) == false)
+    {
+        std::cout << "Failed to load kunai tile texture" << std::endl;
+        return false;
+    }
 
     if (LoadTexture("Image/Collectibles/Scene2D_Lives.tga", ITEM_LIVES) == false)
     {

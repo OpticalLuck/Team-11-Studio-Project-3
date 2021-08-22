@@ -84,6 +84,9 @@ void CPhysics2D::Update(double dElapsedTime)
 	velocity.x = Math::Clamp(velocity.x, -MAX_SPEED, MAX_SPEED);
 	velocity.y = Math::Clamp(velocity.y, -MAX_SPEED, MAX_SPEED);
 
+	if (bGrounded)
+		velocity.y = 0;
+
 	*position += velocity * (float)dElapsedTime;
 
 	force = glm::vec2(0.f);
@@ -97,6 +100,11 @@ void CPhysics2D::DoBounce(glm::vec2 normal, float bounciness)
 void CPhysics2D::SetForce(const glm::vec2 force)
 {
 	this->force = force;
+}
+
+glm::vec2 CPhysics2D::GetForce() const
+{
+	return force;
 }
 
 void CPhysics2D::SetMass(const float mass)

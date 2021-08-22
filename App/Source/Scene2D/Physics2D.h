@@ -40,6 +40,7 @@ public:
 	void DoBounce(glm::vec2 normal, float bounciness = 1.f);
 
 	void SetForce(const glm::vec2 force);
+	glm::vec2 GetForce() const;
 	void SetMass(const float mass);
 	void SetVelocity(const glm::vec2 velocity);
 	void SetboolGrounded(bool bGrounded);

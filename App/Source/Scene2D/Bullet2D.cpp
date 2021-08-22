@@ -1,20 +1,19 @@
-#include "Projectiles.h"
+#include "Bullet2D.h"
 
 #include "Map2D.h"
 #include <vector>
-Projectiles::Projectiles()
+Bullet2D::Bullet2D()
 	: animatedSprites(NULL)
 	, currentColor(glm::vec4())
 {
-	projectileType = PROJ_SHURIKEN;
-	value = 2; //Shuriken by default
+	value = OBJECT_TYPE::ITEM_KUNAI; //Shuriken also by default
 }
 
-Projectiles::~Projectiles()
+Bullet2D::~Bullet2D()
 {
 }
 
-bool Projectiles::Init()
+bool Bullet2D::Init()
 {
 	cPhysics2D.Init(&vTransform);
 	cPhysics2D.MAX_SPEED = 50.f;
@@ -28,15 +27,17 @@ bool Projectiles::Init()
 	return false;
 }
 
-void Projectiles::Update(double dElapsedTime)
+void Bullet2D::Update(double dElapsedTime)
 {
 	cPhysics2D.Update(dElapsedTime);
-	// Update Collider2D Position
 	collider2D->SetPosition(vTransform);
 
 	CMap2D* cMap2D = CMap2D::GetInstance();
 
-	bool physicsChange = false;
+	if (cPhysics2D.GetVelocity().x < 0)
+		vRotate = 180;
+	else
+		vRotate = 0;
 
 	int range = 2;
 	cPhysics2D.SetboolGrounded(false);
@@ -60,9 +61,9 @@ void Projectiles::Update(double dElapsedTime)
 	}
 	//Sorts vector based on shortest dist from player to object
 	sort(aabbVector.begin(), aabbVector.end(), [](const std::pair<CObject2D*, float>& a, const std::pair<CObject2D*, float>& b)
-	{
-		return a.second < b.second;
-	});
+		{
+			return a.second < b.second;
+		});
 	aabbVector.erase(std::unique(aabbVector.begin(), aabbVector.end()), aabbVector.end());
 	bool destroyed = false;
 	for (auto aabbTuple : aabbVector)
@@ -71,30 +72,11 @@ void Projectiles::Update(double dElapsedTime)
 		Collision data = (collider2D->CollideWith(obj->GetCollider()));
 		if (std::get<0>(data))
 		{
-			if (obj->GetCollider()->colliderType == Collider2D::COLLIDER_QUAD)
-			{
-				collider2D->ResolveAABB(obj->GetCollider(), Direction::UP);
-				collider2D->ResolveAABB(obj->GetCollider(), Direction::RIGHT);
-
-				if (std::get<1>(data) == Direction::UP)
-					cPhysics2D.SetboolGrounded(true);
-			}
-			else if (obj->GetCollider()->colliderType == Collider2D::COLLIDER_CIRCLE)
-			{
-				if (glm::dot(cPhysics2D.GetVelocity(), obj->vTransform - vTransform) > 0)
-					collider2D->ResolveAABBCircle(obj->GetCollider(), data, Collider2D::COLLIDER_QUAD);
-
-				if (std::get<1>(data) == Direction::DOWN)
-					cPhysics2D.SetboolGrounded(true);
-			}
-
-			vTransform = collider2D->position;
-
-			//How the object interacts 
-			glm::vec2 normal = Collider2D::ConvertDirectionToVec2(std::get<1>(data));
-			cPhysics2D.DoBounce(normal, 0.f);
+			destroyed = true;
 		}
 	}
+
+
 
 	//Update Map index
 	glm::i32vec2 newindex((int)vTransform.x, CMap2D::GetInstance()->GetLevelRow() - (int)vTransform.y - 1);
@@ -102,14 +84,13 @@ void Projectiles::Update(double dElapsedTime)
 	{
 		CMap2D::GetInstance()->UpdateGridInfo(newindex.y, newindex.x, this, false);
 	}
-
 	if (destroyed)
 	{
 		cMap2D->SetMapInfo(currentIndex.y, currentIndex.x, 0, false);
 	}
 }
 
-CPhysics2D& Projectiles::GetPhysics()
+CPhysics2D& Bullet2D::GetPhysics()
 {
 	return cPhysics2D;
 }
