@@ -120,6 +120,12 @@ public:
 
 	glm::i32vec2 GetCheckpoint(void);
 
+	//Get health
+	int GetHealth(void);
+
+	//Function to call if player gets hit
+	void Attacked(int hp = 1);
+
 protected:
 	bool bIsClone;
 	
@@ -184,6 +190,7 @@ protected:
 	int pMaxShield; //Maximum time of how long player will be protected for (in terms of frames)
 
 	int pBlinkInterval; //Interval of the flashing color
+	int pMaxBlinkInterval;
 
 	// Update the health and lives
 	void UpdateHealthLives(void);

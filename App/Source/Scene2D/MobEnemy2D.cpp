@@ -267,8 +267,8 @@ void CMobEnemy2D::CollisionUpdate(void) {
 		Collision data = (collider2D->CollideWith(playerCollider));
 
 		if (std::get<0>(data)) {
-			//DEBUG_MSG("PLAYER HIT BY MOBENEMY!");
 			//What happens when player collides with enemy code below
+			arrPlayer[i]->Attacked();
 			
 			return;
 		}

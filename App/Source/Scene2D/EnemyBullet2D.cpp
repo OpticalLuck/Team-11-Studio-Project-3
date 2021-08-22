@@ -112,8 +112,8 @@ void EnemyBullet2D::CollisionCheck(void) {
 		Collision data = (collider2D->CollideWith(playerCollider));
 
 		if (std::get<0>(data)) {
-			//DEBUG_MSG("PLAYER HIT BY BULLET!");
 			//Player collision code below
+			arrPlayer[i]->Attacked();
 
 			//Remove bullet from worldspace
 			health = 0;

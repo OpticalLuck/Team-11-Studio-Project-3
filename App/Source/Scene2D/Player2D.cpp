@@ -59,12 +59,12 @@ CPlayer2D::CPlayer2D(void)
 	animatedSprites = nullptr;
 	camera = nullptr;
 	checkpoint  = glm::i32vec2();
-	currentColor = glm::vec4();
+	currentColor = glm::vec4(1,1,1,1);
 
 	pHealth = pShield = 0;
 	pMaxShield = 0;
 	pMaxHealth = 5;
-	pBlinkInterval = 0;
+	pBlinkInterval = pMaxBlinkInterval = 0;
 
 	for (auto &timerVal : timerArr)
 	{
@@ -158,20 +158,19 @@ bool CPlayer2D::Init(void)
 	animatedSprites->PlayAnimation("idle", -1, 1.0f);
 
 	//CS: Init the color to white
-	currentColor = glm::vec4(1.0, 1.0, 1.0, 1.0);
+	currentColor = glm::vec4(1.0, 1.0, 1.0, 1.0); //100,100,100 for full blown white
 
-	//// Get the handler to the CInventoryManager instance
- //   cInventoryManager = CInventoryManager::GetInstance();
-	//// Add a Lives icon as one of the inventory items
-	//cInventoryItem = cInventoryManager->Add("Lives", 2, 5, 3);
-	//cInventoryItem->vec2Size = glm::vec2(25, 25);
-
-	//// Add a Health icon as one of the inventory items
-	//cInventoryItem = cInventoryManager->Add("Health", 2, 100, 100);
-	//cInventoryItem->vec2Size = glm::vec2(25, 25);
-
+	//Health related stuff
 	pHealth = pMaxHealth;
+
+	//Timers and stuff
+	//Shield
+	pMaxShield = int(2.3f * (float)cSettings->FPS);
 	pShield = 0;
+
+	//Blink Interval
+	pBlinkInterval = 0;
+	pMaxBlinkInterval = int(0.2f * (float)cSettings->FPS);
 
 	jumpCount = 0;
 
@@ -251,8 +250,17 @@ bool CPlayer2D::Init(glm::i32vec2 spawnpoint, int iCloneIndex)
 
 	camera = Camera2D::GetInstance();
 
+	//Health related stuff
 	pHealth = pMaxHealth;
+
+	//Timers and stuff
+	//Shield
 	pShield = 0;
+	pMaxShield = int(3.f * (float)cSettings->FPS);
+
+	//Blink Interval
+	pBlinkInterval = 0;
+	pMaxBlinkInterval = int(0.15f * (float)cSettings->FPS);
 
 	jumpCount = 0;
 
@@ -275,6 +283,10 @@ bool CPlayer2D::Init(glm::i32vec2 spawnpoint, int iCloneIndex)
 	cInventory = CInventoryManager::GetInstance()->Get(ss.str().c_str());
 
 	return true;
+}
+
+int CPlayer2D::GetHealth(void) {
+	return pHealth;
 }
 
 glm::i32vec2 CPlayer2D::GetCheckpoint(void) {
@@ -441,6 +453,9 @@ void CPlayer2D::Update(const double dElapsedTime)
 		animatedSprites->PlayAnimation("death", 1, 3.f);
 		break;
 	}
+
+	//Health
+	UpdateHealthLives();
 
 	//CS: Update the animated sprite
 	animatedSprites->Update(dElapsedTime);
@@ -625,27 +640,6 @@ void CPlayer2D::InputUpdate(double dt)
 			timerArr[A_JUMP].second = 0;
 		}
 	}
-	/*if (cKeyboardController->IsKeyPressed(GLFW_KEY_V))
-	{
-		cInventoryItem = cInventoryManager->GetItem("Shuriken");
-		if (cInventoryItem->GetCount() > 0)
-		{
-			if (cMap2D->InsertMapInfo((int)vTransform.y, (int)vTransform.x, 2))
-			{
-				CObject2D* shuriken = cMap2D->GetCObject((int)vTransform.x, (int)vTransform.y);
-				shuriken->vTransform = vTransform;
-
-				glm::vec2 force(0.f);
-				if(facing == LEFT)
-					force = glm::vec2(-1,0) * glm::vec2(10.f, 0.f);
-				else if (facing == RIGHT)
-					force = glm::vec2(1, 0) * glm::vec2(10.f, 0.f);
-
-				static_cast<Projectiles*>(shuriken)->GetPhysics().SetVelocity(force);
-				cInventoryItem->Remove(1);
-			}
-		}
-	}*/
 
 	if (glm::length(velocity) > 0.f)
 		cPhysics2D.SetVelocity(velocity);
@@ -703,7 +697,23 @@ void CPlayer2D::InputUpdate(double dt)
  */
 void CPlayer2D::UpdateHealthLives(void)
 {
-	
+	if (pShield == 0) { //Return if shield is not enabled / player is not hit
+		currentColor = glm::vec4(1, 1, 1, 1);
+		return;
+	}
+
+	pShield--;
+
+	if (pBlinkInterval == 0) { //If blink is 0, toggle it(Blink) and reset timer 
+		pBlinkInterval = pMaxBlinkInterval;
+		if (currentColor.r == 1)
+			currentColor = glm::vec4(100, 100, 100, 1);
+		else
+			currentColor = glm::vec4(1, 1, 1, 1);
+	}
+	else {
+		pBlinkInterval--;
+	}
 }
 
 void CPlayer2D::SetClone(bool bIsClone)
@@ -714,6 +724,14 @@ void CPlayer2D::SetClone(bool bIsClone)
 bool CPlayer2D::IsClone()
 {
 	return bIsClone;
+}
+
+void CPlayer2D::Attacked(int hp) {
+	if (pShield > 0) //Return if shield is enabled/ player does not get damaged
+		return;
+
+	pHealth = Math::Max(0, pHealth - 1);
+	pShield = pMaxShield + 1; //Offset by 1 frame for better synchronisation (FUTURE JEVON IF YOU KNOW YOU KNOW IF NOT THEN LMAO)
 }
 
 void CPlayer2D::SetKeyInputs(std::vector<std::array<KeyInput, KEYBOARD_INPUTS::KEY_TOTAL>> inputs)

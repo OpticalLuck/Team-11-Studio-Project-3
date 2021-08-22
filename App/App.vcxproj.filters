@@ -164,9 +164,6 @@
     <ClCompile Include="Source\Scene2D\Inventory.cpp">
       <Filter>Items</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Scene2D\Boss2D.cpp">
-      <Filter>Entity2D</Filter>
-    </ClCompile>
     <ClCompile Include="Source\InputHandler\CInputHandler.cpp">
       <Filter>InputHandler</Filter>
     </ClCompile>
@@ -205,6 +202,9 @@
     </ClCompile>
     <ClCompile Include="Source\Scene2D\Bullet2D.cpp">
       <Filter>Entity2D\Object2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene2D\Boss2D.cpp">
+      <Filter>Entity2D\Enemy2D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -295,9 +295,6 @@
     <ClInclude Include="Source\Scene2D\Inventory.h">
       <Filter>Items</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Scene2D\Boss2D.h">
-      <Filter>Entity2D</Filter>
-    </ClInclude>
     <ClInclude Include="Source\InputHandler\CInputHandler.h">
       <Filter>InputHandler</Filter>
     </ClInclude>
@@ -360,6 +357,9 @@
     </ClInclude>
     <ClInclude Include="Source\Scene2D\Bullet2D.h">
       <Filter>Entity2D\Object2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene2D\Boss2D.h">
+      <Filter>Entity2D\Enemy2D</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
