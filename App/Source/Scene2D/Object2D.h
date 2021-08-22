@@ -44,19 +44,20 @@ class CObject2D : public CEntity2D
 {
 	public:
 		CObject2D(void);
-		CObject2D(int);
+		CObject2D(int,int objectID = 0);
 		~CObject2D(void); //Do nothing for now
 		
 		bool Init() override;
 		void Update(const double dElapsedTime) override;
 
-		int Getvalue() const;
-		void SetValue(int value);
+		int GetTextureID() const;
+		void SetTextureID(int value);
 
 		glm::i32vec2 GetCurrentIndex() const;
 		void SetCurrentIndex(glm::i32vec2 currentIndex);
 	protected:
-		int value;
+		int textureID;
+		int objectID;
 
 		float width;
 		float height;

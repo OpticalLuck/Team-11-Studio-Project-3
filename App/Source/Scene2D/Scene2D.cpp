@@ -259,11 +259,6 @@ void CScene2D::Render(void)
 	//Call the Map's background (If there's any)
 	cMap2D->RenderBackground();
 
-	cEntityManager->RenderBullets();
-	cEntityManager->RenderEnemy();
-	cEntityManager->RenderClone();
-	cEntityManager->RenderPlayer();
-
 	// Call the Map2D's PreRender()
 	cMap2D->PreRender();
 	// Call the Map2D's Render()
@@ -271,6 +266,10 @@ void CScene2D::Render(void)
 	// Call the Map2D's PostRender()
 	cMap2D->PostRender();
 
+	cEntityManager->RenderBullets();
+	cEntityManager->RenderEnemy();
+	cEntityManager->RenderClone();
+	cEntityManager->RenderPlayer();
 
 	// Call the cGUI_Scene2D's PreRender()
 	cGUI_Scene2D->PreRender();

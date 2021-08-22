@@ -7,7 +7,7 @@ Projectiles::Projectiles()
 	, currentColor(glm::vec4())
 {
 	projectileType = PROJ_SHURIKEN;
-	value = 2; //Shuriken by default
+	textureID = 2; //Shuriken by default
 }
 
 Projectiles::~Projectiles()

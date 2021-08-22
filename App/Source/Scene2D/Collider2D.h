@@ -15,7 +15,7 @@
 #include <string>
 #include <tuple>
 
-enum Direction {
+enum class Direction {
 	UP,
 	RIGHT,
 	DOWN,

@@ -25,16 +25,16 @@ Collision Collider2D::CheckAABBCollision(Collider2D* obj, Collider2D* target)
 	{
 
 		if (diffX > 0)
-			dir = RIGHT;
+			dir = Direction::RIGHT;
 		else
-			dir = LEFT;
+			dir = Direction::LEFT;
 	}
 	else
 	{
 		if (diffY > 0)
-			dir = UP;
+			dir = Direction::UP;
 		else
-			dir = DOWN;
+			dir = Direction::DOWN;
 	}
 
 	return std::make_tuple(collisionX && collisionY, dir, glm::vec2(0.0f, 0.0f));
@@ -53,7 +53,7 @@ Collision Collider2D::CheckAABBCircleCollision(Collider2D* aabb, Collider2D* cir
 	if (glm::length(difference) < circle->vec2Dimensions.x) // not <= since in that case a collision also occurs when object one exactly touches object two, which they are at the end of each collision resolution stage.
 		return std::make_tuple(true, VectorDirection(difference), difference);
 	else
-		return std::make_tuple(false, UP, glm::vec2(0.0f, 0.0f));
+		return std::make_tuple(false, Direction::UP, glm::vec2(0.0f, 0.0f));
 }
 
 Collider2D::Collider2D()
@@ -162,7 +162,7 @@ Collision Collider2D::CollideWith(Collider2D* object)
 
 	}
 	
-	return std::make_tuple(false, UP, glm::vec2(0.0f, 0.0f));
+	return std::make_tuple(false, Direction::UP, glm::vec2(0.0f, 0.0f));
 }
 
 void Collider2D::ResolveAABB(Collider2D* object, Direction axis)
@@ -240,12 +240,12 @@ void Collider2D::ResolveAABBCircle(Collider2D* object, Collision data, ColliderT
 		glm::vec2 diff_vector = std::get<2>(data);
 		if (target == COLLIDER_CIRCLE)
 		{
-			if (dir == LEFT || dir == RIGHT) // horizontal collision
+			if (dir == Direction::LEFT || dir == Direction::RIGHT) // horizontal collision
 			{
 				// relocate
 				float penetration = ball->vec2Dimensions.x - std::abs(diff_vector.x);
 
-				if (dir == LEFT)
+				if (dir == Direction::LEFT)
 					ball->position.x += penetration; // move ball to right
 				else
 					ball->position.x -= penetration; // move ball to left;
@@ -255,7 +255,7 @@ void Collider2D::ResolveAABBCircle(Collider2D* object, Collision data, ColliderT
 				// relocate
 				float penetration = ball->vec2Dimensions.x - std::abs(diff_vector.y);
 
-				if (dir == UP)
+				if (dir == Direction::UP)
 					ball->position.y -= penetration; // move ball bback up
 				else
 					ball->position.y += penetration; // move ball back down
@@ -264,12 +264,12 @@ void Collider2D::ResolveAABBCircle(Collider2D* object, Collision data, ColliderT
 		}
 		else if (target == COLLIDER_QUAD)
 		{
-			if (dir == LEFT || dir == RIGHT) // horizontal collision
+			if (dir == Direction::LEFT || dir == Direction::RIGHT) // horizontal collision
 			{
 				// relocate
 				float penetration = ball->vec2Dimensions.x - std::abs(diff_vector.x);
 
-				if (dir == LEFT)
+				if (dir == Direction::LEFT)
 					quad->position.x -= penetration; // move ball to right
 				else
 					quad->position.x += penetration; // move ball to left;
@@ -279,7 +279,7 @@ void Collider2D::ResolveAABBCircle(Collider2D* object, Collision data, ColliderT
 				// relocate
 				float penetration = ball->vec2Dimensions.x - std::abs(diff_vector.y);
 
-				if (dir == UP)
+				if (dir == Direction::UP)
 					quad->position.y += penetration; // move ball bback up
 				else
 					quad->position.y -= penetration; // move ball back down

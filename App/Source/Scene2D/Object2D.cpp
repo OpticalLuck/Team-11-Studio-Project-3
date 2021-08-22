@@ -2,15 +2,18 @@
 #include <iostream>
 
 CObject2D::CObject2D(void) {
-	value = 0;
+	textureID = 0;
+	objectID = 0;
+
 	vTransform = glm::vec2();
 	currentIndex = glm::i32vec2();
 
 	width = height = 1.f; //Default value is 1 x 1
 }
 
-CObject2D::CObject2D(int value) {
-	this->value = value;
+CObject2D::CObject2D(int value, int objectID) {
+	this->textureID = value;
+	this->objectID = objectID;
 
 	vTransform = glm::i32vec2();
 	currentIndex = glm::i32vec2();
@@ -31,7 +34,7 @@ bool CObject2D::Init()
 	collider2D->Init();
 	collider2D->SetPosition(vTransform);
 
-	if (value >= 100 && value < 300)
+	if (objectID == 0)
 		collider2D->SetbEnabled(true);
 	else
 		collider2D->SetbEnabled(false);
@@ -45,14 +48,14 @@ void CObject2D::Update(const double dElapsedTime)
 		collider2D->position = vTransform;
 }
 
-int CObject2D::Getvalue() const
+int CObject2D::GetTextureID() const
 {
-	return value;
+	return textureID;
 }
 
-void CObject2D::SetValue(int value)
+void CObject2D::SetTextureID(int value)
 {
-	this->value = value;
+	this->textureID = value;
 }
 
 glm::i32vec2 CObject2D::GetCurrentIndex() const
