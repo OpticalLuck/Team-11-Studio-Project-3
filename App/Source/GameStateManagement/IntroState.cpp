@@ -132,3 +132,8 @@ void CIntroState::Destroy(void)
 
 	cout << "CIntroState::Destroy()\n" << endl;
 }
+
+bool CIntroState::ImGuiRender()
+{
+	return true;
+}

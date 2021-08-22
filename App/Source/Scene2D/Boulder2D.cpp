@@ -4,7 +4,7 @@
 Boulder2D::Boulder2D()
 {
 	interactableType = Interactables::BOULDER;
-	value = 150;
+	textureID = 150;
 }
 
 Boulder2D::~Boulder2D()
@@ -18,7 +18,7 @@ bool Boulder2D::Init()
 	collider2D->colliderType = Collider2D::ColliderType::COLLIDER_CIRCLE;
 	collider2D->position = vTransform + glm::vec2(0.5f, 0.5f);
 
-	if (value >= 100 && value < 300)
+	if (textureID >= 100 && textureID < 300)
 		collider2D->SetbEnabled(true);
 	else
 		collider2D->SetbEnabled(false);

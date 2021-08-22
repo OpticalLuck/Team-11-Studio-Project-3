@@ -14,6 +14,9 @@
 #include "System\ImageLoader.h"
 #include "Primitives/MeshBuilder.h"
 
+//Debug
+#include "System/Debug.h"
+
 #include <iostream>
 #include <vector>
 
@@ -25,6 +28,8 @@ using namespace std;
 CMap2D::CMap2D(void)
 	: uiCurLevel(0)
 	, camera(NULL)
+	, cTextureManager(NULL)
+	, quadMesh(NULL)
 {
 	uiNumLevels = 0;
 }
@@ -386,7 +391,7 @@ int CMap2D::GetMapInfo(const unsigned int uiRow, const unsigned int uiCol, const
 		CObject2D* obj = arrObject[uiCurLevel][i];
 
 		if (obj->vTransform.x == uiCol && obj->vTransform.y == uiRow)
-			return obj->Getvalue();
+			return obj->GetTextureID();
 	}
 
 	//Return false if theres nothing on the tile
@@ -459,13 +464,15 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 		for (unsigned int uiCol = 0; uiCol < (unsigned int)doc.GetColumnCount() - 1; ++uiCol)
 		{
 			//Init of objects values
-			int currVal = (int)stoi(row[uiCol]);
+			int currTexture = 0;
+			int currObjID = 0;
+
+			ExtractIDs(row[uiCol], currTexture, currObjID);
 
 			arrGrid[uiCurLevel][uiRow].push_back(nullptr);
 
-			if (currVal > 0) {
-				CObject2D* currObj = objFactory.CreateObject(currVal);
-				currObj->SetValue(currVal);
+			if (currTexture > 0) {
+				CObject2D* currObj = new CObject2D(currTexture, currObjID);
 				currObj->SetCurrentIndex(glm::i32vec2(uiCol, uiRow));
 
 				//Position of values
@@ -484,6 +491,40 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 	}
 
 	return true;
+}
+
+void CMap2D::ExtractIDs(std::string str, int& textureID, int& objectID) {
+	//If there are no ; present (Basically only one value in cell like "100")
+	if (IsInteger(str)) {
+		textureID = stoi(str);
+		objectID = 0;
+		return;
+	}
+
+	//Conversion for if there are more than 1 value present (100;2)
+	stringstream ss(str);
+	vector<int> values;
+
+	while (ss.good()) {
+		std::string substr;
+		getline(ss, substr, ';');
+		
+		//Convert valaue from string to int if possible.
+		values.push_back(std::stoi(substr));
+	}
+
+	textureID = values[0];
+	objectID = values[1];
+}
+
+bool CMap2D::IsInteger(const std::string& s) {
+	if (s.empty() || (!isdigit(s[0]) && s[0] != '-'))
+		return false; //Return false if its empty of if string is not a digit
+
+	char* p;
+	long int temp = strtol(s.c_str(), &p, 10); //Parsing through string and check for index that is not an integer
+
+	return (*p == 0);
 }
 
 void CMap2D::RenderBackground(void) {
@@ -540,7 +581,7 @@ bool CMap2D::SaveMap(string filename, const unsigned int uiCurLevel)
 
 	for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++) {
 		CObject2D* obj = arrObject[uiCurLevel][i];
-		doc.SetCell((int)obj->vTransform.x, int(cSettings->NUM_TILES_YAXIS - 1 - obj->vTransform.y), obj->Getvalue());
+		doc.SetCell((int)obj->vTransform.x, int(cSettings->NUM_TILES_YAXIS - 1 - obj->vTransform.y), obj->GetTextureID());
 	}
 
 	// Save the rapidcsv::Document to a file
@@ -560,7 +601,7 @@ bool CMap2D::FindValue(const int iValue, unsigned int& uirRow, unsigned int& uir
 {
 	for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++) {
 		CObject2D* obj = arrObject[uiCurLevel][i];
-		if (obj->Getvalue() == iValue) {
+		if (obj->GetTextureID() == iValue) {
 			uirCol = (unsigned int)obj->vTransform.x;
 			uirRow = (unsigned int)obj->vTransform.y;
 
@@ -592,7 +633,7 @@ unsigned int CMap2D::GetCurrentLevel(void) const
 
 
 void CMap2D::RenderTile(const CObject2D& obj) {
-	glBindTexture(GL_TEXTURE_2D, cTextureManager->MapOfTextureIDs.at(obj.Getvalue()));
+	glBindTexture(GL_TEXTURE_2D, cTextureManager->MapOfTextureIDs.at(obj.GetTextureID()));
 
 	glBindVertexArray(VAO);
 	//CS: Render the tile

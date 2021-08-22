@@ -156,5 +156,11 @@ protected:
 
 	// Render a tile
 	void RenderTile(const CObject2D& obj);
+
+	//Extract texture and object IDs
+	void ExtractIDs(std::string str,int& textureID, int& objectID);
+
+	//Check if integer
+	inline bool IsInteger(const std::string& s);
 };
 

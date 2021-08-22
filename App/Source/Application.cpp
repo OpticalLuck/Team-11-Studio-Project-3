@@ -298,7 +298,10 @@ void Application::Run(void)
 		}
 
 		// Call the active Game State's Render method
-		CGameStateManager::GetInstance()->Render();
+		if (!CGameStateManager::GetInstance()->Render())
+		{
+			break;
+		}
 		m_ImGuiWindow->PostRender();
 
 

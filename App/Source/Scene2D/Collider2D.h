@@ -17,10 +17,7 @@
 
 #include "../Library/Source/GameControl/Settings.h"
 
-//#include "GameControl/Settings.h"
-//class CSettings;
-
-enum Direction {
+enum class Direction {
 	UP,
 	RIGHT,
 	DOWN,

@@ -97,12 +97,21 @@ bool CGameStateManager::Update(const double dElapsedTime)
 /**
  @brief Render this class instance
  */
-void CGameStateManager::Render(void)
+bool CGameStateManager::Render(void)
 {
 	if (pauseGameState)
+	{
 		pauseGameState->Render();
+		pauseGameState->ImGuiRender();
+	}
 	else if (activeGameState)
+	{
 		activeGameState->Render();
+		if (!activeGameState->ImGuiRender())
+		{
+			return false;
+		}
+	}
 }
 
 /**

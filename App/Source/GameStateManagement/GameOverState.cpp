@@ -74,60 +74,6 @@ bool GameOverState::Init(void)
 bool GameOverState::Update(const double dElapsedTime)
 {
 
-	ImGuiWindowFlags window_flags = 0;
-	window_flags |= ImGuiWindowFlags_NoTitleBar;
-	window_flags |= ImGuiWindowFlags_NoScrollbar;
-	//window_flags |= ImGuiWindowFlags_MenuBar;
-	window_flags |= ImGuiWindowFlags_NoBackground;
-	window_flags |= ImGuiWindowFlags_NoMove;
-	window_flags |= ImGuiWindowFlags_NoCollapse;
-	window_flags |= ImGuiWindowFlags_NoNav;
-
-	float buttonWidth = 256;
-	float buttonHeight = 128;
-
-	// 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
-	{
-		static float f = 0.0f;
-		static int counter = 0;
-
-		ImGui::Begin("Image", NULL, window_flags);
-		ImGui::SetWindowPos(ImVec2(CSettings::GetInstance()->iWindowWidth / 2.0f - buttonWidth / 2.0f,
-								   CSettings::GetInstance()->iWindowHeight / 3.0f - buttonHeight - 64.f) );
-		ImGui::SetWindowSize(ImVec2((float)CSettings::GetInstance()->iWindowWidth, (float)CSettings::GetInstance()->iWindowHeight));
-		ImGui::Image((void*)(intptr_t)gameOverImage.textureID, ImVec2(buttonWidth, buttonWidth));
-		ImGui::End();
-
-
-		// Create a window called "Hello, world!" and append into it.
-		ImGui::Begin("Main Menu", NULL, window_flags);
-		ImGui::SetWindowPos(ImVec2(CSettings::GetInstance()->iWindowWidth / 2.0f - buttonWidth / 2.0f,
-			CSettings::GetInstance()->iWindowHeight / 3.0f));				// Set the top-left of the window at (10,10)
-		ImGui::SetWindowSize(ImVec2((float)CSettings::GetInstance()->iWindowWidth, (float)CSettings::GetInstance()->iWindowHeight));
-
-		//Added rounding for nicer effect
-		ImGuiStyle& style = ImGui::GetStyle();
-		style.FrameRounding = 200.0f;
-
-		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.f, 0.f, 0.f, 0.f));
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.f, 0.f, 0.f, 0.f));
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.f, 0.f, 0.f, 0.f));
-		// Add codes for Exit button here
-		if (ImGui::ImageButton((ImTextureID)exitButtonData.textureID,
-			ImVec2(buttonWidth, buttonHeight), ImVec2(0.0, 0.0), ImVec2(1.0, 1.0)))
-		{
-			// Reset the CKeyboardController
-			CKeyboardController::GetInstance()->Reset();
-
-			// Load the menu state
-			cout << "Quitting the game from GameoverState" << endl;
-
-			return false;
-		}
-		ImGui::PopStyleColor(3);
-		ImGui::End();
-	}
-
 	//For keyboard controls
 	if (CKeyboardController::GetInstance()->IsKeyReleased(GLFW_KEY_SPACE) ||
 		CKeyboardController::GetInstance()->IsKeyReleased(GLFW_KEY_ESCAPE))
@@ -162,4 +108,64 @@ void GameOverState::Destroy(void)
 	}
 
 	cout << "CMenuState::Destroy()\n" << endl;
+}
+
+bool GameOverState::ImGuiRender()
+{
+
+	ImGuiWindowFlags window_flags = 0;
+	window_flags |= ImGuiWindowFlags_NoTitleBar;
+	window_flags |= ImGuiWindowFlags_NoScrollbar;
+	//window_flags |= ImGuiWindowFlags_MenuBar;
+	window_flags |= ImGuiWindowFlags_NoBackground;
+	window_flags |= ImGuiWindowFlags_NoMove;
+	window_flags |= ImGuiWindowFlags_NoCollapse;
+	window_flags |= ImGuiWindowFlags_NoNav;
+
+	float buttonWidth = 256;
+	float buttonHeight = 128;
+
+	// 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
+	{
+		static float f = 0.0f;
+		static int counter = 0;
+
+		ImGui::Begin("Image", NULL, window_flags);
+		ImGui::SetWindowPos(ImVec2(CSettings::GetInstance()->iWindowWidth / 2.0f - buttonWidth / 2.0f,
+			CSettings::GetInstance()->iWindowHeight / 3.0f - buttonHeight - 64.f));
+		ImGui::SetWindowSize(ImVec2((float)CSettings::GetInstance()->iWindowWidth, (float)CSettings::GetInstance()->iWindowHeight));
+		ImGui::Image((void*)(intptr_t)gameOverImage.textureID, ImVec2(buttonWidth, buttonWidth));
+		ImGui::End();
+
+
+		// Create a window called "Hello, world!" and append into it.
+		ImGui::Begin("Main Menu", NULL, window_flags);
+		ImGui::SetWindowPos(ImVec2(CSettings::GetInstance()->iWindowWidth / 2.0f - buttonWidth / 2.0f,
+			CSettings::GetInstance()->iWindowHeight / 3.0f));				// Set the top-left of the window at (10,10)
+		ImGui::SetWindowSize(ImVec2((float)CSettings::GetInstance()->iWindowWidth, (float)CSettings::GetInstance()->iWindowHeight));
+
+		//Added rounding for nicer effect
+		ImGuiStyle& style = ImGui::GetStyle();
+		style.FrameRounding = 200.0f;
+
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.f, 0.f, 0.f, 0.f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.f, 0.f, 0.f, 0.f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.f, 0.f, 0.f, 0.f));
+		// Add codes for Exit button here
+		if (ImGui::ImageButton((ImTextureID)exitButtonData.textureID,
+			ImVec2(buttonWidth, buttonHeight), ImVec2(0.0, 0.0), ImVec2(1.0, 1.0)))
+		{
+			// Reset the CKeyboardController
+			CKeyboardController::GetInstance()->Reset();
+
+			// Load the menu state
+			cout << "Quitting the game from GameoverState" << endl;
+
+			return false;
+		}
+		ImGui::PopStyleColor(3);
+		ImGui::End();
+	}
+
+	return true;
 }
