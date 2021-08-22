@@ -192,7 +192,7 @@ void CLevelEditorState::Render(void)
 	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 	RenderCursor();
-	ImGuiRender();
+	// ImGuiRender();
 }
 
 /**
@@ -224,7 +224,7 @@ bool CLevelEditorState::EditorShortcuts(void)
 			eProperties.WideAreaSelectionStart = vMousePos;
 		}
 		else if (cMouseController->IsButtonReleased(CMouseController::LMB))
-		{
+		{ 
 			eProperties.bIsSelecting = false;
 			DEBUG_MSG("End Wide Area Fill");
 			AreaFill();
@@ -247,8 +247,11 @@ bool CLevelEditorState::EditorShortcuts(void)
 		eProperties.WideAreaSelectionEnd = vMousePos;
 		return true;
 	}
-	else 
+	else
+	{
 		eProperties.bIsSelecting = false;
+		eProperties.WideAreaSelectionStart = eProperties.WideAreaSelectionEnd = vMousePos;
+	}
 
 	if (cMouseController->IsButtonPressed(CMouseController::MMB))
 	{
@@ -576,7 +579,7 @@ void CLevelEditorState::RenderQuad(unsigned int iTextureID)
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void CLevelEditorState::ImGuiRender()
+bool CLevelEditorState::ImGuiRender()
 {
 	//ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 	//ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_FirstUseEver);
@@ -833,7 +836,7 @@ void CLevelEditorState::ImGuiRender()
 		}
 	}
 
-
+	return true;
 }
 
 void CLevelEditorState::RenderCursor()

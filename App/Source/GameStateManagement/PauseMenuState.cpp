@@ -363,3 +363,8 @@ void PauseMenuState::UpdateOption(ImGuiWindowFlags window_flags)
 		}
 	}
 }
+
+bool PauseMenuState::ImGuiRender()
+{
+	return true;
+}

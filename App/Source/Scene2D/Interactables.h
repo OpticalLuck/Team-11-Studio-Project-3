@@ -56,7 +56,7 @@ private:
 	Command cCommand;
 
 	// Boolean to check if the interactable is currently being interacted with
-	bool bInteracted;
+	bool bInteraction;
 
 	bool LoadTexture(const char* filename, GLuint& iTextureID);
 };
