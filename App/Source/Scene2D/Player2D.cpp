@@ -58,13 +58,16 @@ CPlayer2D::CPlayer2D(void)
 
 	animatedSprites = nullptr;
 	camera = nullptr;
+	cSettings = CSettings::GetInstance();
+
 	checkpoint  = glm::i32vec2();
 	currentColor = glm::vec4(1,1,1,1);
 
 	pHealth = pShield = 0;
 	pMaxShield = 0;
 	pMaxHealth = 5;
-	pBlinkInterval = pMaxBlinkInterval = 0;
+	pBlinkInterval = 0;
+	pMaxBlinkInterval = int(0.175f * (float)cSettings->FPS);
 
 	for (auto &timerVal : timerArr)
 	{
@@ -170,7 +173,6 @@ bool CPlayer2D::Init(void)
 
 	//Blink Interval
 	pBlinkInterval = 0;
-	pMaxBlinkInterval = int(0.2f * (float)cSettings->FPS);
 
 	jumpCount = 0;
 
@@ -260,7 +262,6 @@ bool CPlayer2D::Init(glm::i32vec2 spawnpoint, int iCloneIndex)
 
 	//Blink Interval
 	pBlinkInterval = 0;
-	pMaxBlinkInterval = int(0.15f * (float)cSettings->FPS);
 
 	jumpCount = 0;
 
