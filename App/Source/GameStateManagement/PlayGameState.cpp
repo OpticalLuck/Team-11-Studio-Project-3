@@ -69,6 +69,8 @@ bool CPlayGameState::Init(void)
 	// Store the CFPSCounter singleton instance here
 	cFPSCounter = CFPSCounter::GetInstance();
 
+	cPlayerInventory = CInventoryManager::GetInstance()->Get("Player");
+	cTextureManager = CTextureManager::GetInstance();
 	return true;
 }
 
@@ -155,6 +157,14 @@ void CPlayGameState::Destroy(void)
 
 bool CPlayGameState::ImGuiRender()
 {
+	// Define the window flags
+	window_flags = 0;
+	window_flags |= ImGuiWindowFlags_NoBackground;
+	window_flags |= ImGuiWindowFlags_NoTitleBar;
+	window_flags |= ImGuiWindowFlags_NoMove;
+	window_flags |= ImGuiWindowFlags_NoResize;
+	window_flags |= ImGuiWindowFlags_NoCollapse;
+
 	// Calculate the relative scale to our default windows width
 	float relativeScale_x = cSettings->iWindowWidth / 800.0f;
 	float relativeScale_y = cSettings->iWindowHeight / 600.0f;
