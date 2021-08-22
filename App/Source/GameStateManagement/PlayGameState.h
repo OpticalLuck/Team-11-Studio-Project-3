@@ -28,8 +28,26 @@ public:
 	// Destroy this class instance
 	virtual void Destroy(void);
 
+	virtual bool ImGuiRender();
 protected:
 	// The handler to the CScene2D instance
 	CScene2D* cScene2D;
 	CInputHandler* cInputHandler;
+
+	// FPS Control
+	CFPSCounter* cFPSCounter;
+
+	// Flags for IMGUI
+	ImGuiWindowFlags window_flags;
+	float m_fProgressBar;
+
+	float fInterval;
+	int iMinutes;
+	int iSeconds;
+
+	CSettings* cSettings;
+	CTextureManager* cTextureManager;
+	CInventory* cPlayerInventory;
+
+	CKeyboardController* cKeyboardController;
 };

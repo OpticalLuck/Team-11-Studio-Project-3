@@ -11,7 +11,7 @@
 #include <iostream>
 
 Interactables::Interactables(void)
-	: bInteracted(false)
+	: bInteraction(false)
 	, animatedSprites(NULL)
 {
 	transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
@@ -33,20 +33,6 @@ bool Interactables::Init(int iMapID)
 	glBindVertexArray(VAO);
 
 	animatedSprites = CMeshBuilder::GenerateSpriteAnimation(10, 6, cSettings->TILE_WIDTH, cSettings->TILE_HEIGHT);
-
-	switch (iMapID)
-	{
-	case BUTTON:
-		// Load the interactable texture
-		if (LoadTexture("Image/Cyborg/Cyborg.png", iTextureID) == false)
-		{
-			std::cout << "Failed to load player tile texture" << std::endl;
-			return false;
-		}
-		break;
-	default:
-		break;
-	}
 
 	return true;
 }

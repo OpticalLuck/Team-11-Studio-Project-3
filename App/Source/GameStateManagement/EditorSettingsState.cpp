@@ -91,111 +91,6 @@ bool CEditorSettingsState::Init(void)
 bool CEditorSettingsState::Update(const double dElapsedTime)
 {
 
-	ImGuiWindowFlags window_flags = 0;
-	window_flags |= ImGuiWindowFlags_NoTitleBar;
-	window_flags |= ImGuiWindowFlags_NoScrollbar;
-	//window_flags |= ImGuiWindowFlags_MenuBar;
-	window_flags |= ImGuiWindowFlags_NoMove;
-	window_flags |= ImGuiWindowFlags_NoCollapse;
-	window_flags |= ImGuiWindowFlags_NoNav;
-	window_flags |= ImGuiWindowFlags_NoResize;
-
-	ImGuiWindowFlags OptionsFlags =
-		ImGuiWindowFlags_NoScrollbar |
-		ImGuiWindowFlags_NoMove |
-		ImGuiWindowFlags_NoResize |
-		ImGuiWindowFlags_NoCollapse;
-
-	//Added rounding for nicer effect
-	ImGuiStyle& style = ImGui::GetStyle();
-	style.FrameRounding = 100.0f;
-
-	ImGui::Begin("Level Editor", NULL, OptionsFlags);
-	ImGui::SetWindowPos(ImVec2(CSettings::GetInstance()->iWindowWidth * 0.25, CSettings::GetInstance()->iWindowHeight * 0.25));
-	ImGui::SetWindowSize(ImVec2(CSettings::GetInstance()->iWindowWidth * 0.5, CSettings::GetInstance()->iWindowHeight * 0.5));
-	
-	ImGui::BeginTabBar("Level_Editor#Tab_Bar");
-	if (ImGui::BeginTabItem("Select Level"))
-	{
-		ImGui::BeginChild("Levels");
-
-		for (unsigned i = 0; i < cLevelEditor->GetLevels().size(); ++i)
-		{
-			if (ImGui::Button(cLevelEditor->GetLevels()[i].LevelName.c_str()))
-			{
-				cLevelEditor->LoadLevel(cLevelEditor->GetLevels()[i].LevelPath.c_str());
-				// Reset the CKeyboardController
-				CKeyboardController::GetInstance()->Reset();
-
-				// Load the menu state
-				cout << "Loading LevelEditorState" << endl;
-				CGameStateManager::GetInstance()->SetActiveGameState("LevelEditorState");
-			}
-		}
-
-		ImGui::EndChild();
-
-		ImGui::EndTabItem();
-	}
-	if (ImGui::BeginTabItem("Create Level"))
-	{
-		ImGui::InputInt("Level Width", &iWorldWidth);
-		ImGui::InputInt("Level Height", &iWorldHeight);
-		ImGui::InputText("Level Name", LevelName, 30);
-
-		if (iWorldWidth < 32 || iWorldHeight < 24)
-		{
-			ImGui::TextColored(ImVec4(1, 1, 0, 1), "Please input a reasonable Level size");
-		}
-		else
-		{
-			std::string name = LevelName;
-			if (cLevelEditor->LevelExists(name.c_str()))
-			{
-				ImGui::PushTextWrapPos();
-				ImGui::TextColored(ImVec4(1, 1, 0, 1), "This level already exists.\nWould you like to edit it or overwrite it?");
-				ImGui::PopTextWrapPos();
-				if (ImGui::Button("Overwrite"))
-				{
-					cLevelEditor->CreateLevel(name, iWorldWidth, iWorldHeight);
-					// Reset the CKeyboardController
-					CMouseController::GetInstance()->Reset();
-
-					// Load the menu state
-					cout << "Loading LevelEditorState" << endl;
-					CGameStateManager::GetInstance()->SetActiveGameState("LevelEditorState");
-					
-				}
-				ImGui::SameLine();
-				if (ImGui::Button("Edit"))
-				{
-					cLevelEditor->LoadLevelByName(name);
-					// Reset the CKeyboardController
-					CMouseController::GetInstance()->Reset();
-
-					// Load the menu state
-					cout << "Loading LevelEditorState" << endl;
-					CGameStateManager::GetInstance()->SetActiveGameState("LevelEditorState");
-				}
-			}
-			else if (ImGui::Button("Create Level"))
-			{
-				cLevelEditor->CreateLevel(name, iWorldWidth, iWorldHeight);
-				// Reset the CKeyboardController
-				CMouseController::GetInstance()->Reset();
-
-				// Load the menu state
-				cout << "Loading LevelEditorState" << endl;
-				CGameStateManager::GetInstance()->SetActiveGameState("LevelEditorState");
-			}
-		}
-
-
-		ImGui::EndTabItem();
-	}
-	ImGui::EndTabBar();
-	ImGui::End();
-
 	//For keyboard controls
 	if (CKeyboardController::GetInstance()->IsKeyReleased(GLFW_KEY_SPACE))
 	{
@@ -246,4 +141,115 @@ void CEditorSettingsState::Destroy(void)
 
 
 	cout << "CEditorSettingsState::Destroy()\n" << endl;
+}
+
+bool CEditorSettingsState::ImGuiRender()
+{
+
+	ImGuiWindowFlags window_flags = 0;
+	window_flags |= ImGuiWindowFlags_NoTitleBar;
+	window_flags |= ImGuiWindowFlags_NoScrollbar;
+	//window_flags |= ImGuiWindowFlags_MenuBar;
+	window_flags |= ImGuiWindowFlags_NoMove;
+	window_flags |= ImGuiWindowFlags_NoCollapse;
+	window_flags |= ImGuiWindowFlags_NoNav;
+	window_flags |= ImGuiWindowFlags_NoResize;
+
+	ImGuiWindowFlags OptionsFlags =
+		ImGuiWindowFlags_NoScrollbar |
+		ImGuiWindowFlags_NoMove |
+		ImGuiWindowFlags_NoResize |
+		ImGuiWindowFlags_NoCollapse;
+
+	//Added rounding for nicer effect
+	ImGuiStyle& style = ImGui::GetStyle();
+	style.FrameRounding = 100.0f;
+
+	ImGui::Begin("Level Editor", NULL, OptionsFlags);
+	ImGui::SetWindowPos(ImVec2(CSettings::GetInstance()->iWindowWidth * 0.25, CSettings::GetInstance()->iWindowHeight * 0.25));
+	ImGui::SetWindowSize(ImVec2(CSettings::GetInstance()->iWindowWidth * 0.5, CSettings::GetInstance()->iWindowHeight * 0.5));
+
+	ImGui::BeginTabBar("Level_Editor#Tab_Bar");
+	if (ImGui::BeginTabItem("Select Level"))
+	{
+		ImGui::BeginChild("Levels");
+
+		for (unsigned i = 0; i < cLevelEditor->GetLevels().size(); ++i)
+		{
+			if (ImGui::Button(cLevelEditor->GetLevels()[i].LevelName.c_str()))
+			{
+				cLevelEditor->LoadLevel(cLevelEditor->GetLevels()[i].LevelPath.c_str());
+				// Reset the CKeyboardController
+				CKeyboardController::GetInstance()->Reset();
+
+				// Load the menu state
+				cout << "Loading LevelEditorState" << endl;
+				CGameStateManager::GetInstance()->SetActiveGameState("LevelEditorState");
+			}
+		}
+
+		ImGui::EndChild();
+
+		ImGui::EndTabItem();
+	}
+	if (ImGui::BeginTabItem("Create Level"))
+	{
+		ImGui::InputInt("Level Width", &iWorldWidth);
+		ImGui::InputInt("Level Height", &iWorldHeight);
+		ImGui::InputText("Level Name", LevelName, 30);
+
+		if (iWorldWidth < 32 || iWorldHeight < 24)
+		{
+			ImGui::TextColored(ImVec4(1, 1, 0, 1), "Please input a reasonable Level size");
+		}
+		else
+		{
+			std::string name = LevelName;
+			if (cLevelEditor->LevelExists(name.c_str()))
+			{
+				ImGui::PushTextWrapPos();
+				ImGui::TextColored(ImVec4(1, 1, 0, 1), "This level already exists.\nWould you like to edit it or overwrite it?");
+				ImGui::PopTextWrapPos();
+				if (ImGui::Button("Overwrite"))
+				{
+					cLevelEditor->CreateLevel(name, iWorldWidth, iWorldHeight);
+					// Reset the CKeyboardController
+					CMouseController::GetInstance()->Reset();
+
+					// Load the menu state
+					cout << "Loading LevelEditorState" << endl;
+					CGameStateManager::GetInstance()->SetActiveGameState("LevelEditorState");
+
+				}
+				ImGui::SameLine();
+				if (ImGui::Button("Edit"))
+				{
+					cLevelEditor->LoadLevelByName(name);
+					// Reset the CKeyboardController
+					CMouseController::GetInstance()->Reset();
+
+					// Load the menu state
+					cout << "Loading LevelEditorState" << endl;
+					CGameStateManager::GetInstance()->SetActiveGameState("LevelEditorState");
+				}
+			}
+			else if (ImGui::Button("Create Level"))
+			{
+				cLevelEditor->CreateLevel(name, iWorldWidth, iWorldHeight);
+				// Reset the CKeyboardController
+				CMouseController::GetInstance()->Reset();
+
+				// Load the menu state
+				cout << "Loading LevelEditorState" << endl;
+				CGameStateManager::GetInstance()->SetActiveGameState("LevelEditorState");
+			}
+		}
+
+
+		ImGui::EndTabItem();
+	}
+	ImGui::EndTabBar();
+	ImGui::End();
+
+	return true;
 }

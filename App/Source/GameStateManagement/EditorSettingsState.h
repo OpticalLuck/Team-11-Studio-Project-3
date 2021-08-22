@@ -41,6 +41,7 @@ public:
 	// Destroy this class instance
 	virtual void Destroy(void);
 
+	virtual bool ImGuiRender();
 protected:
 
 	CLevelEditor* cLevelEditor;
@@ -51,4 +52,5 @@ protected:
 	static char LevelName[1000];
 
 	CBackgroundEntity* background;
+
 };

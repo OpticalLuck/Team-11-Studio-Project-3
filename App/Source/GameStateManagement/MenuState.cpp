@@ -401,3 +401,8 @@ void CMenuState::UpdateOption(ImGuiWindowFlags window_flags)
 		}
 	}
 }
+
+bool CMenuState::ImGuiRender()
+{
+	return true;
+}

@@ -112,6 +112,7 @@ public:
 	// Destroy this class instance
 	virtual void Destroy(void);
 
+	virtual bool ImGuiRender();
 protected:
 
 	EditorProperties eProperties;
@@ -140,7 +141,6 @@ protected:
 	void GenerateQuadVAO(void);
 	void GenerateFBO(void);
 	void RenderQuad(unsigned int iTextureID);
-	void ImGuiRender(void);
 	void RenderCursor(void);
 
 	bool EditorShortcuts(void);

@@ -29,6 +29,7 @@ public:
 	virtual void Render(void);
 	// Destroy this class instance
 	virtual void Destroy(void);
+	virtual bool ImGuiRender();
 
 protected:
 	CBackgroundEntity* background;
