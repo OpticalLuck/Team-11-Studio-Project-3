@@ -24,9 +24,6 @@
     <Filter Include="Manager2D">
       <UniqueIdentifier>{54f8f5f8-2e6a-42e3-9af7-09b8d09de77d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Command">
-      <UniqueIdentifier>{9ec58048-9e19-41d9-8642-8e72a3b90c0e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Factory">
       <UniqueIdentifier>{db4c60e0-034a-4a8a-a80c-1225539467af}</UniqueIdentifier>
     </Filter>
@@ -103,9 +100,6 @@
     </ClCompile>
     <ClCompile Include="Source\Scene2D\Camera2D.cpp">
       <Filter>Entity2D</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Command\Command.cpp">
-      <Filter>Command</Filter>
     </ClCompile>
     <ClCompile Include="Source\Scene2D\Collider2D.cpp">
       <Filter>Entity2D</Filter>
@@ -264,9 +258,6 @@
     </ClInclude>
     <ClInclude Include="Source\Scene2D\Camera2D.h">
       <Filter>Entity2D</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Command\Command.h">
-      <Filter>Command</Filter>
     </ClInclude>
     <ClInclude Include="Source\Scene2D\Collider2D.h">
       <Filter>Entity2D</Filter>

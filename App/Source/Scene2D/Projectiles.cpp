@@ -4,7 +4,10 @@
 #include <vector>
 
 #include "EntityManager.h"
-
+#include "Primitives/MeshBuilder.h"
+#include "RenderControl/ShaderManager.h"
+#include "../TextureManager/TextureManager.h"
+#include "Camera2D.h"
 Projectiles::Projectiles(int iTextureID)
 	: animatedSprites(NULL)
 	, currentColor(glm::vec4())
@@ -21,6 +24,12 @@ Projectiles::~Projectiles()
 
 bool Projectiles::Init()
 {
+	glGenVertexArrays(1, &VAO);
+	glBindVertexArray(VAO);
+	cSettings = CSettings::GetInstance();
+	mesh = CMeshBuilder::GenerateQuad(glm::vec4(1, 1, 1, 1), cSettings->TILE_WIDTH, cSettings->TILE_HEIGHT);
+	cSettings = CSettings::GetInstance();
+
 	cPhysics2D.Init(&vTransform);
 	cPhysics2D.MAX_SPEED = 50.f;
 	cPhysics2D.FRICTONAL_COEFFICIENT = 0.8f;
@@ -105,18 +114,6 @@ void Projectiles::MapCollision(void) {
 			cPhysics2D.DoBounce(normal, 0.f);
 		}
 	}
-
-	//Update Map index
-	glm::i32vec2 newindex((int)vTransform.x, CMap2D::GetInstance()->GetLevelRow() - (int)vTransform.y - 1);
-	if (newindex != currentIndex)
-	{
-		CMap2D::GetInstance()->UpdateGridInfo(newindex.y, newindex.x, this, false);
-	}
-
-	if (destroyed)
-	{
-		cMap2D->SetMapInfo(currentIndex.y, currentIndex.x, 0, false);
-	}
 }
 
 void Projectiles::EnemyCollision(void) {
@@ -136,4 +133,63 @@ void Projectiles::EnemyCollision(void) {
 CPhysics2D& Projectiles::GetPhysics()
 {
 	return cPhysics2D;
+}
+
+void Projectiles::Render()
+{
+	//Camera init
+	glm::vec2 offset = glm::vec2(float(cSettings->NUM_TILES_XAXIS / 2.f), float(cSettings->NUM_TILES_YAXIS / 2.f));
+	glm::vec2 cameraPos = Camera2D::GetInstance()->getCurrPos();
+
+	glm::vec2 objCamPos = vTransform - cameraPos + offset;
+
+	glm::vec2 actualPos = cSettings->ConvertIndexToUVSpace(objCamPos);
+
+	float clampOffset = cSettings->ConvertIndexToUVSpace(CSettings::AXIS::x, 1, false) / 2;
+
+	float clampX = 2.0f + clampOffset;
+	float clampY = 2.0f + clampOffset;
+
+	if (actualPos.x >= -clampX && actualPos.x <= clampX && actualPos.y >= -clampY && actualPos.y <= clampY)
+	{
+		// get matrix's uniform location and set matrix
+		unsigned int transformLoc = glGetUniformLocation(CShaderManager::GetInstance()->activeShader->ID, "transform");
+		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
+
+		transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
+		transform = glm::translate(transform, glm::vec3(glm::vec2(actualPos.x, actualPos.y),
+			0.0f));
+		transform = glm::rotate(transform, glm::radians(fRotate), glm::vec3(0.f, 0.f, 1.f));
+		// Update the shaders with the latest transform
+		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
+
+		// Get the texture to be rendered
+		glBindTexture(GL_TEXTURE_2D, CTextureManager::GetInstance()->MapOfTextureIDs.at(iTextureID));
+
+		glBindVertexArray(VAO);
+
+		//CS: Use mesh to render
+		mesh->Render();
+
+		glBindVertexArray(0);
+	}
+}
+
+void Projectiles::PreRender()
+{
+	// bind textures on corresponding texture units
+	glActiveTexture(GL_TEXTURE0);
+
+	// Activate blending mode
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	// Activate the shader
+	CShaderManager::GetInstance()->Use("2DShader");
+}
+
+void Projectiles::PostRender()
+{
+	// Disable blending
+	glDisable(GL_BLEND);
 }

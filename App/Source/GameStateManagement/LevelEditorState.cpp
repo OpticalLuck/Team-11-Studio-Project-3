@@ -492,8 +492,12 @@ void CLevelEditorState::MouseInput(double dElapsedTime)
 	if (cMouseController->IsButtonReleased(CMouseController::LMB))
 	{
 		eProperties.bPlacedBlock = false;
-		eProperties.bOpenIDPopup = true;
-		eProperties.BlockPosition = vMousePos;
+		if (cLevelEditor->GetCell(vMousePos.x, vMousePos.y).iTileID > OBJECT_TYPE::INTERACTABLE_START && cLevelEditor->GetCell(vMousePos.x, vMousePos.y).iTileID < OBJECT_TYPE::INTERACTABLE_TOTAL)
+		{
+			eProperties.bOpenIDPopup = true;
+			eProperties.iCurrentInteractableID = cLevelEditor->GetCell(vMousePos.x, vMousePos.y).iInteractableID;
+			eProperties.BlockPosition = vMousePos;
+		}
 	}
 
 	if (cMouseController->IsButtonDown(CMouseController::RMB))
@@ -729,7 +733,7 @@ bool CLevelEditorState::ImGuiRender()
 
 				if (ImGui::BeginTabItem("Enemies"))
 				{
-					RenderImGuiEditorButtons(OBJECT_TYPE::TILE_START, OBJECT_TYPE::TILE_TOTAL);
+					RenderImGuiEditorButtons(OBJECT_TYPE::ENEMIES_START, OBJECT_TYPE::ENEMIES_TOTAL);
 					ImGui::EndTabItem();
 				}
 			}
@@ -831,8 +835,8 @@ bool CLevelEditorState::ImGuiRender()
 		ImGui::SetNextItemWidth(100);
 		ImGui::InputInt("Interactable ID", &eProperties.iCurrentInteractableID);
 		if (ImGui::Button("Done"))
-		{ImGui::OpenPopup("InteractableID");
-			cLevelEditor->GetCell(vMousePos.x, vMousePos.y).iInteractableID = eProperties.iCurrentInteractableID;
+		{
+			cLevelEditor->UpdateCell(eProperties.BlockPosition.x, eProperties.BlockPosition.y, cLevelEditor->GetCell(eProperties.BlockPosition.x, eProperties.BlockPosition.y).iTileID, eProperties.iCurrentInteractableID);
 			eProperties.bOpenIDPopup = false;
 			ImGui::CloseCurrentPopup();
 		}

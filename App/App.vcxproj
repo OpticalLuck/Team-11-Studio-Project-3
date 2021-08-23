@@ -12,7 +12,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp" />
-    <ClCompile Include="Source\Command\Command.cpp" />
     <ClCompile Include="Source\Factory\EnemyFactory.cpp" />
     <ClCompile Include="Source\Factory\ObjectFactory.cpp" />
     <ClCompile Include="Source\GameStateManagement\EditorSettingsState.cpp" />
@@ -55,7 +54,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h" />
-    <ClInclude Include="Source\Command\Command.h" />
     <ClInclude Include="Source\Factory\EnemyFactory.h" />
     <ClInclude Include="Source\Factory\ObjectFactory.h" />
     <ClInclude Include="Source\GameStateManagement\EditorSettingsState.h" />
