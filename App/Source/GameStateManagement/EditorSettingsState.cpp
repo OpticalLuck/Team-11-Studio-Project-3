@@ -166,8 +166,8 @@ bool CEditorSettingsState::ImGuiRender()
 	style.FrameRounding = 100.0f;
 
 	ImGui::Begin("Level Editor", NULL, OptionsFlags);
-	ImGui::SetWindowPos(ImVec2(CSettings::GetInstance()->iWindowWidth * 0.25, CSettings::GetInstance()->iWindowHeight * 0.25));
-	ImGui::SetWindowSize(ImVec2(CSettings::GetInstance()->iWindowWidth * 0.5, CSettings::GetInstance()->iWindowHeight * 0.5));
+	ImGui::SetWindowPos(ImVec2(CSettings::GetInstance()->iWindowWidth * 0.25f, CSettings::GetInstance()->iWindowHeight * 0.25f));
+	ImGui::SetWindowSize(ImVec2(CSettings::GetInstance()->iWindowWidth * 0.5f, CSettings::GetInstance()->iWindowHeight * 0.5f));
 
 	ImGui::BeginTabBar("Level_Editor#Tab_Bar");
 	if (ImGui::BeginTabItem("Select Level"))

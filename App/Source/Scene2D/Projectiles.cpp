@@ -7,7 +7,7 @@ Projectiles::Projectiles(int iTextureID)
 	: animatedSprites(NULL)
 	, currentColor(glm::vec4())
 {
-	projectileType = PROJ_SHURIKEN;
+	projectileType = PROJECTILE_TYPE::PROJ_SHURIKEN;
 	this->iTextureID = iTextureID;
 }
 

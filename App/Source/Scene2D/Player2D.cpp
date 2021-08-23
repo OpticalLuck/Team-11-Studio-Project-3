@@ -619,7 +619,7 @@ void CPlayer2D::InputUpdate(double dt)
 			if(cPhysics2D.GetVelocity().y <= 0)
 				force.y = 80;
 			else
-				velocity.y = 8.4;
+				velocity.y = 8.4f;
 
 			cPhysics2D.SetboolGrounded(false);
 		}

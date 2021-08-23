@@ -10,7 +10,7 @@
 class Projectiles : public CObject2D
 {
 public:
-	enum PROJECTILE_TYPE
+	enum class PROJECTILE_TYPE
 	{
 		PROJ_SHURIKEN,
 		PROJ_TOTAL

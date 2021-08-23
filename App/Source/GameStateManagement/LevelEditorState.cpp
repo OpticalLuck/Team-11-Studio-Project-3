@@ -110,7 +110,7 @@ bool CLevelEditorState::Init(void)
  */
 bool CLevelEditorState::Update(const double dElapsedTime)
 {
-	Camera2D::GetInstance()->Update(dElapsedTime);
+	Camera2D::GetInstance()->Update((float)dElapsedTime);
 
 	vMousePos = Camera2D::GetInstance()->GetCursorPosInWorldSpace(0);
 
@@ -143,11 +143,11 @@ bool CLevelEditorState::Update(const double dElapsedTime)
 
 		// Mouse X Scroll
 		if (cMouseController->GetMousePositionX() < 100 || cMouseController->GetMousePositionX() > cSettings->iWindowWidth - 100)
-			Camera2D::GetInstance()->MoveTarget(-(cSettings->iWindowWidth * 0.5 - cMouseController->GetMousePositionX()) * dElapsedTime * 0.025, 0);
+			Camera2D::GetInstance()->MoveTarget(-(cSettings->iWindowWidth * 0.5f - cMouseController->GetMousePositionX()) * dElapsedTime * 0.025f, 0);
 		
 		// Mouse Y Scroll
 		if (cMouseController->GetMousePositionY() < 100 || cMouseController->GetMousePositionY() > cSettings->iWindowHeight - 100)
-			Camera2D::GetInstance()->MoveTarget(0, (cSettings->iWindowHeight * 0.5 - cMouseController->GetMousePositionY()) * dElapsedTime * 0.025);
+			Camera2D::GetInstance()->MoveTarget(0, (cSettings->iWindowHeight * 0.5f - cMouseController->GetMousePositionY()) * dElapsedTime * 0.025f);
 	}
 
 	FileUtilShortcuts();
@@ -516,11 +516,11 @@ void CLevelEditorState::MouseInput(double dElapsedTime)
 	}
 	if (cMouseController->GetMouseScrollStatus(CMouseController::SCROLL_TYPE_YOFFSET) > 0)
 	{
-		Camera2D::GetInstance()->UpdateZoom(Camera2D::GetInstance()->getTargetZoom() + 0.1);
+		Camera2D::GetInstance()->UpdateZoom(Camera2D::GetInstance()->getTargetZoom() + 0.1f);
 	}
 	if (cMouseController->GetMouseScrollStatus(CMouseController::SCROLL_TYPE_YOFFSET) < 0)
 	{
-		Camera2D::GetInstance()->UpdateZoom(Camera2D::GetInstance()->getTargetZoom() - 0.1);
+		Camera2D::GetInstance()->UpdateZoom(Camera2D::GetInstance()->getTargetZoom() - 0.1f);
 	}
 }
 
@@ -814,7 +814,7 @@ bool CLevelEditorState::ImGuiRender()
 		ImGuiWindowFlags_NoResize |
 		ImGuiWindowFlags_NoCollapse;
 
-	ImGui::SetNextWindowPos(ImVec2((cSettings->iWindowWidth - 250) * 0.5, (cSettings->iWindowHeight - 105) * 0.5));
+	ImGui::SetNextWindowPos(ImVec2((cSettings->iWindowWidth - 250) * 0.5f, (cSettings->iWindowHeight - 105) * 0.5f));
 	ImGui::SetNextWindowSize(ImVec2(250, 105));
 	if (eProperties.bToggleCloseWindow)
 	{
