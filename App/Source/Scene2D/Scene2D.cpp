@@ -15,7 +15,6 @@ CScene2D::CScene2D(void)
 	: cMap2D(NULL)
 	, cPlayer2D(NULL)
 	, cKeyboardController(NULL)
-	, cGUI_Scene2D(NULL)
 	, cGameManager(NULL)
 	, cSoundController(NULL)
 	, CInputHandler(NULL)
@@ -41,12 +40,6 @@ CScene2D::~CScene2D(void)
 	{
 		cGameManager->Destroy();
 		cGameManager = NULL;
-	}
-
-	if (cGUI_Scene2D)
-	{
-		cGUI_Scene2D->Destroy();
-		cGUI_Scene2D = NULL;
 	}
 
 	// We won't delete this since it was created elsewhere
@@ -134,10 +127,6 @@ bool CScene2D::Init(void)
 	// Store the keyboard controller singleton instance here
 	cKeyboardController = CKeyboardController::GetInstance();
 
-	// Store the cGUI_Scene2D singleton instance here
-	cGUI_Scene2D = CGUI_Scene2D::GetInstance();
-	cGUI_Scene2D->Init();
-
 	// Game Manager
 	cGameManager = CGameManager::GetInstance();
 	cGameManager->Init();
@@ -187,8 +176,6 @@ bool CScene2D::Update(const double dElapsedTime)
 			return false;
 		}
 	}
-	// Call the cGUI_Scene2D's update method
-	cGUI_Scene2D->Update(dElapsedTime);
 
 	//Camera work
 	cameraHandler->UpdateTarget(cPlayer2D->vTransform);
@@ -270,13 +257,6 @@ void CScene2D::Render(void)
 	cEntityManager->RenderEnemy();
 	cEntityManager->RenderClone();
 	cEntityManager->RenderPlayer();
-
-	// Call the cGUI_Scene2D's PreRender()
-	cGUI_Scene2D->PreRender();
-	// Call the cGUI_Scene2D's Render()
-	cGUI_Scene2D->Render();
-	// Call the cGUI_Scene2D's PostRender()
-	cGUI_Scene2D->PostRender();
 }
 
 /**
@@ -286,18 +266,5 @@ void CScene2D::PostRender(void)
 {
 }
 
-void CScene2D::CreateIMGUI()
-{
-	// Store the cGUI_Scene2D singleton instance here
-	cGUI_Scene2D = CGUI_Scene2D::GetInstance();
-}
-
-void CScene2D::DeleteIMGUI()
-{
-	if (cGUI_Scene2D)
-	{
-		cGUI_Scene2D = NULL;
-	}
-}
 
 
