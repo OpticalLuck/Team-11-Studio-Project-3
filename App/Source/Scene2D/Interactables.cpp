@@ -86,12 +86,6 @@ void Interactables::PostRender(void)
 	glDisable(GL_BLEND);
 }
 
-void Interactables::SetCommand(COMMANDS eCommand)
-{
-	cCommand.SetCommand(eCommand);
-}
-
-
 /**
 @brief Load a texture, assign it a code and store it in MapOfTextureIDs.
 @param filename A const char* variable which contains the file name of the texture
