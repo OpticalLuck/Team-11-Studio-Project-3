@@ -20,7 +20,7 @@
 #include <iostream>
 #include <vector>
 
-#include "../Library/Source/System/MapLoader.h"
+#include "System/MapLoader.h"
 
 using namespace std;
 
@@ -58,6 +58,19 @@ CMap2D::~CMap2D(void)
 		}
 	}
 	arrBackground.clear();
+
+	for (unsigned i = 0; i < arrBgGrid.size(); i++) {
+		for (unsigned y = 0; y < arrBgGrid[i].size(); y++) {
+			for (unsigned x = 0; x < arrBgGrid[i][y].size(); x++ ) {
+				if (arrBgGrid[i][y][x]) {
+					delete arrBgGrid[i][y][x];
+					arrBgGrid[i][y][x] = nullptr;
+				}
+			}
+		}
+	}
+	arrBgGrid.clear();
+
 	// optional: de-allocate all resources once they've outlived their purpose:
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
@@ -91,13 +104,16 @@ bool CMap2D::Init(const unsigned int uiNumLevels,
 	arrObject.clear();
 	arrBackground.clear();
 	arrAllowanceScale.clear();
-
+	arrBgGrid.clear();
+	arrBgObject.clear();
 	for (unsigned i = 0; i < uiNumLevels; i++) {
 		arrLevelLimit.push_back(glm::i32vec2());
 		arrObject.push_back(std::vector<CObject2D*>());
 		arrGrid.push_back(std::vector<std::vector<CObject2D*>>());
+		arrBgGrid.push_back(std::vector<std::vector<CObject2D*>>());
 		arrBackground.push_back(nullptr);
 		arrAllowanceScale.push_back(glm::vec2());
+		arrBgObject.push_back(std::vector<CObject2D*>());
 	}
 
 
@@ -162,8 +178,34 @@ void CMap2D::Render(void)
 	glm::vec2 offset = glm::vec2(float(cSettings->NUM_TILES_XAXIS / 2.f), float(cSettings->NUM_TILES_YAXIS / 2.f));
 	glm::vec2 cameraPos = camera->getCurrPos();
 
+	for (unsigned i = 0; i < arrBgObject[uiCurLevel].size(); i++) {
+		CObject2D* currObj = arrBgObject[uiCurLevel][i];
+
+		glm::vec2 objCamPos = currObj->vTransform - cameraPos + offset;
+
+		glm::vec2 actualPos = cSettings->ConvertIndexToUVSpace(objCamPos);
+
+		float clampOffset = cSettings->ConvertIndexToUVSpace(CSettings::AXIS::x, 1, false) / 2;
+
+		float clampX = 2.0f + clampOffset;
+		float clampY = 2.0f + clampOffset;
+
+		if (actualPos.x <= -clampX || actualPos.x >= clampX || actualPos.y <= -clampY || actualPos.y >= clampY)
+			continue;
+
+		transform = glm::mat4(1.f);
+		transform = glm::translate(transform, glm::vec3(actualPos.x, actualPos.y, 0.f));
+		transform = glm::rotate(transform, glm::radians(currObj->fRotate), glm::vec3(0.f, 0.f, 1.f));
+
+		// Update the shaders with the latest transform
+		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
+
+		RenderTile(*currObj);
+	}
+
 	for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++) {
 		CObject2D* currObj = arrObject[uiCurLevel][i];
+
 		glm::vec2 objCamPos = currObj->vTransform - cameraPos + offset;
 
 		glm::vec2 actualPos = cSettings->ConvertIndexToUVSpace(objCamPos);
@@ -483,6 +525,7 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 		}
 
 		arrGrid[uiCurLevel].push_back(std::vector<CObject2D*>());
+		arrBgGrid[uiCurLevel].push_back(std::vector<CObject2D*>());
 
 		// Load a particular CSV value into the arrMapInfo
 		for (unsigned int uiCol = 0; uiCol < (unsigned int)doc.GetColumnCount() - 1; ++uiCol)
@@ -490,11 +533,14 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 			//Init of objects values
 			int currTexture = 0;
 			int currObjID = 0;
+			int backgroundID = 0;
 
-			SysMap::ExtractIDs(row[uiCol], currTexture, currObjID);
+			SysMap::ExtractIDs(row[uiCol], currTexture, currObjID, backgroundID);
 
 			arrGrid[uiCurLevel][uiRow].push_back(nullptr);
+			arrBgGrid[uiCurLevel][uiRow].push_back(nullptr);
 
+			//Curr texture
 			if (currTexture > 0) {
 				CObject2D* currObj = objFactory.CreateObject(currTexture);
 
@@ -507,10 +553,30 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 				currObj->vTransform = currIndex;
 
 				currObj->Init();
+				currObj->SetObjectID(currObjID);
 
 				arrObject[uiCurLevel].push_back(currObj);
 				//Add in new CObj pointer if available
 				arrGrid[uiCurLevel][uiRow][uiCol] = currObj;
+			}
+
+			//Background texture
+			if (backgroundID > 0) {
+				CObject2D* currBg = new CObject2D(backgroundID);
+
+				currBg->SetCurrentIndex(glm::i32vec2(uiCol, uiRow));
+
+				//Position of values
+				glm::vec2 currIndex;
+				currIndex.x = (float)uiCol;
+				currIndex.y = (float)doc.GetRowCount() - (float)uiRow - 1.f;
+				currBg->vTransform = currIndex;
+
+				currBg->Init();
+				currBg->GetCollider()->SetbEnabled(false);
+
+				arrBgObject[uiCurLevel].push_back(currBg);
+				arrBgGrid[uiCurLevel][uiRow][uiCol] = currBg;
 			}
 		}
 	}

@@ -87,12 +87,17 @@ class CObject2D : public CEntity2D
 		glm::i32vec2 GetCurrentIndex() const;
 		void SetCurrentIndex(glm::i32vec2 currentIndex);
 
+		void SetObjectID(int objectID);
+
 	protected:
 		float width;
 		float height;
 
 		//Current Index in map Grid
 		glm::i32vec2 currentIndex;
+
+		//Object ID
+		int ObjectID;
 
 		//Handlers
 		CEntityManager* cEntityManager;

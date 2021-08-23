@@ -48,3 +48,7 @@ void CObject2D::SetCurrentIndex(glm::i32vec2 currentIndex)
 {
 	this->currentIndex = currentIndex;
 }
+
+void CObject2D::SetObjectID(int objectID) {
+	this->ObjectID = objectID;
+}

@@ -14,17 +14,35 @@ bool SysMap::IsInteger(const std::string& s) {
 	return (*p == 0);
 }
 
-void SysMap::ExtractIDs(std::string str, int& textureID, int& objectID) {
+void SysMap::ExtractIDs(std::string str, int& textureID, int& objectID, int& backgroundID) {
 	//If there are no ; present (Basically only one value in cell like "100")
 	if (IsInteger(str)) {
 		textureID = stoi(str);
 		objectID = 0;
+		
 		return;
 	}
 
 	//Conversion for if there are more than 1 value present (100;2)
 	std::stringstream ss(str);
+
+	std::vector<std::string> slashChk;
 	std::vector<int> values;
+
+	while (ss.good()) {
+		std::string substr;
+		getline(ss, substr, '/');
+
+		slashChk.push_back(substr);
+	}
+
+	if (slashChk.size() > 1 && IsInteger(slashChk[1]))
+		backgroundID = std::stoi(slashChk[1]);
+
+	//Reinitialise ss
+	ss.str("");
+	ss.clear();
+	ss.str(slashChk[0]);
 
 	while (ss.good()) {
 		std::string substr;
@@ -35,5 +53,7 @@ void SysMap::ExtractIDs(std::string str, int& textureID, int& objectID) {
 	}
 
 	textureID = values[0];
-	objectID = values[1];
+
+	if (values.size() > 1)
+		objectID = values[1];
 }
