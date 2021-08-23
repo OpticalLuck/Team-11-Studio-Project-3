@@ -12,7 +12,7 @@
 #include <includes/gtc/type_ptr.hpp>
 
 // Include CEntity2D
-#include "Primitives/Entity2D.h"
+#include "../Library/Source/Primitives/Entity2D.h"
 
 //Centity manager
 class CEntityManager;

@@ -5,6 +5,7 @@
 #endif
 
 // Include GLFW
+#include <Windows.h>
 #include <GLFW/glfw3.h>
 
 #include "LevelEditorState.h"
@@ -37,8 +38,8 @@ CLevelEditorState::CLevelEditorState(void)
 	, activeTile(0)
 	, transform(1.f)
 	, cursor(NULL)
-	, vMousePos(0.f)
 {
+	vMousePos = glm::i32vec2();
 }
 /**
  @brief Destructor
@@ -143,11 +144,11 @@ bool CLevelEditorState::Update(const double dElapsedTime)
 
 		// Mouse X Scroll
 		if (cMouseController->GetMousePositionX() < 100 || cMouseController->GetMousePositionX() > cSettings->iWindowWidth - 100)
-			Camera2D::GetInstance()->MoveTarget(-(cSettings->iWindowWidth * 0.5f - cMouseController->GetMousePositionX()) * dElapsedTime * 0.025f, 0);
+			Camera2D::GetInstance()->MoveTarget(-(cSettings->iWindowWidth * 0.5f - cMouseController->GetMousePositionX()) * (float)dElapsedTime * 0.025f, 0);
 		
 		// Mouse Y Scroll
 		if (cMouseController->GetMousePositionY() < 100 || cMouseController->GetMousePositionY() > cSettings->iWindowHeight - 100)
-			Camera2D::GetInstance()->MoveTarget(0, (cSettings->iWindowHeight * 0.5f - cMouseController->GetMousePositionY()) * dElapsedTime * 0.025f);
+			Camera2D::GetInstance()->MoveTarget(0, (cSettings->iWindowHeight * 0.5f - cMouseController->GetMousePositionY()) * (float)dElapsedTime * 0.025f);
 	}
 
 	FileUtilShortcuts();
@@ -644,7 +645,7 @@ bool CLevelEditorState::ImGuiRender()
 
 			ImGuiIO& io = ImGui::GetIO();
 
-			ImGui::SetCursorPos(ImVec2(cSettings->iWindowWidth - 110, 0));
+			ImGui::SetCursorPos(ImVec2((float)cSettings->iWindowWidth - 110.f, 0));
 			ImGui::TextColored(ImVec4(1, 1, 0, 1), "Unsaved Changes");
 		}
 
@@ -652,7 +653,7 @@ bool CLevelEditorState::ImGuiRender()
 	}
 
 	ImGui::SetNextWindowPos(ImVec2(0, 19));
-	ImGui::SetNextWindowSize(ImVec2(260, cSettings->iWindowHeight));
+	ImGui::SetNextWindowSize(ImVec2(260.f, (float)cSettings->iWindowHeight));
 
 	ImGuiWindowFlags windowFlags =
 		ImGuiWindowFlags_AlwaysAutoResize |
@@ -748,14 +749,14 @@ bool CLevelEditorState::ImGuiRender()
 
 	// Action History Window
 	ImGui::SetNextWindowSize(ImVec2(150, 250), ImGuiCond_Once);
-	ImGui::SetNextWindowPos(ImVec2(cSettings->iWindowWidth - 150, 19), ImGuiCond_Once);
+	ImGui::SetNextWindowPos(ImVec2((float)cSettings->iWindowWidth - 150.f, 19), ImGuiCond_Once);
 	if (eProperties.bToggleHistoryWindow)
 	{
 		if (ImGui::Begin("History", &eProperties.bToggleHistoryWindow, windowFlags))
 		{
 			if (ImGui::BeginChild("ActionHistory"))
 			{
-				ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.1, 0.5));
+				ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.1f, 0.5f));
 				ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.f);
 				for (unsigned i = 0; i < eProperties.prevActions.size(); ++i)
 				{
@@ -836,7 +837,7 @@ bool CLevelEditorState::ImGuiRender()
 		ImGui::InputInt("Interactable ID", &eProperties.iCurrentInteractableID);
 		if (ImGui::Button("Done"))
 		{
-			cLevelEditor->UpdateCell(eProperties.BlockPosition.x, eProperties.BlockPosition.y, cLevelEditor->GetCell(eProperties.BlockPosition.x, eProperties.BlockPosition.y).iTileID, eProperties.iCurrentInteractableID);
+			cLevelEditor->UpdateCell((unsigned int)eProperties.BlockPosition.x, (unsigned int)eProperties.BlockPosition.y, cLevelEditor->GetCell((unsigned int)eProperties.BlockPosition.x, (unsigned int)eProperties.BlockPosition.y).iTileID, eProperties.iCurrentInteractableID);
 			eProperties.bOpenIDPopup = false;
 			ImGui::CloseCurrentPopup();
 		}
@@ -983,7 +984,7 @@ void CLevelEditorState::RenderImGuiEditorButtons(uint32_t iStart, uint32_t iEnd)
 	const int iMaxButtonsPerRow = 6;
 	int iCounter = 1;
 
-	for (int i = iStart + 1; i < iEnd; ++i)
+	for (unsigned i = iStart + 1; i < iEnd; ++i)
 	{
 		if (CTextureManager::GetInstance()->MapOfTextureIDs.find(i) == CTextureManager::GetInstance()->MapOfTextureIDs.end())
 			continue;

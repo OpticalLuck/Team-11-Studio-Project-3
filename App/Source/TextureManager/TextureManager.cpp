@@ -1,3 +1,5 @@
+#include "TextureManager.h"
+
 #ifndef GLEW_STATIC
 #include <GL/glew.h>
 #define GLEW_STATIC
@@ -5,7 +7,6 @@
 
 #include <GLFW/glfw3.h>
 
-#include "TextureManager.h"
 #include "System/ImageLoader.h"
 #include "../Scene2D/Object2D.h"
 #include <iostream>

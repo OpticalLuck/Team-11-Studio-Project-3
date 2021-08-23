@@ -222,7 +222,7 @@ bool CPlayGameState::ImGuiRender()
 		title.str("");
 		title << "Inventory" << i;
 		ImGui::Begin(title.str().c_str(), NULL, inventoryWindowFlags);
-		ImGui::SetWindowPos(ImVec2(cSettings->iWindowWidth * 0.01f, cSettings->iWindowHeight * (0.065f * i + 0.05)));
+		ImGui::SetWindowPos(ImVec2((float)cSettings->iWindowWidth * 0.01f, (float)cSettings->iWindowHeight * (0.065f * (float)i + 0.05f)));
 		ImGui::SetWindowSize(ImVec2(200.0f * relativeScale_x, 25.0f * relativeScale_y));
 		ImGui::Image((void*)(intptr_t)cTextureManager->MapOfTextureIDs.at(cPlayerInventory->GetItem(i).get_ID()),
 			ImVec2(25 * relativeScale_x, 25 * relativeScale_y),

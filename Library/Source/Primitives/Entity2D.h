@@ -29,6 +29,9 @@
 
 using namespace std;
 
+//Predefinitions
+class Camera2D;
+
 class CEntity2D 
 {
 public:
@@ -104,6 +107,8 @@ protected:
 	// Load a texture
 	virtual bool LoadTexture(const char* filename);
 
-	// Settings
+	//Handlers
 	CSettings* cSettings;
+	//CMap2D* cMap2D;
+	Camera2D* camera2D;
 };

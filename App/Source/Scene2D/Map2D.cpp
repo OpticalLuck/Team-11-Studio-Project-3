@@ -6,6 +6,7 @@
 #include "Map2D.h"
 
 #include "EntityManager.h"
+#include "GameControl/Settings.h"
 
 // Include Shader Manager
 #include "RenderControl\ShaderManager.h"

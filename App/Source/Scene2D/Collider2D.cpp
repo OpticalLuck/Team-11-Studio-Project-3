@@ -89,7 +89,7 @@ Collider2D::Collider2D()
 	, angle(0.f)
 {
 	sLineShaderName = "LineShader";
-	colliderType = COLLIDER_QUAD;
+	colliderType = ColliderType::COLLIDER_QUAD;
 }
 
 Collider2D::~Collider2D()
@@ -177,11 +177,11 @@ Collision Collider2D::CollideWith(Collider2D* object)
 {
 	if (object->bEnabled)
 	{
-		if (object->colliderType == COLLIDER_QUAD)
+		if (object->colliderType == ColliderType::COLLIDER_QUAD)
 		{
 			return CheckAABBCollision(this, object);
 		}
-		else if (object->colliderType == COLLIDER_CIRCLE)
+		else if (object->colliderType == ColliderType::COLLIDER_CIRCLE)
 		{
 			return CheckAABBCircleCollision(this, object);
 		}
@@ -248,12 +248,12 @@ void Collider2D::ResolveAABBCircle(Collider2D* object, Collision data, ColliderT
 	Collider2D* ball = nullptr;
 	Collider2D* quad = nullptr;
 
-	if (object->colliderType == Collider2D::COLLIDER_CIRCLE)
+	if (object->colliderType == Collider2D::ColliderType::COLLIDER_CIRCLE)
 	{
 		quad = this;
 		ball = object;
 	}
-	else if (colliderType == Collider2D::COLLIDER_CIRCLE)
+	else if (colliderType == Collider2D::ColliderType::COLLIDER_CIRCLE)
 	{
 		quad = object;
 		ball = this;
@@ -264,7 +264,7 @@ void Collider2D::ResolveAABBCircle(Collider2D* object, Collision data, ColliderT
 		// collision resolution
 		Direction dir = std::get<1>(data);
 		glm::vec2 diff_vector = std::get<2>(data);
-		if (target == COLLIDER_CIRCLE)
+		if (target == ColliderType::COLLIDER_CIRCLE)
 		{
 			if (dir == Direction::LEFT || dir == Direction::RIGHT) // horizontal collision
 			{
@@ -288,7 +288,7 @@ void Collider2D::ResolveAABBCircle(Collider2D* object, Collision data, ColliderT
 
 			}
 		}
-		else if (target == COLLIDER_QUAD)
+		else if (target == ColliderType::COLLIDER_QUAD)
 		{
 			if (dir == Direction::LEFT || dir == Direction::RIGHT) // horizontal collision
 			{
@@ -350,7 +350,7 @@ void Collider2D::Render(void)
 
 		// render box
 		glBindVertexArray(VAO);
-		if (colliderType == COLLIDER_QUAD)
+		if (colliderType == ColliderType::COLLIDER_QUAD)
 			glDrawArrays(GL_LINE_LOOP, 0, 6);
 		else
 			glDrawArrays(GL_LINE_LOOP, 0, 12);

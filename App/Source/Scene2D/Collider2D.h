@@ -35,7 +35,7 @@ private:
 	// calculates which direction a vector is facing (N,E,S or W)
 	static Direction VectorDirection(glm::vec2 target);
 public:
-	enum ColliderType
+	enum class ColliderType
 	{
 		COLLIDER_QUAD = 0,
 		COLLIDER_CIRCLE,
@@ -75,7 +75,7 @@ public:
 	//Just Here if want to use
 	// NOT RECOMMENDED IF THERE IS MULTIPLE ENTITIES CLOSE TO EACHOTHER
 	void ResolveAABB(Collider2D* object, Direction axis);
-	void ResolveAABBCircle(Collider2D* object, Collision data, ColliderType target = COLLIDER_CIRCLE);
+	void ResolveAABBCircle(Collider2D* object, Collision data, ColliderType target = ColliderType::COLLIDER_CIRCLE);
 
 
 	bool GetbEnabled() const;

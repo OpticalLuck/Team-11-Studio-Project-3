@@ -1,9 +1,14 @@
 #pragma once
-#include "Enemy2D.h"
+
+#include "Object2D.h"
 #include "EntityManager.h"
 
+//physics
+#include "Physics2D.h"
 
-class EnemyBullet2D : public CEnemy2D
+class CMap2D;
+
+class EnemyBullet2D : public CObject2D
 {
 	public:
 		EnemyBullet2D(void);
@@ -16,13 +21,19 @@ class EnemyBullet2D : public CEnemy2D
 		void Render(void);
 
 		bool OutOfWorld(void);
+		int GetHealth(void);
 
 	protected:
 		glm::vec2 dirVec;
 
 		float mAngle;
-		float mSpd; 
+		float mForce; 
 		float mScale; //Scale from 0 to 1 (1 being the max tile width and height)
+
+		int pHealth;
+
+		//Handler 
+		CMap2D* cMap2D;
 
 		//Collision check
 		void CollisionCheck(void);

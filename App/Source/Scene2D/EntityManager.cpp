@@ -301,10 +301,11 @@ void CEntityManager::Update(const double dElapsedTime)
 	for (unsigned i = 0; i < m_eBulletList.size(); i++) {
 		m_eBulletList[i]->Update(dElapsedTime);
 
-		//if (m_eBulletList[i]->OutOfWorld() || m_eBulletList[i]->GetHealth() <= 0) {
-		//	delete m_eBulletList[i];
-		//	m_eBulletList[i] = nullptr;
-		//}
+		EnemyBullet2D* eBullet = dynamic_cast<EnemyBullet2D*>(m_eBulletList[i]);
+		if (eBullet && (eBullet->OutOfWorld() || eBullet->GetHealth() <= 0)) {
+			delete m_eBulletList[i];
+			m_eBulletList[i] = nullptr;
+		}
 	}
 
 	//Remove any nullptrs in bullet array
@@ -318,7 +319,7 @@ void CEntityManager::Update(const double dElapsedTime)
 	}
 }
 
-void CEntityManager::PushBullet(CEntity2D* bullet) {
+void CEntityManager::PushBullet(CObject2D* bullet) {
 	m_eBulletList.push_back(bullet);
 }
 

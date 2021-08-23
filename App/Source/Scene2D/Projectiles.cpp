@@ -90,7 +90,7 @@ void Projectiles::MapCollision(void) {
 		Collision data = (collider2D->CollideWith(obj->GetCollider()));
 		if (std::get<0>(data))
 		{
-			if (obj->GetCollider()->colliderType == Collider2D::COLLIDER_QUAD)
+			if (obj->GetCollider()->colliderType == Collider2D::ColliderType::COLLIDER_QUAD)
 			{
 				collider2D->ResolveAABB(obj->GetCollider(), Direction::UP);
 				collider2D->ResolveAABB(obj->GetCollider(), Direction::RIGHT);
@@ -98,10 +98,10 @@ void Projectiles::MapCollision(void) {
 				if (std::get<1>(data) == Direction::UP)
 					cPhysics2D.SetboolGrounded(true);
 			}
-			else if (obj->GetCollider()->colliderType == Collider2D::COLLIDER_CIRCLE)
+			else if (obj->GetCollider()->colliderType == Collider2D::ColliderType::COLLIDER_CIRCLE)
 			{
 				if (glm::dot(cPhysics2D.GetVelocity(), obj->vTransform - vTransform) > 0)
-					collider2D->ResolveAABBCircle(obj->GetCollider(), data, Collider2D::COLLIDER_QUAD);
+					collider2D->ResolveAABBCircle(obj->GetCollider(), data, Collider2D::ColliderType::COLLIDER_QUAD);
 
 				if (std::get<1>(data) == Direction::DOWN)
 					cPhysics2D.SetboolGrounded(true);

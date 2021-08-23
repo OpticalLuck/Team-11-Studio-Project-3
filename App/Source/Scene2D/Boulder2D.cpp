@@ -46,7 +46,7 @@ void Boulder2D::Update(const double dElapsedTime)
 					Collision data = (collider2D->CollideWith(cMap2D->GetCObject(colCheck, rowCheck)->GetCollider()));
 					if (std::get<0>(data))
 					{
-						if (obj->GetCollider()->colliderType == Collider2D::COLLIDER_QUAD)
+						if (obj->GetCollider()->colliderType == Collider2D::ColliderType::COLLIDER_QUAD)
 						{
 							if (i == 0)
 								collider2D->ResolveAABB(obj->GetCollider(), Direction::UP);
