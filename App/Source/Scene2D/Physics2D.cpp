@@ -69,12 +69,15 @@ void CPhysics2D::Update(double dElapsedTime)
 {
 	glm::vec2 a = CalculateAcceleration();
 	
-	glm::vec2 friction = CalculateFriction(FRICTONAL_COEFFICIENT);
+	if (bGrounded)
+	{
+		glm::vec2 friction = CalculateFriction(FRICTONAL_COEFFICIENT);
 
-	if (abs(friction.x * (float)dElapsedTime) < abs(velocity.x))
-		a += friction;
-	else
-		velocity.x = 0; 
+		if (abs(friction.x * (float)dElapsedTime) < abs(velocity.x))
+			a += friction;
+		else
+			velocity.x = 0; 
+	}
 
 	if(!bGrounded)
 		a += v2Gravity;
