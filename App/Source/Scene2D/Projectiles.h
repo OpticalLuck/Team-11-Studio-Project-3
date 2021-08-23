@@ -17,7 +17,7 @@ public:
 	};
 	PROJECTILE_TYPE projectileType;
 
-	Projectiles(int iTextureID = OBJECT_TYPE::ITEM_SHURIKEN);
+	Projectiles(int iTextureID = OBJECT_TYPE::CONSUMABLES_SHURIKEN);
 	virtual ~Projectiles();
 
 	bool Init() override;

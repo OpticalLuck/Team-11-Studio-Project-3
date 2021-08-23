@@ -302,12 +302,13 @@ void CLevelEditor::LoadExistingLevels(void)
 
     for (const auto& file : fs::directory_iterator(levelFolderPath))
     {
+        DEBUG_MSG("Loading: " << file.path());
+        
         Level level;
         level.LevelName = file.path().filename().generic_string();
         level.LevelPath = file.path().generic_string();
         m_Levels.push_back(level);
 
-        DEBUG_MSG("Loading: " << file.path());
         DEBUG_MSG("Loaded " << file.path().filename());
     }
 }
