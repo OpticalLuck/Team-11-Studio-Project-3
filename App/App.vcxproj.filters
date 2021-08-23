@@ -36,9 +36,6 @@
     <Filter Include="Items">
       <UniqueIdentifier>{3b664dd3-f778-43dd-9188-98d0618c77bf}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Entity2D\Enemy2D">
-      <UniqueIdentifier>{12b6e96b-a1d8-4859-87bd-b2727a81f938}</UniqueIdentifier>
-    </Filter>
     <Filter Include="TextureManager">
       <UniqueIdentifier>{afe0f215-16c2-4a8d-8016-49e8d6a661a0}</UniqueIdentifier>
     </Filter>
@@ -50,6 +47,12 @@
     </Filter>
     <Filter Include="Entity2D\Interactables">
       <UniqueIdentifier>{7f609581-e6d9-4f76-a0f6-7950c37bf6ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entity2D\LivingEntity2D">
+      <UniqueIdentifier>{c7a87555-ea7c-436d-ad47-7d450ba08ac9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entity2D\LivingEntity2D\Enemy2D">
+      <UniqueIdentifier>{12b6e96b-a1d8-4859-87bd-b2727a81f938}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -88,9 +91,6 @@
     </ClCompile>
     <ClCompile Include="Source\Scene2D\BackgroundEntity.cpp">
       <Filter>Scene2D</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Scene2D\Player2D.cpp">
-      <Filter>Entity2D</Filter>
     </ClCompile>
     <ClCompile Include="Source\Scene2D\GameManager.cpp">
       <Filter>Manager2D</Filter>
@@ -150,10 +150,10 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\Scene2D\EnemyBullet2D.cpp">
-      <Filter>Entity2D\Enemy2D</Filter>
+      <Filter>Entity2D\LivingEntity2D\Enemy2D</Filter>
     </ClCompile>
     <ClCompile Include="Source\Scene2D\MobEnemy2D.cpp">
-      <Filter>Entity2D\Enemy2D</Filter>
+      <Filter>Entity2D\LivingEntity2D\Enemy2D</Filter>
     </ClCompile>
     <ClCompile Include="Source\Scene2D\Inventory.cpp">
       <Filter>Items</Filter>
@@ -162,7 +162,7 @@
       <Filter>InputHandler</Filter>
     </ClCompile>
     <ClCompile Include="Source\Scene2D\Boss2D.cpp">
-      <Filter>Entity2D\Enemy2D</Filter>
+      <Filter>Entity2D\LivingEntity2D\Enemy2D</Filter>
     </ClCompile>
     <ClCompile Include="Source\TextureManager\TextureManager.cpp">
       <Filter>TextureManager</Filter>
@@ -209,6 +209,12 @@
     <ClCompile Include="Source\Scene2D\EnemyBullet2D.cpp">
       <Filter>Entity2D\Enemy2D</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Scene2D\Player2D.cpp">
+      <Filter>Entity2D\LivingEntity2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene2D\LivingEntity2D.cpp">
+      <Filter>Entity2D\LivingEntity2D</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h">
@@ -246,9 +252,6 @@
     </ClInclude>
     <ClInclude Include="Source\Scene2D\BackgroundEntity.h">
       <Filter>Scene2D</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Scene2D\Player2D.h">
-      <Filter>Entity2D</Filter>
     </ClInclude>
     <ClInclude Include="Source\Scene2D\GameManager.h">
       <Filter>Manager2D</Filter>
@@ -311,13 +314,13 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\Scene2D\Boss2D.h">
-      <Filter>Entity2D\Enemy2D</Filter>
+      <Filter>Entity2D\LivingEntity2D\Enemy2D</Filter>
     </ClInclude>
     <ClInclude Include="Source\Scene2D\EnemyBullet2D.h">
-      <Filter>Entity2D\Enemy2D</Filter>
+      <Filter>Entity2D\LivingEntity2D\Enemy2D</Filter>
     </ClInclude>
     <ClInclude Include="Source\Scene2D\MobEnemy2D.h">
-      <Filter>Entity2D\Enemy2D</Filter>
+      <Filter>Entity2D\LivingEntity2D\Enemy2D</Filter>
     </ClInclude>
     <ClInclude Include="Source\TextureManager\TextureManager.h">
       <Filter>TextureManager</Filter>
@@ -363,6 +366,12 @@
     </ClInclude>
     <ClInclude Include="Source\Scene2D\EnemyBullet2D.h">
       <Filter>Entity2D\Enemy2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene2D\Player2D.h">
+      <Filter>Entity2D\LivingEntity2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene2D\LivingEntity2D.h">
+      <Filter>Entity2D\LivingEntity2D</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

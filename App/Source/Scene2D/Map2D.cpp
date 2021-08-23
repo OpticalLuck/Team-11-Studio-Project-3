@@ -310,8 +310,30 @@ void CMap2D::UpdateGridInfo(const unsigned int uiRow, const unsigned uiCol, CObj
 	CObject2D* newSpot = nullptr;
 	if (bInvert)
 	{
-		obj = arrGrid[uiCurLevel][GetLevelRow() - target->GetCurrentIndex().y - 1][target->GetCurrentIndex().x];
-		newSpot =  arrGrid[uiCurLevel][GetLevelRow() - uiRow - 1][uiCol];
+		if (uiRow < (unsigned int)GetLevelRow() && uiCol < (unsigned int)GetLevelCol() && uiRow >= 0 && uiCol >= 0) {
+			obj = arrGrid[uiCurLevel][GetLevelRow() - target->GetCurrentIndex().y - 1][target->GetCurrentIndex().x];
+			newSpot = arrGrid[uiCurLevel][GetLevelRow() - uiRow - 1][uiCol];
+		}
+		else {
+			DEBUG_MSG("Object went out of map range - Deleting");
+
+			//Get Object in arrObject list
+			for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++)
+			{
+				obj = arrObject[uiCurLevel][i];
+				if (obj == arrGrid[uiCurLevel][target->GetCurrentIndex().y][target->GetCurrentIndex().x])
+				{
+					arrGrid[uiCurLevel][target->GetCurrentIndex().y][target->GetCurrentIndex().x] = nullptr;
+					//Delete occupying object in arrObj
+					delete obj;
+					arrObject[uiCurLevel][i] = nullptr;
+					arrObject[uiCurLevel].erase(arrObject[uiCurLevel].begin() + i);
+
+					obj = nullptr;
+					break;
+				}
+			}
+		}
 	}
 	else
 	{
@@ -322,7 +344,7 @@ void CMap2D::UpdateGridInfo(const unsigned int uiRow, const unsigned uiCol, CObj
 		}
 		else
 		{
-			cout << "Object went out of map range - Deleting" << endl;
+			DEBUG_MSG("Object went out of map range - Deleting");
 
 			//Get Object in arrObject list
 			for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++)

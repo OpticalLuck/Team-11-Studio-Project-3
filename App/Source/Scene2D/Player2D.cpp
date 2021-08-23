@@ -54,7 +54,7 @@ CPlayer2D::CPlayer2D(void)
 	// Initialise vecIndex
 	vTransform = glm::i32vec2(0);
 
-	type = PLAYER;
+	type = ENTITY_TYPE::PLAYER;
 
 	animatedSprites = nullptr;
 	camera = nullptr;
@@ -659,11 +659,11 @@ void CPlayer2D::InputUpdate(double dt)
 			{ 
 				glm::vec2 distance = Camera2D::GetInstance()->GetCursorPosInWorldSpace() - vTransform;
 
-				CObject2D* shuriken = cMap2D->GetCObject((int)vTransform.x, (int)vTransform.y);
-				shuriken->vTransform = vTransform;
+				CObject2D* shurikenObj = cMap2D->GetCObject((int)vTransform.x, (int)vTransform.y);
+				shurikenObj->vTransform = vTransform;
 
 				glm::vec2 force = glm::clamp(distance * 200.f, glm::vec2(-2000.f, -2000.f), glm::vec2(2000.f, 2000.f));
-				static_cast<Projectiles*>(shuriken)->GetPhysics().SetForce(force);
+				static_cast<Projectiles*>(shurikenObj)->GetPhysics().SetForce(force);
 			}
 		}
 	}
@@ -691,30 +691,6 @@ void CPlayer2D::InputUpdate(double dt)
 		}
 	}
 	cInventory->Update(dt, iTempFrameCounter ,m_KeyboardInputs, m_MouseInputs);
-}
-
-/**
- @brief Update the health and lives.
- */
-void CPlayer2D::UpdateHealthLives(void)
-{
-	if (pShield == 0) { //Return if shield is not enabled / player is not hit
-		currentColor = glm::vec4(1, 1, 1, 1);
-		return;
-	}
-
-	pShield--;
-
-	if (pBlinkInterval == 0) { //If blink is 0, toggle it(Blink) and reset timer 
-		pBlinkInterval = pMaxBlinkInterval;
-		if (currentColor.r == 1)
-			currentColor = glm::vec4(100, 100, 100, 1);
-		else
-			currentColor = glm::vec4(1, 1, 1, 1);
-	}
-	else {
-		pBlinkInterval--;
-	}
 }
 
 void CPlayer2D::SetClone(bool bIsClone)

@@ -20,7 +20,7 @@ CBoss2D::CBoss2D(void) {
 	bulletAng = 0;
 	cMap2D = nullptr;
 	currentColor = glm::vec4();
-	eHealth = 0;
+	pHealth = 0;
 	currTarget = nullptr;
 	quadMesh = nullptr;
 	camera = nullptr;
@@ -150,7 +150,7 @@ bool CBoss2D::Init(void) {
 
 	bulletTimer = 0;
 
-	eHealth = 100;
+	pHealth = 10;
 	currTarget = nullptr;
 
 	isSeen = false;

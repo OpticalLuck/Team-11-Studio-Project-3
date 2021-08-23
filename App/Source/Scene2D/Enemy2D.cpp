@@ -59,12 +59,12 @@ CEnemy2D::CEnemy2D(void)
 		roundDir[i] = RandomiseDir();
 	}
 	dir = roundDir[0];
-	eHealth = 1;
+	pHealth = 1;
 
-	eShield = eBlinkInterval = 0;
+	pShield = pBlinkInterval = 0;
 
-	eMaxShield = int(2.3f * (float)cSettings->FPS);
-	eMaxBlinkInterval = int(0.175f * (float)cSettings->FPS);
+	pMaxShield = int(2.3f * (float)cSettings->FPS);
+	pMaxBlinkInterval = int(0.175f * (float)cSettings->FPS);
 }
 
 /**
@@ -155,7 +155,7 @@ bool CEnemy2D::Init(void)
 
 	// If this class is initialised properly, then set the bIsActive to true
 	bIsActive = true;
-	eHealth = 1;
+	pHealth = 1;
 
 	return true;
 }
@@ -207,32 +207,12 @@ float CEnemy2D::GetAngle(glm::vec2 pos) {
 	return angle;
 }
 
-void CEnemy2D::UpdateHealthLives(void) {
-	if (eShield == 0) { //Return if shield is not enabled / player is not hit
-		currentColor = glm::vec4(1, 1, 1, 1);
-		return;
-	}
-
-	eShield--;
-
-	if (eBlinkInterval == 0) { //If blink is 0, toggle it(Blink) and reset timer 
-		eBlinkInterval = eMaxBlinkInterval;
-		if (currentColor.r == 1)
-			currentColor = glm::vec4(100, 100, 100, 1);
-		else
-			currentColor = glm::vec4(1, 1, 1, 1);
-	}
-	else {
-		eBlinkInterval--;
-	}
-}
-
 void CEnemy2D::Attacked(int hp) {
-	if (eShield > 0) //Return if shield is enabled/ enemy does not get damaged (NOTICE: KEEP FOR NOW BUT REMOVE LATER)
+	if (pShield > 0) //Return if shield is enabled/ enemy does not get damaged (NOTICE: KEEP FOR NOW BUT REMOVE LATER)
 		return;
 
-	eHealth = Math::Max(0, eHealth - 1);
-	eShield = eMaxShield + 1; //Offset by 1 frame for better synchronisation (FUTURE JEVON IF YOU KNOW YOU KNOW IF NOT THEN LMAO)
+	pHealth = Math::Max(0, pHealth - 1);
+	pShield = pMaxShield + 1; //Offset by 1 frame for better synchronisation (FUTURE JEVON IF YOU KNOW YOU KNOW IF NOT THEN LMAO)
 }
 
 float CEnemy2D::GetDistanceBetweenPlayer(CPlayer2D* player) {
@@ -377,11 +357,6 @@ void CEnemy2D::SetTransform(const int iIndex_XAxis, const int iIndex_YAxis)
 {
 	this->vTransform.x = (float)iIndex_XAxis;
 	this->vTransform.y = (float)iIndex_YAxis;
-}
-
-int CEnemy2D::GetHealth() const
-{
-	return eHealth;
 }
 
 

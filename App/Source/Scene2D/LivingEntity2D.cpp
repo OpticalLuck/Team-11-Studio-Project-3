@@ -54,3 +54,7 @@ void LivingEntity2D::UpdateHealthLives(void) {
 		pBlinkInterval--;
 	}
 }
+
+int LivingEntity2D::GetHealth(void) {
+	return pHealth;
+}

@@ -81,7 +81,7 @@ class CObject2D : public CEntity2D
 		CObject2D(int itextureID = 0);
 		virtual ~CObject2D(void);
 		
-		bool Init() override;
+		virtual bool Init();
 		void Update(const double dElapsedTime) override;
 
 		glm::i32vec2 GetCurrentIndex() const;

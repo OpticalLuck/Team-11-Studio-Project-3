@@ -31,9 +31,10 @@ class CEntityManager;
 
 #include "Math/MyMath.h"
 
-//#include "EntityManager.h"
+//LivingEntity2D
+#include "LivingEntity2D.h"
 
-class CEnemy2D : public CEntity2D
+class CEnemy2D : public CEntity2D, public LivingEntity2D
 {
 public:
 	// Constructor
@@ -59,9 +60,6 @@ public:
 
 	// Set the indices of the enemy2D
 	void SetTransform(const int iIndex_XAxis, const int iIndex_YAxis);
-
-	// Get Health
-	int GetHealth() const;
 
 	// boolean flag to indicate if this enemy is active
 	bool bIsActive;
@@ -117,9 +115,6 @@ protected:
 	// Physics
 	//CPhysics2D cPhysics2D;
 
-	// Current color
-	glm::vec4 currentColor;
-
 	//Player target and arrays handling it...
 	CPlayer2D* currTarget;
 	std::vector<CPlayer2D*> arrPlayer;
@@ -139,16 +134,6 @@ protected:
 	//Initial direction for that round
 	DIRECTION roundDir[5];
 
-	// Store health for combat
-	int eHealth;
-
-	//Timer for flashing effect, etc
-	int eShield;
-	int eMaxShield;
-
-	int eBlinkInterval;
-	int eMaxBlinkInterval;
-
 	//Get nearest player. NOTE: TARGET HAS TO BE VALID AND BE WITHIN RANGE FIRST. DEFAULT ACCEPTABLE RANGE IS WITHIN HALF CAMERA WIDTH
 	CPlayer2D* GetNearestTarget(float dist = 16.f);
 
@@ -159,8 +144,5 @@ protected:
 
 	//Randomise direction
 	DIRECTION RandomiseDir(void);
-
-	//Update Health and Lives
-	void UpdateHealthLives(void);
 };
 

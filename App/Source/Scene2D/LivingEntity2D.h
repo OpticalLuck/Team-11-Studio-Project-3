@@ -11,8 +11,9 @@ class LivingEntity2D
 		LivingEntity2D(void);
 		~LivingEntity2D(void);
 
-		void UpdateHealthLives(void);
 		virtual void Attacked(int hp = 1);
+
+		int GetHealth(void);
 
 	protected:
 		//Health and stuff
@@ -24,6 +25,8 @@ class LivingEntity2D
 
 		int pBlinkInterval; //Interval of the flashing color
 		int pMaxBlinkInterval; //Max interval
+
+		void UpdateHealthLives(void);
 
 		// Current color
 		glm::vec4 currentColor;

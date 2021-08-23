@@ -38,11 +38,11 @@ void Projectiles::Update(double dElapsedTime)
 	// Update Collider2D Position
 	collider2D->SetPosition(vTransform);
 
-	//Collision between objects in map space
-	MapCollision();
-
 	//Collision between projectile and enemy
 	EnemyCollision();
+
+	//Collision between objects in map space
+	MapCollision();
 }
 
 void Projectiles::MapCollision(void) {
@@ -55,8 +55,8 @@ void Projectiles::MapCollision(void) {
 	{
 		for (int col = -range; col <= range; col++) //x
 		{
-			int rowCheck = vTransform.y + row;
-			int colCheck = vTransform.x + col;
+			int rowCheck = (int)vTransform.y + row;
+			int colCheck = (int)vTransform.x + col;
 
 			if (rowCheck < 0 || colCheck < 0 || rowCheck > cMap2D->GetLevelRow() - 1 || colCheck > cMap2D->GetLevelCol() - 1) continue;
 

@@ -161,7 +161,7 @@ bool CEntityManager::Clone(void)
 
 bool CEntityManager::CheckCollision(CEntity2D* type1, CEntity2D* type2)
 {
-	if (type1->type == CEntity2D::PLAYER && type2->type == CEntity2D::ENEMY)
+	if (type1->type == CEntity2D::ENTITY_TYPE::PLAYER && type2->type == CEntity2D::ENTITY_TYPE::ENEMY)
 	{
 		return false;
 	}

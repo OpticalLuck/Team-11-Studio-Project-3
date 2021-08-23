@@ -32,7 +32,7 @@ using namespace std;
 class CEntity2D 
 {
 public:
-	enum ENTITY_TYPE
+	enum class ENTITY_TYPE
 	{
 		NONE = 0,
 		TILE,
@@ -44,7 +44,7 @@ public:
 	};
 	ENTITY_TYPE type;
 
-	CEntity2D(ENTITY_TYPE type = NONE);
+	CEntity2D(ENTITY_TYPE type = ENTITY_TYPE::NONE);
 
 	// Destructor
 	virtual ~CEntity2D(void);

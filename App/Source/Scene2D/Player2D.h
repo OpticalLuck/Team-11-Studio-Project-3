@@ -8,6 +8,9 @@
 // Include Singleton template
 #include "DesignPatterns\SingletonTemplate.h"
 
+//LivingEntity2D
+#include "LivingEntity2D.h"
+
 // Include GLEW
 #ifndef GLEW_STATIC
 #include <GL/glew.h>
@@ -51,7 +54,7 @@ class Camera2D;
 
 #include "InventoryManager.h"
 
-class CPlayer2D : public CEntity2D
+class CPlayer2D : public CEntity2D, public LivingEntity2D
 {
 public:
 	enum STATE
@@ -162,11 +165,9 @@ protected:
 	// Keyboard Controller singleton instance
 	CKeyboardController* cKeyboardController;
 	CMouseController* cMouseController;
+
 	//CS: Animated Sprite
 	CSpriteAnimation* animatedSprites;
-
-	// Current color
-	glm::vec4 currentColor;
 
 	// Count the number of jumps
 	int jumpCount;
@@ -182,18 +183,6 @@ protected:
 
 	// Load a texture
 	bool LoadTexture(const char* filename, GLuint& iTextureID);
-
-	//Health and stuff
-	int pHealth;
-	int pMaxHealth;
-	int pShield; //Current time of how long player will be protected for (in terms of frames)
-	int pMaxShield; //Maximum time of how long player will be protected for (in terms of frames)
-
-	int pBlinkInterval; //Interval of the flashing color
-	int pMaxBlinkInterval;
-
-	// Update the health and lives
-	void UpdateHealthLives(void);
 
 	void InputUpdate(double dt);
 

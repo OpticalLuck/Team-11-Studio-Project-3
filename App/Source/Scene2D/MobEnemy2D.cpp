@@ -58,7 +58,7 @@ bool CMobEnemy2D::Init(void) {
 	oldVTransform = vTransform;
 
 	roundIndex = 0;
-	eHealth = 5;
+	pHealth = 5;
 
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
