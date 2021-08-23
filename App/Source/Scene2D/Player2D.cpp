@@ -655,7 +655,7 @@ void CPlayer2D::InputUpdate(double dt)
 		if (shuriken.iCount > 0)
 		{
 			shuriken.Use();
-			if (cMap2D->InsertMapInfo((int)vTransform.y, (int)vTransform.x, OBJECT_TYPE::ITEM_SHURIKEN, CLASS_ID::CID_PROJECTILES))
+			if (cMap2D->InsertMapInfo((int)vTransform.y, (int)vTransform.x, OBJECT_TYPE::CONSUMABLES_SHURIKEN, CLASS_ID::CID_PROJECTILES))
 			{ 
 				glm::vec2 distance = Camera2D::GetInstance()->GetCursorPosInWorldSpace() - vTransform;
 
@@ -675,7 +675,7 @@ void CPlayer2D::InputUpdate(double dt)
 		if (shuriken.iCount > 0)
 		{
 			shuriken.Use();
-			if (cMap2D->InsertMapInfo((int)vTransform.y, (int)vTransform.x, OBJECT_TYPE::ITEM_KUNAI, CLASS_ID::CID_BULLETS))
+			if (cMap2D->InsertMapInfo((int)vTransform.y, (int)vTransform.x, OBJECT_TYPE::CONSUMABLES_KUNAI, CLASS_ID::CID_BULLETS))
 			{
 				CObject2D* shuriken = cMap2D->GetCObject((int)vTransform.x, (int)vTransform.y);
 				shuriken->vTransform = vTransform;

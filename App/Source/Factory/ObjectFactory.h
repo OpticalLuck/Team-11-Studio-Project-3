@@ -18,7 +18,7 @@ enum class CLASS_ID
 class ObjectFactory
 {
 public:
-	CObject2D* CreateObject(int iTextureID, CLASS_ID eClassID);
+	CObject2D* CreateObject(int iTextureID);
 	EnemyBullet2D* CreateBullet(float angle, glm::vec2 vTransform);
 };
 

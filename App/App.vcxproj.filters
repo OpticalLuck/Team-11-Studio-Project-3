@@ -48,6 +48,9 @@
     <Filter Include="InputHandler">
       <UniqueIdentifier>{a64d880b-e813-4454-ab71-ba91fdb27dff}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Entity2D\Interactables">
+      <UniqueIdentifier>{7f609581-e6d9-4f76-a0f6-7950c37bf6ef}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp">
@@ -104,9 +107,6 @@
     <ClCompile Include="Source\Scene2D\Camera2D.cpp">
       <Filter>Entity2D</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Scene2D\Interactables.cpp">
-      <Filter>Entity2D</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Command\Command.cpp">
       <Filter>Command</Filter>
     </ClCompile>
@@ -151,12 +151,6 @@
     </ClCompile>
     <ClCompile Include="Source\TextureManager\TextureManager.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Scene2D\Enemy2D.cpp">
-      <Filter>Entity2D\Enemy2D</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Scene2D\EnemyBullet2D.cpp">
-      <Filter>Entity2D\Enemy2D</Filter>
     </ClCompile>
     <ClCompile Include="Source\Scene2D\MobEnemy2D.cpp">
       <Filter>Entity2D\Enemy2D</Filter>
@@ -204,6 +198,15 @@
       <Filter>Entity2D\Object2D</Filter>
     </ClCompile>
     <ClCompile Include="Source\Scene2D\Boss2D.cpp">
+      <Filter>Entity2D\Enemy2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene2D\Enemy2D.cpp">
+      <Filter>Entity2D\Enemy2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene2D\Interactables.cpp">
+      <Filter>Entity2D\Interactables</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene2D\EnemyBullet2D.cpp">
       <Filter>Entity2D\Enemy2D</Filter>
     </ClCompile>
   </ItemGroup>
@@ -265,9 +268,6 @@
     <ClInclude Include="Source\Command\Command.h">
       <Filter>Command</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Scene2D\Interactables.h">
-      <Filter>Entity2D</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Scene2D\Collider2D.h">
       <Filter>Entity2D</Filter>
     </ClInclude>
@@ -316,12 +316,6 @@
     <ClInclude Include="Source\Scene2D\Boss2D.h">
       <Filter>Entity2D\Enemy2D</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Scene2D\Enemy2D.h">
-      <Filter>Entity2D\Enemy2D</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Scene2D\EnemyBullet2D.h">
-      <Filter>Entity2D\Enemy2D</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Scene2D\MobEnemy2D.h">
       <Filter>Entity2D\Enemy2D</Filter>
     </ClInclude>
@@ -359,6 +353,15 @@
       <Filter>Entity2D\Object2D</Filter>
     </ClInclude>
     <ClInclude Include="Source\Scene2D\Boss2D.h">
+      <Filter>Entity2D\Enemy2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene2D\Enemy2D.h">
+      <Filter>Entity2D\Enemy2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene2D\Interactables.h">
+      <Filter>Entity2D\Interactables</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene2D\EnemyBullet2D.h">
       <Filter>Entity2D\Enemy2D</Filter>
     </ClInclude>
   </ItemGroup>

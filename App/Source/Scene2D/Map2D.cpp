@@ -231,7 +231,7 @@ void CMap2D::SetMapInfo(unsigned int uiRow, unsigned int uiCol, const int iTextu
 	//Check if its not a nullptr
 	if (!arrGrid[uiCurLevel][uiRow][uiCol]) 
 	{
-		CObject2D* currObj = objFactory.CreateObject(iTextureID, ClassID);
+		CObject2D* currObj = objFactory.CreateObject(iTextureID);
 		currObj->SetCurrentIndex(glm::i32vec2(uiCol, uiRow));
 		currObj->vTransform = glm::i32vec2(uiCol, GetLevelRow() - uiRow - 1);
 		currObj->Init();
@@ -255,7 +255,7 @@ void CMap2D::SetMapInfo(unsigned int uiRow, unsigned int uiCol, const int iTextu
 				if (iTextureID > 0)
 				{
 					//Pushes in new Object
-					currObj = objFactory.CreateObject(iTextureID, ClassID);
+					currObj = objFactory.CreateObject(iTextureID);
 					currObj->SetCurrentIndex(glm::i32vec2(uiCol, uiRow));
 					currObj->vTransform = glm::i32vec2(uiCol, GetLevelRow() - uiRow - 1);
 					currObj->Init();
@@ -282,7 +282,7 @@ bool CMap2D::InsertMapInfo(unsigned int uiRow, unsigned int uiCol, const int iTe
 	//Check if its not a nullptr
 	if (!arrGrid[uiCurLevel][uiRow][uiCol])
 	{
-		CObject2D* currObj = objFactory.CreateObject(iTextureID, ClassID);
+		CObject2D* currObj = objFactory.CreateObject(iTextureID);
 		currObj->SetCurrentIndex(glm::i32vec2(uiCol, uiRow));
 		currObj->vTransform = glm::i32vec2(uiCol, GetLevelRow() - uiRow - 1);
 		currObj->Init();
@@ -472,7 +472,7 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 			arrGrid[uiCurLevel][uiRow].push_back(nullptr);
 
 			if (currTexture > 0) {
-				CObject2D* currObj = objFactory.CreateObject(currTexture, static_cast<CLASS_ID>(currObjID));
+				CObject2D* currObj = objFactory.CreateObject(currTexture);
 
 				currObj->SetCurrentIndex(glm::i32vec2(uiCol, uiRow));
 
