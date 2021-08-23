@@ -40,7 +40,7 @@ public:
 
 private:
 
-	CSpriteAnimation* animatedSprites;
+	CMesh* quad;
 
 	// Current color
 	glm::vec4 currentColor;

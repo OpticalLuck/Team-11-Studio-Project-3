@@ -7,12 +7,13 @@
 #include "System\ImageLoader.h"
 
 #include "Primitives/MeshBuilder.h"
+#include "../Scene2D/EntityManager.h"
 
 #include <iostream>
 
 Interactables::Interactables(void)
 	: bInteraction(false)
-	, animatedSprites(NULL)
+	, quad(NULL)
 {
 	transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
 
@@ -25,6 +26,12 @@ Interactables::Interactables(void)
 Interactables::~Interactables(void)
 {
 	glDeleteVertexArrays(1, &VAO);
+
+	if (quad)
+	{
+		delete quad;
+		quad = nullptr;
+	}
 }
 
 bool Interactables::Init(int iMapID)
@@ -32,13 +39,17 @@ bool Interactables::Init(int iMapID)
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
 
-	animatedSprites = CMeshBuilder::GenerateSpriteAnimation(10, 6, cSettings->TILE_WIDTH, cSettings->TILE_HEIGHT);
+	type = INTERACTABLES;
+	quad = CMeshBuilder::GenerateQuad();
 
 	return true;
 }
 
 void Interactables::Update(const double dElapsedTime)
 {
+	if (bInteraction)
+	{
+	}
 }
 
 void Interactables::PreRender(void)
@@ -75,7 +86,7 @@ void Interactables::Render(void)
 	glBindTexture(GL_TEXTURE_2D, iTextureID);
 
 	//CS: Render the animated sprite
-	animatedSprites->Render();
+	quad->Render();
 
 	glBindVertexArray(0);
 }
