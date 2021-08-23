@@ -29,6 +29,8 @@ class Camera2D;
 // Include Keyboard controller
 #include "Inputs\KeyboardController.h"
 
+#include "Inputs\MouseController.h"
+
 // Include Physics2D
 #include "Physics2D.h"
 
@@ -134,7 +136,7 @@ protected:
 
 	// Keyboard Controller singleton instance
 	CKeyboardController* cKeyboardController;
-
+	CMouseController* cMouseController;
 	//CS: Animated Sprite
 	CSpriteAnimation* animatedSprites;
 

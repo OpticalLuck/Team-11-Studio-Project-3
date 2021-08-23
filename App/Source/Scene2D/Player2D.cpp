@@ -25,14 +25,21 @@ using namespace std;
 
 #include "Math/MyMath.h"
 
+//Interactables
 #include "Boulder2D.h"
+
+//Items
+#include "Projectiles.h"
+
+
 /**
  @brief Constructor This constructor has protected access modifier as this class will be a Singleton
  */
 CPlayer2D::CPlayer2D(void)
 	: cMap2D(NULL)
 	, cKeyboardController(NULL)
-	// , cInventoryManager(NULL)
+	, cMouseController(NULL)
+	, cInventoryManager(NULL)
 	, cInventoryItem(NULL)
 	, cSoundController(NULL)
 	, cKeyboardInputHandler(NULL)
@@ -84,8 +91,9 @@ bool CPlayer2D::Init(void)
 {
 	// Store the keyboard controller singleton instance here
 	cKeyboardController = CKeyboardController::GetInstance();
-	// Reset all keys since we are starting a new game
 	cKeyboardController->Reset();
+
+	cMouseController = CMouseController::GetInstance();
 
 	// Get the handler to the CSettings instance
 	cSettings = CSettings::GetInstance();
@@ -136,14 +144,6 @@ bool CPlayer2D::Init(void)
 
 	// Get the handler to the CInventoryManager instance
     cInventoryManager = CInventoryManager::GetInstance();
-	// Add a Lives icon as one of the inventory items
-	cInventoryItem = cInventoryManager->Add("Lives", "Image/Collectibles/Scene2D_Lives.tga", 5, 3);
-	cInventoryItem->vec2Size = glm::vec2(25, 25);
-
-	// Add a Health icon as one of the inventory items
-	cInventoryItem = cInventoryManager->Add("Health", "Image/Scene2D_Health.tga", 100, 100);
-	cInventoryItem->vec2Size = glm::vec2(25, 25);
-
 
 	jumpCount = 0;
 
@@ -278,19 +278,31 @@ void CPlayer2D::Update(const double dElapsedTime)
 	// Store the old position
 	vOldTransform = vTransform;
 
-	if (state != S_DEATH)
-	{
-		if (state != S_ATTACK)
-		{
-			// Get keyboard updates
-			MovementUpdate(dElapsedTime);
-		}
-		if (cKeyboardController->IsKeyPressed(GLFW_KEY_V))
+	// Get keyboard updates
+	MovementUpdate(dElapsedTime);
+	if (cKeyboardController->IsKeyPressed(GLFW_KEY_V))
 		{
 			if (state != S_ATTACK)
 			{
 				cSoundController->PlaySoundByID(6);
 				state = S_ATTACK;
+			}
+		}
+
+	glm::vec2 distance = Camera2D::GetInstance()->GetCursorPosInWorldSpace();
+	cout << distance.x << ", " << distance.y << endl;
+	if (cMouseController->IsButtonPressed(0))
+	{
+		cInventoryItem = cInventoryManager->GetItem("Shuriken");
+		if (cInventoryItem->GetCount() > 0)
+		{
+			if (cMap2D->InsertMapInfo((int)vTransform.y, (int)vTransform.x, 2))
+			{
+				CObject2D* shuriken = cMap2D->GetCObject((int)vTransform.x, (int)vTransform.y);
+				shuriken->vTransform = vTransform;
+
+				static_cast<Projectiles*>(shuriken)->GetPhysics().SetForce(distance * 200.f);
+				cInventoryItem->Remove(1);
 			}
 		}
 	}
@@ -302,7 +314,7 @@ void CPlayer2D::Update(const double dElapsedTime)
 
 	int range = 3;
 
-	//COLLISION RESOLUTION ON Y_AXIS
+	//COLLISION RESOLUTION ON Y_AXIS AND X_AXIS
 	for (int i = 0; i < 2; i++)
 	{
 		for (int row = -range; row <= range; row++) //y
@@ -330,7 +342,8 @@ void CPlayer2D::Update(const double dElapsedTime)
 						}
 						else if (obj->GetCollider()->colliderType == Collider2D::COLLIDER_CIRCLE)
 						{
-							collider2D->ResolveAABBCircle(obj->GetCollider(), data, Collider2D::COLLIDER_QUAD);
+							if(glm::dot(cPhysics2D.GetVelocity(), obj->vTransform - vTransform) > 0)
+								collider2D->ResolveAABBCircle(obj->GetCollider(), data, Collider2D::COLLIDER_QUAD);
 						}
 
 						vTransform = collider2D->position;
@@ -351,7 +364,6 @@ void CPlayer2D::Update(const double dElapsedTime)
 		}
 	}
 
-	
 	//animation States
 	switch (state)
 	{
@@ -417,7 +429,7 @@ void CPlayer2D::Render(void)
 	transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
 	
 	//Get camera transforms and use them instead
-	glm::vec2 offset = glm::vec2((cSettings->NUM_TILES_XAXIS / 2) - 0.5f, (cSettings->NUM_TILES_YAXIS / 2) - 0.5f);
+	glm::vec2 offset = glm::i32vec2((cSettings->NUM_TILES_XAXIS / 2), (cSettings->NUM_TILES_YAXIS / 2));
 	glm::vec2 cameraPos = camera->getCurrPos();
 
 	glm::vec2 IndexPos = vTransform;

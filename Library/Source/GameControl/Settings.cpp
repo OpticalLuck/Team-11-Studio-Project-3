@@ -86,8 +86,8 @@ glm::vec2 CSettings::ConvertIndexToUVSpace(const glm::vec2 pos)
 	glm::vec2 output = pos;
 
 	//ORIGINAL ONE
-	output.x = ((float)output.x - (0.5f * NUM_TILES_XAXIS)) / (0.5f * NUM_TILES_XAXIS);
-	output.y = ((float)output.y - (0.5f * NUM_TILES_YAXIS)) / (0.5f * NUM_TILES_YAXIS);
+	output.x = ((float)output.x + 0.5f - (0.5f * NUM_TILES_XAXIS)) / (0.5f * NUM_TILES_XAXIS);
+	output.y = ((float)output.y + 0.5f - (0.5f * NUM_TILES_YAXIS)) / (0.5f * NUM_TILES_YAXIS);
 
 	//NEW ONE
 	//output.x = (((pos.x + 0.5) / NUM_TILES_XAXIS) * 2) - 1;

@@ -42,6 +42,7 @@ CPhysics2D::CPhysics2D(void)
 	, velocity(glm::vec2(0.f))
 	, force(glm::vec2(0.f))
 	, mass(1)
+	, MAX_SPEED(10.f)
 { 
 }
 

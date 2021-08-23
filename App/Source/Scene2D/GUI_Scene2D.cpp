@@ -68,6 +68,14 @@ bool CGUI_Scene2D::Init(void)
 	cInventoryManager = CInventoryManager::GetInstance();
 
 
+	// Add a Lives icon as one of the inventory items
+	cInventoryItem = cInventoryManager->Add("Lives", "Image/Collectibles/Scene2D_Lives.tga", 5, 3);
+	cInventoryItem->vec2Size = glm::vec2(25, 25);
+
+	// Add a Health icon as one of the inventory items
+	cInventoryItem = cInventoryManager->Add("Health", "Image/Scene2D_Health.tga", 100, 100);
+	cInventoryItem->vec2Size = glm::vec2(25, 25);
+
 	// Add a Tree as one of the inventory items
 	cInventoryItem = cInventoryManager->Add("Shuriken", "Image/Collectibles/shuriken.png", 999, 0);
 	cInventoryItem->vec2Size = glm::vec2(25, 25);
@@ -125,7 +133,7 @@ void CGUI_Scene2D::Update(const double dElapsedTime)
 		ImGuiWindowFlags_NoResize |
 		ImGuiWindowFlags_NoCollapse |
 		ImGuiWindowFlags_NoScrollbar;
-	ImGui::Begin("Shuriken", NULL, inventoryWindowFlags);
+	/*ImGui::Begin("Shuriken", NULL, inventoryWindowFlags);
 	ImGui::SetWindowPos(ImVec2(cSettings->iWindowWidth * 0.03f, cSettings->iWindowHeight * 0.92f));
 	ImGui::SetWindowSize(ImVec2(200.0f * relativeScale_x, 25.0f * relativeScale_y));
 	ImGui::Image((void*)(intptr_t)cInventoryItem->GetTextureID(),
@@ -134,7 +142,7 @@ void CGUI_Scene2D::Update(const double dElapsedTime)
 	ImGui::SameLine();
 	ImGui::SetWindowFontScale(1.5f * relativeScale_y);
 	ImGui::TextColored(ImVec4(1, 1, 0, 1), "Shuriken: %d", cInventoryItem->GetCount());
-	ImGui::End();
+	ImGui::End();*/
 	ImGui::PopStyleColor();
 
 

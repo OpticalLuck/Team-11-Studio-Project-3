@@ -25,6 +25,7 @@
 
 #include <vector>
 #include "../Scene2D/Camera2D.h"
+#include "../Scene2D/BackgroundEntity.h"
 
 struct sCell
 {
@@ -45,11 +46,17 @@ public:
     unsigned int iWorldWidth;
     unsigned int iWorldHeight;
 
-    void Init();
+    glm::vec2 vAllowanceScale;
+    glm::vec2 vUVCoords;
+    std::string backgroundPath;
+    CBackgroundEntity* cBackgroundEntity;
 
+    void Init();
+    
     void PreRender();
     void Render();
     void PostRender();
+    void RenderBackground(void);
 
     // Loading and Creating Functions
     void CreateLevel(std::string levelName, unsigned int iWorldWidth = 32, unsigned int iWorldHeight = 24);  
@@ -59,7 +66,8 @@ public:
     bool LevelExists(std::string levelName);                                                                 
     std::vector<Level> GetLevels(void);      
     Level GetCurrentLevel(void);
-    bool SaveMap();                                                                                          
+    bool SaveMap(void);
+    void ReloadParams(void);
 
     // Resize Map
     bool DecreaseXSize(void);
