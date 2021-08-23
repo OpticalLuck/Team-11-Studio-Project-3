@@ -830,7 +830,7 @@ bool CLevelEditorState::ImGuiRender()
 		ImGui::SetNextItemWidth(100);
 		ImGui::InputInt("Interactable ID", &eProperties.iCurrentInteractableID);
 		if (ImGui::Button("Done"))
-		{ImGui::OpenPopup("InteractableID");
+		{
 			cLevelEditor->GetCell(vMousePos.x, vMousePos.y).iInteractableID = eProperties.iCurrentInteractableID;
 			eProperties.bOpenIDPopup = false;
 			ImGui::CloseCurrentPopup();
