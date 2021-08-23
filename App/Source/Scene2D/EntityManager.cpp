@@ -1,9 +1,12 @@
 #include "EntityManager.h"
 
-#include "EnemyBullet2D.h"
 #include "MobEnemy2D.h"
 
 #include "Boss2D.h"
+
+#include "EnemyBullet2D.h"
+#include "Bullet2D.h"
+#include "Projectiles.h"
 
 CEntityManager::CEntityManager()
 	: cPlayer2D(NULL)

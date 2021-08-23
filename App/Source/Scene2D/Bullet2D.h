@@ -1,11 +1,11 @@
 #pragma once
 #include "Physics2D.h"
-#include "Object2D.h"
+#include "Projectiles.h"
 
 // Include AnimatedSprites
 #include "Primitives/SpriteAnimation.h"
 
-class Bullet2D : public CObject2D
+class Bullet2D : public Projectiles
 {
 public:
 
@@ -21,11 +21,5 @@ public:
 	CPhysics2D& GetPhysics();
 
 private:
-	CSpriteAnimation* animatedSprites;
-
-	// Current color
-	glm::vec4 currentColor;
-
-	CPhysics2D cPhysics2D;
 };
 

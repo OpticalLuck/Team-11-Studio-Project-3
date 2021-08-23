@@ -5,8 +5,6 @@
 #include "RenderControl/ShaderManager.h"
 #include "Primitives/MeshBuilder.h"
 Bullet2D::Bullet2D(int iTextureID)
-	: animatedSprites(NULL)
-	, currentColor(glm::vec4())
 {
 	this->iTextureID = iTextureID; //Shuriken also by default
 }
@@ -73,14 +71,13 @@ void Bullet2D::Update(double dElapsedTime)
 			return a.second < b.second;
 		});
 	aabbVector.erase(std::unique(aabbVector.begin(), aabbVector.end()), aabbVector.end());
-	bool destroyed = false;
 	for (auto aabbTuple : aabbVector)
 	{
 		CObject2D* obj = aabbTuple.first;
 		Collision data = (collider2D->CollideWith(obj->GetCollider()));
 		if (std::get<0>(data))
 		{
-			destroyed = true;
+			bDestroyed = true;
 		}
 	}
 }
