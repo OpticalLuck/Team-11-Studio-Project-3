@@ -7,7 +7,7 @@
 
 // Include Filesystem
 #include "System\filesystem.h"
-
+#include "System\MapLoader.h"
 #include "System/Debug.h"
 #include <fstream>
 
@@ -241,11 +241,18 @@ bool CLevelEditor::LoadLevel(const char* filePath)
         std::vector<std::string> row = doc.GetRow<std::string>(iRow);
         for (unsigned iCol = 0; iCol < iWorldWidth; ++iCol)
         {
+            //Init of objects values
+            int currTexture = 0;
+            int currObjID = 0;
+
+            SysMap::ExtractIDs(row[iCol], currTexture, currObjID);
+
             sCell cell;
             m_CurrentLevel[iRow].push_back(cell);
 
             int currVal = (int)stoi(row[iCol]);
             m_CurrentLevel[iRow][iCol].iTileID = currVal;
+            m_CurrentLevel[iRow][iCol].iInteractableID = currObjID;
         }
     }
 
@@ -345,7 +352,13 @@ bool CLevelEditor::SaveMap()
     {
         for (unsigned int uiCol = 0; uiCol < iWorldWidth; uiCol++)
         {
-            doc.SetCell(uiCol, iWorldHeight - uiRow - 1, m_CurrentLevel[uiRow][uiCol].iTileID);
+            std::string outputString = std::to_string(m_CurrentLevel[uiRow][uiCol].iTileID);
+            if (m_CurrentLevel[uiRow][uiCol].iInteractableID != 0)
+            {
+                outputString += ";" + std::to_string(m_CurrentLevel[uiRow][uiCol].iInteractableID);
+            }
+
+            doc.SetCell(uiCol, iWorldHeight - uiRow - 1, outputString);
         }
     }
 
@@ -426,7 +439,7 @@ bool CLevelEditor::IncreaseYSize(void)
 /**
 @brief Returns the Cell of the index specified
 */
-sCell& CLevelEditor::GetCell(unsigned int x, unsigned int y, bool bInvert)
+sCell CLevelEditor::GetCell(unsigned int x, unsigned int y, bool bInvert)
 {
     if (bInvert)
         return m_CurrentLevel[iWorldHeight - y - 1][x];
@@ -437,12 +450,18 @@ sCell& CLevelEditor::GetCell(unsigned int x, unsigned int y, bool bInvert)
 /**
 @brief Updates the Cell in the level editor given an x and y index
 */
-void CLevelEditor::UpdateCell(unsigned int x, unsigned int y, int TileID, bool bInvert)
+void CLevelEditor::UpdateCell(unsigned int x, unsigned int y, int TileID, int InteractableID, bool bInvert)
 {
     if (bInvert)
+    {
         m_CurrentLevel[iWorldHeight - y - 1][x].iTileID = TileID;
+        m_CurrentLevel[iWorldHeight - y - 1][x].iInteractableID = InteractableID;
+    }
     else
+    {
         m_CurrentLevel[y][x].iTileID = TileID;
+        m_CurrentLevel[y][x].iInteractableID = InteractableID;
+    }
 }
 
 

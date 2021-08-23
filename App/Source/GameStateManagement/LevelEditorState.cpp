@@ -492,8 +492,12 @@ void CLevelEditorState::MouseInput(double dElapsedTime)
 	if (cMouseController->IsButtonReleased(CMouseController::LMB))
 	{
 		eProperties.bPlacedBlock = false;
-		eProperties.bOpenIDPopup = true;
-		eProperties.BlockPosition = vMousePos;
+		if (cLevelEditor->GetCell(vMousePos.x, vMousePos.y).iTileID > OBJECT_TYPE::INTERACTABLE_START && cLevelEditor->GetCell(vMousePos.x, vMousePos.y).iTileID < OBJECT_TYPE::INTERACTABLE_TOTAL)
+		{
+			eProperties.bOpenIDPopup = true;
+			eProperties.iCurrentInteractableID = cLevelEditor->GetCell(vMousePos.x, vMousePos.y).iInteractableID;
+			eProperties.BlockPosition = vMousePos;
+		}
 	}
 
 	if (cMouseController->IsButtonDown(CMouseController::RMB))
@@ -832,7 +836,7 @@ bool CLevelEditorState::ImGuiRender()
 		ImGui::InputInt("Interactable ID", &eProperties.iCurrentInteractableID);
 		if (ImGui::Button("Done"))
 		{
-			cLevelEditor->GetCell(vMousePos.x, vMousePos.y).iInteractableID = eProperties.iCurrentInteractableID;
+			cLevelEditor->UpdateCell(eProperties.BlockPosition.x, eProperties.BlockPosition.y, cLevelEditor->GetCell(eProperties.BlockPosition.x, eProperties.BlockPosition.y).iTileID, eProperties.iCurrentInteractableID);
 			eProperties.bOpenIDPopup = false;
 			ImGui::CloseCurrentPopup();
 		}
