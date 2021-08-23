@@ -85,7 +85,7 @@ void Bullet2D::Update(double dElapsedTime)
 	}
 	if (destroyed)
 	{
-		cMap2D->SetMapInfo(currentIndex.y, currentIndex.x, 0, CLASS_ID::CID_NONE, false);
+		cMap2D->SetMapInfo(currentIndex.y, currentIndex.x, 0, false);
 	}
 }
 

@@ -76,9 +76,9 @@ void CInventory::Init()
 {
 	//m_Items.insert(pair<int, CItem>(0,CItem(2)));
 
-	SetItem(0, "Shuriken", CONSUMABLES_KUNAI, 0, 100, 50);
+	SetItem(0, "Shuriken", PROJECTILES_SHURIKEN, 0, 100, 50);
 	SetItem(1, "Potion", CONSUMABLES_POTION, 0, 100, 2);
-	SetItem(2, "Hook", CONSUMABLES_HOOK, 0, 100);
+	SetItem(2, "Hook", EQUIPMENTS_HOOK, 0, 100);
 }
 
 void CInventory::SetItem(int iIndex, std::string sName, int iID, int iMinVal, int iMaxVal, int iSetVal)
