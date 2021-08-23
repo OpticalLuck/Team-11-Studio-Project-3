@@ -53,6 +53,7 @@ protected:
 	//ButtonData backButtonData;
 	//ButtonData applyButtonData;
 
+	bool bOption;
 
 	float m_fProgressBar;
 
@@ -70,6 +71,7 @@ protected:
 
 	CPlayer2D* cPlayer;
 	CEntityManager* cEntityManager;
+	CMap2D* cMap2D;
 
 	CKeyboardController* cKeyboardController;
 };
