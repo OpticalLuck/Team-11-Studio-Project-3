@@ -308,9 +308,9 @@ void CEntityManager::Update(const double dElapsedTime)
 		//	delete m_eBulletList[i];
 		//	m_eBulletList[i] = nullptr;
 		//}
-		if (dynamic_cast<Bullet2D*>(m_eBulletList[i]))
+		if (dynamic_cast<Projectiles*>(m_eBulletList[i]))
 		{
-			if (dynamic_cast<Bullet2D*>(m_eBulletList[i])->bDestroyed || dynamic_cast<Bullet2D*>(m_eBulletList[i])->bOutsideBoundary())
+			if (dynamic_cast<Projectiles*>(m_eBulletList[i])->bDestroyed || dynamic_cast<Projectiles*>(m_eBulletList[i])->bOutsideBoundary())
 			{
 				delete m_eBulletList[i];
 				m_eBulletList[i] = nullptr;

@@ -110,6 +110,7 @@ void Projectiles::MapCollision(void) {
 			cPhysics2D.DoBounce(normal, 0.f);
 		}
 	}
+
 }
 
 void Projectiles::PlayerCollision(void) {
