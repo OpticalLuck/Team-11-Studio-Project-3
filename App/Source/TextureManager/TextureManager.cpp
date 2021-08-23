@@ -62,7 +62,7 @@ bool CTextureManager::Init(void)
         return false;
     }
 
-    if (LoadTexture("Image/Collectibles/shuriken.png", CONSUMABLES_SHURIKEN) == false)
+    if (LoadTexture("Image/Collectibles/shuriken.png", PROJECTILES_SHURIKEN) == false)
     {
         std::cout << "Failed to load shuriken tile texture" << std::endl;
         return false;
@@ -72,12 +72,12 @@ bool CTextureManager::Init(void)
         std::cout << "Failed to load potion tile texture" << std::endl;
         return false;
     }
-    if (LoadTexture("Image/items/grappling_hook.png", CONSUMABLES_HOOK) == false)
+    if (LoadTexture("Image/items/grappling_hook.png", EQUIPMENTS_HOOK) == false)
     {
         std::cout << "Failed to load grappling hook tile texture" << std::endl;
         return false;
     }
-    if (LoadTexture("Image/Collectibles/kunai.png", CONSUMABLES_KUNAI) == false)
+    if (LoadTexture("Image/Collectibles/kunai.png", BULLETS_KUNAI) == false)
     {
         std::cout << "Failed to load kunai tile texture" << std::endl;
         return false;
