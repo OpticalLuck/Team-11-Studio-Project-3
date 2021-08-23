@@ -221,17 +221,6 @@ std::vector<CPlayer2D*> CEntityManager::GetAllPlayers(void)
 	return arr;
 }
 
-std::vector<CEnemy2D*> CEntityManager::GetAllEnemies(void) 
-{
-	std::vector<CEnemy2D*> arr;
-	arr.push_back(cBoss2D);
-	arr.insert(arr.end(), m_enemyList.begin(), m_enemyList.end());
-
-	arr.erase(std::remove(arr.begin(), arr.end(), nullptr), arr.end());
-
-	return arr;
-}
-
 int CEntityManager::GetCurrRound(void) 
 {
 	return currRound;
