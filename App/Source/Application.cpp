@@ -290,13 +290,13 @@ void Application::Run(void)
 		if (dElapsedTime > 0.0166666666666667)
 			dElapsedTime = 0.0166666666666667;
 
-		m_ImGuiWindow->PreRender(cSettings->ImGuiProperties);
 		// Call the active Game State's Update method
 		if (CGameStateManager::GetInstance()->Update(0.0166666666666667) == false)
 		{
 			break;
 		}
 
+		m_ImGuiWindow->PreRender(cSettings->ImGuiProperties);
 		// Call the active Game State's Render method
 		if (!CGameStateManager::GetInstance()->Render())
 		{

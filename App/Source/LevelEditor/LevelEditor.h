@@ -30,6 +30,8 @@
 struct sCell
 {
     int iTileID = 0;
+    int iInteractableID = 0;
+    int iBackgroundTileID = 0;
 };
 
 struct Level
