@@ -2,8 +2,6 @@
 #include "Physics2D.h"
 #include "Object2D.h"
 
-#include "..\App\Source\Command\Command.h"
-
 // Include AnimatedSprites
 #include "Primitives/SpriteAnimation.h"
 
@@ -33,9 +31,6 @@ protected:
 
 	// Current color
 	glm::vec4 currentColor;
-
-	// Command to run when interacted with
-	Command cCommand;
 
 	CPhysics2D cPhysics2D;
 
