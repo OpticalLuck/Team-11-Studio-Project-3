@@ -62,28 +62,28 @@ bool CTextureManager::Init(void)
         return false;
     }
 
-    if (LoadTexture("Image/Collectibles/shuriken.png", ITEM_SHURIKEN) == false)
+    if (LoadTexture("Image/Collectibles/shuriken.png", PROJECTILES_SHURIKEN) == false)
     {
         std::cout << "Failed to load shuriken tile texture" << std::endl;
         return false;
     }
-    if (LoadTexture("Image/items/potion.png", ITEM_POTION) == false)
+    if (LoadTexture("Image/items/potion.png", CONSUMABLES_POTION) == false)
     {
         std::cout << "Failed to load potion tile texture" << std::endl;
         return false;
     }
-    if (LoadTexture("Image/items/grappling_hook.png", ITEM_HOOK) == false)
+    if (LoadTexture("Image/items/grappling_hook.png", EQUIPMENTS_HOOK) == false)
     {
         std::cout << "Failed to load grappling hook tile texture" << std::endl;
         return false;
     }
-    if (LoadTexture("Image/Collectibles/kunai.png", ITEM_KUNAI) == false)
+    if (LoadTexture("Image/Collectibles/kunai.png", BULLETS_KUNAI) == false)
     {
         std::cout << "Failed to load kunai tile texture" << std::endl;
         return false;
     }
 
-    if (LoadTexture("Image/Collectibles/Scene2D_Lives.tga", ITEM_LIVES) == false)
+    if (LoadTexture("Image/Collectibles/Scene2D_Lives.tga", UI_LIVES) == false)
     {
         std::cout << "Failed to load Scene2D_Lives tile texture" << std::endl;
         return false;
@@ -138,6 +138,30 @@ bool CTextureManager::Init(void)
     if (LoadTexture("Image/altar.png", INTERACTABLE_ALTAR) == false)
     {
         std::cout << "Failed to load Scene2D_Spa tile texture" << std::endl;
+        return false;
+    }
+
+    if (LoadTexture("Image/Enemy/MushroomPreview.png", ENEMY_1) == false)
+    {
+        std::cout << "Failed to load Mushroom tile texture" << std::endl;
+        return false;
+    }
+
+    if (LoadTexture("Image/Enemy/PigPreview.png", ENEMY_2) == false)
+    {
+        std::cout << "Failed to load Pig tile texture" << std::endl;
+        return false;
+    }
+
+    if (LoadTexture("Image/Enemy/SnailPreview.png", ENEMY_3) == false)
+    {
+        std::cout << "Failed to load Snail tile texture" << std::endl;
+        return false;
+    }
+
+    if (LoadTexture("Image/Enemy/MachineGun.png", ENEMY_4) == false)
+    {
+        std::cout << "Failed to load Machine Gun tile texture" << std::endl;
         return false;
     }
 

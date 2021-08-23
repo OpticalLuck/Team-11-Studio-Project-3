@@ -1,5 +1,4 @@
 #pragma once
-#include "..\App\Source\Command\Command.h"
 
 // Include AnimatedSprites
 #include "Primitives/SpriteAnimation.h"
@@ -19,7 +18,7 @@ public:
 
 	INTERACTABLE_TYPE interactableType;
 
-	Interactables(void);
+	Interactables(int iTextureID = 0);
 
 	// Destructor
 	virtual ~Interactables(void);
@@ -39,17 +38,16 @@ public:
 	// PostRender
 	void PostRender(void);
 
-	void SetCommand(COMMANDS eCommand);
+	void SetInteractableID(int);
 
 private:
 
-	CSpriteAnimation* animatedSprites;
+	int iInteractableID;
+
+	CMesh* quad;
 
 	// Current color
 	glm::vec4 currentColor;
-
-	// Command to run when interacted with
-	Command cCommand;
 
 	// Boolean to check if the interactable is currently being interacted with
 	bool bInteraction;

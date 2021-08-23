@@ -33,6 +33,7 @@ using namespace std;
 #include "Projectiles.h"
 #include "Bullet2D.h"
 
+#include "EntityManager.h"
 
 /**
  @brief Constructor This constructor has protected access modifier as this class will be a Singleton
@@ -128,7 +129,7 @@ bool CPlayer2D::Init(void)
 		return false;	// Unable to find the start position of the player, so quit this game
 
 	// Erase the value of the player in the arrMapInfo
-	cMap2D->SetMapInfo(uiRow, uiCol, 0, CLASS_ID::CID_NONE);
+	cMap2D->SetMapInfo(uiRow, uiCol, 0);
 
 	// Set checkpoint position to start position
 	checkpoint = glm::vec2(uiCol, uiRow);
@@ -312,7 +313,7 @@ bool CPlayer2D::Reset()
 		return false;	// Unable to find the start position of the player, so quit this game
 
 	// Erase the value of the player in the arrMapInfo
-	cMap2D->SetMapInfo(uiRow, uiCol, 0, CLASS_ID::CID_NONE);
+	cMap2D->SetMapInfo(uiRow, uiCol, 0);
 
 	// Set checkpoint to start position
 	checkpoint = glm::i32vec2(uiCol, uiRow);
@@ -626,7 +627,7 @@ void CPlayer2D::InputUpdate(double dt)
 			if(cPhysics2D.GetVelocity().y <= 0)
 				force.y = 80;
 			else
-				velocity.y = 8.4;
+				velocity.y = 8.4f;
 
 			cPhysics2D.SetboolGrounded(false);
 		}
@@ -662,16 +663,17 @@ void CPlayer2D::InputUpdate(double dt)
 		if (shuriken.iCount > 0)
 		{
 			shuriken.Use();
-			if (cMap2D->InsertMapInfo((int)vTransform.y, (int)vTransform.x, OBJECT_TYPE::ITEM_SHURIKEN, CLASS_ID::CID_PROJECTILES))
-			{ 
-				glm::vec2 distance = Camera2D::GetInstance()->GetCursorPosInWorldSpace() - vTransform;
+			
+			glm::vec2 distance = Camera2D::GetInstance()->GetCursorPosInWorldSpace() - vTransform;
 
-				CObject2D* shuriken = cMap2D->GetCObject((int)vTransform.x, (int)vTransform.y);
-				shuriken->vTransform = vTransform;
+			CObject2D* shurikenobj = ObjectFactory::CreateObject(OBJECT_TYPE::PROJECTILES_SHURIKEN);
+			shurikenobj->Init();
+			shurikenobj->vTransform = vTransform;
 
-				glm::vec2 force = glm::clamp(distance * 200.f, glm::vec2(-2000.f, -2000.f), glm::vec2(2000.f, 2000.f));
-				static_cast<Projectiles*>(shuriken)->GetPhysics().SetForce(force);
-			}
+			glm::vec2 force = glm::clamp(distance * 200.f, glm::vec2(-2000.f, -2000.f), glm::vec2(2000.f, 2000.f));
+			static_cast<Projectiles*>(shurikenobj)->GetPhysics().SetForce(force);
+
+			CEntityManager::GetInstance()->PushBullet(shurikenobj);
 		}
 	}
 
@@ -682,19 +684,20 @@ void CPlayer2D::InputUpdate(double dt)
 		if (shuriken.iCount > 0)
 		{
 			shuriken.Use();
-			if (cMap2D->InsertMapInfo((int)vTransform.y, (int)vTransform.x, OBJECT_TYPE::ITEM_KUNAI, CLASS_ID::CID_BULLETS))
-			{
-				CObject2D* shuriken = cMap2D->GetCObject((int)vTransform.x, (int)vTransform.y);
-				shuriken->vTransform = vTransform;
+			
+			CObject2D*kunaiobj = ObjectFactory::CreateObject(OBJECT_TYPE::BULLETS_KUNAI);
+			kunaiobj->Init();
+			kunaiobj->vTransform = vTransform;
 
-				glm::vec2 direction(0.f, 0.f);
-				if (facing == LEFT)
-					direction = glm::vec2(-1.f, 0);
-				else
-					direction = glm::vec2(1.f, 0);
-				glm::vec2 force = glm::clamp(direction * 200.f, glm::vec2(-2000.f, -2000.f), glm::vec2(2000.f, 2000.f));
-				static_cast<Bullet2D*>(shuriken)->GetPhysics().SetForce(force);
-			}
+			glm::vec2 direction(0.f, 0.f);
+			if (facing == LEFT)
+				direction = glm::vec2(-1.f, 0);
+			else
+				direction = glm::vec2(1.f, 0);
+			glm::vec2 force = glm::clamp(direction * 200.f, glm::vec2(-2000.f, -2000.f), glm::vec2(2000.f, 2000.f));
+				static_cast<Bullet2D*>(kunaiobj)->GetPhysics().SetForce(force);
+
+			CEntityManager::GetInstance()->PushBullet(kunaiobj);
 		}
 	}
 	cInventory->Update(dt, iTempFrameCounter ,m_KeyboardInputs, m_MouseInputs);

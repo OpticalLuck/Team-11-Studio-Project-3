@@ -94,30 +94,6 @@ bool CMenuState::Init(void)
  */
 bool CMenuState::Update(const double dElapsedTime)
 {
-
-	ImGuiWindowFlags window_flags = 0;
-	window_flags |= ImGuiWindowFlags_NoTitleBar;
-	window_flags |= ImGuiWindowFlags_NoScrollbar;
-	//window_flags |= ImGuiWindowFlags_MenuBar;
-	window_flags |= ImGuiWindowFlags_NoMove;
-	window_flags |= ImGuiWindowFlags_NoCollapse;
-	window_flags |= ImGuiWindowFlags_NoNav;
-	window_flags |= ImGuiWindowFlags_NoResize;
-
-	switch (menuState)
-	{
-	case STATE_MAIN:
-		window_flags |= ImGuiWindowFlags_NoBackground;
-		if (UpdateMenu(window_flags) == false)
-		{
-			return false;
-		}
-		break;
-	case STATE_OPTION:
-		UpdateOption(window_flags);
-		break;
-	}
-
 	return true;
 }
 
@@ -404,5 +380,29 @@ void CMenuState::UpdateOption(ImGuiWindowFlags window_flags)
 
 bool CMenuState::ImGuiRender()
 {
+
+	ImGuiWindowFlags window_flags = 0;
+	window_flags |= ImGuiWindowFlags_NoTitleBar;
+	window_flags |= ImGuiWindowFlags_NoScrollbar;
+	//window_flags |= ImGuiWindowFlags_MenuBar;
+	window_flags |= ImGuiWindowFlags_NoMove;
+	window_flags |= ImGuiWindowFlags_NoCollapse;
+	window_flags |= ImGuiWindowFlags_NoNav;
+	window_flags |= ImGuiWindowFlags_NoResize;
+
+	switch (menuState)
+	{
+	case STATE_MAIN:
+		window_flags |= ImGuiWindowFlags_NoBackground;
+		if (UpdateMenu(window_flags) == false)
+		{
+			return false;
+		}
+		break;
+	case STATE_OPTION:
+		UpdateOption(window_flags);
+		break;
+	}
+
 	return true;
 }

@@ -31,7 +31,11 @@ struct ActionState
 struct EditorProperties
 {
 	int iUndoCount = 0;
+	int iCurrentInteractableID = 0;
 	
+	glm::vec2 BlockPosition = { 0 , 0 };
+
+	bool bOpenIDPopup = false;
 	bool bShowGrids = true;
 	bool bSaved = true;
 	bool bPlacedBlock = false;
@@ -159,4 +163,6 @@ protected:
 	void DecreaseYSize(void);
 
 	void UpdateHistory(void);
+
+	void RenderImGuiEditorButtons(uint32_t iStart, uint32_t iEnd);
 };

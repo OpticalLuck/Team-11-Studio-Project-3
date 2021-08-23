@@ -2,6 +2,8 @@
 
 #include "Map2D.h"
 #include <vector>
+#include "RenderControl/ShaderManager.h"
+#include "Primitives/MeshBuilder.h"
 Bullet2D::Bullet2D(int iTextureID)
 	: animatedSprites(NULL)
 	, currentColor(glm::vec4())
@@ -13,10 +15,17 @@ Bullet2D::~Bullet2D()
 {
 	if (animatedSprites)
 		delete animatedSprites;
+
+	glDeleteVertexArrays(1, &VAO);
 }
 
 bool Bullet2D::Init()
 {
+	glGenVertexArrays(1, &VAO);
+	glBindVertexArray(VAO);
+	cSettings = CSettings::GetInstance();
+	mesh = CMeshBuilder::GenerateQuad(glm::vec4(1, 1, 1, 1), cSettings->TILE_WIDTH, cSettings->TILE_HEIGHT);
+
 	cPhysics2D.Init(&vTransform);
 	cPhysics2D.SetGravity(0.f);
 	cPhysics2D.MAX_SPEED = 50.f;
@@ -74,19 +83,62 @@ void Bullet2D::Update(double dElapsedTime)
 			destroyed = true;
 		}
 	}
+}
 
+void Bullet2D::PreRender()
+{
+	// Activate blending mode
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+	CShaderManager::GetInstance()->Use("2DShader");
+	// bind textures on corresponding texture units
+	glActiveTexture(GL_TEXTURE0);
+	// Activate the shader
+}
 
-	//Update Map index
-	glm::i32vec2 newindex((int)vTransform.x, CMap2D::GetInstance()->GetLevelRow() - (int)vTransform.y - 1);
-	if (newindex != currentIndex)
+void Bullet2D::Render()
+{
+	// get matrix's uniform location and set matrix
+	unsigned int transformLoc = glGetUniformLocation(CShaderManager::GetInstance()->activeShader->ID, "transform");
+	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
+
+	//Camera init
+	glm::vec2 offset = glm::vec2(float(cSettings->NUM_TILES_XAXIS / 2.f), float(cSettings->NUM_TILES_YAXIS / 2.f));
+	glm::vec2 cameraPos = Camera2D::GetInstance()->getCurrPos();
+
+	glm::vec2 objCamPos = vTransform - cameraPos + offset;
+
+	glm::vec2 actualPos = cSettings->ConvertIndexToUVSpace(objCamPos);
+
+	float clampOffset = cSettings->ConvertIndexToUVSpace(CSettings::AXIS::x, 1, false) / 2;
+
+	float clampX = 2.0f + clampOffset;
+	float clampY = 2.0f + clampOffset;
+
+	if (actualPos.x >= -clampX && actualPos.x <= clampX && actualPos.y >= -clampY && actualPos.y <= clampY)
 	{
-		CMap2D::GetInstance()->UpdateGridInfo(newindex.y, newindex.x, this, false);
+		transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
+		transform = glm::translate(transform, glm::vec3(glm::vec2(actualPos.x, actualPos.y),
+			0.0f));
+		transform = glm::rotate(transform, glm::radians(fRotate), glm::vec3(0.f, 0.f, 1.f));
+		// Update the shaders with the latest transform
+		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
+
+		// Get the texture to be rendered
+		glBindTexture(GL_TEXTURE_2D, CTextureManager::GetInstance()->MapOfTextureIDs.at(iTextureID));
+
+		glBindVertexArray(VAO);
+		mesh->Render();
+
+		glBindVertexArray(0);
 	}
-	if (destroyed)
-	{
-		cMap2D->SetMapInfo(currentIndex.y, currentIndex.x, 0, CLASS_ID::CID_NONE, false);
-	}
+}
+
+void Bullet2D::PostRender()
+{
+	// Disable blending
+	glDisable(GL_BLEND);
 }
 
 CPhysics2D& Bullet2D::GetPhysics()

@@ -26,5 +26,4 @@ public:
 private:
 	std::map<std::string, CInventory>m_Inventory; //store a list of inventory for clone/player
 	CInventory* cActiveInventory;
-	
 };

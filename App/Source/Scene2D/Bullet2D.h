@@ -2,20 +2,22 @@
 #include "Physics2D.h"
 #include "Object2D.h"
 
-#include "..\App\Source\Command\Command.h"
-
 // Include AnimatedSprites
 #include "Primitives/SpriteAnimation.h"
+
 class Bullet2D : public CObject2D
 {
 public:
 
-	Bullet2D(int iTextureID = OBJECT_TYPE::ITEM_KUNAI);
+	Bullet2D(int iTextureID = OBJECT_TYPE::BULLETS_KUNAI);
 	virtual ~Bullet2D();
 
 	bool Init() override;
 	void Update(double dElapsedTime) override;
 
+	void PreRender() override;
+	void Render() override;
+	void PostRender() override;
 	CPhysics2D& GetPhysics();
 
 private:
@@ -23,9 +25,6 @@ private:
 
 	// Current color
 	glm::vec4 currentColor;
-
-	// Command to run when interacted with
-	Command cCommand;
 
 	CPhysics2D cPhysics2D;
 };

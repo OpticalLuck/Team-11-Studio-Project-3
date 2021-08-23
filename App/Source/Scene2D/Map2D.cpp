@@ -5,6 +5,8 @@
  */
 #include "Map2D.h"
 
+#include "EntityManager.h"
+
 // Include Shader Manager
 #include "RenderControl\ShaderManager.h"
 
@@ -19,6 +21,8 @@
 
 #include <iostream>
 #include <vector>
+
+#include "../Library/Source/System/MapLoader.h"
 
 using namespace std;
 
@@ -221,7 +225,7 @@ glm::i32vec2 CMap2D::GetLevelLimit(void) {
  @param iCol A const int variable containing the column index of the element to set to
  @param iValue A const int variable containing the value to assign to this arrMapInfo
  */
-void CMap2D::SetMapInfo(unsigned int uiRow, unsigned int uiCol, const int iTextureID, const CLASS_ID ClassID, const bool bInvert)
+void CMap2D::SetMapInfo(unsigned int uiRow, unsigned int uiCol, const int iTextureID, const bool bInvert)
 {
 	if (bInvert)
 	{
@@ -231,7 +235,7 @@ void CMap2D::SetMapInfo(unsigned int uiRow, unsigned int uiCol, const int iTextu
 	//Check if its not a nullptr
 	if (!arrGrid[uiCurLevel][uiRow][uiCol]) 
 	{
-		CObject2D* currObj = objFactory.CreateObject(iTextureID, ClassID);
+		CObject2D* currObj = objFactory.CreateObject(iTextureID);
 		currObj->SetCurrentIndex(glm::i32vec2(uiCol, uiRow));
 		currObj->vTransform = glm::i32vec2(uiCol, GetLevelRow() - uiRow - 1);
 		currObj->Init();
@@ -255,7 +259,7 @@ void CMap2D::SetMapInfo(unsigned int uiRow, unsigned int uiCol, const int iTextu
 				if (iTextureID > 0)
 				{
 					//Pushes in new Object
-					currObj = objFactory.CreateObject(iTextureID, ClassID);
+					currObj = objFactory.CreateObject(iTextureID);
 					currObj->SetCurrentIndex(glm::i32vec2(uiCol, uiRow));
 					currObj->vTransform = glm::i32vec2(uiCol, GetLevelRow() - uiRow - 1);
 					currObj->Init();
@@ -272,7 +276,7 @@ void CMap2D::SetMapInfo(unsigned int uiRow, unsigned int uiCol, const int iTextu
 	}
 }
 
-bool CMap2D::InsertMapInfo(unsigned int uiRow, unsigned int uiCol, const int iTextureID, const CLASS_ID ClassID, const bool bInvert)
+bool CMap2D::InsertMapInfo(unsigned int uiRow, unsigned int uiCol, const int iTextureID, const bool bInvert)
 {
 	if (bInvert)
 	{
@@ -282,7 +286,7 @@ bool CMap2D::InsertMapInfo(unsigned int uiRow, unsigned int uiCol, const int iTe
 	//Check if its not a nullptr
 	if (!arrGrid[uiCurLevel][uiRow][uiCol])
 	{
-		CObject2D* currObj = objFactory.CreateObject(iTextureID, ClassID);
+		CObject2D* currObj = objFactory.CreateObject(iTextureID);
 		currObj->SetCurrentIndex(glm::i32vec2(uiCol, uiRow));
 		currObj->vTransform = glm::i32vec2(uiCol, GetLevelRow() - uiRow - 1);
 		currObj->Init();
@@ -467,12 +471,12 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 			int currTexture = 0;
 			int currObjID = 0;
 
-			ExtractIDs(row[uiCol], currTexture, currObjID);
+			SysMap::ExtractIDs(row[uiCol], currTexture, currObjID);
 
 			arrGrid[uiCurLevel][uiRow].push_back(nullptr);
 
 			if (currTexture > 0) {
-				CObject2D* currObj = objFactory.CreateObject(currTexture, static_cast<CLASS_ID>(currObjID));
+				CObject2D* currObj = objFactory.CreateObject(currTexture);
 
 				currObj->SetCurrentIndex(glm::i32vec2(uiCol, uiRow));
 
@@ -482,9 +486,13 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 				currIndex.y = (float)doc.GetRowCount() - (float)uiRow - 1.f;
 				currObj->vTransform = currIndex;
 
+				if (currObjID != 0)
+				{
+					((Interactables*)(currObj))->SetInteractableID(currObjID);
+					CEntityManager::GetInstance()->PushInteractables((Interactables*)currObj);
+				}
+
 				currObj->Init();
-				if (currObjID == (int)CLASS_ID::CID_BACKGROUND)
-					currObj->GetCollider()->SetbEnabled(false);
 
 				arrObject[uiCurLevel].push_back(currObj);
 				//Add in new CObj pointer if available
@@ -494,40 +502,6 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 	}
 
 	return true;
-}
-
-void CMap2D::ExtractIDs(std::string str, int& textureID, int& objectID) {
-	//If there are no ; present (Basically only one value in cell like "100")
-	if (IsInteger(str)) {
-		textureID = stoi(str);
-		objectID = 0;
-		return;
-	}
-
-	//Conversion for if there are more than 1 value present (100;2)
-	stringstream ss(str);
-	vector<int> values;
-
-	while (ss.good()) {
-		std::string substr;
-		getline(ss, substr, ';');
-		
-		//Convert valaue from string to int if possible.
-		values.push_back(std::stoi(substr));
-	}
-
-	textureID = values[0];
-	objectID = values[1];
-}
-
-bool CMap2D::IsInteger(const std::string& s) {
-	if (s.empty() || (!isdigit(s[0]) && s[0] != '-'))
-		return false; //Return false if its empty of if string is not a digit
-
-	char* p;
-	long int temp = strtol(s.c_str(), &p, 10); //Parsing through string and check for index that is not an integer
-
-	return (*p == 0);
 }
 
 void CMap2D::RenderBackground(void) {

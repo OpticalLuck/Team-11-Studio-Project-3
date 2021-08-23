@@ -4,21 +4,11 @@
 
 class EnemyBullet2D;
 
-enum class CLASS_ID
-{
-	CID_NONE		= 0,
-	CID_COBJECT		= 1,
-	CID_PROJECTILES = 2,
-	CID_BULLETS		= 3,
-	CID_BOULDER		= 4,
-	CID_BACKGROUND  = 5,
-	CID_TOTAL
-};
 
 class ObjectFactory
 {
 public:
-	CObject2D* CreateObject(int iTextureID, CLASS_ID eClassID);
-	EnemyBullet2D* CreateBullet(float angle, glm::vec2 vTransform);
+	static CObject2D* CreateObject(int iTextureID);
+	static EnemyBullet2D* CreateBullet(float angle, glm::vec2 vTransform);
 };
 

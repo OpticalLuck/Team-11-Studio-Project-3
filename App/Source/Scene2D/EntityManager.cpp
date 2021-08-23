@@ -12,6 +12,7 @@ CEntityManager::CEntityManager()
 	, cBoss2D(NULL)
 	, cKeyboardController(NULL)
 	, cInputHandler(NULL)
+	, CInventoryManager(NULL)
 	, currRound(0)
 {
 }
@@ -125,6 +126,16 @@ bool CEntityManager::EntityManagerInit(void)
 	currRound = 0;
 
 	return true;
+}
+
+std::vector<CEnemy2D*> CEntityManager::GetAllEnemies(void) {
+	std::vector<CEnemy2D*> arr;
+	arr.push_back(cBoss2D);
+	arr.insert(arr.end(), m_enemyList.begin(), m_enemyList.end());
+
+	arr.erase(std::remove(arr.begin(), arr.end(), nullptr), arr.end());
+
+	return arr;
 }
 
 void CEntityManager::PushEnemy(CEnemy2D* enemy) {
@@ -311,10 +322,10 @@ void CEntityManager::Update(const double dElapsedTime)
 	for (unsigned i = 0; i < m_eBulletList.size(); i++) {
 		m_eBulletList[i]->Update(dElapsedTime);
 
-		if (m_eBulletList[i]->OutOfWorld() || m_eBulletList[i]->GetHealth() <= 0) {
-			delete m_eBulletList[i];
-			m_eBulletList[i] = nullptr;
-		}
+		//if (m_eBulletList[i]->OutOfWorld() || m_eBulletList[i]->GetHealth() <= 0) {
+		//	delete m_eBulletList[i];
+		//	m_eBulletList[i] = nullptr;
+		//}
 	}
 
 	//Remove any nullptrs in bullet array
@@ -328,6 +339,11 @@ void CEntityManager::Update(const double dElapsedTime)
 	}
 }
 
-void CEntityManager::PushBullet(EnemyBullet2D* bullet) {
+void CEntityManager::PushBullet(CEntity2D* bullet) {
 	m_eBulletList.push_back(bullet);
+}
+
+void CEntityManager::PushInteractables(Interactables* interactable)
+{
+	m_interactableList.push_back(interactable);
 }

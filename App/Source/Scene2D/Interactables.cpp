@@ -7,14 +7,18 @@
 #include "System\ImageLoader.h"
 
 #include "Primitives/MeshBuilder.h"
+#include "../Scene2D/EntityManager.h"
 
 #include <iostream>
 
-Interactables::Interactables(void)
+Interactables::Interactables(int iTextureID)
 	: bInteraction(false)
-	, animatedSprites(NULL)
+	, quad(NULL)
+	, iInteractableID(0)
 {
 	transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
+
+	this->iTextureID = iTextureID;
 
 	// Initialise vecIndex
 	vTransform = glm::i32vec2(0);
@@ -25,6 +29,12 @@ Interactables::Interactables(void)
 Interactables::~Interactables(void)
 {
 	glDeleteVertexArrays(1, &VAO);
+
+	if (quad)
+	{
+		delete quad;
+		quad = nullptr;
+	}
 }
 
 bool Interactables::Init(int iMapID)
@@ -32,13 +42,17 @@ bool Interactables::Init(int iMapID)
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
 
-	animatedSprites = CMeshBuilder::GenerateSpriteAnimation(10, 6, cSettings->TILE_WIDTH, cSettings->TILE_HEIGHT);
+	type = INTERACTABLES;
+	quad = CMeshBuilder::GenerateQuad();
 
 	return true;
 }
 
 void Interactables::Update(const double dElapsedTime)
 {
+	if (bInteraction)
+	{
+	}
 }
 
 void Interactables::PreRender(void)
@@ -72,10 +86,10 @@ void Interactables::Render(void)
 	glUniform4fv(colorLoc, 1, glm::value_ptr(currentColor));
 
 	// Get the texture to be rendered
-	glBindTexture(GL_TEXTURE_2D, iTextureID);
+	glBindTexture(GL_TEXTURE_2D, CTextureManager::GetInstance()->MapOfTextureIDs.at(iTextureID));
 
 	//CS: Render the animated sprite
-	animatedSprites->Render();
+	quad->Render();
 
 	glBindVertexArray(0);
 }
@@ -86,11 +100,10 @@ void Interactables::PostRender(void)
 	glDisable(GL_BLEND);
 }
 
-void Interactables::SetCommand(COMMANDS eCommand)
+void Interactables::SetInteractableID(int id)
 {
-	cCommand.SetCommand(eCommand);
+	iInteractableID = id;
 }
-
 
 /**
 @brief Load a texture, assign it a code and store it in MapOfTextureIDs.

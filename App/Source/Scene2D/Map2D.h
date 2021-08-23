@@ -77,10 +77,10 @@ public:
 	void RenderBackground(void);
 
 	// Set the value at certain indices in the arrMapInfo - Doesnt care if there is something there since it will replace
-	void SetMapInfo(unsigned int uiRow, unsigned int uiCol, const int iTextureID, const CLASS_ID ClassID, const bool bInvert = true);
+	void SetMapInfo(unsigned int uiRow, unsigned int uiCol, const int iTextureID, const bool bInvert = true);
 
 	// Insert mapinfo into the gridarr and arrobj, will return false if something is in the way
-	bool InsertMapInfo(unsigned int uiRow, unsigned int uiCol, const int iTextureID, const CLASS_ID ClassID, const bool bInvert = true);
+	bool InsertMapInfo(unsigned int uiRow, unsigned int uiCol, const int iTextureID, const bool bInvert = true);
 	
 	//Update object's grid location with new row and col
 	void UpdateGridInfo(const unsigned int uiRow, const unsigned uiCol, CObject2D* target, const bool bInvert = true);
@@ -156,11 +156,5 @@ protected:
 
 	// Render a tile
 	void RenderTile(const CObject2D& obj);
-
-	//Extract texture and object IDs
-	void ExtractIDs(std::string str,int& textureID, int& objectID);
-
-	//Check if integer
-	inline bool IsInteger(const std::string& s);
 };
 

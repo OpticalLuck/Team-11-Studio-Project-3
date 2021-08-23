@@ -8,30 +8,39 @@
 #include "../Scene2D/Bullet2D.h"
 
 
-CObject2D* ObjectFactory::CreateObject(int iTextureID, CLASS_ID eClassID)
+CObject2D* ObjectFactory::CreateObject(int iTextureID)
 {
     CObject2D* newObj = nullptr;
-    switch (eClassID)
-    {
-    case CLASS_ID::CID_COBJECT:
-        newObj = new CObject2D(iTextureID);
-        break;
-    case CLASS_ID::CID_PROJECTILES:
-        newObj = new Projectiles(iTextureID);
-        break;
-    case CLASS_ID::CID_BULLETS:
-        newObj = new Bullet2D(iTextureID);
-        break;
-    case CLASS_ID::CID_BOULDER:
-        newObj = new Boulder2D(iTextureID);
-        break;
-    case CLASS_ID::CID_BACKGROUND:
-        newObj = new CObject2D(iTextureID);
-        break;
-    default:
-        newObj = new CObject2D(iTextureID);
-        break;
-    }
+
+	if (iTextureID > TILE_START && iTextureID < TILE_TOTAL)
+	{
+		newObj = new CObject2D(iTextureID);
+	}
+	else if (iTextureID > CONSUMABLES_START && iTextureID < CONSUMABLES_TOTAL)
+	{
+		newObj = new CObject2D(iTextureID);
+	}
+	else if (iTextureID > INTERACTABLE_START && iTextureID < INTERACTABLE_TOTAL)
+	{
+		newObj = new Interactables(iTextureID);
+	}
+	else if (iTextureID > PROJECTILES_START && iTextureID < PROJECTILES_TOTAL)
+	{
+		newObj = new Projectiles(iTextureID);
+	}
+	else if (iTextureID > BULLETS_START && iTextureID < BULLETS_TOTAL)
+	{
+		newObj = new Bullet2D(iTextureID);
+	}
+	else if (iTextureID > OBSTACLES_START && iTextureID < OBSTACLES_TOTAL)
+	{
+		if(iTextureID == OBSTACLE_BOULDER)
+			newObj = new Boulder2D(iTextureID);
+		else
+			newObj = new CObject2D(iTextureID);
+	}
+	else
+		newObj = new CObject2D(iTextureID);
 
     return newObj;
 }

@@ -30,6 +30,8 @@
 struct sCell
 {
     int iTileID = 0;
+    int iInteractableID = 0;
+    int iBackgroundTileID = 0;
 };
 
 struct Level
@@ -78,7 +80,7 @@ public:
 
     // Update Map
     sCell GetCell(unsigned int x, unsigned int y, bool bInvert = false);                
-    void UpdateCell(unsigned int x, unsigned int y, int TileID, bool bInvert = false);  
+    void UpdateCell(unsigned int x, unsigned int y, int TileID, int InteractableID = 0, bool bInvert = false);  
 
     // Render Control
     void SetShader(const std::string& _name);
