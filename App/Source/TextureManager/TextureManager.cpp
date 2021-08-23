@@ -62,28 +62,28 @@ bool CTextureManager::Init(void)
         return false;
     }
 
-    if (LoadTexture("Image/Collectibles/shuriken.png", ITEM_SHURIKEN) == false)
+    if (LoadTexture("Image/Collectibles/shuriken.png", CONSUMABLES_SHURIKEN) == false)
     {
         std::cout << "Failed to load shuriken tile texture" << std::endl;
         return false;
     }
-    if (LoadTexture("Image/items/potion.png", ITEM_POTION) == false)
+    if (LoadTexture("Image/items/potion.png", CONSUMABLES_POTION) == false)
     {
         std::cout << "Failed to load potion tile texture" << std::endl;
         return false;
     }
-    if (LoadTexture("Image/items/grappling_hook.png", ITEM_HOOK) == false)
+    if (LoadTexture("Image/items/grappling_hook.png", CONSUMABLES_HOOK) == false)
     {
         std::cout << "Failed to load grappling hook tile texture" << std::endl;
         return false;
     }
-    if (LoadTexture("Image/Collectibles/kunai.png", ITEM_KUNAI) == false)
+    if (LoadTexture("Image/Collectibles/kunai.png", CONSUMABLES_KUNAI) == false)
     {
         std::cout << "Failed to load kunai tile texture" << std::endl;
         return false;
     }
 
-    if (LoadTexture("Image/Collectibles/Scene2D_Lives.tga", ITEM_LIVES) == false)
+    if (LoadTexture("Image/Collectibles/Scene2D_Lives.tga", UI_LIVES) == false)
     {
         std::cout << "Failed to load Scene2D_Lives tile texture" << std::endl;
         return false;
