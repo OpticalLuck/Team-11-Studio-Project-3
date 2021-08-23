@@ -3,6 +3,7 @@
 //Include Entities
 #include "Player2D.h"
 #include "Enemy2D.h"
+#include "Interactables.h"
 
 #include <vector>
 #include <iostream>
@@ -63,6 +64,7 @@ protected:
 	CInventoryManager* CInventoryManager;
 
 	//list of vectors
+	std::vector<Interactables*> m_interactableList;
 	std::vector<CEnemy2D*> m_enemyList;
 	std::vector<CEntity2D*> m_eBulletList;
 	std::vector<CEntity2D*> m_cloneList;
