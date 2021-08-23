@@ -143,9 +143,6 @@
     <ClCompile Include="Source\TextureManager\TextureManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Scene2D\EnemyBullet2D.cpp">
-      <Filter>Entity2D\LivingEntity2D\Enemy2D</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Scene2D\MobEnemy2D.cpp">
       <Filter>Entity2D\LivingEntity2D\Enemy2D</Filter>
     </ClCompile>
@@ -154,9 +151,6 @@
     </ClCompile>
     <ClCompile Include="Source\InputHandler\CInputHandler.cpp">
       <Filter>InputHandler</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Scene2D\Boss2D.cpp">
-      <Filter>Entity2D\LivingEntity2D\Enemy2D</Filter>
     </ClCompile>
     <ClCompile Include="Source\TextureManager\TextureManager.cpp">
       <Filter>TextureManager</Filter>
@@ -185,9 +179,6 @@
     <ClCompile Include="Source\Factory\EnemyFactory.cpp">
       <Filter>Factory</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Scene2D\Enemy2D.cpp">
-      <Filter>Entity2D</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Scene2D\Bullet2D.cpp">
       <Filter>Entity2D\Object2D</Filter>
     </ClCompile>
@@ -208,6 +199,15 @@
     </ClCompile>
     <ClCompile Include="Source\Scene2D\LivingEntity2D.cpp">
       <Filter>Entity2D\LivingEntity2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene2D\Boss2D.cpp">
+      <Filter>Entity2D\LivingEntity2D\Enemy2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene2D\Enemy2D.cpp">
+      <Filter>Entity2D\LivingEntity2D\Enemy2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene2D\EnemyBullet2D.cpp">
+      <Filter>Entity2D\Object2D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -304,12 +304,6 @@
     <ClInclude Include="Source\TextureManager\TextureManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Scene2D\Boss2D.h">
-      <Filter>Entity2D\LivingEntity2D\Enemy2D</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Scene2D\EnemyBullet2D.h">
-      <Filter>Entity2D\LivingEntity2D\Enemy2D</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Scene2D\MobEnemy2D.h">
       <Filter>Entity2D\LivingEntity2D\Enemy2D</Filter>
     </ClInclude>
@@ -340,9 +334,6 @@
     <ClInclude Include="Source\Factory\EnemyFactory.h">
       <Filter>Factory</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Scene2D\Enemy2D.h">
-      <Filter>Entity2D</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Scene2D\Bullet2D.h">
       <Filter>Entity2D\Object2D</Filter>
     </ClInclude>
@@ -363,6 +354,15 @@
     </ClInclude>
     <ClInclude Include="Source\Scene2D\LivingEntity2D.h">
       <Filter>Entity2D\LivingEntity2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene2D\Boss2D.h">
+      <Filter>Entity2D\LivingEntity2D\Enemy2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene2D\Enemy2D.h">
+      <Filter>Entity2D\LivingEntity2D\Enemy2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene2D\EnemyBullet2D.h">
+      <Filter>Entity2D\Object2D</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

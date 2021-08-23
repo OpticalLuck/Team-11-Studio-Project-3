@@ -42,7 +42,7 @@ bool Interactables::Init(int iMapID)
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
 
-	type = INTERACTABLES;
+	type = CEntity2D::ENTITY_TYPE::INTERACTABLES;
 	quad = CMeshBuilder::GenerateQuad();
 
 	return true;
