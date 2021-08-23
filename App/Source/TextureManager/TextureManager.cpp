@@ -141,6 +141,30 @@ bool CTextureManager::Init(void)
         return false;
     }
 
+    if (LoadTexture("Image/Enemy/MushroomPreview.png", ENEMY_1) == false)
+    {
+        std::cout << "Failed to load Mushroom tile texture" << std::endl;
+        return false;
+    }
+
+    if (LoadTexture("Image/Enemy/PigPreview.png", ENEMY_2) == false)
+    {
+        std::cout << "Failed to load Pig tile texture" << std::endl;
+        return false;
+    }
+
+    if (LoadTexture("Image/Enemy/SnailPreview.png", ENEMY_3) == false)
+    {
+        std::cout << "Failed to load Snail tile texture" << std::endl;
+        return false;
+    }
+
+    if (LoadTexture("Image/Enemy/MachineGun.png", ENEMY_4) == false)
+    {
+        std::cout << "Failed to load Machine Gun tile texture" << std::endl;
+        return false;
+    }
+
 	return true;
 }
 

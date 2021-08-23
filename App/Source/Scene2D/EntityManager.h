@@ -42,7 +42,7 @@ public:
 	int GetCurrRound(void);
 
 	void PushEnemy(CEnemy2D*);
-	void PushBullet(EnemyBullet2D*);
+	void PushBullet(CEntity2D*);
 	void PushInteractables(Interactables*);
 
 	std::vector<CPlayer2D*> GetAllPlayers(void);

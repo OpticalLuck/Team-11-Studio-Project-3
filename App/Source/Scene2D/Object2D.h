@@ -72,6 +72,15 @@ enum OBJECT_TYPE
 	OBSTACLES_TOTAL					= 200,
 
 	// ENEMIES 300 - 400
+	ENEMIES_START					= 299,
+	ENEMY_1							= 300,
+	ENEMY_2							= 301,
+	ENEMY_3							= 302,
+	ENEMY_4							= 303,
+	ENEMY_5							= 304,
+	BOSS							= 305,
+	ENEMIES_TOTAL					= 306,
+
 	OBJECT_TOTAL,
 };
 

@@ -733,7 +733,7 @@ bool CLevelEditorState::ImGuiRender()
 
 				if (ImGui::BeginTabItem("Enemies"))
 				{
-					RenderImGuiEditorButtons(OBJECT_TYPE::TILE_START, OBJECT_TYPE::TILE_TOTAL);
+					RenderImGuiEditorButtons(OBJECT_TYPE::ENEMIES_START, OBJECT_TYPE::ENEMIES_TOTAL);
 					ImGui::EndTabItem();
 				}
 			}
