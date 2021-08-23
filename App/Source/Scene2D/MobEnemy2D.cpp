@@ -58,7 +58,7 @@ bool CMobEnemy2D::Init(void) {
 	oldVTransform = vTransform;
 
 	roundIndex = 0;
-	health = 5;
+	eHealth = 5;
 
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
@@ -143,6 +143,9 @@ void CMobEnemy2D::Update(const double dElapsedTime) {
 		else
 			dir = DIRECTION::LEFT;
 	}
+
+	//Health lives update
+	UpdateHealthLives();
 
 	animatedSprites->Update(dElapsedTime);
 }

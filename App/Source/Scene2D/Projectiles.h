@@ -39,6 +39,6 @@ protected:
 	//Collision within map
 	void MapCollision(void);
 	//Collision with players
-	void PlayerCollision(void);
+	void EnemyCollision(void);
 };
 

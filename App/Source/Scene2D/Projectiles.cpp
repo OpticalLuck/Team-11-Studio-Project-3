@@ -27,6 +27,8 @@ bool Projectiles::Init()
 
 	collider2D->Init(vTransform, glm::vec2(0.2f), Collider2D::ColliderType::COLLIDER_CIRCLE);
 
+	cEntityManager = CEntityManager::GetInstance();
+
 	return false;
 }
 
@@ -38,6 +40,9 @@ void Projectiles::Update(double dElapsedTime)
 
 	//Collision between objects in map space
 	MapCollision();
+
+	//Collision between projectile and enemy
+	EnemyCollision();
 }
 
 void Projectiles::MapCollision(void) {
@@ -114,12 +119,17 @@ void Projectiles::MapCollision(void) {
 	}
 }
 
-void Projectiles::PlayerCollision(void) {
-	std::vector<CPlayer2D*> playerArr = cEntityManager->GetAllPlayers();
+void Projectiles::EnemyCollision(void) {
+	std::vector<CEnemy2D*> enemyArr = cEntityManager->GetAllEnemies();
 
 	//collider2D->CollideWith(obj->GetCollider())
-	for (unsigned i = 0; i < playerArr.size(); i++) {
-		//Collision data = 
+	for (unsigned i = 0; i < enemyArr.size(); i++) {
+		Collision data = collider2D->CollideWith(enemyArr[i]->GetCollider());
+
+		if (std::get<0>(data)) { //If collided with 
+			//Enemy collision code activate!
+			enemyArr[i]->Attacked();
+		}
 	}
 }
 

@@ -20,7 +20,7 @@ CBoss2D::CBoss2D(void) {
 	bulletAng = 0;
 	cMap2D = nullptr;
 	currentColor = glm::vec4();
-	health = 0;
+	eHealth = 0;
 	currTarget = nullptr;
 	quadMesh = nullptr;
 	camera = nullptr;
@@ -150,7 +150,7 @@ bool CBoss2D::Init(void) {
 
 	bulletTimer = 0;
 
-	health = 100;
+	eHealth = 100;
 	currTarget = nullptr;
 
 	isSeen = false;
@@ -291,6 +291,8 @@ void CBoss2D::Update(const double dElapsedTime) {
 			bulletAng = GetAngle(currTarget->vTransform); 
 	}
 
+	//Health lives update
+	UpdateHealthLives();
 }
 
 void CBoss2D::ResetCurrTimers(void) {

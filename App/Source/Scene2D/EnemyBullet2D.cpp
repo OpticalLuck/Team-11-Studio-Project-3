@@ -36,7 +36,7 @@ bool EnemyBullet2D::Init(float angle, glm::vec2 spawnPoint) {
 	mSpd = 10; //index per second
 	mScale = 0.5f;
 
-	health = 1;
+	eHealth = 1;
 
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
@@ -97,7 +97,7 @@ void EnemyBullet2D::CollisionCheck(void) {
 				Collision data = (collider2D->CollideWith(cMap2D->GetCObject(colCheck, rowCheck)->GetCollider()));
 				if (std::get<0>(data))
 				{
-					health = 0; //If health = 0, bullet will no longer be rendered
+					eHealth = 0; //If health = 0, bullet will no longer be rendered
 					return; 
 				}
 			}
@@ -116,7 +116,7 @@ void EnemyBullet2D::CollisionCheck(void) {
 			arrPlayer[i]->Attacked();
 
 			//Remove bullet from worldspace
-			health = 0;
+			eHealth = 0;
 			return;
 		}
 	}

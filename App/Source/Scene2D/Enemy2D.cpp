@@ -29,7 +29,7 @@ using namespace std;
 // Include math.h
 #include <math.h>
 
-#include "System/Debug.h"
+#include "../Library/Source/System/Debug.h"
 
 /**
  @brief Constructor This constructor has protected access modifier as this class will be a Singleton
@@ -37,11 +37,12 @@ using namespace std;
 CEnemy2D::CEnemy2D(void)
 	: bIsActive(false)
 	, cMap2D(NULL)
-	, cSettings(NULL)
 	, quadMesh(nullptr)
 	, sCurrentFSM(FSM::IDLE)
 	,dir(DIRECTION::LEFT)
 {
+	cSettings = CSettings::GetInstance();
+
 	transform = glm::mat4(1.0f);	// make sure to initialize matrix to identity matrix first
 
 	// Initialise vecIndex
@@ -58,7 +59,12 @@ CEnemy2D::CEnemy2D(void)
 		roundDir[i] = RandomiseDir();
 	}
 	dir = roundDir[0];
-	health = 1;
+	eHealth = 1;
+
+	eShield = eBlinkInterval = 0;
+
+	eMaxShield = int(2.3f * (float)cSettings->FPS);
+	eMaxBlinkInterval = int(0.175f * (float)cSettings->FPS);
 }
 
 /**
@@ -149,7 +155,7 @@ bool CEnemy2D::Init(void)
 
 	// If this class is initialised properly, then set the bIsActive to true
 	bIsActive = true;
-	health = 1;
+	eHealth = 1;
 
 	return true;
 }
@@ -199,6 +205,34 @@ float CEnemy2D::GetAngle(glm::vec2 pos) {
 		angle -= 360;
 
 	return angle;
+}
+
+void CEnemy2D::UpdateHealthLives(void) {
+	if (eShield == 0) { //Return if shield is not enabled / player is not hit
+		currentColor = glm::vec4(1, 1, 1, 1);
+		return;
+	}
+
+	eShield--;
+
+	if (eBlinkInterval == 0) { //If blink is 0, toggle it(Blink) and reset timer 
+		eBlinkInterval = eMaxBlinkInterval;
+		if (currentColor.r == 1)
+			currentColor = glm::vec4(100, 100, 100, 1);
+		else
+			currentColor = glm::vec4(1, 1, 1, 1);
+	}
+	else {
+		eBlinkInterval--;
+	}
+}
+
+void CEnemy2D::Attacked(int hp) {
+	if (eShield > 0) //Return if shield is enabled/ enemy does not get damaged (NOTICE: KEEP FOR NOW BUT REMOVE LATER)
+		return;
+
+	eHealth = Math::Max(0, eHealth - 1);
+	eShield = eMaxShield + 1; //Offset by 1 frame for better synchronisation (FUTURE JEVON IF YOU KNOW YOU KNOW IF NOT THEN LMAO)
 }
 
 float CEnemy2D::GetDistanceBetweenPlayer(CPlayer2D* player) {
@@ -347,7 +381,7 @@ void CEnemy2D::SetTransform(const int iIndex_XAxis, const int iIndex_YAxis)
 
 int CEnemy2D::GetHealth() const
 {
-	return health;
+	return eHealth;
 }
 
 

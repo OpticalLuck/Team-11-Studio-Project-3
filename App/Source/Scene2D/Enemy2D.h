@@ -69,6 +69,9 @@ public:
 	//Set texture
 	void SetTexture(const char* fileName);
 
+	//If get attacked
+	void Attacked(int hp = 1);
+
 protected:
 	enum class DIRECTION
 	{
@@ -137,7 +140,14 @@ protected:
 	DIRECTION roundDir[5];
 
 	// Store health for combat
-	int health;
+	int eHealth;
+
+	//Timer for flashing effect, etc
+	int eShield;
+	int eMaxShield;
+
+	int eBlinkInterval;
+	int eMaxBlinkInterval;
 
 	//Get nearest player. NOTE: TARGET HAS TO BE VALID AND BE WITHIN RANGE FIRST. DEFAULT ACCEPTABLE RANGE IS WITHIN HALF CAMERA WIDTH
 	CPlayer2D* GetNearestTarget(float dist = 16.f);
@@ -149,5 +159,8 @@ protected:
 
 	//Randomise direction
 	DIRECTION RandomiseDir(void);
+
+	//Update Health and Lives
+	void UpdateHealthLives(void);
 };
 
