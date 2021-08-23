@@ -4,16 +4,6 @@
 
 class EnemyBullet2D;
 
-enum class CLASS_ID
-{
-	CID_NONE		= 0,
-	CID_COBJECT		= 1,
-	CID_PROJECTILES = 2,
-	CID_BULLETS		= 3,
-	CID_BOULDER		= 4,
-	CID_BACKGROUND  = 5,
-	CID_TOTAL
-};
 
 class ObjectFactory
 {

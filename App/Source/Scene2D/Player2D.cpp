@@ -128,7 +128,7 @@ bool CPlayer2D::Init(void)
 		return false;	// Unable to find the start position of the player, so quit this game
 
 	// Erase the value of the player in the arrMapInfo
-	cMap2D->SetMapInfo(uiRow, uiCol, 0, CLASS_ID::CID_NONE);
+	cMap2D->SetMapInfo(uiRow, uiCol, 0);
 
 	// Set checkpoint position to start position
 	checkpoint = glm::vec2(uiCol, uiRow);
@@ -305,7 +305,7 @@ bool CPlayer2D::Reset()
 		return false;	// Unable to find the start position of the player, so quit this game
 
 	// Erase the value of the player in the arrMapInfo
-	cMap2D->SetMapInfo(uiRow, uiCol, 0, CLASS_ID::CID_NONE);
+	cMap2D->SetMapInfo(uiRow, uiCol, 0);
 
 	// Set checkpoint to start position
 	checkpoint = glm::i32vec2(uiCol, uiRow);
@@ -655,7 +655,7 @@ void CPlayer2D::InputUpdate(double dt)
 		if (shuriken.iCount > 0)
 		{
 			shuriken.Use();
-			if (cMap2D->InsertMapInfo((int)vTransform.y, (int)vTransform.x, OBJECT_TYPE::PROJECTILES_SHURIKEN, CLASS_ID::CID_PROJECTILES))
+			if (cMap2D->InsertMapInfo((int)vTransform.y, (int)vTransform.x, OBJECT_TYPE::PROJECTILES_SHURIKEN))
 			{ 
 				glm::vec2 distance = Camera2D::GetInstance()->GetCursorPosInWorldSpace() - vTransform;
 
@@ -675,7 +675,7 @@ void CPlayer2D::InputUpdate(double dt)
 		if (shuriken.iCount > 0)
 		{
 			shuriken.Use();
-			if (cMap2D->InsertMapInfo((int)vTransform.y, (int)vTransform.x, OBJECT_TYPE::BULLETS_KUNAI, CLASS_ID::CID_BULLETS))
+			if (cMap2D->InsertMapInfo((int)vTransform.y, (int)vTransform.x, OBJECT_TYPE::BULLETS_KUNAI))
 			{
 				CObject2D* shuriken = cMap2D->GetCObject((int)vTransform.x, (int)vTransform.y);
 				shuriken->vTransform = vTransform;
