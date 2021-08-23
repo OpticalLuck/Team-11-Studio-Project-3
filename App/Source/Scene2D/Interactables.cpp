@@ -11,11 +11,14 @@
 
 #include <iostream>
 
-Interactables::Interactables(void)
+Interactables::Interactables(int iTextureID)
 	: bInteraction(false)
 	, quad(NULL)
+	, iInteractableID(0)
 {
 	transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
+
+	this->iTextureID = iTextureID;
 
 	// Initialise vecIndex
 	vTransform = glm::i32vec2(0);
@@ -83,7 +86,7 @@ void Interactables::Render(void)
 	glUniform4fv(colorLoc, 1, glm::value_ptr(currentColor));
 
 	// Get the texture to be rendered
-	glBindTexture(GL_TEXTURE_2D, iTextureID);
+	glBindTexture(GL_TEXTURE_2D, CTextureManager::GetInstance()->MapOfTextureIDs.at(iTextureID));
 
 	//CS: Render the animated sprite
 	quad->Render();
@@ -95,6 +98,11 @@ void Interactables::PostRender(void)
 {
 	// Disable blending
 	glDisable(GL_BLEND);
+}
+
+void Interactables::SetInteractableID(int id)
+{
+	iInteractableID = id;
 }
 
 /**

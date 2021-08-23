@@ -5,6 +5,8 @@
  */
 #include "Map2D.h"
 
+#include "EntityManager.h"
+
 // Include Shader Manager
 #include "RenderControl\ShaderManager.h"
 
@@ -483,6 +485,12 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 				currIndex.x = (float)uiCol;
 				currIndex.y = (float)doc.GetRowCount() - (float)uiRow - 1.f;
 				currObj->vTransform = currIndex;
+
+				if (currObjID != 0)
+				{
+					((Interactables*)(currObj))->SetInteractableID(currObjID);
+					CEntityManager::GetInstance()->PushInteractables((Interactables*)currObj);
+				}
 
 				currObj->Init();
 

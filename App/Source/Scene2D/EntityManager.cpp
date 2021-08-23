@@ -321,3 +321,8 @@ void CEntityManager::Update(const double dElapsedTime)
 void CEntityManager::PushBullet(EnemyBullet2D* bullet) {
 	m_eBulletList.push_back(bullet);
 }
+
+void CEntityManager::PushInteractables(Interactables* interactable)
+{
+	m_interactableList.push_back(interactable);
+}

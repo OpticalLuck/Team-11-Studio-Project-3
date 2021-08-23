@@ -46,6 +46,7 @@ public:
 
 	void PushEnemy(CEnemy2D*);
 	void PushBullet(EnemyBullet2D*);
+	void PushInteractables(Interactables*);
 
 	std::vector<CPlayer2D*> GetAllPlayers(void);
 	std::vector<CEnemy2D*> GetAllEnemies(void);

@@ -18,7 +18,7 @@ public:
 
 	INTERACTABLE_TYPE interactableType;
 
-	Interactables(void);
+	Interactables(int iTextureID = 0);
 
 	// Destructor
 	virtual ~Interactables(void);
@@ -38,7 +38,11 @@ public:
 	// PostRender
 	void PostRender(void);
 
+	void SetInteractableID(int);
+
 private:
+
+	int iInteractableID;
 
 	CMesh* quad;
 
