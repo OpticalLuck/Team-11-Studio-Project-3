@@ -34,7 +34,7 @@ class CMobEnemy2D : public CEnemy2D
 		bool inView;
 
 		void UpdateMovement(void);
-		void CollisionUpdate(void);
+		void CollisionUpdate(const float dElapsedTime);
 		void ClampPos(void);
 };
 

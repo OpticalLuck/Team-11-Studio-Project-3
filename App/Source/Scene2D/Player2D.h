@@ -129,6 +129,9 @@ public:
 	//Function to call if player gets hit
 	void Attacked(int hp = 1);
 
+	//return cphysics
+	CPhysics2D& GetCPhysics(void);
+
 protected:
 	bool bIsClone;
 	

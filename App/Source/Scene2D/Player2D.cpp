@@ -747,3 +747,7 @@ CPlayer2D* const CPlayer2D::Clone()
 {
 	return new CPlayer2D(*this);
 }
+
+CPhysics2D& CPlayer2D::GetCPhysics(void) {
+	return cPhysics2D;
+}

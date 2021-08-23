@@ -135,7 +135,7 @@ void CMobEnemy2D::Update(const double dElapsedTime) {
 
 	//Collision with world's object
 	collider2D->position = vTransform;
-	CollisionUpdate();
+	CollisionUpdate(dElapsedTime);
 
 	if (vTransform == oldVTransform) {
 		if (dir == DIRECTION::LEFT)
@@ -198,7 +198,7 @@ void CMobEnemy2D::ClampPos(void) {
 	}
 }
 
-void CMobEnemy2D::CollisionUpdate(void) {
+void CMobEnemy2D::CollisionUpdate(const float dElapsedTime) {
 	int range = 3;
 	cPhysics2D.SetboolGrounded(false);
 
@@ -270,9 +270,28 @@ void CMobEnemy2D::CollisionUpdate(void) {
 		Collision data = (collider2D->CollideWith(playerCollider));
 
 		if (std::get<0>(data)) {
-			//What happens when player collides with enemy code below
+			//Knockback effect
+			if (arrPlayer[i]->GetShield() == 0) {
+				glm::vec2 knockbackDir = glm::vec2(vTransform.x - arrPlayer[i]->vTransform.x, arrPlayer[i]->vTransform.y - vTransform.y + 5.f);
+
+				knockbackDir = glm::normalize(knockbackDir);
+
+				float ogFriction = arrPlayer[i]->GetCPhysics().FRICTONAL_COEFFICIENT;
+
+				CPhysics2D& physics = arrPlayer[i]->GetCPhysics();
+
+				physics.DoBounce(knockbackDir, 10.f);
+				physics.SetboolGrounded(true);
+
+				physics.FRICTONAL_COEFFICIENT = 0;
+				physics.Update(dElapsedTime);
+
+				physics.FRICTONAL_COEFFICIENT = ogFriction;
+			}
+
+			//Effect for bounce
 			arrPlayer[i]->Attacked();
-			
+
 			return;
 		}
 	}
