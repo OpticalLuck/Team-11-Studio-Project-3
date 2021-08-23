@@ -1,5 +1,9 @@
 #include "EntityManager.h"
 
+#include "EnemyBullet2D.h"
+#include "MobEnemy2D.h"
+
+#include "Boss2D.h"
 
 CEntityManager::CEntityManager()
 	: cPlayer2D(NULL)
@@ -7,12 +11,40 @@ CEntityManager::CEntityManager()
 	, cMap2D(NULL)
 	, cBoss2D(NULL)
 	, cKeyboardController(NULL)
-	, cKeyboardInputHandler(NULL)
+	, cInputHandler(NULL)
+	, currRound(0)
 {
 }
 
 CEntityManager::~CEntityManager()
 {
+	if (cPlayer2D) {
+		delete cPlayer2D;
+		cPlayer2D = nullptr;
+	}
+
+	if (cBoss2D) {
+		delete cBoss2D;
+		cBoss2D = nullptr;
+	}
+
+	for (unsigned i = 0; i < m_enemyList.size(); i++) {
+		delete m_enemyList[i];
+		m_enemyList[i] = nullptr;
+	}
+	m_enemyList.clear();
+
+	for (unsigned i = 0; i < m_cloneList.size(); i++) {
+		delete m_cloneList[i];
+		m_cloneList[i] = nullptr;
+	}
+	m_cloneList.clear();
+
+	for (unsigned i = 0; i < m_eBulletList.size(); i++) {
+		delete m_eBulletList[i];
+		m_eBulletList[i] = nullptr;
+	}
+	m_eBulletList.clear();
 }
 
 bool CEntityManager::EntityManagerInit(void)
@@ -23,7 +55,7 @@ bool CEntityManager::EntityManagerInit(void)
 	cMap2D->SetShader("2DShader");
 	// Store the keyboard controller singleton instance here
 	cKeyboardController = CKeyboardController::GetInstance();
-	cKeyboardInputHandler = CKeyboardInputHandler::GetInstance();
+	cInputHandler = CInputHandler::GetInstance();
 
 	unsigned int uiRow = -1;
 	unsigned int uiCol = -1;
@@ -44,47 +76,72 @@ bool CEntityManager::EntityManagerInit(void)
 	}
 
 	//enemy init
-	if (cMap2D->FindValue(300, uiRow, uiCol) == true)
-	{
-		cEnemy2D = new CEnemy2D;
-		cEnemy2D->SetShader("2DColorShader");
-		m_enemyList.push_back(cEnemy2D);
-		if (cEnemy2D->Init() == false)
-		{
-			cout << "Failed to load CEnemy2D" << endl;
-			return false;
-		}
+	while (cMap2D->FindValue(300, uiRow, uiCol)) {
+		m_enemyList.push_back(enemyFactory.CreateEnemy(300));
+	}
+
+	while (cMap2D->FindValue(301, uiRow, uiCol)) {
+		m_enemyList.push_back(enemyFactory.CreateEnemy(301));
+	}
+
+	while (cMap2D->FindValue(303, uiRow, uiCol)) {
+		m_enemyList.push_back(enemyFactory.CreateEnemy(303));
+	}
+
+	while (cMap2D->FindValue(304, uiRow, uiCol)) {
+		m_enemyList.push_back(enemyFactory.CreateEnemy(304));
 	}
 
 	//Boss initialisation
 	if (cMap2D->FindValue(305, uiRow, uiCol)) {
-		cBoss2D = new CBoss2D;
-		cBoss2D->SetShader("2DColorShader");
-		if (cBoss2D->Init() == false) {
-			cout << "Failed to load CBoss2D" << endl;
+		cBoss2D = dynamic_cast<CBoss2D*>(enemyFactory.CreateEnemy(305));
+
+		if (cMap2D->FindValue(305, uiRow, uiCol)) {
+			DEBUG_MSG("ERROR: TOO MANY BOSS IN LEVEL. THERE SHOULD ONLY BE ONE BOSS");
 			return false;
 		}
 	}
 
+	//clone init
+	//cCloneTemplate = new CPlayer2D();
+	//if (cCloneTemplate->Init(cPlayer2D->GetCheckpoint(),m_cloneList.size()) == false)
+	//{
+	//	cout << "Failed to load clone" << endl;
+	//	return false;
+	//}
+	//// initialise all default values
+	//cCloneTemplate->SetClone(true);
+	//cCloneTemplate->SetShader("2DColorShader");
+	//// find position to spawn in map
+	//if (cMap2D->FindValue(1, uiRow, uiCol) == true)
+	//{
+	//	cCloneTemplate->vTransform = glm::vec2(uiCol, uiRow);
+	//}
 	currRound = 0;
 
 	return true;
 }
 
+void CEntityManager::PushEnemy(CEnemy2D* enemy) {
+	if (enemy)
+		m_enemyList.push_back(enemy);
+	else
+		DEBUG_MSG("ENEMY NOT ADDED AS IT IS A NULLPTR.");
+}
 
 bool CEntityManager::Clone(void)
 {
 	CPlayer2D* clone = new CPlayer2D();
 	clone->SetShader("2DColorShader");
 
-	if (!clone->Init(cPlayer2D->GetCheckpoint()))
+	if (!clone->Init(cPlayer2D->GetCheckpoint(),m_cloneList.size()))
 	{
 		std::cout << "Failed to clone Player\n";
 		return false;
 	}
-
 	clone->SetClone(true);
-	clone->SetInputs(cKeyboardInputHandler->GetAllInputs());
+	clone->SetKeyInputs(cInputHandler->GetAllKeyboardInputs());
+	clone->SetMouseInputs(cInputHandler->GetAllMouseInputs());
 	m_cloneList.push_back(clone);
 
 	return true;
@@ -129,19 +186,22 @@ CPlayer2D* CEntityManager::GetPlayer()
 	return cPlayer2D;
 }
 
-std::vector<CPlayer2D*> CEntityManager::GetAllPlayers(void) {
+std::vector<CPlayer2D*> CEntityManager::GetAllPlayers(void) 
+{
 	std::vector<CPlayer2D*> arr;
 	
 	arr.push_back(cPlayer2D); //Add controllable player
 
-	for (unsigned i = 0; i < m_cloneList.size(); i++) { //Add the other clones to the vector
+	for (unsigned i = 0; i < m_cloneList.size(); i++) 
+	{ //Add the other clones to the vector
 		arr.push_back(static_cast<CPlayer2D*>(m_cloneList[i])); 
 	}
 
 	return arr;
 }
 
-int CEntityManager::GetCurrRound(void) {
+int CEntityManager::GetCurrRound(void) 
+{
 	return currRound;
 }
 
@@ -152,6 +212,8 @@ void CEntityManager::RenderEnemy(void)
 		m_enemyList[i]->PreRender();
 		m_enemyList[i]->Render();
 		m_enemyList[i]->PostRender();
+
+		m_enemyList[i]->RenderCollider();
 	}
 
 	if (cBoss2D) {
@@ -160,6 +222,16 @@ void CEntityManager::RenderEnemy(void)
 		cBoss2D->PostRender();
 		
 		cBoss2D->RenderCollider();
+	}
+}
+
+void CEntityManager::RenderBullets(void) {
+	for (unsigned i = 0; i < m_eBulletList.size(); i++) {
+		m_eBulletList[i]->PreRender();
+		m_eBulletList[i]->Render();
+		m_eBulletList[i]->PostRender();
+		
+		m_eBulletList[i]->RenderCollider();
 	}
 }
 
@@ -202,25 +274,39 @@ void CEntityManager::Update(const double dElapsedTime)
 
 	// Call all the cEnemy2D's update method before Map2D 
 	// as we want to capture the updates before map2D update
-	for (unsigned i = 0; i < m_enemyList.size(); i++)
-	{
-		if (static_cast<CEnemy2D*>(m_enemyList[i])->GetHealth() < 0)
-		{
+	for (unsigned i = 0; i < m_enemyList.size(); i++) {
+		m_enemyList[i]->Update(dElapsedTime);
+
+		//Delete conditions
+		if (m_enemyList[i]->GetHealth() <= 0) {
 			delete m_enemyList[i];
-			m_enemyList.erase(m_enemyList.begin() + i);
+			m_enemyList[i] = nullptr;
 		}
 	}
-	for (unsigned i = 0; i < m_enemyList.size(); i++)
-	{
-		m_enemyList[i]->Update(dElapsedTime);
+
+	m_enemyList.erase(std::remove(m_enemyList.begin(), m_enemyList.end(), nullptr), m_enemyList.end()); //Remove any nullptrs in the array
+
+	//Call enemy bullets
+	for (unsigned i = 0; i < m_eBulletList.size(); i++) {
+		m_eBulletList[i]->Update(dElapsedTime);
+
+		if (m_eBulletList[i]->OutOfWorld() || m_eBulletList[i]->GetHealth() <= 0) {
+			delete m_eBulletList[i];
+			m_eBulletList[i] = nullptr;
+		}
 	}
 
+	//Remove any nullptrs in bullet array
+	m_eBulletList.erase(std::remove(m_eBulletList.begin(), m_eBulletList.end(), nullptr), m_eBulletList.end());
+
+	
+	//Keyboard inputs
 	if (cKeyboardController->IsKeyPressed(GLFW_KEY_C))
 	{
 		Clone();
 	}
 }
 
-
-
-
+void CEntityManager::PushBullet(EnemyBullet2D* bullet) {
+	m_eBulletList.push_back(bullet);
+}

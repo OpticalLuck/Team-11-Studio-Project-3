@@ -12,10 +12,6 @@ public:
 
 	enum INTERACTABLE_TYPE
 	{
-		//Collidables
-		BOULDER = 110,
-
-		//Non-collidables
 		BUTTON = 201,
 		LEVER = 202,
 		PRESSURE_PLATE = 203,
@@ -56,7 +52,7 @@ private:
 	Command cCommand;
 
 	// Boolean to check if the interactable is currently being interacted with
-	bool bInteracted;
+	bool bInteraction;
 
 	bool LoadTexture(const char* filename, GLuint& iTextureID);
 };

@@ -17,7 +17,7 @@ public:
 	};
 	PROJECTILE_TYPE projectileType;
 
-	Projectiles();
+	Projectiles(int iTextureID = OBJECT_TYPE::ITEM_SHURIKEN);
 	virtual ~Projectiles();
 
 	bool Init() override;
@@ -25,7 +25,6 @@ public:
 
 	CPhysics2D& GetPhysics();
 protected:
-
 	CSpriteAnimation* animatedSprites;
 
 	// Current color

@@ -13,6 +13,8 @@ using namespace std;
 // Include Mesh Builder
 #include "Primitives/MeshBuilder.h"
 
+#include "EntityManager.h"
+
 //Include entity manager
 #include "EntityManager.h"
 
@@ -27,6 +29,8 @@ using namespace std;
 // Include math.h
 #include <math.h>
 
+#include "System/Debug.h"
+
 /**
  @brief Constructor This constructor has protected access modifier as this class will be a Singleton
  */
@@ -34,7 +38,6 @@ CEnemy2D::CEnemy2D(void)
 	: bIsActive(false)
 	, cMap2D(NULL)
 	, cSettings(NULL)
-	, cPlayer2D(NULL)
 	, quadMesh(nullptr)
 	, sCurrentFSM(FSM::IDLE)
 	,dir(DIRECTION::LEFT)
@@ -48,8 +51,13 @@ CEnemy2D::CEnemy2D(void)
 	vec2UVCoordinate = glm::vec2(0.0f);
 
 	//type = ENEMY;
-
 	int chance = Math::RandIntMinMax(0, 100);
+
+	//Store initial value of each round
+	for (int i = 0; i < 5; i++) {
+		roundDir[i] = RandomiseDir();
+	}
+	dir = roundDir[0];
 }
 
 /**
@@ -57,13 +65,21 @@ CEnemy2D::CEnemy2D(void)
  */
 CEnemy2D::~CEnemy2D(void)
 {
+	if (quadMesh) {
+		delete quadMesh;
+		quadMesh = nullptr;
+	}
 
-	// We won't delete this since it was created elsewhere
-	cPlayer2D = NULL;
+	cMap2D = nullptr;
+	camera = nullptr;
+	cSettings = nullptr;
+	cEntityManager = nullptr;
 
-	// We won't delete this since it was created elsewhere
-	cMap2D = NULL;
-
+	currTarget = nullptr;
+	for (unsigned i = 0; i < arrPlayer.size(); i++)
+		arrPlayer[i] = nullptr;
+	arrPlayer.clear();
+	
 	// optional: de-allocate all resources once they've outlived their purpose:
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
@@ -80,6 +96,9 @@ bool CEnemy2D::Init(void)
 
 	// Get the handler to the CMap2D instance
 	cMap2D = CMap2D::GetInstance();
+
+	camera = Camera2D::GetInstance();
+
 	// Find the indices for the player in arrMapInfo, and assign it to cPlayer2D
 	unsigned int uiRow = -1;
 	unsigned int uiCol = -1;
@@ -87,7 +106,7 @@ bool CEnemy2D::Init(void)
 		return false;	// Unable to find the start position of the player, so quit this game
 
 	// Erase the value of the player in the arrMapInfo
-	cMap2D->SetMapInfo(uiRow, uiCol, 0);
+	cMap2D->SetMapInfo(uiRow, uiCol, 0, CLASS_ID::CID_NONE);
 
 	// Set the start position of the Player to iRow and iCol
 	vTransform = glm::i32vec2(uiCol, uiRow);
@@ -100,11 +119,18 @@ bool CEnemy2D::Init(void)
 	//CS: Create the Quad Mesh using the mesh builder
 	quadMesh = CMeshBuilder::GenerateQuad(glm::vec4(1, 1, 1, 1), cSettings->TILE_WIDTH, cSettings->TILE_HEIGHT);
 
+	roundIndex = 0;
+
 	// Load the enemy2D texture
 	if (LoadTexture("Image/Scene2D_EnemyTile.tga", iTextureID) == false)
 	{
 		std::cout << "Failed to load enemy2D tile texture" << std::endl;
 		return false;
+	}
+
+	//Store initial value of each round
+	for (int i = 0; i < 5; i++) {
+		roundDir[i] = RandomiseDir();
 	}
 
 	//CS: Init the color to white
@@ -114,6 +140,8 @@ bool CEnemy2D::Init(void)
 	currTarget = nullptr;
 	arrPlayer = CEntityManager::GetInstance()->GetAllPlayers();
 
+	cEntityManager = CEntityManager::GetInstance();
+
 	// Set the Physics to fall status by default
 	//cPhysics2D.Init();
 	//cPhysics2D.SetStatus(CPhysics2D::STATUS::FALL);
@@ -122,6 +150,12 @@ bool CEnemy2D::Init(void)
 	bIsActive = true;
 
 	return true;
+}
+
+void CEnemy2D::SetTexture(const char* fileName) {
+	if (!LoadTexture(fileName, iTextureID)) {
+		DEBUG_MSG("ERROR: FAILED TO SET TEXTURE ON ENEMY. INVALID FILENAME.");
+	}
 }
 
 CPlayer2D* CEnemy2D::GetNearestTarget(float dist) {
@@ -145,6 +179,10 @@ CPlayer2D* CEnemy2D::GetNearestTarget(float dist) {
 		nearest = nullptr;
 
 	return nearest;
+}
+
+CEnemy2D::DIRECTION CEnemy2D::RandomiseDir(void) {
+	return (DIRECTION)Math::RandIntMinMax(0, (int)DIRECTION::NUM_DIRECTIONS - 1);
 }
 
 float CEnemy2D::GetAngle(glm::vec2 pos) {
@@ -247,11 +285,26 @@ void CEnemy2D::Render(void)
 	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
 
 	transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-	transform = glm::translate(transform, glm::vec3(vec2UVCoordinate.x,
-													vec2UVCoordinate.y,
-													0.0f));
-	/*if (facing == LEFT)
-		transform = glm::rotate(transform, glm::radians(180.f), glm::vec3(0.f, 1.f, 0.f));*/
+
+	//Get camera transforms and use them instead
+	glm::vec2 offset = glm::i32vec2((cSettings->NUM_TILES_XAXIS / 2), (cSettings->NUM_TILES_YAXIS / 2));
+	glm::vec2 cameraPos = camera->getCurrPos();
+
+	glm::vec2 IndexPos = vTransform;
+
+	glm::vec2 actualPos = IndexPos - cameraPos + offset;
+	actualPos = cSettings->ConvertIndexToUVSpace(actualPos);
+
+	float clampOffset = cSettings->ConvertIndexToUVSpace(CSettings::AXIS::x, 1, false);
+	clampOffset = (clampOffset + 1);
+
+	float clampX = 1.0f + clampOffset;
+	float clampY = 1.0f + clampOffset;
+	if (actualPos.x <= -clampX || actualPos.x >= clampX || actualPos.y <= -clampY || actualPos.y >= clampY)
+		return; //Exit code if enemy is too far to be rendered
+
+	transform = glm::translate(transform, glm::vec3(actualPos.x, actualPos.y, 0.f));
+
 	// Update the shaders with the latest transform
 	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
 	glUniform4fv(colorLoc, 1, glm::value_ptr(currentColor));
@@ -288,18 +341,6 @@ void CEnemy2D::SetTransform(const int iIndex_XAxis, const int iIndex_YAxis)
 {
 	this->vTransform.x = (float)iIndex_XAxis;
 	this->vTransform.y = (float)iIndex_YAxis;
-}
-
-/**
- @brief Set the handle to cPlayer to this class instance
- @param cPlayer2D A CPlayer2D* variable which contains the pointer to the CPlayer2D instance
- */
-void CEnemy2D::SetPlayer2D(CPlayer2D* cPlayer2D)
-{
-	this->cPlayer2D = cPlayer2D;
-
-	// Update the enemy's direction
-	//UpdateDirection();
 }
 
 int CEnemy2D::GetHealth() const

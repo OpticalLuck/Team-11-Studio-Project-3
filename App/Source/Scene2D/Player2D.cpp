@@ -6,6 +6,7 @@
 #include "Player2D.h"
 
 #include <iostream>
+#include <sstream>
 using namespace std;
 
 // Include Shader Manager
@@ -30,6 +31,7 @@ using namespace std;
 
 //Items
 #include "Projectiles.h"
+#include "Bullet2D.h"
 
 
 /**
@@ -39,13 +41,13 @@ CPlayer2D::CPlayer2D(void)
 	: cMap2D(NULL)
 	, cKeyboardController(NULL)
 	, cMouseController(NULL)
-	, cInventoryManager(NULL)
-	, cInventoryItem(NULL)
 	, cSoundController(NULL)
-	, cKeyboardInputHandler(NULL)
+	, cInputHandler(NULL)
 	, iTempFrameCounter(0)
 	//, bDamaged(false)
 	, bIsClone(false)
+	, cInventory(NULL)
+
 {
 	transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
 
@@ -56,8 +58,22 @@ CPlayer2D::CPlayer2D(void)
 
 	animatedSprites = nullptr;
 	camera = nullptr;
+	cSettings = CSettings::GetInstance();
+
 	checkpoint  = glm::i32vec2();
-	currentColor = glm::vec4();
+	currentColor = glm::vec4(1,1,1,1);
+
+	pHealth = pShield = 0;
+	pMaxShield = 0;
+	pMaxHealth = 5;
+	pBlinkInterval = 0;
+	pMaxBlinkInterval = int(0.175f * (float)cSettings->FPS);
+
+	for (auto &timerVal : timerArr)
+	{
+		timerVal.first = false;
+		timerVal.second = 0;
+	}
 }
 
 /**
@@ -65,6 +81,11 @@ CPlayer2D::CPlayer2D(void)
  */
 CPlayer2D::~CPlayer2D(void)
 {
+	if (collider2D) {
+		delete collider2D;
+		collider2D = nullptr;
+	}
+
 	// We won't delete this since it was created elsewhere
 	cSoundController = NULL;
 
@@ -75,7 +96,7 @@ CPlayer2D::~CPlayer2D(void)
 	cKeyboardController = NULL;
 
 	// We won't delete this since it was created elsewhere
-	cKeyboardInputHandler = NULL;
+	cInputHandler = NULL;
 
 	// We won't delete this since it was created elsewhere
 	cMap2D = NULL;
@@ -107,7 +128,7 @@ bool CPlayer2D::Init(void)
 		return false;	// Unable to find the start position of the player, so quit this game
 
 	// Erase the value of the player in the arrMapInfo
-	cMap2D->SetMapInfo(uiRow, uiCol, 0);
+	cMap2D->SetMapInfo(uiRow, uiCol, 0, CLASS_ID::CID_NONE);
 
 	// Set checkpoint position to start position
 	checkpoint = glm::vec2(uiCol, uiRow);
@@ -140,10 +161,18 @@ bool CPlayer2D::Init(void)
 	animatedSprites->PlayAnimation("idle", -1, 1.0f);
 
 	//CS: Init the color to white
-	currentColor = glm::vec4(1.0, 1.0, 1.0, 1.0);
+	currentColor = glm::vec4(1.0, 1.0, 1.0, 1.0); //100,100,100 for full blown white
 
-	// Get the handler to the CInventoryManager instance
-    cInventoryManager = CInventoryManager::GetInstance();
+	//Health related stuff
+	pHealth = pMaxHealth;
+
+	//Timers and stuff
+	//Shield
+	pMaxShield = int(2.3f * (float)cSettings->FPS);
+	pShield = 0;
+
+	//Blink Interval
+	pBlinkInterval = 0;
 
 	jumpCount = 0;
 
@@ -158,22 +187,25 @@ bool CPlayer2D::Init(void)
 	// Get the handler to the CSoundController
 	cSoundController = CSoundController::GetInstance();
 
-	cKeyboardInputHandler = CKeyboardInputHandler::GetInstance();
+	cInputHandler = CInputHandler::GetInstance();
 
-	collider2D->vec2Dimensions = glm::vec2(0.20000f,0.50000f);
-	collider2D->Init();
-
+	collider2D->Init(vTransform, glm::vec2(0.2f,0.5f));
 	cPhysics2D.Init(&vTransform);
+
+	CInventoryManager::GetInstance()->Add("Player");
+	cInventory = CInventoryManager::GetInstance()->Get("Player");
+
 	return true;
 }
 
-bool CPlayer2D::Init(glm::i32vec2 spawnpoint)
+bool CPlayer2D::Init(glm::i32vec2 spawnpoint, int iCloneIndex)
 {
 	// Store the keyboard controller singleton instance here
 	cKeyboardController = CKeyboardController::GetInstance();
 	// Reset all keys since we are starting a new game
 	cKeyboardController->Reset();
 
+	cMouseController = CMouseController::GetInstance();
 	// Get the handler to the CSettings instance
 	cSettings = CSettings::GetInstance();
 
@@ -220,20 +252,42 @@ bool CPlayer2D::Init(glm::i32vec2 spawnpoint)
 
 	camera = Camera2D::GetInstance();
 
+	//Health related stuff
+	pHealth = pMaxHealth;
+
+	//Timers and stuff
+	//Shield
+	pShield = 0;
+	pMaxShield = int(3.f * (float)cSettings->FPS);
+
+	//Blink Interval
+	pBlinkInterval = 0;
+
+	jumpCount = 0;
+
 	fMovementSpeed = 5.f;
 	fJumpSpeed = 5.f;
 
 	// Get the handler to the CSoundController
 	cSoundController = CSoundController::GetInstance();
 
-	cKeyboardInputHandler = CKeyboardInputHandler::GetInstance();
+	cInputHandler = CInputHandler::GetInstance();
 
-	collider2D->vec2Dimensions = glm::vec2(0.20000f, 0.50000f);
-	collider2D->Init();
+	collider2D->Init(vTransform, glm::vec2(0.2f, 0.5f));
 
 	cPhysics2D.Init(&vTransform);
 
+	std::stringstream ss;
+	ss << "Clone" << iCloneIndex;
+
+	CInventoryManager::GetInstance()->Add(ss.str().c_str());
+	cInventory = CInventoryManager::GetInstance()->Get(ss.str().c_str());
+
 	return true;
+}
+
+int CPlayer2D::GetHealth(void) {
+	return pHealth;
 }
 
 glm::i32vec2 CPlayer2D::GetCheckpoint(void) {
@@ -251,7 +305,7 @@ bool CPlayer2D::Reset()
 		return false;	// Unable to find the start position of the player, so quit this game
 
 	// Erase the value of the player in the arrMapInfo
-	cMap2D->SetMapInfo(uiRow, uiCol, 0);
+	cMap2D->SetMapInfo(uiRow, uiCol, 0, CLASS_ID::CID_NONE);
 
 	// Set checkpoint to start position
 	checkpoint = glm::i32vec2(uiCol, uiRow);
@@ -275,95 +329,103 @@ bool CPlayer2D::Reset()
  */
 void CPlayer2D::Update(const double dElapsedTime)
 {
+	// Only update the inputs if the instance is not a clone
+	// Clone will have a fixed input that is created on initialisation
+	if (!bIsClone)
+	{
+		m_KeyboardInputs = cInputHandler->GetAllKeyboardInputs();
+		m_MouseInputs = cInputHandler->GetAllMouseInputs();
+	}
+
 	// Store the old position
 	vOldTransform = vTransform;
 
-	// Get keyboard updates
-	MovementUpdate(dElapsedTime);
-	if (cKeyboardController->IsKeyPressed(GLFW_KEY_V))
-		{
-			if (state != S_ATTACK)
-			{
-				cSoundController->PlaySoundByID(6);
-				state = S_ATTACK;
-			}
-		}
-
-	glm::vec2 distance = Camera2D::GetInstance()->GetCursorPosInWorldSpace();
-	cout << distance.x << ", " << distance.y << endl;
-	if (cMouseController->IsButtonPressed(0))
+	for (auto& timerVal : timerArr)
 	{
-		cInventoryItem = cInventoryManager->GetItem("Shuriken");
-		if (cInventoryItem->GetCount() > 0)
+		if (timerVal.first)
 		{
-			if (cMap2D->InsertMapInfo((int)vTransform.y, (int)vTransform.x, 2))
-			{
-				CObject2D* shuriken = cMap2D->GetCObject((int)vTransform.x, (int)vTransform.y);
-				shuriken->vTransform = vTransform;
-
-				static_cast<Projectiles*>(shuriken)->GetPhysics().SetForce(distance * 200.f);
-				cInventoryItem->Remove(1);
-			}
+			if (timerVal.second <= 60)
+				timerVal.second += dElapsedTime;
+			else
+				timerVal.second = 0;
 		}
 	}
 
+	// Get keyboard & Mouse updates
+	InputUpdate(dElapsedTime);
 	cPhysics2D.Update(dElapsedTime);
-
 	// Update Collider2D Position
 	collider2D->position = vTransform;
 
-	int range = 3;
-
 	//COLLISION RESOLUTION ON Y_AXIS AND X_AXIS
-	for (int i = 0; i < 2; i++)
+	int range = 3;
+	cPhysics2D.SetboolGrounded(false);
+
+	//Stores nearby objects and its dist to player into a vector 
+	vector<pair<CObject2D*, float>> aabbVector;
+	for (int row = -range; row <= range; row++) //y
 	{
-		for (int row = -range; row <= range; row++) //y
+		for (int col = -range; col <= range; col++) //x
 		{
-			for (int col = -range; col <= range; col++) //x
+			int rowCheck = vTransform.y + row;
+			int colCheck = vTransform.x + col;
+
+			if (rowCheck < 0 || colCheck < 0 || rowCheck > cMap2D->GetLevelRow() - 1 || colCheck > cMap2D->GetLevelCol() - 1) continue;
+			if (cMap2D->GetCObject(colCheck, rowCheck))
 			{
-				int rowCheck = vTransform.y + row;
-				int colCheck = vTransform.x + col;
+				CObject2D* obj = cMap2D->GetCObject(colCheck, rowCheck);
+				float distance = glm::length( obj->vTransform - vTransform );
+				aabbVector.push_back({ obj, distance });
+			}
+		}
+	}
+	//Sorts vector based on shortest dist from player to object
+	sort(aabbVector.begin(), aabbVector.end(), [](const std::pair<CObject2D*, float>& a, const std::pair<CObject2D*, float>& b)
+	{
+		return a.second < b.second;
+	});
+	aabbVector.erase(std::unique(aabbVector.begin(), aabbVector.end()), aabbVector.end());
+	// Detects and Resolves Collsion
+	for (auto aabbTuple : aabbVector)
+	{
+		CObject2D* obj = aabbTuple.first;
+		Collision data = (collider2D->CollideWith(obj->GetCollider()));
+		if (std::get<0>(data))
+		{
+			if (obj->GetCollider()->colliderType == Collider2D::COLLIDER_QUAD)
+			{
+				collider2D->ResolveAABB(obj->GetCollider(), Direction::UP);
+				collider2D->ResolveAABB(obj->GetCollider(), Direction::RIGHT);
 
-				if (rowCheck < 0 || colCheck < 0 || rowCheck > cMap2D->GetLevelRow() - 1 || colCheck > cMap2D->GetLevelCol() - 1)
-					continue;
+				if (std::get<1>(data) == Direction::UP)
+					cPhysics2D.SetboolGrounded(true);
+			}
+			else if (obj->GetCollider()->colliderType == Collider2D::COLLIDER_CIRCLE)
+			{
+				if (glm::dot(cPhysics2D.GetVelocity(), obj->vTransform - vTransform) > 0)
+					collider2D->ResolveAABBCircle(obj->GetCollider(), data, Collider2D::COLLIDER_QUAD);
 
-				if (cMap2D->GetCObject(colCheck, rowCheck))
+				if (std::get<1>(data) == Direction::DOWN)
+					cPhysics2D.SetboolGrounded(true);
+			}
+
+			vTransform = collider2D->position;
+			obj->vTransform = obj->GetCollider()->position;
+
+			if (obj->type == ENTITY_TYPE::TILE)
+			{
+				if (dynamic_cast<Boulder2D*>(obj))
 				{
-					CObject2D* obj = cMap2D->GetCObject(colCheck, rowCheck);;
-					Collision data = (collider2D->CollideWith(cMap2D->GetCObject(colCheck, rowCheck)->GetCollider()));
-					if (std::get<0>(data))
-					{
-						if (obj->GetCollider()->colliderType == Collider2D::COLLIDER_QUAD)
-						{
-							if(i == 0)
-								collider2D->ResolveAABB(obj->GetCollider(), Collider2D::Y);
-							else if (i == 1)
-								collider2D->ResolveAABB(obj->GetCollider(), Collider2D::X);
-						}
-						else if (obj->GetCollider()->colliderType == Collider2D::COLLIDER_CIRCLE)
-						{
-							if(glm::dot(cPhysics2D.GetVelocity(), obj->vTransform - vTransform) > 0)
-								collider2D->ResolveAABBCircle(obj->GetCollider(), data, Collider2D::COLLIDER_QUAD);
-						}
-
-						vTransform = collider2D->position;
-						obj->vTransform = obj->GetCollider()->position;
-
-						if (obj->type == CObject2D::ENTITY_TYPE::INTERACTABLES)
-						{
-							if (static_cast<Interactables*>(obj)->interactableType == Interactables::INTERACTABLE_TYPE::BOULDER)
-							{
-								glm::vec2 direction = glm::normalize(obj->vTransform - vTransform);
-								static_cast<Boulder2D*>(obj)->GetPhysics().SetForce(glm::vec2(120.f, 0) * direction);
-								cPhysics2D.SetVelocity(glm::vec2(0.f));
-							}
-						}
-					}
+					glm::vec2 direction = glm::normalize(obj->vTransform - vTransform);
+					static_cast<Boulder2D*>(obj)->GetPhysics().SetForce(glm::vec2(120.f, 0) * direction);
+					cPhysics2D.SetVelocity(glm::vec2(0.f));
 				}
 			}
 		}
 	}
 
+	//BOUNDARY CHECK
+	LockWithinBoundary();
 	//animation States
 	switch (state)
 	{
@@ -392,6 +454,9 @@ void CPlayer2D::Update(const double dElapsedTime)
 		animatedSprites->PlayAnimation("death", 1, 3.f);
 		break;
 	}
+
+	//Health
+	UpdateHealthLives();
 
 	//CS: Update the animated sprite
 	animatedSprites->Update(dElapsedTime);
@@ -513,43 +578,119 @@ bool CPlayer2D::LoadTexture(const char* filename, GLuint& iTextureID)
 	return true;
 }
 
-void CPlayer2D::MovementUpdate(double dt)
+void CPlayer2D::InputUpdate(double dt)
 {
 	state = S_IDLE;
 	
-	std::vector<std::array<bool, KEYBOARD_INPUTS::INPUT_TOTAL>> keyboardInputs = (bIsClone) ? m_CloneKeyboardInputs : cKeyboardInputHandler->GetAllInputs();
-	if ((unsigned)iTempFrameCounter >= keyboardInputs.size())
+	if ((unsigned)iTempFrameCounter >= m_KeyboardInputs.size())
 		return;
 
 	glm::vec2 velocity = cPhysics2D.GetVelocity();
-	if (keyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::W])
+	glm::vec2 force = glm::vec2(0.f);
+
+	if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::W].bKeyDown)
 	{
 		velocity.y = fMovementSpeed;
+		cPhysics2D.SetboolGrounded(false);
 	}
-	else if (keyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::S])
+	else if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::S].bKeyDown)
 	{
-		velocity.y = -fMovementSpeed;
+		//velocity.y = -fMovementSpeed;
 	}
-	if (keyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::D])
+
+	if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::D].bKeyDown)
 	{
 		velocity.x = fMovementSpeed;
 		state = S_MOVE;
 		facing = RIGHT;
 	}
-	else if (keyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::A])
+	else if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::A].bKeyDown)
 	{
 		velocity.x = -fMovementSpeed;
 		state = S_MOVE;
 		facing = LEFT;
 	}
 
-	if (keyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::SPACE])
+	if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::SPACE].bKeyDown)
 	{
-		velocity.y = fJumpSpeed;
+		if (timerArr[A_JUMP].second < 0.2)
+		{
+			timerArr[A_JUMP].first = true;
+			if(cPhysics2D.GetVelocity().y <= 0)
+				force.y = 80;
+			else
+				velocity.y = 8.4;
+
+			cPhysics2D.SetboolGrounded(false);
+		}
+		else
+		{
+			timerArr[A_JUMP].first = false;
+
+			if (cPhysics2D.GetboolGrounded())
+			{
+				timerArr[A_JUMP].second = 0;
+			}
+		}
+	}
+	else
+	{
+		timerArr[A_JUMP].first = false;
+		if (cPhysics2D.GetboolGrounded())
+		{
+			timerArr[A_JUMP].second = 0;
+		}
 	}
 
 	if (glm::length(velocity) > 0.f)
 		cPhysics2D.SetVelocity(velocity);
+
+	if (glm::length(force) > 0.f)
+		cPhysics2D.SetForce(force);
+
+	if (m_MouseInputs[iTempFrameCounter][MOUSE_INPUTS::LMB].bButtonPressed)
+	{
+		CInventoryManager::GetInstance()->Use(cInventory->sName);
+		CItem& shuriken = CInventoryManager::GetInstance()->Get(cInventory->sName)->GetItem(0);
+		if (shuriken.iCount > 0)
+		{
+			shuriken.Use();
+			if (cMap2D->InsertMapInfo((int)vTransform.y, (int)vTransform.x, OBJECT_TYPE::ITEM_SHURIKEN, CLASS_ID::CID_PROJECTILES))
+			{ 
+				glm::vec2 distance = Camera2D::GetInstance()->GetCursorPosInWorldSpace() - vTransform;
+
+				CObject2D* shuriken = cMap2D->GetCObject((int)vTransform.x, (int)vTransform.y);
+				shuriken->vTransform = vTransform;
+
+				glm::vec2 force = glm::clamp(distance * 200.f, glm::vec2(-2000.f, -2000.f), glm::vec2(2000.f, 2000.f));
+				static_cast<Projectiles*>(shuriken)->GetPhysics().SetForce(force);
+			}
+		}
+	}
+
+	if (m_MouseInputs[iTempFrameCounter][MOUSE_INPUTS::RMB].bButtonPressed)
+	{
+		CInventoryManager::GetInstance()->Use(cInventory->sName);
+		CItem& shuriken = CInventoryManager::GetInstance()->Get(cInventory->sName)->GetItem(0);
+		if (shuriken.iCount > 0)
+		{
+			shuriken.Use();
+			if (cMap2D->InsertMapInfo((int)vTransform.y, (int)vTransform.x, OBJECT_TYPE::ITEM_KUNAI, CLASS_ID::CID_BULLETS))
+			{
+				CObject2D* shuriken = cMap2D->GetCObject((int)vTransform.x, (int)vTransform.y);
+				shuriken->vTransform = vTransform;
+
+				glm::vec2 direction(0.f, 0.f);
+				if (facing == LEFT)
+					direction = glm::vec2(-1.f, 0);
+				else
+					direction = glm::vec2(1.f, 0);
+				glm::vec2 force = glm::clamp(direction * 200.f, glm::vec2(-2000.f, -2000.f), glm::vec2(2000.f, 2000.f));
+				static_cast<Bullet2D*>(shuriken)->GetPhysics().SetForce(force);
+			}
+		}
+	}
+	cInventory->Update(dt, iTempFrameCounter ,m_KeyboardInputs, m_MouseInputs);
 }
 
 /**
@@ -557,19 +698,22 @@ void CPlayer2D::MovementUpdate(double dt)
  */
 void CPlayer2D::UpdateHealthLives(void)
 {
-	// Update health and lives
-	// Check if a life is lost
-	if (cInventoryItem->GetCount() <= 0)
-	{
-		state = S_DEATH;
-		cSoundController->PlaySoundByID(9);
+	if (pShield == 0) { //Return if shield is not enabled / player is not hit
+		currentColor = glm::vec4(1, 1, 1, 1);
+		return;
+	}
 
-		// Check if there is no lives left...
-		if (cInventoryItem->GetCount() < 0)
-		{
-			// Player loses the game
-			CGameManager::GetInstance()->bPlayerLost = true;
-		}
+	pShield--;
+
+	if (pBlinkInterval == 0) { //If blink is 0, toggle it(Blink) and reset timer 
+		pBlinkInterval = pMaxBlinkInterval;
+		if (currentColor.r == 1)
+			currentColor = glm::vec4(100, 100, 100, 1);
+		else
+			currentColor = glm::vec4(1, 1, 1, 1);
+	}
+	else {
+		pBlinkInterval--;
 	}
 }
 
@@ -583,9 +727,41 @@ bool CPlayer2D::IsClone()
 	return bIsClone;
 }
 
-void CPlayer2D::SetInputs(std::vector<std::array<bool, KEYBOARD_INPUTS::INPUT_TOTAL>> inputs)
+void CPlayer2D::Attacked(int hp) {
+	if (pShield > 0) //Return if shield is enabled/ player does not get damaged
+		return;
+
+	pHealth = Math::Max(0, pHealth - 1);
+	pShield = pMaxShield + 1; //Offset by 1 frame for better synchronisation (FUTURE JEVON IF YOU KNOW YOU KNOW IF NOT THEN LMAO)
+}
+
+void CPlayer2D::SetKeyInputs(std::vector<std::array<KeyInput, KEYBOARD_INPUTS::KEY_TOTAL>> inputs)
 {
-	m_CloneKeyboardInputs = inputs;
+	m_KeyboardInputs = inputs;
+}
+
+void CPlayer2D::SetMouseInputs(std::vector<std::array<MouseInput, MOUSE_INPUTS::MOUSE_TOTAL>> inputs)
+{
+	m_MouseInputs = inputs;
+}
+
+void CPlayer2D::ResetToCheckPoint()
+{
+	vTransform = checkpoint;
+	cPhysics2D.SetVelocity(glm::vec2(0.f));
+	cKeyboardController->Reset();
+}
+
+void CPlayer2D::LockWithinBoundary()
+{
+	glm::vec2 minVal = glm::vec2(0.5f, 0.f) - glm::vec2(collider2D->vec2Dimensions.x, 0);
+	minVal *= -1;
+
+	glm::vec2 mapDimensions = cMap2D->GetLevelLimit();
+	glm::vec2 maxVel = mapDimensions - glm::vec2(1.f, 1.f) + glm::vec2(0.5f - collider2D->vec2Dimensions.x, 0);
+
+	vTransform = glm::clamp(vTransform, minVal, maxVel);
+	collider2D->SetPosition(vTransform);
 }
 
 CPlayer2D* const CPlayer2D::Clone()

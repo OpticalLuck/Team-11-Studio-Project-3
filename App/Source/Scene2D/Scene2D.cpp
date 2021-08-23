@@ -18,7 +18,7 @@ CScene2D::CScene2D(void)
 	, cGUI_Scene2D(NULL)
 	, cGameManager(NULL)
 	, cSoundController(NULL)
-	, cKeyboardInputHandler(NULL)
+	, CInputHandler(NULL)
 	, isCompleted(false)
 	, cEntityManager(NULL)
 	, cameraHandler(NULL)
@@ -52,7 +52,7 @@ CScene2D::~CScene2D(void)
 	// We won't delete this since it was created elsewhere
 	cKeyboardController = NULL;
 
-	cKeyboardInputHandler = NULL;
+	CInputHandler = NULL;
 
 	// Destroy the enemies
 	for (unsigned i = 0; i < enemyVector.size(); i++)
@@ -146,10 +146,11 @@ bool CScene2D::Init(void)
 	cSoundController = CSoundController::GetInstance();
 	cSoundController->PlaySoundByID(4);
 
-	cKeyboardInputHandler = CKeyboardInputHandler::GetInstance();
+	CInputHandler = CInputHandler::GetInstance();
 
-	cInventoryManager = CInventoryManager::GetInstance();
-
+	//cInventoryManager = CInventoryManager::GetInstance();
+	cInventoryM = CInventoryManager::GetInstance();
+		
 	return true;
 }
 
@@ -165,7 +166,7 @@ bool CScene2D::Update(const double dElapsedTime)
 
 	if (fCooldown > 0)
 	{
-		fCooldown -= dElapsedTime;
+		fCooldown -= (float)dElapsedTime;
 	}
 
 	// Get keyboard updates
@@ -231,20 +232,6 @@ bool CScene2D::Update(const double dElapsedTime)
 		cSoundController->PlaySoundByID(2);
 		return false;
 	}
-
-	if (cKeyboardController->IsKeyDown(GLFW_KEY_UP) && fCooldown <= 0)
-	{
-		cInventoryManager->NavigateIndex("UP");
-		std::cout << "index is : " << cInventoryManager->GetItemIndex() << std::endl;
-		fCooldown = .5f;
-	}
-	if (cKeyboardController->IsKeyDown(GLFW_KEY_DOWN) && fCooldown <= 0)
-	{
-		cInventoryManager->NavigateIndex("DOWN");
-		std::cout << "index is : " << cInventoryManager->GetItemIndex() << std::endl;
-		fCooldown = .5f;
-	}
-
 	return true;
 }
 
@@ -272,10 +259,6 @@ void CScene2D::Render(void)
 	//Call the Map's background (If there's any)
 	cMap2D->RenderBackground();
 
-	cEntityManager->RenderEnemy();
-	cEntityManager->RenderClone();
-	cEntityManager->RenderPlayer();
-
 	// Call the Map2D's PreRender()
 	cMap2D->PreRender();
 	// Call the Map2D's Render()
@@ -283,6 +266,10 @@ void CScene2D::Render(void)
 	// Call the Map2D's PostRender()
 	cMap2D->PostRender();
 
+	cEntityManager->RenderBullets();
+	cEntityManager->RenderEnemy();
+	cEntityManager->RenderClone();
+	cEntityManager->RenderPlayer();
 
 	// Call the cGUI_Scene2D's PreRender()
 	cGUI_Scene2D->PreRender();

@@ -7,7 +7,7 @@
 #include "GameControl/Settings.h"
 #include "Camera2D.h"
 
-//#include "DesignPatterns/SingletonTemplate.h"
+#include "Math/MyMath.h"
 
 Collision Collider2D::CheckAABBCollision(Collider2D* obj, Collider2D* target)
 {
@@ -16,7 +16,28 @@ Collision Collider2D::CheckAABBCollision(Collider2D* obj, Collider2D* target)
 	bool collisionX = abs(obj->position.x - target->position.x) <= obj->vec2Dimensions.x + target->vec2Dimensions.x - threshold;
 	bool collisionY = abs(obj->position.y - target->position.y) <= obj->vec2Dimensions.y + target->vec2Dimensions.y;
 
-	return std::make_tuple(collisionX && collisionY, UP, glm::vec2(0.0f, 0.0f));
+
+	float diffX = (obj->position.x + obj->vec2Dimensions.x) - (target->position.x + target->vec2Dimensions.x);
+	float diffY = (obj->position.y + obj->vec2Dimensions.y) - (target->position.y + target->vec2Dimensions.y);
+
+	Direction dir;
+	
+	if (abs(diffX) > abs(diffY))
+	{
+		if (diffX > 0)
+			dir = Direction::RIGHT;
+		else
+			dir = Direction::LEFT;
+	}
+	else
+	{
+		if (diffY > 0)
+			dir = Direction::UP;
+		else
+			dir = Direction::DOWN;
+	}
+
+	return std::make_tuple(collisionX && collisionY, dir, glm::vec2(0.0f, 0.0f));
 }
 
 Collision Collider2D::CheckAABBCircleCollision(Collider2D* aabb, Collider2D* circle)
@@ -32,7 +53,29 @@ Collision Collider2D::CheckAABBCircleCollision(Collider2D* aabb, Collider2D* cir
 	if (glm::length(difference) < circle->vec2Dimensions.x) // not <= since in that case a collision also occurs when object one exactly touches object two, which they are at the end of each collision resolution stage.
 		return std::make_tuple(true, VectorDirection(difference), difference);
 	else
-		return std::make_tuple(false, UP, glm::vec2(0.0f, 0.0f));
+		return std::make_tuple(false, Direction::UP, glm::vec2(0.0f, 0.0f));
+}
+
+Direction Collider2D::VectorDirection(glm::vec2 target)
+{
+	glm::vec2 compass[] = {
+			glm::vec2(0.0f, 1.0f),	// up
+			glm::vec2(1.0f, 0.0f),	// right
+			glm::vec2(0.0f, -1.0f),	// down
+			glm::vec2(-1.0f, 0.0f)	// left
+	};
+	float max = 0.0f;
+	unsigned int best_match = -1;
+	for (unsigned int i = 0; i < 4; i++)
+	{
+		float dot_product = glm::dot(glm::normalize(target), compass[i]);
+		if (dot_product > max)
+		{
+			max = dot_product;
+			best_match = i;
+		}
+	}
+	return (Direction)best_match;
 }
 
 Collider2D::Collider2D()
@@ -43,6 +86,7 @@ Collider2D::Collider2D()
 	, fLineWidth(1.0f)
 	, cSettings(NULL)
 	, bEnabled(true)
+	, angle(0.f)
 {
 	sLineShaderName = "LineShader";
 	colliderType = COLLIDER_QUAD;
@@ -50,18 +94,18 @@ Collider2D::Collider2D()
 
 Collider2D::~Collider2D()
 {
+	cSettings = nullptr;
+
+	//Delete buffers when done
+	glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(1, &VBO);
 }
 
-bool Collider2D::Init()
+bool Collider2D::Init(glm::vec2 position, glm::vec2 vec2Dimensions, ColliderType colliderType)
 {
-	float vertices[] = {
-		-vec2Dimensions.x, -vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
-		vec2Dimensions.x, -vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
-		vec2Dimensions.x, vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
-		vec2Dimensions.x, vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
-		-vec2Dimensions.x, vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
-		-vec2Dimensions.x, -vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
-	};
+	this->colliderType = colliderType;
+	this->position = position;
+	this->vec2Dimensions = vec2Dimensions;
 
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
@@ -69,7 +113,40 @@ bool Collider2D::Init()
 	glBindVertexArray(VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	if (colliderType == ColliderType::COLLIDER_QUAD) {
+		float vertices[] = {
+		-vec2Dimensions.x, -vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
+		vec2Dimensions.x, -vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
+		vec2Dimensions.x, vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
+		vec2Dimensions.x, vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
+		-vec2Dimensions.x, vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
+		-vec2Dimensions.x, -vec2Dimensions.y, vec4Colour.x, vec4Colour.y, vec4Colour.z,
+		};
+
+		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	}
+	else {
+		std::vector<float> vertices;
+		const float max = Math::PI * 2;
+		const float inc = 12;
+		const float r = vec2Dimensions.x;
+
+		float angle = 0;
+
+		for (int i = 0; i < inc; i++) {
+			vertices.push_back(r * cos(angle));
+			vertices.push_back(r * sin(angle));
+
+			vertices.push_back(vec4Colour.x);
+			vertices.push_back(vec4Colour.y);
+			vertices.push_back(vec4Colour.z);
+
+			angle += max / inc;
+		}
+
+		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_STATIC_DRAW);
+	}
 
 	// position attribute
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
@@ -81,6 +158,8 @@ bool Collider2D::Init()
 	glLineWidth(fLineWidth);
 
 	cSettings = CSettings::GetInstance();
+
+	angle = 0;
 	 
 	return true;
 }
@@ -88,6 +167,10 @@ bool Collider2D::Init()
 void Collider2D::SetLineShader(const std::string& name)
 {
 	sLineShaderName = name;
+}
+
+void Collider2D::SetAngle(float ang) {
+	angle = ang;
 }
 
 Collision Collider2D::CollideWith(Collider2D* object)
@@ -105,10 +188,10 @@ Collision Collider2D::CollideWith(Collider2D* object)
 
 	}
 	
-	return std::make_tuple(false, UP, glm::vec2(0.0f, 0.0f));
+	return std::make_tuple(false, Direction::UP, glm::vec2(0.0f, 0.0f));
 }
 
-void Collider2D::ResolveAABB(Collider2D* object, CorrectedAxis axis)
+void Collider2D::ResolveAABB(Collider2D* object, Direction axis)
 {
 	glm::vec2 direction = object->position - position;
 
@@ -129,7 +212,7 @@ void Collider2D::ResolveAABB(Collider2D* object, CorrectedAxis axis)
 		}
 	}
 
-	if (axis == X)
+	if (axis == Direction::RIGHT || axis == Direction::LEFT)
 	{
 		if (shortestXDist < shortestYDist && shortestYDist != 0)
 		{
@@ -137,7 +220,7 @@ void Collider2D::ResolveAABB(Collider2D* object, CorrectedAxis axis)
 			position += glm::vec2(shortestXDist, 0) * correctionAxis;
 		}
 	}
-	else if (axis == Y)
+	else if (axis == Direction::UP || axis == Direction::DOWN)
 	{
 		if (shortestXDist > shortestYDist)
 		{
@@ -178,18 +261,17 @@ void Collider2D::ResolveAABBCircle(Collider2D* object, Collision data, ColliderT
 
 	if (ball)
 	{
-
 		// collision resolution
 		Direction dir = std::get<1>(data);
 		glm::vec2 diff_vector = std::get<2>(data);
 		if (target == COLLIDER_CIRCLE)
 		{
-			if (dir == LEFT || dir == RIGHT) // horizontal collision
+			if (dir == Direction::LEFT || dir == Direction::RIGHT) // horizontal collision
 			{
 				// relocate
 				float penetration = ball->vec2Dimensions.x - std::abs(diff_vector.x);
 
-				if (dir == LEFT)
+				if (dir == Direction::LEFT)
 					ball->position.x += penetration; // move ball to right
 				else
 					ball->position.x -= penetration; // move ball to left;
@@ -199,7 +281,7 @@ void Collider2D::ResolveAABBCircle(Collider2D* object, Collision data, ColliderT
 				// relocate
 				float penetration = ball->vec2Dimensions.x - std::abs(diff_vector.y);
 
-				if (dir == UP)
+				if (dir == Direction::UP)
 					ball->position.y -= penetration; // move ball bback up
 				else
 					ball->position.y += penetration; // move ball back down
@@ -208,12 +290,12 @@ void Collider2D::ResolveAABBCircle(Collider2D* object, Collision data, ColliderT
 		}
 		else if (target == COLLIDER_QUAD)
 		{
-			if (dir == LEFT || dir == RIGHT) // horizontal collision
+			if (dir == Direction::LEFT || dir == Direction::RIGHT) // horizontal collision
 			{
 				// relocate
 				float penetration = ball->vec2Dimensions.x - std::abs(diff_vector.x);
 
-				if (dir == LEFT)
+				if (dir == Direction::LEFT)
 					quad->position.x -= penetration; // move ball to right
 				else
 					quad->position.x += penetration; // move ball to left;
@@ -223,7 +305,7 @@ void Collider2D::ResolveAABBCircle(Collider2D* object, Collision data, ColliderT
 				// relocate
 				float penetration = ball->vec2Dimensions.x - std::abs(diff_vector.y);
 
-				if (dir == UP)
+				if (dir == Direction::UP)
 					quad->position.y += penetration; // move ball bback up
 				else
 					quad->position.y -= penetration; // move ball back down
@@ -262,12 +344,16 @@ void Collider2D::Render(void)
 	{
 		transform = glm::mat4(1.f);
 		transform = glm::translate(transform, glm::vec3(actualPos.x, actualPos.y, 0.f));
+		transform = glm::rotate(transform, angle, glm::vec3(0, 0, 1));
 		transform = glm::scale(transform, glm::vec3(CSettings::GetInstance()->TILE_WIDTH, CSettings::GetInstance()->TILE_HEIGHT, 1.f));
 		CShaderManager::GetInstance()->activeShader->setMat4("transform", transform);
 
 		// render box
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_LINE_LOOP, 0, 6);
+		if (colliderType == COLLIDER_QUAD)
+			glDrawArrays(GL_LINE_LOOP, 0, 6);
+		else
+			glDrawArrays(GL_LINE_LOOP, 0, 12);
 	}
 }
 
@@ -293,4 +379,17 @@ glm::vec2 Collider2D::GetPosition() const
 void Collider2D::SetPosition(glm::vec2 position)
 {
 	this->position = position;
+}
+
+glm::vec2 Collider2D::ConvertDirectionToVec2(Direction direction)
+{
+	glm::vec2 compass[] = {
+			glm::vec2(0.0f, 1.0f),	// up
+			glm::vec2(1.0f, 0.0f),	// right
+			glm::vec2(0.0f, -1.0f),	// down
+			glm::vec2(-1.0f, 0.0f)	// left
+	};
+
+
+	return compass[static_cast<int>(direction)];
 }

@@ -44,7 +44,7 @@ public:
 	bool bUse4XAntiliasing = true;
 
 	// Windows Information
-	enum SCREENSIZE
+	enum class SCREENSIZE
 	{
 		SSIZE_800x600 = 0,
 		SSIZE_1024x768,
@@ -60,7 +60,7 @@ public:
 	// Should make these not hard-coded :P - You Right B)
 	unsigned int iWindowWidth;
 	unsigned int iWindowHeight;
-	unsigned int iWindowPosX = 50;
+	unsigned int iWindowPosX = 500;
 	unsigned int iWindowPosY = 50;
 	bool bDisableMousePointer = false;
 	bool bShowMousePointer = true;

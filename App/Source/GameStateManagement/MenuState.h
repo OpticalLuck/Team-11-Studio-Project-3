@@ -40,6 +40,7 @@ public:
 	// Destroy this class instance
 	virtual void Destroy(void);
 
+	virtual bool ImGuiRender();
 protected:
 	enum MENUSTATE
 	{

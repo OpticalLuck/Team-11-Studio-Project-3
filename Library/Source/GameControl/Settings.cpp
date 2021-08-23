@@ -7,7 +7,7 @@ CSettings::CSettings(void)
 	: pWindow(NULL)
 	, logl_root(NULL)
 	, m_ImGuiWindow(NULL)
-	, screenSize(SSIZE_800x600)
+	, screenSize(SCREENSIZE::SSIZE_800x600)
 	, MASTER_VOLUME(100.f)
 	, BGM_VOLUME(100.f)
 	, SFX_VOLUME(100.f)
@@ -27,19 +27,19 @@ CSettings::CSettings(void)
 
 	switch (screenSize)
 	{
-	case SSIZE_800x600:
+	case SCREENSIZE::SSIZE_800x600:
 		iWindowWidth = 800;
 		iWindowHeight = 600;
 		break;
-	case SSIZE_1024x768:
+	case SCREENSIZE::SSIZE_1024x768:
 		iWindowWidth = 1024;
 		iWindowHeight = 768;
 		break;
-	case SSIZE_1400x1050:
+	case SCREENSIZE::SSIZE_1400x1050:
 		iWindowWidth = 1400;
 		iWindowHeight = 1050;
 		break;
-	case SSIZE_1600x1200:
+	case SCREENSIZE::SSIZE_1600x1200:
 		iWindowWidth = 1600;
 		iWindowHeight = 1200;
 		break;
@@ -119,23 +119,23 @@ void CSettings::UpdateWindowSize()
 {
 	switch (screenSize)
 	{
-	case SSIZE_800x600:
+	case SCREENSIZE::SSIZE_800x600:
 		iWindowWidth = 800;
 		iWindowHeight = 600;
 		break;
-	case SSIZE_1024x768:
+	case SCREENSIZE::SSIZE_1024x768:
 		iWindowWidth = 1024;
 		iWindowHeight = 768;
 		break;
-	case SSIZE_1400x1050:
+	case SCREENSIZE::SSIZE_1400x1050:
 		iWindowWidth = 1400;
 		iWindowHeight = 1050;
 		break;
-	case SSIZE_1600x1200:
+	case SCREENSIZE::SSIZE_1600x1200:
 		iWindowWidth = 1600;
 		iWindowHeight = 1200;
 		break;
-	case SSIZE_1600x900:
+	case SCREENSIZE::SSIZE_1600x900:
 		iWindowWidth = 1600;
 		iWindowHeight = 900;
 		break;

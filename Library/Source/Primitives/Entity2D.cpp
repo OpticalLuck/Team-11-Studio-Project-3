@@ -15,7 +15,6 @@
 #include <iostream>
 using namespace std;
 
-
 /**
  @brief Constructor This constructor has protected access modifier as this class will be a Singleton
  */
@@ -23,23 +22,23 @@ CEntity2D::CEntity2D(ENTITY_TYPE type)
 	: VAO(0)
 	, VBO(0)
 	, EBO(0)
+	, mesh(NULL)
 	, iTextureID(0)
 	, cSettings(NULL)
-	, mesh(NULL)
 	, collider2D(NULL)
 {
+	this->type = type;
+
 	transform = glm::mat4(1.0f);	// make sure to initialize matrix to identity matrix first
 
 	// Initialise vecIndex
 	vTransform = glm::i32vec2(0);
 
-	vRotate = 0.f;
+	fRotate = 0.f;
 
 	collider2D = new Collider2D();
+	collider2D->Init(vTransform);
 }
-
-
-
 
 /**
  @brief Destructor This destructor has protected access modifier as this class will be a Singleton
@@ -51,9 +50,17 @@ CEntity2D::~CEntity2D(void)
 	//glDeleteBuffers(1, &VBO);
 	//glDeleteBuffers(1, &EBO);
 	//CS: Delete the mesh
-	if(mesh)
-		delete mesh;
+	cSettings = nullptr;
 
+	if (mesh) {
+		delete mesh;
+		mesh = nullptr;
+	}
+
+	if (collider2D) {
+		delete collider2D;
+		collider2D = nullptr;
+	}
 }
 
 /**
@@ -72,7 +79,7 @@ bool CEntity2D::Init(void)
 	//Draw a quad for a default entity2D
 	mesh = CMeshBuilder::GenerateQuad(glm::vec4(1, 1, 1, 1), 1.0f);
 
-	vRotate = 0.f;
+	fRotate = 0.f;
 
 	/*
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -87,6 +94,9 @@ bool CEntity2D::Init(void)
 	// texture coord attribute
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);*/
+
+	if (!collider2D)
+		collider2D = new Collider2D;
 
 	// Load the enemy2D texture
 	if (LoadTexture("Image/Scene2D_EnemyTile.tga") == false)
@@ -143,6 +153,7 @@ void CEntity2D::Render(void)
 	transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
 	transform = glm::translate(transform, glm::vec3(glm::vec2(vTransform.x, vTransform.y),
 		0.0f));
+	transform = glm::rotate(transform, glm::radians(fRotate), glm::vec3(0.f, 0.f, 1.f));
 	// Update the shaders with the latest transform
 	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
 
@@ -177,6 +188,16 @@ void CEntity2D::RenderCollider()
 Collider2D* CEntity2D::GetCollider()
 {
 	return collider2D;
+}
+
+void CEntity2D::SetTextureID(int iTextureID)
+{
+	this->iTextureID = iTextureID;
+}
+
+int CEntity2D::GetTextureID() const
+{
+	return iTextureID;
 }
 
 /**

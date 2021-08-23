@@ -24,7 +24,15 @@ using namespace std;
  */
 CPlayGameState::CPlayGameState(void)
 	: cScene2D(NULL)
-	, cKeyboardInputHandler(NULL)
+	, cInputHandler(NULL)
+	, cSettings(NULL)
+	, cTextureManager(NULL)
+	, cPlayerInventory(NULL)
+	, cKeyboardController(NULL)
+	, m_fProgressBar(0.0f)
+	, fInterval(0.f)
+	, iMinutes(0.f)
+	, iSeconds(0.f)
 {
 
 }
@@ -52,9 +60,17 @@ bool CPlayGameState::Init(void)
 		return false;
 	}
 
-	cKeyboardInputHandler = CKeyboardInputHandler::GetInstance();
-	cKeyboardInputHandler->Init();
+	cInputHandler = CInputHandler::GetInstance();
+	cInputHandler->Init();
 
+	// Get the handler to the CSettings instance
+	cSettings = CSettings::GetInstance();
+
+	// Store the CFPSCounter singleton instance here
+	cFPSCounter = CFPSCounter::GetInstance();
+
+	cPlayerInventory = CInventoryManager::GetInstance()->Get("Player");
+	cTextureManager = CTextureManager::GetInstance();
 	return true;
 }
 
@@ -63,7 +79,7 @@ bool CPlayGameState::Init(void)
  */
 bool CPlayGameState::Update(const double dElapsedTime)
 {
-	cKeyboardInputHandler->Update(dElapsedTime);
+	cInputHandler->Update(dElapsedTime);
 	if (CKeyboardController::GetInstance()->IsKeyReleased(GLFW_KEY_ESCAPE))
 	{
 		// Reset the CKeyboardController
@@ -132,4 +148,100 @@ void CPlayGameState::Destroy(void)
 		cScene2D->Destroy();
 		cScene2D = NULL;
 	}
+	if (cInputHandler)
+	{
+		cInputHandler->Destroy();
+		cInputHandler = NULL;
+	}
+}
+
+bool CPlayGameState::ImGuiRender()
+{
+	// Define the window flags
+	window_flags = 0;
+	window_flags |= ImGuiWindowFlags_NoBackground;
+	window_flags |= ImGuiWindowFlags_NoTitleBar;
+	window_flags |= ImGuiWindowFlags_NoMove;
+	window_flags |= ImGuiWindowFlags_NoResize;
+	window_flags |= ImGuiWindowFlags_NoCollapse;
+
+	// Calculate the relative scale to our default windows width
+	float relativeScale_x = cSettings->iWindowWidth / 800.0f;
+	float relativeScale_y = cSettings->iWindowHeight / 600.0f;
+
+	relativeScale_x = Math::Max(1.f, relativeScale_x);
+	relativeScale_y = Math::Max(1.f, relativeScale_y);
+
+	if (iSeconds == 60)
+	{
+		iMinutes += 1;
+		iSeconds = 0;
+		fInterval = 0;
+	}
+
+	fInterval++;
+	iSeconds = int(fInterval / 110.f);
+
+	// Create an invisible window which covers the entire OpenGL window
+	ImGui::Begin("Invisible window", NULL, window_flags);
+	ImGui::SetWindowPos(ImVec2(0.0f, 0.0f));
+	ImGui::SetWindowSize(ImVec2((float)cSettings->iWindowWidth, (float)cSettings->iWindowHeight));
+	ImGui::SetWindowFontScale(1.5f * relativeScale_y);
+
+	// Display the FPS
+	/*ImGui::TextColored(ImVec4(1, 1, 0, 1), "FPS: %d", cFPSCounter->GetFrameRate());*/
+	ImGui::TextColored(ImVec4(1, 1, 1, 1), "Timer = %d : %d", iMinutes, iSeconds);
+
+	ImGui::SameLine();
+	ImGui::InvisibleButton("temp", ImVec2(50, 1));
+
+	ImGui::SameLine();
+	ImGui::TextColored(ImVec4(1, 1, 0, 1), "HEALTH(TEST): %d", CEntityManager::GetInstance()->GetPlayer()->GetHealth());
+
+	// Render the inventory items
+
+	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 1.0f, 1.0f));  // Set a background color
+	ImGuiWindowFlags inventoryWindowFlags = ImGuiWindowFlags_AlwaysAutoResize |
+		ImGuiWindowFlags_NoTitleBar |
+		ImGuiWindowFlags_NoMove |
+		ImGuiWindowFlags_NoResize |
+		ImGuiWindowFlags_NoCollapse |
+		ImGuiWindowFlags_NoScrollbar;
+	ImGui::PopStyleColor();
+
+	//looping to render the invetory cgui
+	for (int i = 0; i < cPlayerInventory->GetNumofUniqueItems(); i++)
+	{
+		ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 1.0f, 1.0f));
+		if (cPlayerInventory->iCurrentIndex == i)
+		{
+			ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1.f, 0.f, 0.f, 1.f));
+		}
+
+		std::stringstream title;
+		title.str("");
+		title << "Inventory" << i;
+		ImGui::Begin(title.str().c_str(), NULL, inventoryWindowFlags);
+		ImGui::SetWindowPos(ImVec2(cSettings->iWindowWidth * 0.01f, cSettings->iWindowHeight * (0.065f * i + 0.05)));
+		ImGui::SetWindowSize(ImVec2(200.0f * relativeScale_x, 25.0f * relativeScale_y));
+		ImGui::Image((void*)(intptr_t)cTextureManager->MapOfTextureIDs.at(cPlayerInventory->GetItem(i).get_ID()),
+			ImVec2(25 * relativeScale_x, 25 * relativeScale_y),
+			ImVec2(0, 1), ImVec2(1, 0));
+		ImGui::SameLine();
+		ImGui::SetWindowFontScale(1.5f * relativeScale_y);
+		std::stringstream ss;
+		ss.str("");
+		ss << cPlayerInventory->GetItem(i).GetName() << ": %d";
+		ImGui::TextColored(ImVec4(1, 1, 0, 1), ss.str().c_str(), cPlayerInventory->GetItem(i));
+		ImGui::End();
+		ImGui::PopStyleColor();
+		if (cPlayerInventory->iCurrentIndex == i)
+		{
+			ImGui::PopStyleColor();
+		}
+
+	}
+	ImGui::End();
+
+	return true;
 }

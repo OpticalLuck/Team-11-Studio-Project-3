@@ -1,8 +1,5 @@
 #pragma once
 
-// Include Singleton template
-#include "DesignPatterns\SingletonTemplate.h"
-
 // Include GLEW
 #ifndef GLEW_STATIC
 #include <GL/glew.h>
@@ -20,6 +17,9 @@
 enum OBJECT_TYPE
 {
 	ITEM_SHURIKEN = 2,
+	ITEM_POTION = 3,
+	ITEM_HOOK = 4,
+	ITEM_KUNAI = 5,
 	ITEM_LIVES = 10,
 	INTERACTABLE_SWITCH1_OFF = 11,
 	INTERACTABLE_SWITCH1_ON = 12,
@@ -37,28 +37,23 @@ enum OBJECT_TYPE
 	TILE_LEFT_GRASS = 104,
 	TILE_RIGHT_GRASS = 105,
 	TILE_TOP_RIGHT_GROUND = 106,
-	TILE_BOULDER = 150,
+	OBSTACLE_BOULDER = 150,
 	OBJECT_TOTAL,
 };
 
 class CObject2D : public CEntity2D
 {
 	public:
-		CObject2D(void);
-		CObject2D(int);
-		~CObject2D(void); //Do nothing for now
+		CObject2D(int itextureID = 0);
+		virtual ~CObject2D(void);
 		
 		bool Init() override;
 		void Update(const double dElapsedTime) override;
 
-		int Getvalue() const;
-		void SetValue(int value);
-
 		glm::i32vec2 GetCurrentIndex() const;
 		void SetCurrentIndex(glm::i32vec2 currentIndex);
-	protected:
-		int value;
 
+	protected:
 		float width;
 		float height;
 

@@ -19,7 +19,7 @@ public:
 	// Update this class instance
 	bool Update(const double dElapsedTime);
 	// Render this class instance
-	void Render(void);
+	bool Render(void);
 
 	// User Interface
 	bool AddGameState(const std::string& _name, CGameStateBase* _scene);

@@ -14,6 +14,9 @@
 #include "System\ImageLoader.h"
 #include "Primitives/MeshBuilder.h"
 
+//Debug
+#include "System/Debug.h"
+
 #include <iostream>
 #include <vector>
 
@@ -25,6 +28,8 @@ using namespace std;
 CMap2D::CMap2D(void)
 	: uiCurLevel(0)
 	, camera(NULL)
+	, cTextureManager(NULL)
+	, quadMesh(NULL)
 {
 	uiNumLevels = 0;
 }
@@ -171,6 +176,7 @@ void CMap2D::Render(void)
 
 		transform = glm::mat4(1.f);
 		transform = glm::translate(transform, glm::vec3(actualPos.x, actualPos.y, 0.f));
+		transform = glm::rotate(transform, glm::radians(currObj->fRotate), glm::vec3(0.f, 0.f, 1.f));
 
 		// Update the shaders with the latest transform
 		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
@@ -215,7 +221,7 @@ glm::i32vec2 CMap2D::GetLevelLimit(void) {
  @param iCol A const int variable containing the column index of the element to set to
  @param iValue A const int variable containing the value to assign to this arrMapInfo
  */
-void CMap2D::SetMapInfo(unsigned int uiRow, unsigned int uiCol, const int iValue, const bool bInvert)
+void CMap2D::SetMapInfo(unsigned int uiRow, unsigned int uiCol, const int iTextureID, const CLASS_ID ClassID, const bool bInvert)
 {
 	if (bInvert)
 	{
@@ -225,7 +231,7 @@ void CMap2D::SetMapInfo(unsigned int uiRow, unsigned int uiCol, const int iValue
 	//Check if its not a nullptr
 	if (!arrGrid[uiCurLevel][uiRow][uiCol]) 
 	{
-		CObject2D* currObj = objFactory.CreateObject(iValue);
+		CObject2D* currObj = objFactory.CreateObject(iTextureID, ClassID);
 		currObj->SetCurrentIndex(glm::i32vec2(uiCol, uiRow));
 		currObj->vTransform = glm::i32vec2(uiCol, GetLevelRow() - uiRow - 1);
 		currObj->Init();
@@ -246,10 +252,10 @@ void CMap2D::SetMapInfo(unsigned int uiRow, unsigned int uiCol, const int iValue
 				arrObject[uiCurLevel][i] = nullptr;
 				arrObject[uiCurLevel].erase(arrObject[uiCurLevel].begin() + i);
 
-				if (iValue > 0)
+				if (iTextureID > 0)
 				{
 					//Pushes in new Object
-					currObj = objFactory.CreateObject(iValue);
+					currObj = objFactory.CreateObject(iTextureID, ClassID);
 					currObj->SetCurrentIndex(glm::i32vec2(uiCol, uiRow));
 					currObj->vTransform = glm::i32vec2(uiCol, GetLevelRow() - uiRow - 1);
 					currObj->Init();
@@ -266,7 +272,7 @@ void CMap2D::SetMapInfo(unsigned int uiRow, unsigned int uiCol, const int iValue
 	}
 }
 
-bool CMap2D::InsertMapInfo(unsigned int uiRow, unsigned int uiCol, const int iValue, const bool bInvert)
+bool CMap2D::InsertMapInfo(unsigned int uiRow, unsigned int uiCol, const int iTextureID, const CLASS_ID ClassID, const bool bInvert)
 {
 	if (bInvert)
 	{
@@ -276,7 +282,7 @@ bool CMap2D::InsertMapInfo(unsigned int uiRow, unsigned int uiCol, const int iVa
 	//Check if its not a nullptr
 	if (!arrGrid[uiCurLevel][uiRow][uiCol])
 	{
-		CObject2D* currObj = objFactory.CreateObject(iValue);
+		CObject2D* currObj = objFactory.CreateObject(iTextureID, ClassID);
 		currObj->SetCurrentIndex(glm::i32vec2(uiCol, uiRow));
 		currObj->vTransform = glm::i32vec2(uiCol, GetLevelRow() - uiRow - 1);
 		currObj->Init();
@@ -293,7 +299,7 @@ bool CMap2D::InsertMapInfo(unsigned int uiRow, unsigned int uiCol, const int iVa
 	return true;
 }
 
-void CMap2D::ReplaceGridInfo(const unsigned int uiRow, const unsigned uiCol, CObject2D* target, const bool bInvert)
+void CMap2D::UpdateGridInfo(const unsigned int uiRow, const unsigned uiCol, CObject2D* target, const bool bInvert)
 {
 	// Used for checking current spot
 	CObject2D* obj = nullptr;
@@ -307,13 +313,37 @@ void CMap2D::ReplaceGridInfo(const unsigned int uiRow, const unsigned uiCol, COb
 	}
 	else
 	{
-		obj = arrGrid[uiCurLevel][target->GetCurrentIndex().y][target->GetCurrentIndex().x];
-		newSpot = arrGrid[uiCurLevel][uiRow][uiCol];
+		if (uiRow < (unsigned int)GetLevelRow() && uiCol < (unsigned int)GetLevelCol() && uiRow >= 0 && uiCol >= 0)
+		{
+			obj = arrGrid[uiCurLevel][target->GetCurrentIndex().y][target->GetCurrentIndex().x];
+			newSpot = arrGrid[uiCurLevel][uiRow][uiCol];
+		}
+		else
+		{
+			cout << "Object went out of map range - Deleting" << endl;
+
+			//Get Object in arrObject list
+			for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++)
+			{
+				obj = arrObject[uiCurLevel][i];
+				if (obj == arrGrid[uiCurLevel][target->GetCurrentIndex().y][target->GetCurrentIndex().x])
+				{
+					arrGrid[uiCurLevel][target->GetCurrentIndex().y][target->GetCurrentIndex().x] = nullptr;
+					//Delete occupying object in arrObj
+					delete obj;
+					arrObject[uiCurLevel][i] = nullptr;
+					arrObject[uiCurLevel].erase(arrObject[uiCurLevel].begin() + i);
+
+					obj = nullptr;
+					break;
+				}
+			}
+		}
 	}
 
 	if (newSpot == nullptr)
 	{
-		if (obj == target)
+		if (obj == target && target)
 		{
 			if (bInvert)
 			{
@@ -361,7 +391,7 @@ int CMap2D::GetMapInfo(const unsigned int uiRow, const unsigned int uiCol, const
 		CObject2D* obj = arrObject[uiCurLevel][i];
 
 		if (obj->vTransform.x == uiCol && obj->vTransform.y == uiRow)
-			return obj->Getvalue();
+			return obj->GetTextureID();
 	}
 
 	//Return false if theres nothing on the tile
@@ -434,13 +464,16 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 		for (unsigned int uiCol = 0; uiCol < (unsigned int)doc.GetColumnCount() - 1; ++uiCol)
 		{
 			//Init of objects values
-			int currVal = (int)stoi(row[uiCol]);
+			int currTexture = 0;
+			int currObjID = 0;
+
+			ExtractIDs(row[uiCol], currTexture, currObjID);
 
 			arrGrid[uiCurLevel][uiRow].push_back(nullptr);
 
-			if (currVal > 0) {
-				CObject2D* currObj = objFactory.CreateObject(currVal);
-				currObj->SetValue(currVal);
+			if (currTexture > 0) {
+				CObject2D* currObj = objFactory.CreateObject(currTexture, static_cast<CLASS_ID>(currObjID));
+
 				currObj->SetCurrentIndex(glm::i32vec2(uiCol, uiRow));
 
 				//Position of values
@@ -450,6 +483,8 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 				currObj->vTransform = currIndex;
 
 				currObj->Init();
+				if (currObjID == (int)CLASS_ID::CID_BACKGROUND)
+					currObj->GetCollider()->SetbEnabled(false);
 
 				arrObject[uiCurLevel].push_back(currObj);
 				//Add in new CObj pointer if available
@@ -459,6 +494,40 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 	}
 
 	return true;
+}
+
+void CMap2D::ExtractIDs(std::string str, int& textureID, int& objectID) {
+	//If there are no ; present (Basically only one value in cell like "100")
+	if (IsInteger(str)) {
+		textureID = stoi(str);
+		objectID = 0;
+		return;
+	}
+
+	//Conversion for if there are more than 1 value present (100;2)
+	stringstream ss(str);
+	vector<int> values;
+
+	while (ss.good()) {
+		std::string substr;
+		getline(ss, substr, ';');
+		
+		//Convert valaue from string to int if possible.
+		values.push_back(std::stoi(substr));
+	}
+
+	textureID = values[0];
+	objectID = values[1];
+}
+
+bool CMap2D::IsInteger(const std::string& s) {
+	if (s.empty() || (!isdigit(s[0]) && s[0] != '-'))
+		return false; //Return false if its empty of if string is not a digit
+
+	char* p;
+	long int temp = strtol(s.c_str(), &p, 10); //Parsing through string and check for index that is not an integer
+
+	return (*p == 0);
 }
 
 void CMap2D::RenderBackground(void) {
@@ -515,7 +584,7 @@ bool CMap2D::SaveMap(string filename, const unsigned int uiCurLevel)
 
 	for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++) {
 		CObject2D* obj = arrObject[uiCurLevel][i];
-		doc.SetCell((int)obj->vTransform.x, int(cSettings->NUM_TILES_YAXIS - 1 - obj->vTransform.y), obj->Getvalue());
+		doc.SetCell((int)obj->vTransform.x, int(cSettings->NUM_TILES_YAXIS - 1 - obj->vTransform.y), obj->GetTextureID());
 	}
 
 	// Save the rapidcsv::Document to a file
@@ -535,9 +604,9 @@ bool CMap2D::FindValue(const int iValue, unsigned int& uirRow, unsigned int& uir
 {
 	for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++) {
 		CObject2D* obj = arrObject[uiCurLevel][i];
-		if (obj->Getvalue() == iValue) {
-			uirCol = obj->vTransform.x;
-			uirRow = obj->vTransform.y; //For now keep the same
+		if (obj->GetTextureID() == iValue) {
+			uirCol = (unsigned int)obj->vTransform.x;
+			uirRow = (unsigned int)obj->vTransform.y;
 
 			return true;
 		}
@@ -566,8 +635,8 @@ unsigned int CMap2D::GetCurrentLevel(void) const
 }
 
 
-void CMap2D::RenderTile(const CObject2D obj) {
-	glBindTexture(GL_TEXTURE_2D, cTextureManager->MapOfTextureIDs.at(obj.Getvalue()));
+void CMap2D::RenderTile(const CObject2D& obj) {
+	glBindTexture(GL_TEXTURE_2D, cTextureManager->MapOfTextureIDs.at(obj.GetTextureID()));
 
 	glBindVertexArray(VAO);
 	//CS: Render the tile

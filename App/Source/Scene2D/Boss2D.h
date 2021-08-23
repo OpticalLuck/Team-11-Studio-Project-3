@@ -15,6 +15,9 @@ class CEntityManager;
 //Include Player2D
 class CPlayer2D;
 
+//Factory 
+#include "../App/Source/Factory/ObjectFactory.h"
+
 // Include Settings
 #include "GameControl\Settings.h"
 
@@ -27,6 +30,14 @@ class CPlayer2D;
 class CBoss2D : public CEnemy2D
 {
 	public :
+		enum class ATK {
+			A_CIRCLE, //Attacks in a circular pattern.
+			A_TWIN, //Circular pattern but only 2
+			A_ATTACK, //Shoots at the player normally
+			A_MACHINEGUN, //Constantly targets the player like a machine gun would
+			A_TOTAL
+		};
+
 		CBoss2D(void);
 		virtual ~CBoss2D(void);
 
@@ -44,19 +55,40 @@ class CBoss2D : public CEnemy2D
 		// PostRender
 		void PostRender(void);
 
+		//Set how many types of attacks the enemy can do
+		void SetAtkTypes(std::vector<ATK> atkTypes);
+
+		//Set pauseenabled
+		void SetPauseEnabled(bool pauseEnabled);
+
+		//Set id
+		void SetID(int id);
+
+		//Set min and max AtkDuration
+		void SetMaxAtkDuration(float val);
+		void SetMinAtkDuration(float val);
+
+		//Set min and max pauseDuration
+		void SetMaxPauseDuration(float val);
+		void SetMinPauseDuration(float val);
+
 	protected:
-		enum class ATK {
-			A_CIRCLE, //Attacks in a circular pattern.
-			A_ATTACK, //Shoots at the player normally
-			A_TOTAL
-		};
+		int id;
 
 		std::vector<ATK>* arrATK; //Current attack during current round
 		int fsmIndex; //Current index of where its at in the array
-		int roundIndex; //Current round
 
-		float currAtkDuration;
-		float currPauseDuration;
+		//AtkDuration (Based on frames)
+		int currAtkDuration;
+		//Min and max of atkDuration (Based on seconds)
+		float minAtkDuration;
+		float maxAtkDuration;
+
+		//pauseDuration (Based on frames)
+		int currPauseDuration;
+		//Min and max of pauseDuration (Based on seconds)
+		float minPauseDuration;
+		float maxPauseDuration;
 
 		std::vector<int>* arrAtkDuration;
 		std::vector<int>* arrPauseDuration;
@@ -64,20 +96,22 @@ class CBoss2D : public CEnemy2D
 		bool isSeen;
 
 		float bulletAng; //Angle of which where the bullet will come from
-		int maxBulletTimer; //Timer in terms of frames
+		int maxBulletTimer[(int)ATK::A_TOTAL]; //Timer in terms of frames
 		int bulletTimer;
+
+		bool pauseEnabled;
+		std::vector<ATK> atkTypes; //How many attack types does it store
 
 		//Rendering
 		//Mesh
 		CMesh* quadMesh;
 
+		//Factory
+		ObjectFactory factory;
+
 		// Current color
 		glm::vec4 currentColor;
 		bool bIsActive;
-
-		//Handlers
-		Camera2D* camera;
-		CEntityManager* cEntityManager;
 
 		//Functions
 		// Load a texture
@@ -91,5 +125,11 @@ class CBoss2D : public CEnemy2D
 
 		//Update attacks
 		void UpdateAttack(float dElapsedTime);
+
+		//Shuffle to next attack
+		void ShuffleNextAttack(void);
+
+		//Reset current values
+		void ResetCurrTimers(void);
 };
 

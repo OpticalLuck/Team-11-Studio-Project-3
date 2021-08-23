@@ -28,6 +28,7 @@ class Camera2D : public CSingletonTemplate<Camera2D>
 
 		void Update(float dElapsedTime);
 		void UpdateTarget(glm::vec2 target);
+		void MoveTarget(float moveX, float moveY);
 		void UpdateZoom(float fTarget);
 		void UpdatePos(glm::vec2 pos);
 		void Reset(void);

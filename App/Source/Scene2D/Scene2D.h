@@ -89,7 +89,7 @@ protected:
 	// Keyboard Controller singleton instance
 	CKeyboardController* cKeyboardController;
 
-	CKeyboardInputHandler* cKeyboardInputHandler;
+	CInputHandler* CInputHandler;
 
 	// A transformation matrix for controlling where to render the entities
 	glm::mat4 transform;
@@ -105,7 +105,7 @@ protected:
 	// Handler to the CSoundController
 	CSoundController* cSoundController;
 
-	CInventoryManager* cInventoryManager;
+	CInventoryManager* cInventoryM;
 
 	//Handler for camera
 	Camera2D* cameraHandler;
@@ -130,7 +130,6 @@ inline void CScene2D::LoadEnemy()
 		// Initialise the instance
 		if (cEnemy2D->Init() == true)
 		{
-			cEnemy2D->SetPlayer2D(cPlayer2D);
 			enemyVector.push_back(cEnemy2D);
 		}
 		else
