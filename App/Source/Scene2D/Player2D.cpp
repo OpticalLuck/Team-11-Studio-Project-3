@@ -33,6 +33,7 @@ using namespace std;
 #include "Projectiles.h"
 #include "Bullet2D.h"
 
+#include "EntityManager.h"
 
 /**
  @brief Constructor This constructor has protected access modifier as this class will be a Singleton
@@ -655,16 +656,17 @@ void CPlayer2D::InputUpdate(double dt)
 		if (shuriken.iCount > 0)
 		{
 			shuriken.Use();
-			if (cMap2D->InsertMapInfo((int)vTransform.y, (int)vTransform.x, OBJECT_TYPE::PROJECTILES_SHURIKEN))
-			{ 
-				glm::vec2 distance = Camera2D::GetInstance()->GetCursorPosInWorldSpace() - vTransform;
+			
+			glm::vec2 distance = Camera2D::GetInstance()->GetCursorPosInWorldSpace() - vTransform;
 
-				CObject2D* shuriken = cMap2D->GetCObject((int)vTransform.x, (int)vTransform.y);
-				shuriken->vTransform = vTransform;
+			CObject2D* shurikenobj = ObjectFactory::CreateObject(OBJECT_TYPE::PROJECTILES_SHURIKEN);
+			shurikenobj->Init();
+			shurikenobj->vTransform = vTransform;
 
-				glm::vec2 force = glm::clamp(distance * 200.f, glm::vec2(-2000.f, -2000.f), glm::vec2(2000.f, 2000.f));
-				static_cast<Projectiles*>(shuriken)->GetPhysics().SetForce(force);
-			}
+			glm::vec2 force = glm::clamp(distance * 200.f, glm::vec2(-2000.f, -2000.f), glm::vec2(2000.f, 2000.f));
+			static_cast<Projectiles*>(shurikenobj)->GetPhysics().SetForce(force);
+
+			CEntityManager::GetInstance()->PushBullet(shurikenobj);
 		}
 	}
 
@@ -675,19 +677,20 @@ void CPlayer2D::InputUpdate(double dt)
 		if (shuriken.iCount > 0)
 		{
 			shuriken.Use();
-			if (cMap2D->InsertMapInfo((int)vTransform.y, (int)vTransform.x, OBJECT_TYPE::BULLETS_KUNAI))
-			{
-				CObject2D* shuriken = cMap2D->GetCObject((int)vTransform.x, (int)vTransform.y);
-				shuriken->vTransform = vTransform;
+			
+			CObject2D*kunaiobj = ObjectFactory::CreateObject(OBJECT_TYPE::BULLETS_KUNAI);
+			kunaiobj->Init();
+			kunaiobj->vTransform = vTransform;
 
-				glm::vec2 direction(0.f, 0.f);
-				if (facing == LEFT)
-					direction = glm::vec2(-1.f, 0);
-				else
-					direction = glm::vec2(1.f, 0);
-				glm::vec2 force = glm::clamp(direction * 200.f, glm::vec2(-2000.f, -2000.f), glm::vec2(2000.f, 2000.f));
-				static_cast<Bullet2D*>(shuriken)->GetPhysics().SetForce(force);
-			}
+			glm::vec2 direction(0.f, 0.f);
+			if (facing == LEFT)
+				direction = glm::vec2(-1.f, 0);
+			else
+				direction = glm::vec2(1.f, 0);
+			glm::vec2 force = glm::clamp(direction * 200.f, glm::vec2(-2000.f, -2000.f), glm::vec2(2000.f, 2000.f));
+				static_cast<Bullet2D*>(kunaiobj)->GetPhysics().SetForce(force);
+
+			CEntityManager::GetInstance()->PushBullet(kunaiobj);
 		}
 	}
 	cInventory->Update(dt, iTempFrameCounter ,m_KeyboardInputs, m_MouseInputs);

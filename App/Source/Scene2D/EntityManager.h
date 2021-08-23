@@ -19,13 +19,10 @@ class CBoss2D;
 //System debug
 #include "System/Debug.h"
 
-class CEntityManager : public CEntity2D , public CSingletonTemplate<CEntityManager>
+class CEntityManager : public CSingletonTemplate<CEntityManager>
 {
 	friend class CSingletonTemplate<CEntityManager>;
 public:
-	CEntityManager();
-	~CEntityManager();
-
 	//Inits
 	bool EntityManagerInit(void);
 	
@@ -44,12 +41,15 @@ public:
 	int GetCurrRound(void);
 
 	void PushEnemy(CEnemy2D*);
-	void PushBullet(EnemyBullet2D*);
+	void PushBullet(CEntity2D*);
 
 	std::vector<CPlayer2D*> GetAllPlayers(void);
 	std::vector<CEnemy2D*> GetAllEnemies(void);
 
 protected:
+	CEntityManager();
+	~CEntityManager();
+
 	CInputHandler* cInputHandler;
 	CKeyboardController* cKeyboardController;
 
@@ -64,7 +64,7 @@ protected:
 
 	//list of vectors
 	std::vector<CEnemy2D*> m_enemyList;
-	std::vector<EnemyBullet2D*> m_eBulletList;
+	std::vector<CEntity2D*> m_eBulletList;
 	std::vector<CEntity2D*> m_cloneList;
 
 	int currRound; //Current round in game. First is 0 and last is 4 (Will be storing enemies prev attacks etc using this)

@@ -6,6 +6,7 @@
 
 // Include AnimatedSprites
 #include "Primitives/SpriteAnimation.h"
+
 class Bullet2D : public CObject2D
 {
 public:
@@ -16,6 +17,9 @@ public:
 	bool Init() override;
 	void Update(double dElapsedTime) override;
 
+	void PreRender() override;
+	void Render() override;
+	void PostRender() override;
 	CPhysics2D& GetPhysics();
 
 private:

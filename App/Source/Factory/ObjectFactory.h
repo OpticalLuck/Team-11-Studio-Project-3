@@ -8,7 +8,7 @@ class EnemyBullet2D;
 class ObjectFactory
 {
 public:
-	CObject2D* CreateObject(int iTextureID);
-	EnemyBullet2D* CreateBullet(float angle, glm::vec2 vTransform);
+	static CObject2D* CreateObject(int iTextureID);
+	static EnemyBullet2D* CreateBullet(float angle, glm::vec2 vTransform);
 };
 

@@ -23,6 +23,10 @@ public:
 	bool Init() override;
 	void Update(double dElapsedTime) override;
 
+	void PreRender() override;
+	void Render() override;
+	void PostRender() override;
+
 	CPhysics2D& GetPhysics();
 protected:
 	CSpriteAnimation* animatedSprites;
