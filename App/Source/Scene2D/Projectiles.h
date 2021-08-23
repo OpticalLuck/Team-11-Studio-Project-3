@@ -26,6 +26,10 @@ public:
 	void PostRender() override;
 
 	CPhysics2D& GetPhysics();
+
+	bool bOutsideBoundary(void);
+
+	bool bDestroyed;
 protected:
 	CSpriteAnimation* animatedSprites;
 

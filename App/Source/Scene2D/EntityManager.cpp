@@ -1,9 +1,12 @@
 #include "EntityManager.h"
 
-#include "EnemyBullet2D.h"
 #include "MobEnemy2D.h"
 
 #include "Boss2D.h"
+
+#include "EnemyBullet2D.h"
+#include "Bullet2D.h"
+#include "Projectiles.h"
 
 CEntityManager::CEntityManager()
 	: cPlayer2D(NULL)
@@ -315,6 +318,15 @@ void CEntityManager::Update(const double dElapsedTime)
 		//	delete m_eBulletList[i];
 		//	m_eBulletList[i] = nullptr;
 		//}
+		if (dynamic_cast<Bullet2D*>(m_eBulletList[i]))
+		{
+			if (dynamic_cast<Bullet2D*>(m_eBulletList[i])->bDestroyed || dynamic_cast<Bullet2D*>(m_eBulletList[i])->bOutsideBoundary())
+			{
+				delete m_eBulletList[i];
+				m_eBulletList[i] = nullptr;
+				cout << "byebye";
+			}
+		}
 	}
 
 	//Remove any nullptrs in bullet array

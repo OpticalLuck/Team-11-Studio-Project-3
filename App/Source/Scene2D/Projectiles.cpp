@@ -11,6 +11,7 @@
 Projectiles::Projectiles(int iTextureID)
 	: animatedSprites(NULL)
 	, currentColor(glm::vec4())
+	, bDestroyed(false)
 {
 	projectileType = PROJECTILE_TYPE::PROJ_SHURIKEN;
 	this->iTextureID = iTextureID;
@@ -182,4 +183,14 @@ void Projectiles::PostRender()
 {
 	// Disable blending
 	glDisable(GL_BLEND);
+}
+
+bool Projectiles::bOutsideBoundary(void)
+{
+	glm::vec2 limit = CMap2D::GetInstance()->GetLevelLimit();
+
+	bool xCheck = (vTransform.x < -collider2D->vec2Dimensions.x || vTransform.x > limit.x + collider2D->vec2Dimensions.x);
+	bool yCheck = (vTransform.y < -collider2D->vec2Dimensions.y || vTransform.y > limit.y + collider2D->vec2Dimensions.y);
+
+	return (xCheck || yCheck);
 }
