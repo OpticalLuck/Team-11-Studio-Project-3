@@ -2,8 +2,6 @@
 #include "Physics2D.h"
 #include "Object2D.h"
 
-#include "..\App\Source\Command\Command.h"
-
 // Include AnimatedSprites
 #include "Primitives/SpriteAnimation.h"
 
@@ -23,15 +21,16 @@ public:
 	bool Init() override;
 	void Update(double dElapsedTime) override;
 
+	void PreRender() override;
+	void Render() override;
+	void PostRender() override;
+
 	CPhysics2D& GetPhysics();
 protected:
 	CSpriteAnimation* animatedSprites;
 
 	// Current color
 	glm::vec4 currentColor;
-
-	// Command to run when interacted with
-	Command cCommand;
 
 	CPhysics2D cPhysics2D;
 

@@ -80,6 +80,9 @@ bool CEntity2D::Init(void)
 	mesh = CMeshBuilder::GenerateQuad(glm::vec4(1, 1, 1, 1), 1.0f);
 
 	fRotate = 0.f;
+	if (!collider2D)
+		collider2D = new Collider2D;
+
 
 	/*
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -95,15 +98,14 @@ bool CEntity2D::Init(void)
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);*/
 
-	if (!collider2D)
-		collider2D = new Collider2D;
+	
 
 	// Load the enemy2D texture
-	if (LoadTexture("Image/Scene2D_EnemyTile.tga") == false)
-	{
-		std::cout << "Failed to load enemy2D tile texture" << std::endl;
-		return false;
-	}
+	//if (LoadTexture("Image/Scene2D_EnemyTile.tga") == false)
+	//{
+	//	std::cout << "Failed to load enemy2D tile texture" << std::endl;
+	//	return false;
+	//}
 
 	return true;
 }
