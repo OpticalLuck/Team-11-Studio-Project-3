@@ -1,6 +1,8 @@
 #include "Object2D.h"
 #include <iostream>
 
+#include "EntityManager.h"
+
 CObject2D::CObject2D(int iTextureID) 
 	: width(1.f)
 	, height(1.f)
@@ -9,10 +11,12 @@ CObject2D::CObject2D(int iTextureID)
 
 	vTransform = glm::i32vec2();
 	currentIndex = glm::i32vec2();
+
+	cEntityManager = nullptr;
 }
 
 CObject2D::~CObject2D(void) {
-	//No Pointers
+	cEntityManager = nullptr; //Dellocation of handlers
 }
 
 bool CObject2D::Init()
@@ -22,11 +26,9 @@ bool CObject2D::Init()
 
 	//Collider2D initialisation
 	collider2D->Init(vTransform);
+	collider2D->SetbEnabled(true);
 
-	//if (objectID == 0)
-		collider2D->SetbEnabled(true);
-	//else
-		//collider2D->SetbEnabled(false);
+	cEntityManager = CEntityManager::GetInstance();
 
 	return true;
 }

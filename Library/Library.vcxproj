@@ -37,6 +37,7 @@
     <ClCompile Include="Source\System\CSVWriter.cpp" />
     <ClCompile Include="Source\System\ImageLoader.cpp" />
     <ClCompile Include="Source\System\LoadOBJ.cpp" />
+    <ClCompile Include="Source\System\MapLoader.cpp" />
     <ClCompile Include="Source\TimeControl\FPSCounter.cpp" />
     <ClCompile Include="Source\TimeControl\StopWatch.cpp" />
   </ItemGroup>
@@ -70,6 +71,7 @@
     <ClInclude Include="Source\System\filesystem.h" />
     <ClInclude Include="Source\System\ImageLoader.h" />
     <ClInclude Include="Source\System\LoadOBJ.h" />
+    <ClInclude Include="Source\System\MapLoader.h" />
     <ClInclude Include="Source\System\rapidcsv.h" />
     <ClInclude Include="Source\System\WindowUtils.h" />
     <ClInclude Include="Source\TimeControl\FPSCounter.h" />

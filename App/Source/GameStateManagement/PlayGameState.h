@@ -9,6 +9,7 @@
 
 #include "GameStateBase.h"
 #include "../InputHandler/CInputHandler.h"
+#include "TimeControl/FPSCounter.h"
 #include "..\Scene2D\Scene2D.h"
 
 class CPlayGameState : public CGameStateBase

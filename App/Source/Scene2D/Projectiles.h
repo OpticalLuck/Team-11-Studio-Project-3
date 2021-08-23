@@ -10,7 +10,7 @@
 class Projectiles : public CObject2D
 {
 public:
-	enum PROJECTILE_TYPE
+	enum class PROJECTILE_TYPE
 	{
 		PROJ_SHURIKEN,
 		PROJ_TOTAL
@@ -34,5 +34,11 @@ protected:
 	Command cCommand;
 
 	CPhysics2D cPhysics2D;
+
+	//Function
+	//Collision within map
+	void MapCollision(void);
+	//Collision with players
+	void PlayerCollision(void);
 };
 
