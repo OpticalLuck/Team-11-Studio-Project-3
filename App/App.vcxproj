@@ -37,7 +37,6 @@
     <ClCompile Include="Source\Scene2D\EnemyBullet2D.cpp" />
     <ClCompile Include="Source\Scene2D\EntityManager.cpp" />
     <ClCompile Include="Source\Scene2D\GameManager.cpp" />
-    <ClCompile Include="Source\Scene2D\GUI_Scene2D.cpp" />
     <ClCompile Include="Source\Scene2D\Interactables.cpp" />
     <ClCompile Include="Source\Scene2D\Inventory.cpp" />
     <ClCompile Include="Source\Scene2D\InventoryManager.cpp" />
@@ -80,7 +79,6 @@
     <ClInclude Include="Source\Scene2D\EnemyBullet2D.h" />
     <ClInclude Include="Source\Scene2D\EntityManager.h" />
     <ClInclude Include="Source\Scene2D\GameManager.h" />
-    <ClInclude Include="Source\Scene2D\GUI_Scene2D.h" />
     <ClInclude Include="Source\Scene2D\Interactables.h" />
     <ClInclude Include="Source\Scene2D\Inventory.h" />
     <ClInclude Include="Source\Scene2D\InventoryManager.h" />

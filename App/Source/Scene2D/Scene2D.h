@@ -41,7 +41,6 @@
 // GUI
 //#include "GUI/GUI.h"
 // GUI_Scene2D
-#include "GUI_Scene2D.h"
 
 // Game Manager
 #include "GameManager.h"
@@ -93,9 +92,6 @@ protected:
 
 	// A transformation matrix for controlling where to render the entities
 	glm::mat4 transform;
-
-	// GUI_Scene2D
-	CGUI_Scene2D* cGUI_Scene2D;
 
 	// Game Manager
 	CGameManager* cGameManager;
