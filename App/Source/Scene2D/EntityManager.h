@@ -1,4 +1,4 @@
-#pragma once 
+#pragma once
 
 //Include Entities
 #include "Player2D.h"
@@ -26,7 +26,7 @@ class CEntityManager : public CSingletonTemplate<CEntityManager>
 public:
 	//Inits
 	bool EntityManagerInit(void);
-	
+
 	//Renders
 	void RenderEnemy(void);
 	void RenderClone(void);
@@ -43,6 +43,7 @@ public:
 
 	void PushEnemy(CEnemy2D*);
 	void PushBullet(CEntity2D*);
+	void PushInteractables(Interactables*);
 
 	std::vector<CPlayer2D*> GetAllPlayers(void);
 	std::vector<CEnemy2D*> GetAllEnemies(void);

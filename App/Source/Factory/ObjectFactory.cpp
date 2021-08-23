@@ -18,7 +18,11 @@ CObject2D* ObjectFactory::CreateObject(int iTextureID)
 	}
 	else if (iTextureID > CONSUMABLES_START && iTextureID < CONSUMABLES_TOTAL)
 	{
-			newObj = new CObject2D(iTextureID);
+		newObj = new CObject2D(iTextureID);
+	}
+	else if (iTextureID > INTERACTABLE_START && iTextureID < INTERACTABLE_TOTAL)
+	{
+		newObj = new Interactables(iTextureID);
 	}
 	else if (iTextureID > PROJECTILES_START && iTextureID < PROJECTILES_TOTAL)
 	{
