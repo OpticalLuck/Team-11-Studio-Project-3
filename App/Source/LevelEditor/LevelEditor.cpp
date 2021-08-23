@@ -426,7 +426,7 @@ bool CLevelEditor::IncreaseYSize(void)
 /**
 @brief Returns the Cell of the index specified
 */
-sCell CLevelEditor::GetCell(unsigned int x, unsigned int y, bool bInvert)
+sCell& CLevelEditor::GetCell(unsigned int x, unsigned int y, bool bInvert)
 {
     if (bInvert)
         return m_CurrentLevel[iWorldHeight - y - 1][x];

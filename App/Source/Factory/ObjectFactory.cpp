@@ -18,14 +18,17 @@ CObject2D* ObjectFactory::CreateObject(int iTextureID)
 	}
 	else if (iTextureID > CONSUMABLES_START && iTextureID < CONSUMABLES_TOTAL)
 	{
-		if (iTextureID == CONSUMABLES_SHURIKEN)
-			newObj = new Projectiles(iTextureID);
-		else if (iTextureID == CONSUMABLES_KUNAI)
-			newObj = new Bullet2D(iTextureID);
-		else
 			newObj = new CObject2D(iTextureID);
 	}
-	else if (iTextureID > OBSTACLES_START && iTextureID < OBSTACLES_END)
+	else if (iTextureID > PROJECTILES_START && iTextureID < PROJECTILES_TOTAL)
+	{
+		newObj = new Projectiles(iTextureID);
+	}
+	else if (iTextureID > BULLETS_START && iTextureID < BULLETS_TOTAL)
+	{
+		newObj = new Bullet2D(iTextureID);
+	}
+	else if (iTextureID > OBSTACLES_START && iTextureID < OBSTACLES_TOTAL)
 	{
 		if(iTextureID == OBSTACLE_BOULDER)
 			newObj = new Boulder2D(iTextureID);

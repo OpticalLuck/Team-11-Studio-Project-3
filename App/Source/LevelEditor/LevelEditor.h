@@ -79,7 +79,7 @@ public:
     bool DecreaseYSize(void);
 
     // Update Map
-    sCell GetCell(unsigned int x, unsigned int y, bool bInvert = false);                
+    sCell& GetCell(unsigned int x, unsigned int y, bool bInvert = false);                
     void UpdateCell(unsigned int x, unsigned int y, int TileID, bool bInvert = false);  
 
     // Render Control

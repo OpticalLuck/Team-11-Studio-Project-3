@@ -223,7 +223,7 @@ glm::i32vec2 CMap2D::GetLevelLimit(void) {
  @param iCol A const int variable containing the column index of the element to set to
  @param iValue A const int variable containing the value to assign to this arrMapInfo
  */
-void CMap2D::SetMapInfo(unsigned int uiRow, unsigned int uiCol, const int iTextureID, const CLASS_ID ClassID, const bool bInvert)
+void CMap2D::SetMapInfo(unsigned int uiRow, unsigned int uiCol, const int iTextureID, const bool bInvert)
 {
 	if (bInvert)
 	{
@@ -274,7 +274,7 @@ void CMap2D::SetMapInfo(unsigned int uiRow, unsigned int uiCol, const int iTextu
 	}
 }
 
-bool CMap2D::InsertMapInfo(unsigned int uiRow, unsigned int uiCol, const int iTextureID, const CLASS_ID ClassID, const bool bInvert)
+bool CMap2D::InsertMapInfo(unsigned int uiRow, unsigned int uiCol, const int iTextureID, const bool bInvert)
 {
 	if (bInvert)
 	{
@@ -485,8 +485,6 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 				currObj->vTransform = currIndex;
 
 				currObj->Init();
-				if (currObjID == (int)CLASS_ID::CID_BACKGROUND)
-					currObj->GetCollider()->SetbEnabled(false);
 
 				arrObject[uiCurLevel].push_back(currObj);
 				//Add in new CObj pointer if available

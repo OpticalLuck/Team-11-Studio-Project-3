@@ -114,7 +114,7 @@ bool CBoss2D::Init(void) {
 		return false;	// Unable to find the start position of the boss, so quit this game
 
 	// Erase the value of the boss in the arrMapInfo
-	cMap2D->SetMapInfo(uiRow, uiCol, 0, CLASS_ID::CID_NONE);
+	cMap2D->SetMapInfo(uiRow, uiCol, 0);
 
 	vTransform = glm::i32vec2(uiCol, uiRow);
 

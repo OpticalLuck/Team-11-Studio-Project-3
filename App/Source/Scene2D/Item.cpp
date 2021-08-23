@@ -52,11 +52,11 @@ void CItem::Use(void)
 			cout << "You are using potion\n";
 			cout << "iCount is " << iCount << '\n';
 			break;
-		case OBJECT_TYPE::CONSUMABLES_HOOK:
+		case OBJECT_TYPE::EQUIPMENTS_HOOK:
 			cout << "You are using Item hook\n";
 			cout << "iCount is " << iCount << '\n';
 			break;
-		case OBJECT_TYPE::CONSUMABLES_SHURIKEN:
+		case OBJECT_TYPE::PROJECTILES_SHURIKEN:
 			cout << "You are using Item shuriken\n";
 			cout << "iCount is " << iCount << '\n';
 			break;

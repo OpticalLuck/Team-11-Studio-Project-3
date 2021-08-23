@@ -492,6 +492,8 @@ void CLevelEditorState::MouseInput(double dElapsedTime)
 	if (cMouseController->IsButtonReleased(CMouseController::LMB))
 	{
 		eProperties.bPlacedBlock = false;
+		eProperties.bOpenIDPopup = true;
+		eProperties.BlockPosition = vMousePos;
 	}
 
 	if (cMouseController->IsButtonDown(CMouseController::RMB))
@@ -593,6 +595,7 @@ bool CLevelEditorState::ImGuiRender()
 	//ImGui::End();
 	//ImGui::PopStyleVar();
 
+	// Main Menu
 	if (ImGui::BeginMainMenuBar())
 	{
 		if (ImGui::BeginMenu("File"))
@@ -645,13 +648,14 @@ bool CLevelEditorState::ImGuiRender()
 	}
 
 	ImGui::SetNextWindowPos(ImVec2(0, 19));
-	ImGui::SetNextWindowSize(ImVec2(250, cSettings->iWindowHeight));
+	ImGui::SetNextWindowSize(ImVec2(260, cSettings->iWindowHeight));
 
 	ImGuiWindowFlags windowFlags =
 		ImGuiWindowFlags_AlwaysAutoResize |
 		ImGuiWindowFlags_NoMove |
 		ImGuiWindowFlags_NoResize;
 
+	// Editor Window
 	ImGui::SetNextWindowCollapsed(!eProperties.bToggleEditorWindow);
 	eProperties.bToggleEditorWindow = false;
 	if (ImGui::Begin("Editor", NULL, windowFlags))
@@ -713,44 +717,19 @@ bool CLevelEditorState::ImGuiRender()
 			{
 				if (ImGui::BeginTabItem("Tiles"))
 				{
-				
-					const int iMaxButtonsPerRow = 6;
-					int iCounter = 0;
-					for (int i = TILE_GROUND; i < OBJECT_TOTAL; ++i)
-					{
-						if (CTextureManager::GetInstance()->MapOfTextureIDs.find(i) == CTextureManager::GetInstance()->MapOfTextureIDs.end())
-							continue;
-
-						if (iCounter <= iMaxButtonsPerRow && iCounter != 0)
-						{
-							ImGui::SameLine();
-						}
-						else
-							iCounter = 0;
-						
-						if (activeTile == i)
-							ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.26f, 0.59f, 0.98f, 0.40f));
-						else
-							ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.f, 0.f, 0.f, 0.f));
-
-						if (ImGui::ImageButton((void*)CTextureManager::GetInstance()->MapOfTextureIDs.at(i), ImVec2(25.f, 25.f), ImVec2(0, 1), ImVec2(1, 0)))
-						{
-							activeTile = i;
-						}
-						ImGui::PopStyleColor();
-						++iCounter;
-						
-					}
+					RenderImGuiEditorButtons(OBJECT_TYPE::TILE_START, OBJECT_TYPE::TILE_TOTAL);
 					ImGui::EndTabItem();
 				}	
 
 				if (ImGui::BeginTabItem("Interactables"))
 				{
+					RenderImGuiEditorButtons(OBJECT_TYPE::INTERACTABLE_START, OBJECT_TYPE::INTERACTABLE_TOTAL);
 					ImGui::EndTabItem();
 				}
 
 				if (ImGui::BeginTabItem("Enemies"))
 				{
+					RenderImGuiEditorButtons(OBJECT_TYPE::TILE_START, OBJECT_TYPE::TILE_TOTAL);
 					ImGui::EndTabItem();
 				}
 			}
@@ -763,6 +742,7 @@ bool CLevelEditorState::ImGuiRender()
 
 	windowFlags = 0;
 
+	// Action History Window
 	ImGui::SetNextWindowSize(ImVec2(150, 250), ImGuiCond_Once);
 	ImGui::SetNextWindowPos(ImVec2(cSettings->iWindowWidth - 150, 19), ImGuiCond_Once);
 	if (eProperties.bToggleHistoryWindow)
@@ -814,7 +794,9 @@ bool CLevelEditorState::ImGuiRender()
 		ImGuiWindowFlags_NoResize |
 		ImGuiWindowFlags_NoCollapse;
 
+	// Close Window Alert
 	ImGui::SetNextWindowPos(ImVec2((cSettings->iWindowWidth - 250) * 0.5f, (cSettings->iWindowHeight - 105) * 0.5f));
+
 	ImGui::SetNextWindowSize(ImVec2(250, 105));
 	if (eProperties.bToggleCloseWindow)
 	{
@@ -837,6 +819,27 @@ bool CLevelEditorState::ImGuiRender()
 			ImGui::End();
 		}
 	}
+
+	if (eProperties.bOpenIDPopup)
+	{
+		ImGui::OpenPopup("InteractableID");
+	}
+
+	// Interactable ID Popup
+	if (ImGui::BeginPopup("InteractableID"))
+	{
+		ImGui::SetNextItemWidth(100);
+		ImGui::InputInt("Interactable ID", &eProperties.iCurrentInteractableID);
+		if (ImGui::Button("Done"))
+		{ImGui::OpenPopup("InteractableID");
+			cLevelEditor->GetCell(vMousePos.x, vMousePos.y).iInteractableID = eProperties.iCurrentInteractableID;
+			eProperties.bOpenIDPopup = false;
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
+	}
+
+	
 
 	return true;
 }
@@ -969,4 +972,36 @@ void CLevelEditorState::UpdateHistory(void)
 
 	eProperties.undoStates.push_back(currentState);
 	eProperties.redoStates.clear();
+}
+
+void CLevelEditorState::RenderImGuiEditorButtons(uint32_t iStart, uint32_t iEnd)
+{
+	const int iMaxButtonsPerRow = 6;
+	int iCounter = 1;
+
+	for (int i = iStart + 1; i < iEnd; ++i)
+	{
+		if (CTextureManager::GetInstance()->MapOfTextureIDs.find(i) == CTextureManager::GetInstance()->MapOfTextureIDs.end())
+			continue;
+
+		if (iCounter <= iMaxButtonsPerRow && iCounter != 1)
+		{
+			ImGui::SameLine();
+		}
+		else
+			iCounter = 1;
+
+		if (activeTile == i)
+			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.26f, 0.59f, 0.98f, 0.40f));
+		else
+			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.f, 0.f, 0.f, 0.f));
+
+		if (ImGui::ImageButton((void*)CTextureManager::GetInstance()->MapOfTextureIDs.at(i), ImVec2(25.f, 25.f), ImVec2(0, 1), ImVec2(1, 0)))
+		{
+			activeTile = i;
+		}
+		ImGui::PopStyleColor();
+		++iCounter;
+
+	}
 }
