@@ -14,6 +14,9 @@
 // Include CEntity2D
 #include "Primitives/Entity2D.h"
 
+//Centity manager
+class CEntityManager;
+
 enum OBJECT_TYPE
 {
 	//CONSUMABLES 2 - 25
@@ -84,5 +87,8 @@ class CObject2D : public CEntity2D
 
 		//Current Index in map Grid
 		glm::i32vec2 currentIndex;
+
+		//Handlers
+		CEntityManager* cEntityManager;
 };
 

@@ -20,6 +20,8 @@
 #include <iostream>
 #include <vector>
 
+#include "../Library/Source/System/MapLoader.h"
+
 using namespace std;
 
 /**
@@ -467,7 +469,7 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 			int currTexture = 0;
 			int currObjID = 0;
 
-			ExtractIDs(row[uiCol], currTexture, currObjID);
+			SysMap::ExtractIDs(row[uiCol], currTexture, currObjID);
 
 			arrGrid[uiCurLevel][uiRow].push_back(nullptr);
 
@@ -494,40 +496,6 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 	}
 
 	return true;
-}
-
-void CMap2D::ExtractIDs(std::string str, int& textureID, int& objectID) {
-	//If there are no ; present (Basically only one value in cell like "100")
-	if (IsInteger(str)) {
-		textureID = stoi(str);
-		objectID = 0;
-		return;
-	}
-
-	//Conversion for if there are more than 1 value present (100;2)
-	stringstream ss(str);
-	vector<int> values;
-
-	while (ss.good()) {
-		std::string substr;
-		getline(ss, substr, ';');
-		
-		//Convert valaue from string to int if possible.
-		values.push_back(std::stoi(substr));
-	}
-
-	textureID = values[0];
-	objectID = values[1];
-}
-
-bool CMap2D::IsInteger(const std::string& s) {
-	if (s.empty() || (!isdigit(s[0]) && s[0] != '-'))
-		return false; //Return false if its empty of if string is not a digit
-
-	char* p;
-	long int temp = strtol(s.c_str(), &p, 10); //Parsing through string and check for index that is not an integer
-
-	return (*p == 0);
 }
 
 void CMap2D::RenderBackground(void) {

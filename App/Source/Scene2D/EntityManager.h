@@ -47,6 +47,7 @@ public:
 	void PushBullet(EnemyBullet2D*);
 
 	std::vector<CPlayer2D*> GetAllPlayers(void);
+	std::vector<CEnemy2D*> GetAllEnemies(void);
 
 protected:
 	CInputHandler* cInputHandler;

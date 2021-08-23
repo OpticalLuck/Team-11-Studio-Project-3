@@ -34,5 +34,11 @@ protected:
 	Command cCommand;
 
 	CPhysics2D cPhysics2D;
+
+	//Function
+	//Collision within map
+	void MapCollision(void);
+	//Collision with players
+	void PlayerCollision(void);
 };
 

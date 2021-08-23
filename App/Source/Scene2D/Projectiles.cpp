@@ -3,6 +3,8 @@
 #include "Map2D.h"
 #include <vector>
 
+#include "EntityManager.h"
+
 Projectiles::Projectiles(int iTextureID)
 	: animatedSprites(NULL)
 	, currentColor(glm::vec4())
@@ -34,9 +36,12 @@ void Projectiles::Update(double dElapsedTime)
 	// Update Collider2D Position
 	collider2D->SetPosition(vTransform);
 
-	CMap2D* cMap2D = CMap2D::GetInstance();
+	//Collision between objects in map space
+	MapCollision();
+}
 
-	bool physicsChange = false;
+void Projectiles::MapCollision(void) {
+	CMap2D* cMap2D = CMap2D::GetInstance();
 
 	int range = 2;
 	cPhysics2D.SetboolGrounded(false);
@@ -60,9 +65,9 @@ void Projectiles::Update(double dElapsedTime)
 	}
 	//Sorts vector based on shortest dist from player to object
 	sort(aabbVector.begin(), aabbVector.end(), [](const std::pair<CObject2D*, float>& a, const std::pair<CObject2D*, float>& b)
-	{
-		return a.second < b.second;
-	});
+		{
+			return a.second < b.second;
+		});
 	aabbVector.erase(std::unique(aabbVector.begin(), aabbVector.end()), aabbVector.end());
 	bool destroyed = false;
 	for (auto aabbTuple : aabbVector)
@@ -106,6 +111,15 @@ void Projectiles::Update(double dElapsedTime)
 	if (destroyed)
 	{
 		cMap2D->SetMapInfo(currentIndex.y, currentIndex.x, 0, CLASS_ID::CID_NONE, false);
+	}
+}
+
+void Projectiles::PlayerCollision(void) {
+	std::vector<CPlayer2D*> playerArr = cEntityManager->GetAllPlayers();
+
+	//collider2D->CollideWith(obj->GetCollider())
+	for (unsigned i = 0; i < playerArr.size(); i++) {
+		//Collision data = 
 	}
 }
 
