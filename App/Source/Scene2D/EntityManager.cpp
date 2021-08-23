@@ -100,6 +100,11 @@ bool CEntityManager::EntityManagerInit(void)
 			DEBUG_MSG("ERROR: TOO MANY BOSS IN LEVEL. THERE SHOULD ONLY BE ONE BOSS");
 			return false;
 		}
+		if (cBoss2D->Init() == false)
+		{
+			cout << "Failed to load CBoss2D" << endl;
+			return false;
+		}
 	}
 
 	//clone init
@@ -186,6 +191,11 @@ CPlayer2D* CEntityManager::GetPlayer()
 	return cPlayer2D;
 }
 
+CBoss2D* CEntityManager::GetBoss()
+{
+	return cBoss2D;
+}
+
 std::vector<CPlayer2D*> CEntityManager::GetAllPlayers(void) 
 {
 	std::vector<CPlayer2D*> arr;
@@ -196,6 +206,17 @@ std::vector<CPlayer2D*> CEntityManager::GetAllPlayers(void)
 	{ //Add the other clones to the vector
 		arr.push_back(static_cast<CPlayer2D*>(m_cloneList[i])); 
 	}
+
+	return arr;
+}
+
+std::vector<CEnemy2D*> CEntityManager::GetAllEnemies(void) 
+{
+	std::vector<CEnemy2D*> arr;
+	arr.push_back(cBoss2D);
+	arr.insert(arr.end(), m_enemyList.begin(), m_enemyList.end());
+
+	arr.erase(std::remove(arr.begin(), arr.end(), nullptr), arr.end());
 
 	return arr;
 }

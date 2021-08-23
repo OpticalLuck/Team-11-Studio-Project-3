@@ -134,6 +134,8 @@ bool CPlayer2D::Init(void)
 	checkpoint = glm::vec2(uiCol, uiRow);
 	// Set the start position of the Player to iRow and iCol
 	vTransform = glm::vec2(uiCol, uiRow);
+	vTransform.x;
+	vTransform.y;
 
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
@@ -288,6 +290,11 @@ bool CPlayer2D::Init(glm::i32vec2 spawnpoint, int iCloneIndex)
 
 int CPlayer2D::GetHealth(void) {
 	return pHealth;
+}
+
+int CPlayer2D::GetMaxHealth(void)
+{
+	return pMaxHealth;
 }
 
 glm::i32vec2 CPlayer2D::GetCheckpoint(void) {
@@ -704,6 +711,7 @@ void CPlayer2D::UpdateHealthLives(void)
 	}
 
 	pShield--;
+	std::cout << "Health is : "<< pHealth << std::endl;
 
 	if (pBlinkInterval == 0) { //If blink is 0, toggle it(Blink) and reset timer 
 		pBlinkInterval = pMaxBlinkInterval;
@@ -733,6 +741,16 @@ void CPlayer2D::Attacked(int hp) {
 
 	pHealth = Math::Max(0, pHealth - 1);
 	pShield = pMaxShield + 1; //Offset by 1 frame for better synchronisation (FUTURE JEVON IF YOU KNOW YOU KNOW IF NOT THEN LMAO)
+}
+
+float CPlayer2D::GetTransformX(void)
+{
+	return vTransform.x;
+}
+
+float CPlayer2D::GetTransformY(void)
+{
+	return vTransform.y;
 }
 
 void CPlayer2D::SetKeyInputs(std::vector<std::array<KeyInput, KEYBOARD_INPUTS::KEY_TOTAL>> inputs)

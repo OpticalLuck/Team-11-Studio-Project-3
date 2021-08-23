@@ -95,6 +95,33 @@ glm::vec2 CSettings::ConvertIndexToUVSpace(const glm::vec2 pos)
 
 	return output;
 }
+glm::vec2 CSettings::ConvertIndexToScreenSpace(const glm::vec2 pos,const glm::vec2 transform)
+{
+	glm::vec2 screenspace = pos;
+	glm::vec2 worldspace = transform;
+	screenspace.x = (float)(worldspace.x / NUM_TILES_XAXIS) * iWindowWidth;
+	screenspace.y = (float)(worldspace.y / NUM_TILES_YAXIS) * iWindowHeight;
+
+	return screenspace;
+}
+
+float CSettings::ConvertIndexToXScreenSpace(const float posX, const float transformX)
+{
+	float screenspace = posX;
+	float worldspace = transformX;
+	screenspace = (float)(worldspace / NUM_TILES_XAXIS) * iWindowWidth;
+
+	return screenspace;
+}
+
+float CSettings::ConvertIndexToYScreenSpace(const float posY, const float transformY)
+{
+	float screenspace = posY;
+	float worldspace = transformY;
+	screenspace = (float)(worldspace / NUM_TILES_YAXIS) * iWindowHeight;
+
+	return screenspace;
+}
 
 glm::vec2 CSettings::ConvertUVSpaceToIndex(const glm::vec2 pos)
 {

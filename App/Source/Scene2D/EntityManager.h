@@ -41,12 +41,14 @@ public:
 	void RemoveEntity(string type, int amount);
 
 	CPlayer2D* GetPlayer();
+	CBoss2D* GetBoss();
 	int GetCurrRound(void);
 
 	void PushEnemy(CEnemy2D*);
 	void PushBullet(EnemyBullet2D*);
 
 	std::vector<CPlayer2D*> GetAllPlayers(void);
+	std::vector<CEnemy2D*> GetAllEnemies(void);
 
 protected:
 	CInputHandler* cInputHandler;

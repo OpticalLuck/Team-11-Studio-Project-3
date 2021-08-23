@@ -109,6 +109,16 @@ void Camera2D::ClampCamPos(glm::i32vec2 clampPos) {
 
 }
 
+float Camera2D::GetPosX(void)
+{
+	return pos.x;
+}
+
+float Camera2D::GetPosY(void)
+{
+	return pos.y;
+}
+
 glm::vec2 Camera2D::GetCursorPosInWorldSpace(float offset)
 {
 	CalculateMousePosInWorldSpace();

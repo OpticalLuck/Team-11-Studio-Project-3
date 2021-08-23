@@ -28,11 +28,16 @@ CPlayGameState::CPlayGameState(void)
 	, cSettings(NULL)
 	, cTextureManager(NULL)
 	, cPlayerInventory(NULL)
+	, cPlayer(NULL)
+	, cEntityManager(NULL)
 	, cKeyboardController(NULL)
 	, m_fProgressBar(0.0f)
 	, fInterval(0.f)
 	, iMinutes(0.f)
 	, iSeconds(0.f)
+	, transformX(0.f)
+	, transformY(0.f)
+	, cCamera(NULL)
 {
 
 }
@@ -71,6 +76,15 @@ bool CPlayGameState::Init(void)
 
 	cPlayerInventory = CInventoryManager::GetInstance()->Get("Player");
 	cTextureManager = CTextureManager::GetInstance();
+	
+	cEntityManager = CEntityManager::GetInstance();
+	cPlayer = cEntityManager->GetPlayer();
+
+	
+	
+	
+
+	cCamera = Camera2D::GetInstance();
 	return true;
 }
 
@@ -165,6 +179,16 @@ bool CPlayGameState::ImGuiRender()
 	window_flags |= ImGuiWindowFlags_NoResize;
 	window_flags |= ImGuiWindowFlags_NoCollapse;
 
+	health_window = 0;
+	health_window |= ImGuiWindowFlags_AlwaysAutoResize;
+	health_window |= ImGuiWindowFlags_NoBackground;
+	health_window |= ImGuiWindowFlags_NoTitleBar;
+	health_window |= ImGuiWindowFlags_NoMove;
+	health_window |= ImGuiWindowFlags_NoResize;
+	health_window |= ImGuiWindowFlags_NoCollapse;
+	health_window |= ImGuiWindowFlags_NoScrollbar;
+
+
 	// Calculate the relative scale to our default windows width
 	float relativeScale_x = cSettings->iWindowWidth / 800.0f;
 	float relativeScale_y = cSettings->iWindowHeight / 600.0f;
@@ -198,50 +222,79 @@ bool CPlayGameState::ImGuiRender()
 	ImGui::SameLine();
 	ImGui::TextColored(ImVec4(1, 1, 0, 1), "HEALTH(TEST): %d", CEntityManager::GetInstance()->GetPlayer()->GetHealth());
 
-	// Render the inventory items
+	{// Render the inventory items
 
-	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 1.0f, 1.0f));  // Set a background color
-	ImGuiWindowFlags inventoryWindowFlags = ImGuiWindowFlags_AlwaysAutoResize |
-		ImGuiWindowFlags_NoTitleBar |
-		ImGuiWindowFlags_NoMove |
-		ImGuiWindowFlags_NoResize |
-		ImGuiWindowFlags_NoCollapse |
-		ImGuiWindowFlags_NoScrollbar;
-	ImGui::PopStyleColor();
-
-	//looping to render the invetory cgui
-	for (int i = 0; i < cPlayerInventory->GetNumofUniqueItems(); i++)
-	{
-		ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 1.0f, 1.0f));
-		if (cPlayerInventory->iCurrentIndex == i)
-		{
-			ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1.f, 0.f, 0.f, 1.f));
-		}
-
-		std::stringstream title;
-		title.str("");
-		title << "Inventory" << i;
-		ImGui::Begin(title.str().c_str(), NULL, inventoryWindowFlags);
-		ImGui::SetWindowPos(ImVec2(cSettings->iWindowWidth * 0.01f, cSettings->iWindowHeight * (0.065f * i + 0.05)));
-		ImGui::SetWindowSize(ImVec2(200.0f * relativeScale_x, 25.0f * relativeScale_y));
-		ImGui::Image((void*)(intptr_t)cTextureManager->MapOfTextureIDs.at(cPlayerInventory->GetItem(i).get_ID()),
-			ImVec2(25 * relativeScale_x, 25 * relativeScale_y),
-			ImVec2(0, 1), ImVec2(1, 0));
-		ImGui::SameLine();
-		ImGui::SetWindowFontScale(1.5f * relativeScale_y);
-		std::stringstream ss;
-		ss.str("");
-		ss << cPlayerInventory->GetItem(i).GetName() << ": %d";
-		ImGui::TextColored(ImVec4(1, 1, 0, 1), ss.str().c_str(), cPlayerInventory->GetItem(i));
-		ImGui::End();
+		ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 1.0f, 1.0f));  // Set a background color
+		ImGuiWindowFlags inventoryWindowFlags = ImGuiWindowFlags_AlwaysAutoResize |
+			ImGuiWindowFlags_NoTitleBar |
+			ImGuiWindowFlags_NoMove |
+			ImGuiWindowFlags_NoResize |
+			ImGuiWindowFlags_NoCollapse |
+			ImGuiWindowFlags_NoScrollbar;
 		ImGui::PopStyleColor();
-		if (cPlayerInventory->iCurrentIndex == i)
-		{
-			ImGui::PopStyleColor();
-		}
 
+		//looping to render the invetory cgui
+		for (int i = 0; i < cPlayerInventory->GetNumofUniqueItems(); i++)
+		{
+			ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 1.0f, 1.0f));
+			if (cPlayerInventory->iCurrentIndex == i)
+			{
+				ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1.f, 0.f, 0.f, 1.f));
+				//ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.f);
+			}
+
+			std::stringstream title;
+			title.str("");
+			title << "Inventory" << i;
+			ImGui::Begin(title.str().c_str(), NULL, inventoryWindowFlags);
+			ImGui::SetWindowPos(ImVec2(cSettings->iWindowWidth * 0.01f, cSettings->iWindowHeight * (0.065f * i + 0.05)));
+			ImGui::SetWindowSize(ImVec2(200.0f * relativeScale_x, 25.0f * relativeScale_y));
+			ImGui::Image((void*)(intptr_t)cTextureManager->MapOfTextureIDs.at(cPlayerInventory->GetItem(i).get_ID()),
+				ImVec2(25 * relativeScale_x, 15 * relativeScale_y),
+				ImVec2(0, 1), ImVec2(1, 0));
+			ImGui::SameLine();
+			ImGui::SetWindowFontScale(1.5f * relativeScale_y);
+			std::stringstream ss;
+			ss.str("");
+			ss << cPlayerInventory->GetItem(i).GetName() << ": %d";
+			ImGui::TextColored(ImVec4(1, 1, 0, 1), ss.str().c_str(), cPlayerInventory->GetItem(i));
+			ImGui::End();
+			ImGui::PopStyleColor();
+			if (cPlayerInventory->iCurrentIndex == i)
+			{
+				ImGui::PopStyleColor();
+			}
+
+		}
+	}
+	{		//render health on player
+		float vPlayerPosX = cPlayer->GetTransformX();
+		float vCameraposX = cCamera->GetPosX();
+		float finalPosX = vPlayerPosX - vCameraposX;
+		finalPosX = finalPosX / cSettings->NUM_TILES_XAXIS * cSettings->iWindowWidth;
+		finalPosX += 0.5 * cSettings->iWindowWidth - 20;
+
+		float vPlayerPosY = cPlayer->GetTransformY();
+		float vCameraposY = cCamera->GetPosY();
+		float finalPosY = vPlayerPosY - vCameraposY;
+		finalPosY = finalPosY / cSettings->NUM_TILES_YAXIS * cSettings->iWindowHeight;
+		finalPosY += 0.5 * cSettings->iWindowHeight;
+		finalPosY = cSettings->iWindowHeight - finalPosY - 60;
+
+
+		ImGui::Begin("Health", NULL, health_window);
+		ImGui::SetWindowPos(ImVec2(finalPosX, finalPosY));
+		ImGui::SetWindowSize(ImVec2(200.0f * relativeScale_x, 25.0f * relativeScale_y));
+		ImGui::SameLine();
+		ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.0f, 0.0f, 1.0f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
+		ImGui::ProgressBar(cPlayer->GetHealth() /(float)cPlayer->GetMaxHealth(), ImVec2(50.0f, 20.0f));
+		ImGui::PopStyleColor();
+		ImGui::PopStyleColor();
+		ImGui::End();
 	}
 	ImGui::End();
 
 	return true;
 }
+

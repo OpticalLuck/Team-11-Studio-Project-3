@@ -69,6 +69,11 @@ public:
 	//Set texture
 	void SetTexture(const char* fileName);
 
+	//returns transform x
+	float GetTransformX(void);
+	//returns transform y
+	float GetTransformY(void);
+
 protected:
 	enum class DIRECTION
 	{

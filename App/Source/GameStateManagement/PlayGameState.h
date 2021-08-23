@@ -30,6 +30,10 @@ public:
 	virtual void Destroy(void);
 
 	virtual bool ImGuiRender();
+
+	//virtual bool OptionInit();
+	//virtual bool RenderOption();
+
 protected:
 	// The handler to the CScene2D instance
 	CScene2D* cScene2D;
@@ -40,15 +44,32 @@ protected:
 
 	// Flags for IMGUI
 	ImGuiWindowFlags window_flags;
+	ImGuiWindowFlags health_window;
+
+	//ButtonData resumeButtonData;
+	//ButtonData restartButtonData;
+	//ButtonData exitButtonData;
+	//ButtonData optionButtonData;
+	//ButtonData backButtonData;
+	//ButtonData applyButtonData;
+
+
 	float m_fProgressBar;
 
 	float fInterval;
 	int iMinutes;
 	int iSeconds;
 
+	float transformX;
+	float transformY;
+
 	CSettings* cSettings;
+	Camera2D* cCamera;
 	CTextureManager* cTextureManager;
 	CInventory* cPlayerInventory;
+
+	CPlayer2D* cPlayer;
+	CEntityManager* cEntityManager;
 
 	CKeyboardController* cKeyboardController;
 };
