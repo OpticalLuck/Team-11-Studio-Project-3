@@ -12,6 +12,7 @@ CEntityManager::CEntityManager()
 	, cBoss2D(NULL)
 	, cKeyboardController(NULL)
 	, cInputHandler(NULL)
+	, CInventoryManager(NULL)
 	, currRound(0)
 {
 }
@@ -120,6 +121,16 @@ bool CEntityManager::EntityManagerInit(void)
 	currRound = 0;
 
 	return true;
+}
+
+std::vector<CEnemy2D*> CEntityManager::GetAllEnemies(void) {
+	std::vector<CEnemy2D*> arr;
+	arr.push_back(cBoss2D);
+	arr.insert(arr.end(), m_enemyList.begin(), m_enemyList.end());
+
+	arr.erase(std::remove(arr.begin(), arr.end(), nullptr), arr.end());
+
+	return arr;
 }
 
 void CEntityManager::PushEnemy(CEnemy2D* enemy) {

@@ -30,9 +30,9 @@ CPlayGameState::CPlayGameState(void)
 	, cPlayerInventory(NULL)
 	, cKeyboardController(NULL)
 	, m_fProgressBar(0.0f)
-	, fInterval(0.f)
-	, iMinutes(0.f)
-	, iSeconds(0.f)
+	, fInterval(0)
+	, iMinutes(0)
+	, iSeconds(0)
 {
 
 }

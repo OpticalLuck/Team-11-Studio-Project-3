@@ -34,8 +34,8 @@ void Boulder2D::Update(const double dElapsedTime)
 		{
 			for (int col = -range; col <= range; col++) //x
 			{
-				int rowCheck = vTransform.y + row;
-				int colCheck = vTransform.x + col;
+				int rowCheck = (int)vTransform.y + row;
+				int colCheck = (int)vTransform.x + col;
 
 				if (rowCheck < 0 || colCheck < 0 || rowCheck > cMap2D->GetLevelRow() - 1 || colCheck > cMap2D->GetLevelCol() - 1)
 					continue;

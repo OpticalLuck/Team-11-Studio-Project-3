@@ -58,6 +58,7 @@ CEnemy2D::CEnemy2D(void)
 		roundDir[i] = RandomiseDir();
 	}
 	dir = roundDir[0];
+	health = 1;
 }
 
 /**
@@ -148,6 +149,7 @@ bool CEnemy2D::Init(void)
 
 	// If this class is initialised properly, then set the bIsActive to true
 	bIsActive = true;
+	health = 1;
 
 	return true;
 }
