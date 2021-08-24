@@ -6,6 +6,7 @@
 #include "Primitives/MeshBuilder.h"
 #include "Math/MyMath.h"
 #include "EntityManager.h"
+#include "MobEnemy2D.h"
 
 Bullet2D::Bullet2D(int iTextureID)
 {
@@ -42,6 +43,7 @@ bool Bullet2D::Init(bool player, float angle, float force)
 
 	float radAng = Math::DegreeToRadian(angle);
 	cPhysics2D->SetVelocity(glm::vec2(cosf(radAng), sinf(radAng)) * force);
+	cPhysics2D->SetMass(0.75f);
 
 	collider2D->Init(vTransform, glm::vec2(0.25f), Collider2D::ColliderType::COLLIDER_CIRCLE);
 
@@ -78,10 +80,15 @@ void Bullet2D::EntityCollision(void) {
 		if (std::get<0>(data)) {
 			//collision code below
 			CPlayer2D* player = dynamic_cast<CPlayer2D*>(arr[i]);
+			CMobEnemy2D* enemy = dynamic_cast<CMobEnemy2D*>(arr[i]);
+
+			//For knockback effect
 			if (player)
-				player->Attacked(1, player->GetCPhysics());
+				player->Attacked(1, cPhysics2D);
+			else if (enemy)
+				enemy->Attacked(1, cPhysics2D);
 			else
-				arr[i]->Attacked();
+				arr[i]->Attacked(); //Default
 
 			//Remove bullet from worldspace
 			bDestroyed = true;
