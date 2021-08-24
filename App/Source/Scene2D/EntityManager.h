@@ -47,6 +47,7 @@ public:
 
 	std::vector<CPlayer2D*> GetAllPlayers(void);
 	std::vector<CEnemy2D*> GetAllEnemies(void);
+	std::vector<Interactables*> GetAllInteractables(void);
 
 protected:
 	CEntityManager();

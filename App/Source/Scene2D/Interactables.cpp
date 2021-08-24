@@ -24,6 +24,8 @@ Interactables::Interactables(int iTextureID)
 	vTransform = glm::i32vec2(0);
 
 	type = ENTITY_TYPE::INTERACTABLES;
+
+	Init();
 }
 
 Interactables::~Interactables(void)
@@ -37,7 +39,7 @@ Interactables::~Interactables(void)
 	}
 }
 
-bool Interactables::Init(int iMapID)
+bool Interactables::Init()
 {
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
@@ -45,14 +47,26 @@ bool Interactables::Init(int iMapID)
 	type = CEntity2D::ENTITY_TYPE::INTERACTABLES;
 	quad = CMeshBuilder::GenerateQuad();
 
+	interactableType = static_cast<INTERACTABLE_TYPE>(iTextureID);
+	if (interactableType < DOOR)
+	{
+		collidable = false;
+	}
+	else
+	{
+		// Initialise Doors
+		// Interacted doors are open
+		if (bInteraction)
+		{
+			collidable = false;
+		}
+	}
+
 	return true;
 }
 
 void Interactables::Update(const double dElapsedTime)
 {
-	if (bInteraction)
-	{
-	}
 }
 
 void Interactables::PreRender(void)
@@ -145,4 +159,41 @@ bool Interactables::LoadTexture(const char* filename, GLuint& iTextureID)
 	free(data);
 
 	return true;
+}
+
+bool Interactables::Activate()
+{
+	this->bInteraction = !bInteraction;
+
+	// Change Texture
+	// On and Off Textures are an index apart in the texture manager
+	switch (bInteraction) {
+	case true:
+		this->iTextureID++;
+		break;
+	case false:
+		this->iTextureID--;
+		break;
+	}
+
+	// Loop through the interactables to activate the corresponding Interactable IDs
+	if (this->interactableType < DOOR) 
+	{
+		CEntityManager* entManager = CEntityManager::GetInstance();
+		for (auto& e : entManager->GetAllInteractables())
+		{
+			if (e->interactableType >= DOOR)
+			{
+				if (this->iInteractableID == e->iInteractableID)
+				{
+					e->Activate();
+					e->collidable = !collidable;
+					return true;
+				}
+			}
+		}
+	}
+
+	return false;
+
 }

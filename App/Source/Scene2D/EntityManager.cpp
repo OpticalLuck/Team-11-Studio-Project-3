@@ -136,6 +136,11 @@ std::vector<CEnemy2D*> CEntityManager::GetAllEnemies(void) {
 	return arr;
 }
 
+std::vector<Interactables*> CEntityManager::GetAllInteractables(void)
+{
+	return m_interactableList;
+}
+
 void CEntityManager::PushEnemy(CEnemy2D* enemy) {
 	if (enemy)
 		m_enemyList.push_back(enemy);

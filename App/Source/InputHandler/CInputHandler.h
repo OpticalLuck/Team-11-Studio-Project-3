@@ -20,6 +20,7 @@ enum KEYBOARD_INPUTS
 	ARROW_UP,
 	ARROW_DOWN,
 	ENTER,
+	E,
 	KEY_TOTAL,
 };
 
@@ -73,7 +74,8 @@ protected:
 								   GLFW_KEY_SPACE,
 								   GLFW_KEY_UP,
 								   GLFW_KEY_DOWN,
-								   GLFW_KEY_ENTER};
+								   GLFW_KEY_ENTER,
+								   GLFW_KEY_E };
 	uint32_t m_Buttons[MOUSE_TOTAL] = { CMouseController::LMB, CMouseController::RMB, CMouseController::MMB };
 
 	// Keyboard Inputs stored in a dynamic vector of arrays

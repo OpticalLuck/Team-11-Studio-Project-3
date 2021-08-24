@@ -375,8 +375,19 @@ void CPlayer2D::Update(const double dElapsedTime)
 			if (cMap2D->GetCObject(colCheck, rowCheck))
 			{
 				CObject2D* obj = cMap2D->GetCObject(colCheck, rowCheck);
-				float distance = glm::length( obj->vTransform - vTransform );
-				aabbVector.push_back({ obj, distance });
+				if (obj->collidable)
+				{
+					float distance = glm::length(obj->vTransform - vTransform);
+					aabbVector.push_back({ obj, distance });
+				}
+
+				if (obj->type == ENTITY_TYPE::INTERACTABLES)
+				{
+					if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::E].bKeyPressed)
+					{
+						((Interactables*)(obj))->Activate();
+					}
+				}
 			}
 		}
 	}

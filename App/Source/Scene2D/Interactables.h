@@ -11,9 +11,10 @@ public:
 
 	enum INTERACTABLE_TYPE
 	{
-		BUTTON = 201,
-		LEVER = 202,
-		PRESSURE_PLATE = 203,
+		LEVER = OBJECT_TYPE::INTERACTABLE_SWITCH1_OFF,
+		// PRESSURE_PLATE = 203,
+
+		DOOR,
 	};
 
 	INTERACTABLE_TYPE interactableType;
@@ -24,7 +25,7 @@ public:
 	virtual ~Interactables(void);
 
 	// Init
-	bool Init(int iMapID);
+	bool Init();
 
 	// Update
 	void Update(const double dElapsedTime);
@@ -38,6 +39,7 @@ public:
 	// PostRender
 	void PostRender(void);
 
+	bool Activate();
 	void SetInteractableID(int);
 
 private:
