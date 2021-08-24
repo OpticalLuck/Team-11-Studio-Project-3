@@ -28,12 +28,14 @@
 #include "Collider2D.h"
 #include "Physics2D.h"
 
+#include "../App/Source/Scene2D/LivingEntity2D.h"
+
 using namespace std;
 
 //Predefinitions
 class Camera2D;
 
-class CEntity2D 
+class CEntity2D
 {
 public:
 	enum class ENTITY_TYPE
@@ -72,6 +74,9 @@ public:
 	virtual void PostRender(void);
 
 	virtual void RenderCollider();
+
+	//Function to call if object gets hit
+	//virtual void Attacked(int hp = 1, CPhysics2D* bounceObj = nullptr);
 
 	Collider2D* GetCollider();
 

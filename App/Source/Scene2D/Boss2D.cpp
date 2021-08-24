@@ -14,6 +14,10 @@
 #include "EntityManager.h"
 //Enemy bullet
 #include "EnemyBullet2D.h"
+//Projectiles
+#include "Projectiles.h"
+//Bullet2D
+#include "Bullet2D.h"
 
 CBoss2D::CBoss2D(void) {
 	bIsActive = false;
@@ -208,7 +212,7 @@ int CBoss2D::RandomiseTimer(bool atk) {
 	float value = 0; //In terms of seconds first
 
 	if (!atk && !pauseEnabled) //If pause is not enabled, return 0 seconds for pause
-		return value;
+		return (int)value;
 
 	if (atk)
 		value = Math::RandFloatMinMax(minAtkDuration, maxAtkDuration);
@@ -394,7 +398,7 @@ void CBoss2D::UpdateAttack(float dElapsedTime) {
 	switch (arrATK[roundIndex][fsmIndex]) {
 		case ATK::A_MACHINEGUN:
 		case ATK::A_ATTACK: {
-			EnemyBullet2D* bullet = factory.CreateBullet(bulletAng, vTransform);
+			Bullet2D* bullet = ObjectFactory::CreateBullet(bulletAng, vTransform);
 			cEntityManager->PushBullet(bullet);
 
 			break;
@@ -402,7 +406,7 @@ void CBoss2D::UpdateAttack(float dElapsedTime) {
 
 		case ATK::A_CIRCLE: {
 			for (int i = 0; i < 4; i++) {
-				EnemyBullet2D* bullet = factory.CreateBullet(bulletAng + (i * 90), vTransform);
+				Bullet2D* bullet = ObjectFactory::CreateBullet(bulletAng + (i * 90), vTransform);
 				cEntityManager->PushBullet(bullet);
 			}
 
@@ -411,7 +415,7 @@ void CBoss2D::UpdateAttack(float dElapsedTime) {
 
 		case ATK::A_TWIN: {
 			for (int i = 0; i < 2; i++) {
-				EnemyBullet2D* bullet = factory.CreateBullet(bulletAng + (i * 180), vTransform);
+				Bullet2D* bullet = ObjectFactory::CreateBullet(bulletAng + (i * 180), vTransform);
 				cEntityManager->PushBullet(bullet);
 			}
 

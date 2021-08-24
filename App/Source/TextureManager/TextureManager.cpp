@@ -177,6 +177,11 @@ bool CTextureManager::Init(void)
         return false;
     }
 
+    if (LoadTexture("Image/Objects/Bullet.tga", BULLETS_ENEMY) == false) {
+        std::cout << "Failed to load bullet texture" << std::endl;
+        return false;
+    }
+
 	return true;
 }
 

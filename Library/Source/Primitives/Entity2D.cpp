@@ -123,7 +123,6 @@ bool CEntity2D::Init(void)
 	return true;
 }
 
-
 /**
  @brief Set the name of the shader to be used in this class instance
  @param _name The name of the Shader instance in the CShaderManager

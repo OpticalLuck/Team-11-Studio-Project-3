@@ -38,6 +38,11 @@ CLevelEditorState::CLevelEditorState(void)
 	, activeTile(0)
 	, transform(1.f)
 	, cursor(NULL)
+	, FBO(0)
+	, RBO(0)
+	, quadVAO(0)
+	, quadVBO(0)
+	, textureColorBuffer(0)
 {
 	vMousePos = glm::i32vec2();
 }
@@ -144,11 +149,11 @@ bool CLevelEditorState::Update(const double dElapsedTime)
 
 		// Mouse X Scroll
 		if (cMouseController->GetMousePositionX() < 100 || cMouseController->GetMousePositionX() > cSettings->iWindowWidth - 100)
-			Camera2D::GetInstance()->MoveTarget(-(cSettings->iWindowWidth * 0.5f - cMouseController->GetMousePositionX()) * (float)dElapsedTime * 0.025f, 0);
+			Camera2D::GetInstance()->MoveTarget(-((float)cSettings->iWindowWidth * 0.5f - (float)cMouseController->GetMousePositionX()) * (float)dElapsedTime * 0.025f, 0);
 		
 		// Mouse Y Scroll
 		if (cMouseController->GetMousePositionY() < 100 || cMouseController->GetMousePositionY() > cSettings->iWindowHeight - 100)
-			Camera2D::GetInstance()->MoveTarget(0, (cSettings->iWindowHeight * 0.5f - cMouseController->GetMousePositionY()) * (float)dElapsedTime * 0.025f);
+			Camera2D::GetInstance()->MoveTarget(0, ((float)cSettings->iWindowHeight * 0.5f - (float)cMouseController->GetMousePositionY()) * (float)dElapsedTime * 0.025f);
 	}
 
 	FileUtilShortcuts();

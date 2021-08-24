@@ -23,6 +23,9 @@ class CMobEnemy2D : public CEnemy2D
 		void SetAnimatedSprites(CSpriteAnimation* animatedSprites);
 		CSpriteAnimation* GetAnimatedSprites(void);
 
+		//Function to call if Entity gets hit
+		virtual void Attacked(int hp = 1, CPhysics2D* bounceObj = nullptr);
+
 	protected:
 		glm::vec2 oldVTransform;
 		float mSpd;
@@ -32,7 +35,7 @@ class CMobEnemy2D : public CEnemy2D
 		bool clampSides; //check if enemy can jump off cliff and stuff
 		bool inView;
 
-		void UpdateMovement(void);
+		void UpdateMovement(const float dElapsedTime);
 		void CollisionUpdate(void);
 		void ClampPos(void);
 };

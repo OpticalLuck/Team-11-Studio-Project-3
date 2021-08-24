@@ -1,5 +1,7 @@
 #include "Settings.h"
 
+#include "../Library/Source/System/Debug.h"
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -128,6 +130,10 @@ glm::vec2 CSettings::GetWindowSize()
 		return glm::vec2(1600, 900);
 	case SCREENSIZE::SSIZE_1600x1200:
 		return glm::vec2(1600, 1050);
+	default:
+		DEBUG_MSG("SCREENSIZE TYPE INVALID, REVERTING TO DEFAULT VALUE");
+		screenSize = SCREENSIZE::SSIZE_800x600;
+		return glm::vec2(800, 600);
 	}
 }
 
@@ -159,15 +165,15 @@ void CSettings::LoadSettings()
 		}
 		else if (title == "master-volume")
 		{
-			MASTER_VOLUME = stoi(value);
+			MASTER_VOLUME = (float)stoi(value);
 		}
 		else if (title == "bgm-volume")
 		{
-			BGM_VOLUME = stoi(value);
+			BGM_VOLUME = (float)stoi(value);
 		}
  		else if (title == "sfx-volume")
 		{
-			SFX_VOLUME = stoi(value);
+			SFX_VOLUME = (float)stoi(value);
 		}
 	}
 
@@ -237,7 +243,7 @@ void CSettings::SaveSettings()
 	{
 		SetFileAttributes(fileLPCWSTR, attr | FILE_ATTRIBUTE_NORMAL);
 	}
-	rename(tempfilename.c_str(), filename.c_str());
+	int yes = rename(tempfilename.c_str(), filename.c_str());
 }
 
 // Update the specifications of the map
