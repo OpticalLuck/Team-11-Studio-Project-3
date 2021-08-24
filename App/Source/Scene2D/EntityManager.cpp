@@ -4,7 +4,6 @@
 
 #include "Boss2D.h"
 
-#include "EnemyBullet2D.h"
 #include "Bullet2D.h"
 #include "Projectiles.h"
 

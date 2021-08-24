@@ -12,8 +12,6 @@
 #include "RenderControl/ShaderManager.h"
 //Include CEntityManager
 #include "EntityManager.h"
-//Enemy bullet
-#include "EnemyBullet2D.h"
 //Projectiles
 #include "Projectiles.h"
 //Bullet2D

@@ -112,6 +112,8 @@ bool CGameStateManager::Render(void)
 			return false;
 		}
 	}
+
+	return true;
 }
 
 /**

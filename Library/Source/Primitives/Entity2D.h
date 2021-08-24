@@ -28,8 +28,6 @@
 #include "Collider2D.h"
 #include "Physics2D.h"
 
-#include "../App/Source/Scene2D/LivingEntity2D.h"
-
 using namespace std;
 
 //Predefinitions
