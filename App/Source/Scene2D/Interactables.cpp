@@ -24,6 +24,8 @@ Interactables::Interactables(int iTextureID)
 	vTransform = glm::i32vec2(0);
 
 	type = ENTITY_TYPE::INTERACTABLES;
+
+	Init();
 }
 
 Interactables::~Interactables(void)
@@ -37,7 +39,7 @@ Interactables::~Interactables(void)
 	}
 }
 
-bool Interactables::Init(int iMapID)
+bool Interactables::Init()
 {
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
@@ -45,14 +47,31 @@ bool Interactables::Init(int iMapID)
 	type = CEntity2D::ENTITY_TYPE::INTERACTABLES;
 	quad = CMeshBuilder::GenerateQuad();
 
+	if (!cPhysics2D)
+		cPhysics2D = new CPhysics2D;
+	if (!collider2D)
+		collider2D = new Collider2D;
+
+	interactableType = static_cast<INTERACTABLE_TYPE>(iTextureID);
+	if (interactableType < DOOR)
+	{
+		collider2D->SetbEnabled(false);
+	}
+	else
+	{
+		// Initialise Doors
+		// Interacted doors are open
+		if (bInteraction)
+		{
+			collider2D->SetbEnabled(false);
+		}
+	}
+
 	return true;
 }
 
 void Interactables::Update(const double dElapsedTime)
 {
-	if (bInteraction)
-	{
-	}
 }
 
 void Interactables::PreRender(void)
@@ -145,4 +164,62 @@ bool Interactables::LoadTexture(const char* filename, GLuint& iTextureID)
 	free(data);
 
 	return true;
+}
+
+bool Interactables::Activate(bool interaction)
+{
+	switch (interactableType) {
+	case LEVER:
+		ActivateSwitch();
+		break;
+	case PRESSURE_PLATE:
+		ActivatePressurePlate(interaction);
+		break;
+	default:
+		this->bInteraction = interaction;
+		break;
+	}
+
+	// Change Texture
+	// On and Off Textures are an index apart in the texture manager
+	switch (bInteraction) {
+	case true:
+		this->iTextureID = this->interactableType + 1;
+		break;
+	case false:
+		this->iTextureID = this->interactableType;
+		break;
+	}
+
+	// Loop through the interactables to activate the corresponding Interactable IDs
+	if (this->interactableType < DOOR)
+	{
+		CEntityManager* entManager = CEntityManager::GetInstance();
+		for (auto& e : entManager->GetAllInteractables())
+		{
+			if (e->interactableType >= DOOR)
+			{
+				if (this->iInteractableID == e->iInteractableID)
+				{
+					e->Activate(this->bInteraction);
+					collider2D->SetbEnabled(!collider2D->GetbEnabled());
+					return true;
+				}
+			}
+		}
+	}
+
+	return true;
+}
+
+bool Interactables::ActivateSwitch()
+{
+	this->bInteraction = !this->bInteraction;
+	return false;
+}
+
+bool Interactables::ActivatePressurePlate(bool interaction)
+{
+	this->bInteraction = interaction;
+	return false;
 }

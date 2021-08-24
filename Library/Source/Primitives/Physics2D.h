@@ -52,6 +52,8 @@ public:
 	bool GetboolKnockedBacked(void) const;
 	bool GetboolGrounded() const;
 
+	glm::vec2 GetPosition(void);
+
 	void SetGravity(float gravity);
 
 	float MAX_SPEED;

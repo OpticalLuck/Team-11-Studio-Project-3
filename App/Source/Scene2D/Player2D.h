@@ -34,12 +34,8 @@ class Camera2D;
 
 #include "Inputs\MouseController.h"
 
-// Include Physics2D
-#include "Physics2D.h"
-
 // Include AnimatedSprites
 #include "Primitives/SpriteAnimation.h"
-
 
 // Include SoundController
 #include "..\SoundController\SoundController.h"
@@ -130,7 +126,7 @@ public:
 	void Attacked(int hp = 1, CPhysics2D* bounceObj = nullptr);
 
 	//return cphysics
-	CPhysics2D& GetCPhysics(void);
+	CPhysics2D* GetCPhysics(void);
 
 protected:
 	bool bIsClone;
@@ -138,7 +134,7 @@ protected:
 	//Timer for actions that need cooldown
 	std::pair<bool, double> timerArr[A_TOTAL];
 
-	enum DIRECTION
+	enum class DIRECTION
 	{
 		LEFT = 0,
 		RIGHT = 1,
@@ -154,8 +150,6 @@ protected:
 	int iTempFrameCounter; // move to game manager/scene2D/PlayGameState later
 
 	glm::vec2 vOldTransform;
-
-	CPhysics2D cPhysics2D;
 
 	glm::i32vec2 checkpoint;
 

@@ -135,6 +135,12 @@ bool CBoss2D::Init(void) {
 	// If this class is initialised properly, then set the bIsActive to true
 	bIsActive = true;
 
+
+	if (!cPhysics2D)
+		cPhysics2D = new CPhysics2D;
+	if (!collider2D)
+		collider2D = new Collider2D;
+
 	collider2D->Init(vTransform);
 	//Update collider to Boss position
 	collider2D->SetPosition(glm::vec3(vTransform, 0.f));
@@ -206,7 +212,7 @@ int CBoss2D::RandomiseTimer(bool atk) {
 	float value = 0; //In terms of seconds first
 
 	if (!atk && !pauseEnabled) //If pause is not enabled, return 0 seconds for pause
-		return value;
+		return (int)value;
 
 	if (atk)
 		value = Math::RandFloatMinMax(minAtkDuration, maxAtkDuration);
@@ -417,7 +423,6 @@ void CBoss2D::UpdateAttack(float dElapsedTime) {
 		}
 
 		default:
-
 			break;
 	}
 }

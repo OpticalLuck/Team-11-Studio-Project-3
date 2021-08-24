@@ -1,5 +1,4 @@
 #pragma once
-#include "Physics2D.h"
 #include "Object2D.h"
 
 // Include AnimatedSprites
@@ -25,8 +24,6 @@ public:
 	virtual void Render() override;
 	virtual void PostRender() override;
 
-	CPhysics2D& GetPhysics();
-
 	bool bOutsideBoundary(void);
 
 	bool bDestroyed;
@@ -35,13 +32,5 @@ protected:
 
 	// Current color
 	glm::vec4 currentColor;
-
-	CPhysics2D cPhysics2D;
-
-	//Function
-	//Collision within map
-	void MapCollision(void);
-	//Collision with players
-	void EnemyCollision(void);
 };
 

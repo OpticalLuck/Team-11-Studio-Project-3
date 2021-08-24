@@ -47,13 +47,13 @@ enum OBJECT_TYPE
 	INTERACTABLE_START				= 26,
 	INTERACTABLE_SWITCH1_OFF		= 27,
 	INTERACTABLE_SWITCH1_ON			= 28,
-	INTERACTABLE_SWITCH2_OFF		= 28,
-	INTERACTABLE_SWITCH2_ON			= 29,
-	INTERACTABLE_PORTAL				= 28,
-	INTERACTABLE_PORTAL_GATE		= 30,
-	INTERACTABLE_PORTAL_GATE_OFF	= 31,
-	INTERACTABLE_SPIKES				= 32,
-	INTERACTABLE_ALTAR				= 33,
+	INTERACTABLE_PRESSURE_PLATE_OFF	= 29,
+	INTERACTABLE_PRESSURE_PLATE_ON  = 30,
+	INTERACTABLE_PORTAL				= 31,
+	INTERACTABLE_PORTAL_GATE		= 32,
+	INTERACTABLE_PORTAL_GATE_OFF	= 33,
+	INTERACTABLE_SPIKES				= 34,
+	INTERACTABLE_ALTAR				= 35,
 	INTERACTABLE_TOTAL				= 39,
 
 	// STATIC TILES 100 - 149
@@ -99,6 +99,11 @@ class CObject2D : public CEntity2D
 
 		void SetObjectID(int objectID);
 
+		std::vector<pair<CObject2D*, float>>CheckMapCollision(int range = 2);
+
+		virtual void ResolveMapCollision(std::vector<pair<CObject2D*, float>> aabbvector);
+		virtual void ResolveEnemyCollision();
+		virtual void ResolvePlayerCollision();
 	protected:
 		float width;
 		float height;

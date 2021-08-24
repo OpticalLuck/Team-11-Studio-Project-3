@@ -1,5 +1,4 @@
 #pragma once
-#include "Physics2D.h"
 #include "Projectiles.h"
 
 // Include AnimatedSprites
@@ -18,11 +17,12 @@ public:
 	void PreRender() override;
 	void Render() override;
 	void PostRender() override;
-	CPhysics2D& GetPhysics();
+
 
 	void MapCollision(void);
 	void EntityCollision(void);
 
+	void ResolveMapCollision(std::vector<pair<CObject2D*, float>> aabbvector) override;
 private:
 	bool mFriendly; //If true, it came from player, if not, enemy
 };

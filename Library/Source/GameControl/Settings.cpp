@@ -1,6 +1,11 @@
 #include "Settings.h"
 
+#include "../Library/Source/System/Debug.h"
+
 #include <iostream>
+#include <fstream>
+#include <sstream>
+
 using namespace std;
 
 CSettings::CSettings(void)
@@ -44,6 +49,12 @@ CSettings::CSettings(void)
 		iWindowHeight = 1200;
 		break;
 	}
+
+	LoadSettings();
+
+	BGM_VOLUME = 20;
+
+	SaveSettings();
 }
 
 
@@ -103,6 +114,136 @@ glm::vec2 CSettings::ConvertUVSpaceToIndex(const glm::vec2 pos)
 	output.y = (float)output.y * (0.5f * NUM_TILES_YAXIS) + (0.5f * NUM_TILES_YAXIS);
 
 	return output;
+}
+
+glm::vec2 CSettings::GetWindowSize()
+{
+	switch (screenSize)
+	{
+	case SCREENSIZE::SSIZE_800x600:
+		return glm::vec2(800, 600);
+	case SCREENSIZE::SSIZE_1024x768:
+		return glm::vec2(1024, 768);
+	case SCREENSIZE::SSIZE_1400x1050:
+		return glm::vec2(1400, 1050);
+	case SCREENSIZE::SSIZE_1600x900:
+		return glm::vec2(1600, 900);
+	case SCREENSIZE::SSIZE_1600x1200:
+		return glm::vec2(1600, 1050);
+	default:
+		DEBUG_MSG("SCREENSIZE TYPE INVALID, REVERTING TO DEFAULT VALUE");
+		screenSize = SCREENSIZE::SSIZE_800x600;
+		return glm::vec2(800, 600);
+	}
+}
+
+void CSettings::LoadSettings()
+{
+	std::ifstream cfile;
+
+	cfile.open("Settings.txt");
+
+	if (!cfile)
+	{
+		cout << "Unable to open Settings file";
+		exit(1);
+	}
+
+	std::string cLine;
+	while (getline(cfile, cLine))
+	{
+		std::string title = cLine.substr(0, cLine.find(":"));
+		std::string value = cLine.substr(cLine.find(":") + 1, cLine.length());
+
+		if (title == "resolution")
+		{
+			int horizontal = stoi(value.substr(0, value.find('x')));
+			int vertical = stoi(value.substr(value.find('x') + 1, value.length()));
+
+			iWindowWidth = horizontal;
+			iWindowHeight = vertical;
+		}
+		else if (title == "master-volume")
+		{
+			MASTER_VOLUME = (float)stoi(value);
+		}
+		else if (title == "bgm-volume")
+		{
+			BGM_VOLUME = (float)stoi(value);
+		}
+ 		else if (title == "sfx-volume")
+		{
+			SFX_VOLUME = (float)stoi(value);
+		}
+	}
+
+	cfile.close();
+}
+
+void CSettings::SaveSettings()
+{
+	std::string filename = "Settings.txt";
+	std::string tempfilename = "Settings_temp.txt";
+
+	std::ifstream cfile;
+	cfile.open(filename);
+	std::ofstream tempfile(tempfilename);
+
+	std::wstring wtempfilename = to_wide(tempfilename);
+	const wchar_t* fileLPCWSTR = wtempfilename.c_str();
+	int attr = GetFileAttributes(fileLPCWSTR);
+	if ((attr & FILE_ATTRIBUTE_HIDDEN) == 0)
+	{
+		SetFileAttributes(fileLPCWSTR, attr | FILE_ATTRIBUTE_HIDDEN);
+	}
+
+	if (!cfile)
+	{
+		cout << "Unable to open Settings file";
+		exit(1);
+	}
+
+	std::string cLine;
+	while (getline(cfile, cLine))
+	{
+		std::string title = cLine.substr(0, cLine.find(":"));
+
+		if (title == "resolution")
+		{
+			glm::vec2 size = GetWindowSize();
+			std::stringstream screensize;
+			screensize << size.x << 'x' << size.y;
+
+			cLine.replace(cLine.find(":") + 1, cLine.length(), screensize.str());
+		}
+		else if (title == "master-volume")
+		{
+			cLine.replace(cLine.find(":") + 1, cLine.length(), std::to_string((int)MASTER_VOLUME));
+		}
+		else if (title == "bgm-volume")
+		{
+			cLine.replace(cLine.find(":") + 1, cLine.length(), std::to_string((int)BGM_VOLUME));
+		}
+		else if (title == "sfx-volume")
+		{
+			cLine.replace(cLine.find(":") + 1, cLine.length(), std::to_string((int)SFX_VOLUME));
+		}
+
+		tempfile << cLine << endl;
+	}
+
+	//must be closed before editing... probably read and write shit
+	cfile.close();
+	remove(filename.c_str());
+
+	tempfile.close();
+
+	//set attribute before renaming as attr is attached to tempfilename
+	if ((attr & FILE_ATTRIBUTE_NORMAL) == 0)
+	{
+		SetFileAttributes(fileLPCWSTR, attr | FILE_ATTRIBUTE_NORMAL);
+	}
+	int yes = rename(tempfilename.c_str(), filename.c_str());
 }
 
 // Update the specifications of the map

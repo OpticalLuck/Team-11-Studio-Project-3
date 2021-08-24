@@ -23,24 +23,12 @@
 #include "RenderControl\ShaderManager.h"
 
 // Include the Map2D as we will use it to check the player's movements and actions
-
-//#include "Map2D.h"
-
 #include "Map2D.h"
+
 //Camera
-#include "Camera2D.h"
+#include "Primitives/Camera2D.h"
 
 #include "Enemy2D.h"
-
-// Include vector
-//#include <vector>
-
-// Include Keyboard controller
-//#include "Inputs\KeyboardController.h"
-
-// GUI
-//#include "GUI/GUI.h"
-// GUI_Scene2D
 
 // Game Manager
 #include "GameManager.h"

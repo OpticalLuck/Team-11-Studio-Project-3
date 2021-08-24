@@ -2,7 +2,7 @@
 
 //Include handlers
 #include "Map2D.h"
-#include "Camera2D.h"
+#include "Primitives/Camera2D.h"
 #include "EntityManager.h"
 
 //Mesh builder
@@ -83,6 +83,10 @@ bool CMobEnemy2D::Init(void) {
 
 	// Set the Physics to fall status by default
 
+	if (!cPhysics2D)
+		cPhysics2D = new CPhysics2D;
+	if (!collider2D)
+		collider2D = new Collider2D;
 	//Collider2D
 	collider2D->Init(vTransform);
 
@@ -93,7 +97,7 @@ bool CMobEnemy2D::Init(void) {
 	animatedSprites->PlayAnimation("idle", -1, 0.6f);*/
 
 	//Physics initialisation
-	cPhysics2D.Init(&vTransform);
+	cPhysics2D->Init(&vTransform);
 	mSpd = 5;
 
 	// If this class is initialised properly, then set the bIsActive to true
@@ -131,19 +135,19 @@ void CMobEnemy2D::Update(const double dElapsedTime) {
 
 	//Physics
 	UpdateMovement(dElapsedTime);
-	cPhysics2D.Update(dElapsedTime);
+	cPhysics2D->Update(dElapsedTime);
 
 	//Collision with world's object
 	collider2D->position = vTransform;
-	CollisionUpdate(dElapsedTime);
+	CollisionUpdate();
 
-	if (vTransform == oldVTransform && cPhysics2D.GetboolKnockedBacked() == false) {
+	if (vTransform == oldVTransform && cPhysics2D->GetboolKnockedBacked() == false) {
 		if (dir == DIRECTION::LEFT)
 			dir = DIRECTION::RIGHT;
 		else
 			dir = DIRECTION::LEFT;
 
-		cPhysics2D.SetVelocity(glm::vec2(0, 0));
+		cPhysics2D->SetVelocity(glm::vec2(0, 0));
 	}
 
 	//Health lives update
@@ -200,69 +204,73 @@ void CMobEnemy2D::ClampPos(void) {
 	}
 }
 
-void CMobEnemy2D::CollisionUpdate(const float dElapsedTime) {
+
+void CMobEnemy2D::CollisionUpdate(void) {
+	cPhysics2D->SetboolGrounded(false);
+
 	int range = 3;
-	cPhysics2D.SetboolGrounded(false);
-
-	//Collision for loop
-	for (int i = 0; i < 2; i++)
+	//Stores nearby objects and its dist to player into a vector 
+	vector<pair<CObject2D*, float>> aabbVector;
+	for (int row = -range; row <= range; row++) //y
 	{
-		for (int row = -range; row <= range; row++) //y
+		for (int col = -range; col <= range; col++) //x
 		{
-			for (int col = -range; col <= range; col++) //x
+			int rowCheck = vTransform.y + row;
+			int colCheck = vTransform.x + col;
+
+			if (rowCheck < 0 || colCheck < 0 || rowCheck > cMap2D->GetLevelRow() - 1 || colCheck > cMap2D->GetLevelCol() - 1) continue;
+			if (cMap2D->GetCObject(colCheck, rowCheck))
 			{
-				int rowCheck = vTransform.y + row;
-				int colCheck = vTransform.x + col;
+				CObject2D* obj = cMap2D->GetCObject(colCheck, rowCheck);
+				float distance = glm::length(obj->vTransform - vTransform);
+				aabbVector.push_back({ obj, distance });
+			}
+		}
+	}
+	//Sorts vector based on shortest dist from player to object
+	sort(aabbVector.begin(), aabbVector.end(), [](const std::pair<CObject2D*, float>& a, const std::pair<CObject2D*, float>& b)
+		{
+			return a.second < b.second;
+		});
+	aabbVector.erase(std::unique(aabbVector.begin(), aabbVector.end()), aabbVector.end());
+	// Detects and Resolves Collsion
+	for (auto aabbTuple : aabbVector)
+	{
+		CObject2D* obj = aabbTuple.first;
+		Collision data = (collider2D->CollideWith(obj->GetCollider()));
+		if (std::get<0>(data))
+		{
+			if (obj->GetCollider()->colliderType == Collider2D::ColliderType::COLLIDER_QUAD)
+			{
+				collider2D->ResolveAABB(obj->GetCollider(), data);
 
-				if (rowCheck < 0 || colCheck < 0 || rowCheck > cMap2D->GetLevelRow() - 1 || colCheck > cMap2D->GetLevelCol() - 1) continue;
+				if (std::get<1>(data) == Direction::UP)
+					cPhysics2D->SetboolGrounded(true);
+			}
+			else if (obj->GetCollider()->colliderType == Collider2D::ColliderType::COLLIDER_CIRCLE)
+			{
+				if (glm::dot(cPhysics2D->GetVelocity(), obj->vTransform - vTransform) > 0)
+					collider2D->ResolveAABBCircle(obj->GetCollider(), data, Collider2D::ColliderType::COLLIDER_QUAD);
 
-				if (cMap2D->GetCObject(colCheck, rowCheck))
+				if (std::get<1>(data) == Direction::DOWN)
+					cPhysics2D->SetboolGrounded(true);
+			}
+
+			vTransform = collider2D->position;
+			obj->vTransform = obj->GetCollider()->position;
+
+			if (obj->type == ENTITY_TYPE::TILE)
+			{
+				if (dynamic_cast<Boulder2D*>(obj))
 				{
-					CObject2D* obj = cMap2D->GetCObject(colCheck, rowCheck);;
-					Collision data = (collider2D->CollideWith(cMap2D->GetCObject(colCheck, rowCheck)->GetCollider()));
-					if (std::get<0>(data))
-					{
-						if (obj->GetCollider()->colliderType == Collider2D::ColliderType::COLLIDER_QUAD)
-						{
-							if (i == 0)
-							{
-								collider2D->ResolveAABB(obj->GetCollider(), Direction::UP);
-							}
-							else if (i == 1)
-							{
-								collider2D->ResolveAABB(obj->GetCollider(), Direction::RIGHT);
-							}
-
-							if (std::get<1>(data) == Direction::UP)
-								cPhysics2D.SetboolGrounded(true);
-						}
-						else if (obj->GetCollider()->colliderType == Collider2D::ColliderType::COLLIDER_CIRCLE)
-						{
-							if (glm::dot(cPhysics2D.GetVelocity(), obj->vTransform - vTransform) > 0)
-								collider2D->ResolveAABBCircle(obj->GetCollider(), data, Collider2D::ColliderType::COLLIDER_QUAD);
-
-							if (std::get<1>(data) == Direction::DOWN)
-								cPhysics2D.SetboolGrounded(true);
-						}
-
-						//Clamping movement...
-						vTransform = collider2D->position;
-						obj->vTransform = obj->GetCollider()->position;
-
-						if (obj->type == ENTITY_TYPE::TILE)
-						{
-							if (dynamic_cast<Boulder2D*>(obj))
-							{
-								glm::vec2 direction = glm::normalize(obj->vTransform - vTransform);
-								static_cast<Boulder2D*>(obj)->GetPhysics().SetForce(glm::vec2(120.f, 0) * direction);
-								cPhysics2D.SetVelocity(glm::vec2(0.f));
-							}
-						}
-					}
+					glm::vec2 direction = glm::normalize(obj->vTransform - vTransform);
+					obj->GetPhysics()->SetForce(glm::vec2(120.f, 0) * direction);
+					cPhysics2D->SetVelocity(glm::vec2(0.f));
 				}
 			}
 		}
 	}
+
 
 	//Player collision
 	std::vector<CPlayer2D*> arrPlayer = cEntityManager->GetAllPlayers();
@@ -272,7 +280,7 @@ void CMobEnemy2D::CollisionUpdate(const float dElapsedTime) {
 		Collision data = (collider2D->CollideWith(playerCollider));
 
 		if (std::get<0>(data)) {
-			arrPlayer[i]->Attacked(1,&cPhysics2D);
+			arrPlayer[i]->Attacked(1,cPhysics2D);
 
 			return;
 		}
@@ -280,21 +288,21 @@ void CMobEnemy2D::CollisionUpdate(const float dElapsedTime) {
 }
 
 void CMobEnemy2D::UpdateMovement(const float dElapsedTime) {
-	if (cPhysics2D.GetboolKnockedBacked()) {
-		if (cPhysics2D.GetVelocity() == glm::vec2(0, 0))
-			cPhysics2D.SetBoolKnockBacked(false);
+	if (cPhysics2D->GetboolKnockedBacked()) {
+		if (cPhysics2D->GetVelocity() == glm::vec2(0, 0))
+			cPhysics2D->SetBoolKnockBacked(false);
 		else
 			return;
 	}
 
-	glm::vec2 velocity = cPhysics2D.GetVelocity();
+	glm::vec2 velocity = cPhysics2D->GetVelocity();
 
 	if (dir == DIRECTION::LEFT && velocity.x > -mSpd)
 		velocity.x = Math::Max(velocity.x - mSpd, -mSpd);
 	else if (dir == DIRECTION::RIGHT && velocity.x < mSpd)
 		velocity.x = Math::Min(velocity.x + mSpd, mSpd);
 
-	cPhysics2D.SetVelocity(velocity);
+	cPhysics2D->SetVelocity(velocity);
 }
 
 void CMobEnemy2D::Render(void) {

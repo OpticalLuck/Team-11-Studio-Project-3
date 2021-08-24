@@ -37,7 +37,7 @@ class CSettings;
 #include "Player2D.h"
 
 //Include camera
-#include "Camera2D.h"
+#include "Primitives/Camera2D.h"
 
 //Include background entity
 #include "BackgroundEntity.h"

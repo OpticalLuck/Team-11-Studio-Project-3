@@ -28,13 +28,12 @@ class CMobEnemy2D : public CEnemy2D
 		float mSpd;
 
 		CSpriteAnimation* animatedSprites;
-		CPhysics2D cPhysics2D;
 
 		bool clampSides; //check if enemy can jump off cliff and stuff
 		bool inView;
 
 		void UpdateMovement(const float dElapsedTime);
-		void CollisionUpdate(const float dElapsedTime);
+		void CollisionUpdate(void);
 		void ClampPos(void);
 };
 

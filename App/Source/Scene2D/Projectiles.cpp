@@ -7,8 +7,7 @@
 #include "Primitives/MeshBuilder.h"
 #include "RenderControl/ShaderManager.h"
 #include "../TextureManager/TextureManager.h"
-#include "Camera2D.h"
-
+#include "Primitives/Camera2D.h"
 
 Projectiles::Projectiles(int iTextureID)
 	: animatedSprites(NULL)
@@ -33,9 +32,15 @@ bool Projectiles::Init()
 	mesh = CMeshBuilder::GenerateQuad(glm::vec4(1, 1, 1, 1), cSettings->TILE_WIDTH, cSettings->TILE_HEIGHT);
 	cSettings = CSettings::GetInstance();
 
-	cPhysics2D.Init(&vTransform);
-	cPhysics2D.MAX_SPEED = 50.f;
-	cPhysics2D.FRICTONAL_COEFFICIENT = 0.8f;
+
+	if (!cPhysics2D)
+		cPhysics2D = new CPhysics2D;
+	if (!collider2D)
+		collider2D = new Collider2D;
+
+	cPhysics2D->Init(&vTransform);
+	cPhysics2D->MAX_SPEED = 50.f;
+	cPhysics2D->FRICTONAL_COEFFICIENT = 0.8f;
 
 	collider2D->Init(vTransform, glm::vec2(0.2f), Collider2D::ColliderType::COLLIDER_CIRCLE);
 
@@ -46,98 +51,17 @@ bool Projectiles::Init()
 
 void Projectiles::Update(double dElapsedTime)
 {
-	cPhysics2D.Update(dElapsedTime);
+	cPhysics2D->Update(dElapsedTime);
 	// Update Collider2D Position
 	collider2D->SetPosition(vTransform);
 
 	//Collision between projectile and enemy
-	EnemyCollision();
+	ResolveEnemyCollision();
 
 	//Collision between objects in map space
-	MapCollision();
+	ResolveMapCollision(CheckMapCollision());
 }
 
-void Projectiles::MapCollision(void) {
-	CMap2D* cMap2D = CMap2D::GetInstance();
-
-	int range = 2;
-	cPhysics2D.SetboolGrounded(false);
-	vector<pair<CObject2D*, float>> aabbVector;
-	for (int row = -range; row <= range; row++) //y
-	{
-		for (int col = -range; col <= range; col++) //x
-		{
-			int rowCheck = (int)vTransform.y + row;
-			int colCheck = (int)vTransform.x + col;
-
-			if (rowCheck < 0 || colCheck < 0 || rowCheck > cMap2D->GetLevelRow() - 1 || colCheck > cMap2D->GetLevelCol() - 1) continue;
-
-			if (cMap2D->GetCObject(colCheck, rowCheck) && cMap2D->GetCObject(colCheck, rowCheck) != this)
-			{
-				CObject2D* obj = cMap2D->GetCObject(colCheck, rowCheck);
-				float distance = glm::length(obj->vTransform - vTransform);
-				aabbVector.push_back({ obj, distance });
-			}
-		}
-	}
-	//Sorts vector based on shortest dist from player to object
-	sort(aabbVector.begin(), aabbVector.end(), [](const std::pair<CObject2D*, float>& a, const std::pair<CObject2D*, float>& b)
-		{
-			return a.second < b.second;
-		});
-	aabbVector.erase(std::unique(aabbVector.begin(), aabbVector.end()), aabbVector.end());
-	bool destroyed = false;
-	for (auto aabbTuple : aabbVector)
-	{
-		CObject2D* obj = aabbTuple.first;
-		Collision data = (collider2D->CollideWith(obj->GetCollider()));
-		if (std::get<0>(data))
-		{
-			if (obj->GetCollider()->colliderType == Collider2D::ColliderType::COLLIDER_QUAD)
-			{
-				collider2D->ResolveAABB(obj->GetCollider(), Direction::UP);
-				collider2D->ResolveAABB(obj->GetCollider(), Direction::RIGHT);
-
-				if (std::get<1>(data) == Direction::UP)
-					cPhysics2D.SetboolGrounded(true);
-			}
-			else if (obj->GetCollider()->colliderType == Collider2D::ColliderType::COLLIDER_CIRCLE)
-			{
-				if (glm::dot(cPhysics2D.GetVelocity(), obj->vTransform - vTransform) > 0)
-					collider2D->ResolveAABBCircle(obj->GetCollider(), data, Collider2D::ColliderType::COLLIDER_QUAD);
-
-				if (std::get<1>(data) == Direction::DOWN)
-					cPhysics2D.SetboolGrounded(true);
-			}
-
-			vTransform = collider2D->position;
-
-			//How the object interacts 
-			glm::vec2 normal = Collider2D::ConvertDirectionToVec2(std::get<1>(data));
-			cPhysics2D.DoBounce(normal, 0.f);
-		}
-	}
-
-}
-
-void Projectiles::EnemyCollision(void) {
-	std::vector<CEnemy2D*> enemyArr = cEntityManager->GetAllEnemies();
-
-	//collider2D->CollideWith(obj->GetCollider())
-	for (unsigned i = 0; i < enemyArr.size(); i++) {
-		Collision data = collider2D->CollideWith(enemyArr[i]->GetCollider());
-
-		if (std::get<0>(data)) { //If collided with 
-			//Enemy collision code activate!
-			enemyArr[i]->Attacked();
-		}
-	}
-}
-
-CPhysics2D& Projectiles::GetPhysics()
-{
-	return cPhysics2D;
-}
 
 void Projectiles::Render()
 {

@@ -60,8 +60,11 @@ bool EnemyBullet2D::Init(float angle, glm::vec2 spawnPoint) {
 		return false;
 	}
 
-	collider2D->vec2Dimensions = glm::vec2(mScale / 2, mScale / 2);
-	collider2D->colliderType = Collider2D::ColliderType::COLLIDER_CIRCLE;
+	if (!cPhysics2D)
+		cPhysics2D = new CPhysics2D;
+	if (!collider2D)
+		collider2D = new Collider2D;
+
 	collider2D->Init(vTransform, glm::vec2(mScale/2), Collider2D::ColliderType::COLLIDER_CIRCLE);
 	//Update collider to position
 	collider2D->SetPosition(glm::vec3(vTransform, 0.f));
@@ -83,45 +86,8 @@ void EnemyBullet2D::Update(const double dElapsedTime) {
 }
 
 void EnemyBullet2D::CollisionCheck(void) {
-	glm::i32vec2 mapPos = glm::i32vec2(round(vTransform.x), round(vTransform.y)); // Position in terms of map (INDEX)
-	int range = 2;
-
-	for (int row = -range; row <= range; row++) { //y
-		for (int col = -range; col <= range; col++) { //x
-			int rowCheck = mapPos.y + row;
-			int colCheck = mapPos.x + col;
-
-			if (rowCheck < 0 || colCheck < 0 || rowCheck > cMap2D->GetLevelRow() - 1 || colCheck > cMap2D->GetLevelCol() - 1)
-				continue;
-
-			if (cMap2D->GetCObject(colCheck, rowCheck)) { //If object is in map
-				CObject2D* obj = cMap2D->GetCObject(colCheck, rowCheck);
-				Collision data = (collider2D->CollideWith(cMap2D->GetCObject(colCheck, rowCheck)->GetCollider()));
-				if (std::get<0>(data))
-				{
-					pHealth = 0; //If health = 0, bullet will no longer be rendered
-					return; 
-				}
-			}
-		}
-	}
-
-	//Player collision
-	std::vector<CPlayer2D*> arrPlayer = cEntityManager->GetAllPlayers();
-	
-	for (unsigned i = 0; i < arrPlayer.size(); i++) {
-		Collider2D* playerCollider = arrPlayer[i]->GetCollider();
-		Collision data = (collider2D->CollideWith(playerCollider));
-
-		if (std::get<0>(data)) {
-			//Player collision code below
-			arrPlayer[i]->Attacked();
-
-			//Remove bullet from worldspace
-			pHealth = 0;
-			return;
-		}
-	}
+	ResolveMapCollision(CheckMapCollision());
+	ResolvePlayerCollision();
 }
 
 void EnemyBullet2D::Render(void) {
@@ -177,4 +143,38 @@ bool EnemyBullet2D::OutOfWorld(void) {
 
 int EnemyBullet2D::GetHealth(void) {
 	return pHealth;
+}
+
+void EnemyBullet2D::ResolveMapCollision(std::vector<pair<CObject2D*, float>> aabbvector)
+{
+	for (auto aabbTuple : aabbvector)
+	{
+		CObject2D* obj = aabbTuple.first;
+		Collision data = (collider2D->CollideWith(obj->GetCollider()));
+		if (std::get<0>(data))
+		{
+			pHealth = 0; //If health = 0, bullet will no longer be rendered
+			return;
+		}
+	}
+}
+
+void EnemyBullet2D::ResolvePlayerCollision()
+{
+	//Player collision
+	std::vector<CPlayer2D*> arrPlayer = cEntityManager->GetAllPlayers();
+
+	for (unsigned i = 0; i < arrPlayer.size(); i++) {
+		Collider2D* playerCollider = arrPlayer[i]->GetCollider();
+		Collision data = (collider2D->CollideWith(playerCollider));
+
+		if (std::get<0>(data)) {
+			//Player collision code below
+			arrPlayer[i]->Attacked();
+
+			//Remove bullet from worldspace
+			pHealth = 0;
+			return;
+		}
+	}
 }

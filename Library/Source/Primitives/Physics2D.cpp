@@ -8,8 +8,8 @@
 #include <iostream>
 using namespace std;
 
-#include "GameControl/Settings.h"
-#include "Math/MyMath.h"
+#include "../GameControl/Settings.h"
+#include "../Math/MyMath.h"
 
 glm::vec2 CPhysics2D::CalculateAcceleration()
 {
@@ -55,6 +55,7 @@ CPhysics2D::CPhysics2D(void)
  */
 CPhysics2D::~CPhysics2D(void)
 {
+	position = nullptr;
 }
 
 /**
@@ -82,8 +83,8 @@ void CPhysics2D::Update(double dElapsedTime)
 
 	if(!bGrounded)
 		a += v2Gravity;
-	velocity += a * (float)dElapsedTime;
 
+	velocity += a * (float)dElapsedTime;
 
 	//Comment out FOR NOW!!!
 	//velocity.x = Math::Clamp(velocity.x, -MAX_SPEED, MAX_SPEED);
@@ -120,6 +121,10 @@ void CPhysics2D::DoBounce(glm::vec2 normal, float bounciness)
 void CPhysics2D::SetForce(const glm::vec2 force)
 {
 	this->force = force;
+}
+
+glm::vec2 CPhysics2D::GetPosition(void) {
+	return *position;
 }
 
 glm::vec2 CPhysics2D::GetForce() const
