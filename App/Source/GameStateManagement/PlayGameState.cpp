@@ -231,13 +231,13 @@ bool CPlayGameState::ImGuiRender()
 
 		// Display the FPS
 		ImGui::TextColored(ImVec4(1, 1, 0, 1), "FPS: %d", cFPSCounter->GetFrameRate());
-		//ImGui::TextColored(ImVec4(1, 1, 1, 1), "Timer = %d : %d", iMinutes, iSeconds);
+		ImGui::SameLine();
+		ImGui::TextColored(ImVec4(1, 1, 1, 1), "Timer = %d : %d", iMinutes, iSeconds);
 
 		ImGui::SameLine();
 		ImGui::InvisibleButton("temp", ImVec2(50, 1));
 
-		ImGui::SameLine();
-		ImGui::TextColored(ImVec4(1, 1, 0, 1), "HEALTH(TEST): %d", CEntityManager::GetInstance()->GetPlayer()->GetHealth());
+
 
 		{// Render the inventory items
 
