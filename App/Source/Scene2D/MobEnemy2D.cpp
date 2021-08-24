@@ -107,6 +107,30 @@ bool CMobEnemy2D::Init(void) {
 	return true;
 }
 
+void CMobEnemy2D::Attacked(int hp, CPhysics2D* bounceObj) {
+	if (pShield > 0) //Return if shield is enabled/ player does not get damaged
+		return;
+
+	pHealth = Math::Max(0, pHealth - 1);
+	pShield = pMaxShield + 1; //Offset by 1 frame for better synchronisation (FUTURE JEVON IF YOU KNOW YOU KNOW IF NOT THEN LMAO)
+
+	//Collision response between the objects
+	if (bounceObj) {
+		glm::vec2 ogVel = cPhysics2D->GetVelocity();
+
+		if (vTransform.x > bounceObj->GetPosition().x)
+			cPhysics2D->SetVelocity(glm::vec2(-mSpd, ogVel.y));
+		else if (vTransform.x < bounceObj->GetPosition().x)
+			cPhysics2D->SetVelocity(glm::vec2(mSpd, ogVel.y));
+
+		cPhysics2D->CollisionResponse(bounceObj, 1.5f, 1.5f);
+		cPhysics2D->SetBoolKnockBacked(true);
+		bounceObj->SetBoolKnockBacked(true);
+
+		//cPhysics2D->SetVelocity(ogVel);
+	}
+}
+
 void CMobEnemy2D::SetAnimatedSprites(CSpriteAnimation* animatedSprites) {
 	this->animatedSprites = animatedSprites;
 }

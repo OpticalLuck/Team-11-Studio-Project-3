@@ -47,6 +47,7 @@ CPhysics2D::CPhysics2D(void)
 	, FRICTONAL_COEFFICIENT(2.f)
 	, bGrounded(false)
 	, bKnockBacked(false)
+	, sCurrentStatus(STATUS::IDLE)
 { 
 }
 
