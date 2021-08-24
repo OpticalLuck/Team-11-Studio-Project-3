@@ -87,12 +87,23 @@ void CPhysics2D::Update(double dElapsedTime)
 	velocity.x = Math::Clamp(velocity.x, -MAX_SPEED, MAX_SPEED);
 	velocity.y = Math::Clamp(velocity.y, -MAX_SPEED, MAX_SPEED);
 
-	if (bGrounded)
+	if (bGrounded && velocity.y <= 0)
 		velocity.y = 0;
 
 	*position += velocity * (float)dElapsedTime;
 
 	force = glm::vec2(0.f);
+}
+
+void CPhysics2D::CollisionResponse(CPhysics2D* object) {
+	glm::vec2 prevVel1 = velocity;
+	glm::vec2 prevVel2 = object->GetVelocity();
+
+	//v2 = ((2 * m1) / (m1 + m2)) * u1 - ((m1 - m2) / (m1 + m2)) * u2
+	//v1 = ((m1 - m2) / (m1 + m2)) * u1 + ((2 * m2) / (m1 + m2)) * u2
+
+	velocity = ((mass - object->mass) / (mass + object->mass)) * prevVel1 + ((2 * object->mass) / (mass + object->mass)) * prevVel2;
+	object->velocity = ((2 * mass) / (mass + object->mass)) * prevVel1 - ((mass - object->mass) / (mass + object->mass)) * prevVel2;
 }
 
 void CPhysics2D::DoBounce(glm::vec2 normal, float bounciness)

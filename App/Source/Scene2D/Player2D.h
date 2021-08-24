@@ -57,7 +57,7 @@ class Camera2D;
 class CPlayer2D : public CEntity2D, public LivingEntity2D
 {
 public:
-	enum STATE
+	enum class STATE
 	{
 		S_IDLE = 0,
 		S_MOVE,
@@ -127,7 +127,7 @@ public:
 	int GetHealth(void);
 
 	//Function to call if player gets hit
-	void Attacked(int hp = 1);
+	void Attacked(int hp = 1, CPhysics2D* bounceObj = nullptr);
 
 	//return cphysics
 	CPhysics2D& GetCPhysics(void);

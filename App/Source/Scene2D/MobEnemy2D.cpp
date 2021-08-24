@@ -270,27 +270,7 @@ void CMobEnemy2D::CollisionUpdate(const float dElapsedTime) {
 		Collision data = (collider2D->CollideWith(playerCollider));
 
 		if (std::get<0>(data)) {
-			//Knockback effect
-			if (arrPlayer[i]->GetShield() == 0) {
-				glm::vec2 knockbackDir = glm::vec2(vTransform.x - arrPlayer[i]->vTransform.x, arrPlayer[i]->vTransform.y - vTransform.y + 5.f);
-
-				knockbackDir = glm::normalize(knockbackDir);
-
-				float ogFriction = arrPlayer[i]->GetCPhysics().FRICTONAL_COEFFICIENT;
-
-				CPhysics2D& physics = arrPlayer[i]->GetCPhysics();
-
-				physics.DoBounce(knockbackDir, 10.f);
-				physics.SetboolGrounded(true);
-
-				physics.FRICTONAL_COEFFICIENT = 0;
-				physics.Update(dElapsedTime);
-
-				physics.FRICTONAL_COEFFICIENT = ogFriction;
-			}
-
-			//Effect for bounce
-			arrPlayer[i]->Attacked();
+			arrPlayer[i]->Attacked(1,&cPhysics2D);
 
 			return;
 		}

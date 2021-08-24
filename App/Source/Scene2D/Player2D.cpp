@@ -146,7 +146,7 @@ bool CPlayer2D::Init(void)
 		return false;
 	}
 	
-	state = S_IDLE;
+	state = STATE::S_IDLE;
 	facing = RIGHT;
 	//CS: Create the animated sprite and setup the animation 
 	animatedSprites = CMeshBuilder::GenerateSpriteAnimation(10, 6, cSettings->TILE_WIDTH, cSettings->TILE_HEIGHT);
@@ -231,7 +231,7 @@ bool CPlayer2D::Init(glm::i32vec2 spawnpoint, int iCloneIndex)
 		return false;
 	}
 
-	state = S_IDLE;
+	state = STATE::S_IDLE;
 	facing = RIGHT;
 	//CS: Create the animated sprite and setup the animation 
 	animatedSprites = CMeshBuilder::GenerateSpriteAnimation(10, 6, cSettings->TILE_WIDTH, cSettings->TILE_HEIGHT);
@@ -430,28 +430,28 @@ void CPlayer2D::Update(const double dElapsedTime)
 	//animation States
 	switch (state)
 	{
-	case S_IDLE:
+	case STATE::S_IDLE:
 		animatedSprites->PlayAnimation("idle", -1, 1.f);
 		break;
-	case S_MOVE:
+	case STATE::S_MOVE:
 		animatedSprites->PlayAnimation("run", -1, 0.6f);
 		break;
-	case S_JUMP:
+	case STATE::S_JUMP:
 		animatedSprites->PlayAnimation("jump", 1, 0.6f);
 		break;
-	case S_DOUBLE_JUMP:
+	case STATE::S_DOUBLE_JUMP:
 		animatedSprites->PlayAnimation("double_jump", 1, 0.4f);
 		break;
-	case S_HOLD:
+	case STATE::S_HOLD:
 		animatedSprites->PlayAnimation("idle", -1, 1.2f);
 		break;
-	case S_ATTACK:
+	case STATE::S_ATTACK:
 		animatedSprites->PlayAnimation("attack", 1, 0.6f);
 		break;
-	case S_CLIMB:
+	case STATE::S_CLIMB:
 		animatedSprites->PlayAnimation("climb", 1, 1.f);
 		break;
-	case S_DEATH:
+	case STATE::S_DEATH:
 		animatedSprites->PlayAnimation("death", 1, 3.f);
 		break;
 	}
@@ -581,7 +581,7 @@ bool CPlayer2D::LoadTexture(const char* filename, GLuint& iTextureID)
 
 void CPlayer2D::InputUpdate(double dt)
 {
-	state = S_IDLE;
+	state = STATE::S_IDLE;
 	
 	if ((unsigned)iTempFrameCounter >= m_KeyboardInputs.size())
 		return;
@@ -602,13 +602,13 @@ void CPlayer2D::InputUpdate(double dt)
 	if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::D].bKeyDown)
 	{
 		velocity.x = fMovementSpeed;
-		state = S_MOVE;
+		state = STATE::S_MOVE;
 		facing = RIGHT;
 	}
 	else if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::A].bKeyDown)
 	{
 		velocity.x = -fMovementSpeed;
-		state = S_MOVE;
+		state = STATE::S_MOVE;
 		facing = LEFT;
 	}
 
@@ -666,7 +666,7 @@ void CPlayer2D::InputUpdate(double dt)
 			glm::vec2 force = glm::clamp(distance * 200.f, glm::vec2(-2000.f, -2000.f), glm::vec2(2000.f, 2000.f));
 			static_cast<Projectiles*>(shurikenobj)->GetPhysics().SetForce(force);
 
-			CEntityManager::GetInstance()->PushBullet(shurikenobj);
+			CEntityManager::GetInstance()->PushBullet(static_cast<Projectiles*>(shurikenobj));
 		}
 	}
 
@@ -690,7 +690,7 @@ void CPlayer2D::InputUpdate(double dt)
 			glm::vec2 force = glm::clamp(direction * 200.f, glm::vec2(-2000.f, -2000.f), glm::vec2(2000.f, 2000.f));
 				static_cast<Bullet2D*>(kunaiobj)->GetPhysics().SetForce(force);
 
-			CEntityManager::GetInstance()->PushBullet(kunaiobj);
+			CEntityManager::GetInstance()->PushBullet(static_cast<Bullet2D*>(kunaiobj));
 		}
 	}
 	cInventory->Update(dt, iTempFrameCounter ,m_KeyboardInputs, m_MouseInputs);
@@ -706,12 +706,18 @@ bool CPlayer2D::IsClone()
 	return bIsClone;
 }
 
-void CPlayer2D::Attacked(int hp) {
+void CPlayer2D::Attacked(int hp, CPhysics2D* bounceObj) {
 	if (pShield > 0) //Return if shield is enabled/ player does not get damaged
 		return;
 
 	pHealth = Math::Max(0, pHealth - 1);
 	pShield = pMaxShield + 1; //Offset by 1 frame for better synchronisation (FUTURE JEVON IF YOU KNOW YOU KNOW IF NOT THEN LMAO)
+
+	//Collision response between the objects
+	if (bounceObj) {
+		cPhysics2D.CollisionResponse(bounceObj);
+		cPhysics2D.SetVelocity(cPhysics2D.GetVelocity() * 5.f); //increase value for player
+	}
 }
 
 void CPlayer2D::SetKeyInputs(std::vector<std::array<KeyInput, KEYBOARD_INPUTS::KEY_TOTAL>> inputs)

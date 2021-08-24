@@ -18,12 +18,12 @@ public:
 	Projectiles(int iTextureID = OBJECT_TYPE::PROJECTILES_SHURIKEN);
 	virtual ~Projectiles();
 
-	bool Init() override;
-	void Update(double dElapsedTime) override;
+	virtual bool Init() override;
+	virtual void Update(double dElapsedTime);
 
-	void PreRender() override;
-	void Render() override;
-	void PostRender() override;
+	virtual void PreRender() override;
+	virtual void Render() override;
+	virtual void PostRender() override;
 
 	CPhysics2D& GetPhysics();
 

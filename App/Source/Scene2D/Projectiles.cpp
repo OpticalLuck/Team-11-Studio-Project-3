@@ -8,6 +8,8 @@
 #include "RenderControl/ShaderManager.h"
 #include "../TextureManager/TextureManager.h"
 #include "Camera2D.h"
+
+
 Projectiles::Projectiles(int iTextureID)
 	: animatedSprites(NULL)
 	, currentColor(glm::vec4())
