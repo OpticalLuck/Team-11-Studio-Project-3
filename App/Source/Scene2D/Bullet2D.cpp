@@ -27,7 +27,6 @@ bool Bullet2D::Init()
 	cPhysics2D.Init(&vTransform);
 	cPhysics2D.SetGravity(0.f);
 	cPhysics2D.MAX_SPEED = 50.f;
-	cPhysics2D.FRICTONAL_COEFFICIENT = 0.8f;
 
 	collider2D->Init(vTransform, glm::vec2(0.2f), Collider2D::ColliderType::COLLIDER_CIRCLE);
 	return false;

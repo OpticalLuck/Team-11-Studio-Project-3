@@ -18,10 +18,10 @@
 #include "../Library/Source/GameControl/Settings.h"
 
 enum class Direction {
-	UP,
-	RIGHT,
-	DOWN,
-	LEFT
+	UP = 0,
+	RIGHT = 1,
+	DOWN = 2,
+	LEFT = 3
 };
 
 typedef std::tuple<bool, Direction, glm::vec2> Collision;
@@ -74,7 +74,7 @@ public:
 
 	//Just Here if want to use
 	// NOT RECOMMENDED IF THERE IS MULTIPLE ENTITIES CLOSE TO EACHOTHER
-	void ResolveAABB(Collider2D* object, Direction axis);
+	void ResolveAABB(Collider2D* object, Collision data);
 	void ResolveAABBCircle(Collider2D* object, Collision data, ColliderType target = ColliderType::COLLIDER_CIRCLE);
 
 

@@ -179,18 +179,17 @@ bool CPlayer2D::Init(void)
 
 	camera = Camera2D::GetInstance();
 
+	//fMovementSpeed = 1.f;
 	fMovementSpeed = 5.f;
 	fJumpSpeed = 5.f;
 
-	//fMovementSpeed = 1.f;
-	//fJumpSpeed = 1.f;
 
 	// Get the handler to the CSoundController
 	cSoundController = CSoundController::GetInstance();
 
 	cInputHandler = CInputHandler::GetInstance();
 
-	collider2D->Init(vTransform, glm::vec2(0.2f,0.5f));
+	collider2D->Init(vTransform, glm::vec2(0.2f,0.2f), Collider2D::ColliderType::COLLIDER_QUAD);
 	cPhysics2D.Init(&vTransform);
 
 	CInventoryManager::GetInstance()->Add("Player");
@@ -395,8 +394,7 @@ void CPlayer2D::Update(const double dElapsedTime)
 		{
 			if (obj->GetCollider()->colliderType == Collider2D::ColliderType::COLLIDER_QUAD)
 			{
-				collider2D->ResolveAABB(obj->GetCollider(), Direction::UP);
-				collider2D->ResolveAABB(obj->GetCollider(), Direction::RIGHT);
+				collider2D->ResolveAABB(obj->GetCollider(), data);
 
 				if (std::get<1>(data) == Direction::UP)
 					cPhysics2D.SetboolGrounded(true);
@@ -422,8 +420,13 @@ void CPlayer2D::Update(const double dElapsedTime)
 					cPhysics2D.SetVelocity(glm::vec2(0.f));
 				}
 			}
+
+
+			if (std::get<1>(data) == Direction::LEFT || std::get<1>(data) == Direction::RIGHT)
+				cPhysics2D.SetVelocity(glm::vec2(0, cPhysics2D.GetVelocity().y));
 		}
 	}
+
 
 	//BOUNDARY CHECK
 	LockWithinBoundary();
@@ -687,8 +690,8 @@ void CPlayer2D::InputUpdate(double dt)
 				direction = glm::vec2(-1.f, 0);
 			else
 				direction = glm::vec2(1.f, 0);
-			glm::vec2 force = glm::clamp(direction * 200.f, glm::vec2(-2000.f, -2000.f), glm::vec2(2000.f, 2000.f));
-				static_cast<Bullet2D*>(kunaiobj)->GetPhysics().SetForce(force);
+			glm::vec2 force = direction * 4.f;
+				static_cast<Bullet2D*>(kunaiobj)->GetPhysics().SetVelocity(force);
 
 			CEntityManager::GetInstance()->PushBullet(kunaiobj);
 		}
