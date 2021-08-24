@@ -12,6 +12,7 @@ RayCast2D::RayCast2D(void) {
 	collider2D->Init(currentPoint, glm::vec2(0.1f, 0.1f));
 
 	currentTarget = nullptr;
+	cMap2D = nullptr;
 }
 
 RayCast2D::~RayCast2D(void) {
