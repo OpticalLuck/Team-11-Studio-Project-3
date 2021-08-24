@@ -44,8 +44,9 @@ CPhysics2D::CPhysics2D(void)
 	, force(glm::vec2(0.f))
 	, mass(1)
 	, MAX_SPEED(10.f)
-	, FRICTONAL_COEFFICIENT(2.f)
+	, FRICTONAL_COEFFICIENT(1.5f)
 	, bGrounded(false)
+	, bKnockBacked(false)
 { 
 }
 
@@ -85,8 +86,9 @@ void CPhysics2D::Update(double dElapsedTime)
 
 	velocity += a * (float)dElapsedTime;
 
-	velocity.x = Math::Clamp(velocity.x, -MAX_SPEED, MAX_SPEED);
-	velocity.y = Math::Clamp(velocity.y, -MAX_SPEED, MAX_SPEED);
+	//Comment out FOR NOW!!!
+	//velocity.x = Math::Clamp(velocity.x, -MAX_SPEED, MAX_SPEED);
+	//velocity.y = Math::Clamp(velocity.y, -MAX_SPEED, MAX_SPEED);
 
 	if (bGrounded && velocity.y <= 0)
 		velocity.y = 0;
@@ -94,6 +96,21 @@ void CPhysics2D::Update(double dElapsedTime)
 	*position += velocity * (float)dElapsedTime;
 
 	force = glm::vec2(0.f);
+}
+
+void CPhysics2D::CollisionResponse(CPhysics2D* object, float scaleObj1, float scaleObj2) {
+	glm::vec2 prevVel1 = velocity;
+	glm::vec2 prevVel2 = object->GetVelocity();
+
+	//v2 = ((2 * m1) / (m1 + m2)) * u1 - ((m1 - m2) / (m1 + m2)) * u2
+	//v1 = ((m1 - m2) / (m1 + m2)) * u1 + ((2 * m2) / (m1 + m2)) * u2
+
+	velocity = ((mass - object->mass) / (mass + object->mass)) * prevVel1 + ((2 * object->mass) / (mass + object->mass)) * prevVel2;
+	object->velocity = ((2 * mass) / (mass + object->mass)) * prevVel1 - ((mass - object->mass) / (mass + object->mass)) * prevVel2;
+
+	//Scaling of velocity
+	velocity *= scaleObj1;
+	object->velocity *= scaleObj2;
 }
 
 void CPhysics2D::DoBounce(glm::vec2 normal, float bounciness)
@@ -104,6 +121,10 @@ void CPhysics2D::DoBounce(glm::vec2 normal, float bounciness)
 void CPhysics2D::SetForce(const glm::vec2 force)
 {
 	this->force = force;
+}
+
+glm::vec2 CPhysics2D::GetPosition(void) {
+	return *position;
 }
 
 glm::vec2 CPhysics2D::GetForce() const
@@ -134,6 +155,14 @@ glm::vec2 CPhysics2D::GetVelocity() const
 bool CPhysics2D::GetboolGrounded() const
 {
 	return bGrounded;
+}
+
+bool CPhysics2D::GetboolKnockedBacked(void) const {
+	return bKnockBacked;
+}
+
+void CPhysics2D::SetBoolKnockBacked(bool bKnockBacked) {
+	this->bKnockBacked = bKnockBacked;
 }
 
 void CPhysics2D::SetGravity(float gravity)

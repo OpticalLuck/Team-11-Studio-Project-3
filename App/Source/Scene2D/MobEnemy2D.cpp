@@ -134,18 +134,20 @@ void CMobEnemy2D::Update(const double dElapsedTime) {
 	ClampPos();
 
 	//Physics
-	UpdateMovement();
+	UpdateMovement(dElapsedTime);
 	cPhysics2D->Update(dElapsedTime);
 
 	//Collision with world's object
 	collider2D->position = vTransform;
 	CollisionUpdate();
 
-	if (vTransform == oldVTransform) {
+	if (vTransform == oldVTransform && cPhysics2D->GetboolKnockedBacked() == false) {
 		if (dir == DIRECTION::LEFT)
 			dir = DIRECTION::RIGHT;
 		else
 			dir = DIRECTION::LEFT;
+
+		cPhysics2D->SetVelocity(glm::vec2(0, 0));
 	}
 
 	//Health lives update
@@ -201,6 +203,7 @@ void CMobEnemy2D::ClampPos(void) {
 			break;
 	}
 }
+
 
 void CMobEnemy2D::CollisionUpdate(void) {
 	cPhysics2D->SetboolGrounded(false);
@@ -277,22 +280,27 @@ void CMobEnemy2D::CollisionUpdate(void) {
 		Collision data = (collider2D->CollideWith(playerCollider));
 
 		if (std::get<0>(data)) {
-			//What happens when player collides with enemy code below
-			arrPlayer[i]->Attacked();
-			
+			arrPlayer[i]->Attacked(1,cPhysics2D);
+
 			return;
 		}
 	}
 }
 
-void CMobEnemy2D::UpdateMovement(void) {
-	float force = mSpd;
-
-	if (dir == DIRECTION::LEFT)
-		force *= -1;
+void CMobEnemy2D::UpdateMovement(const float dElapsedTime) {
+	if (cPhysics2D->GetboolKnockedBacked()) {
+		if (cPhysics2D->GetVelocity() == glm::vec2(0, 0))
+			cPhysics2D->SetBoolKnockBacked(false);
+		else
+			return;
+	}
 
 	glm::vec2 velocity = cPhysics2D->GetVelocity();
-	velocity.x = force;
+
+	if (dir == DIRECTION::LEFT && velocity.x > -mSpd)
+		velocity.x = Math::Max(velocity.x - mSpd, -mSpd);
+	else if (dir == DIRECTION::RIGHT && velocity.x < mSpd)
+		velocity.x = Math::Min(velocity.x + mSpd, mSpd);
 
 	cPhysics2D->SetVelocity(velocity);
 }

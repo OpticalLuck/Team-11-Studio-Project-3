@@ -147,8 +147,8 @@ bool CPlayer2D::Init(void)
 		return false;
 	}
 	
-	state = S_IDLE;
-	facing = RIGHT;
+	state = STATE::S_IDLE;
+	facing = DIRECTION::RIGHT;
 	//CS: Create the animated sprite and setup the animation 
 	animatedSprites = CMeshBuilder::GenerateSpriteAnimation(10, 6, cSettings->TILE_WIDTH, cSettings->TILE_HEIGHT);
 	animatedSprites->AddAnimation("run", 0, 6);
@@ -178,7 +178,7 @@ bool CPlayer2D::Init(void)
 	jumpCount = 0;
 
 	//fMovementSpeed = 1.f;
-	fMovementSpeed = 3.f;
+	fMovementSpeed = 5.f;
 	fJumpSpeed = 5.f;
 
 	if (!cPhysics2D)
@@ -227,8 +227,8 @@ bool CPlayer2D::Init(glm::i32vec2 spawnpoint, int iCloneIndex)
 		return false;
 	}
 
-	state = S_IDLE;
-	facing = RIGHT;
+	state = STATE::S_IDLE;
+	facing = DIRECTION::RIGHT;
 	//CS: Create the animated sprite and setup the animation 
 	animatedSprites = CMeshBuilder::GenerateSpriteAnimation(10, 6, cSettings->TILE_WIDTH, cSettings->TILE_HEIGHT);
 	animatedSprites->AddAnimation("run", 0, 6);
@@ -455,31 +455,36 @@ void CPlayer2D::Update(const double dElapsedTime)
 
 	//BOUNDARY CHECK
 	LockWithinBoundary();
+
+	//DISABLE KNOCKED BACK STATUS
+	if (cPhysics2D->GetboolKnockedBacked() && cPhysics2D->GetVelocity() == glm::vec2(0, 0))
+		cPhysics2D->SetBoolKnockBacked(false);
+
 	//animation States
 	switch (state)
 	{
-	case S_IDLE:
+	case STATE::S_IDLE:
 		animatedSprites->PlayAnimation("idle", -1, 1.f);
 		break;
-	case S_MOVE:
+	case STATE::S_MOVE:
 		animatedSprites->PlayAnimation("run", -1, 0.6f);
 		break;
-	case S_JUMP:
+	case STATE::S_JUMP:
 		animatedSprites->PlayAnimation("jump", 1, 0.6f);
 		break;
-	case S_DOUBLE_JUMP:
+	case STATE::S_DOUBLE_JUMP:
 		animatedSprites->PlayAnimation("double_jump", 1, 0.4f);
 		break;
-	case S_HOLD:
+	case STATE::S_HOLD:
 		animatedSprites->PlayAnimation("idle", -1, 1.2f);
 		break;
-	case S_ATTACK:
+	case STATE::S_ATTACK:
 		animatedSprites->PlayAnimation("attack", 1, 0.6f);
 		break;
-	case S_CLIMB:
+	case STATE::S_CLIMB:
 		animatedSprites->PlayAnimation("climb", 1, 1.f);
 		break;
-	case S_DEATH:
+	case STATE::S_DEATH:
 		animatedSprites->PlayAnimation("death", 1, 3.f);
 		break;
 	}
@@ -533,7 +538,7 @@ void CPlayer2D::Render(void)
 
 	transform = glm::translate(transform, glm::vec3(actualPos.x, actualPos.y, 0.f));
 
-	if (facing == LEFT)
+	if (facing == DIRECTION::LEFT)
 		transform = glm::rotate(transform, glm::radians(180.f), glm::vec3(0.f, 1.f, 0.f));
 	// Update the shaders with the latest transform
 	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
@@ -609,7 +614,7 @@ bool CPlayer2D::LoadTexture(const char* filename, GLuint& iTextureID)
 
 void CPlayer2D::InputUpdate(double dt)
 {
-	state = S_IDLE;
+	state = STATE::S_IDLE;
 	
 	if ((unsigned)iTempFrameCounter >= m_KeyboardInputs.size())
 		return;
@@ -631,16 +636,20 @@ void CPlayer2D::InputUpdate(double dt)
 
 	if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::D].bKeyDown)
 	{
-		velocity.x = fMovementSpeed;
-		state = S_MOVE;
-		facing = RIGHT;
+		//velocity.x = fMovementSpeed;
+		if (velocity.x < fMovementSpeed && !cPhysics2D->GetboolKnockedBacked())
+			velocity.x = Math::Min(velocity.x + fMovementSpeed, fMovementSpeed);
+
+		state = STATE::S_MOVE;
+		facing = DIRECTION::RIGHT;
 		DEBUG_MSG(this << ": Frame:" << iTempFrameCounter << " Move Right");
 	}
 	else if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::A].bKeyDown)
 	{
-		velocity.x = -fMovementSpeed;
-		state = S_MOVE;
-		facing = LEFT;
+		if (velocity.x > -fMovementSpeed && !cPhysics2D->GetboolKnockedBacked())
+			velocity.x = Math::Max(velocity.x - fMovementSpeed, -fMovementSpeed);
+		state = STATE::S_MOVE;
+		facing = DIRECTION::LEFT;
 		DEBUG_MSG(this << ": Frame:" << iTempFrameCounter << " Move Left");
 	}
 
@@ -655,6 +664,7 @@ void CPlayer2D::InputUpdate(double dt)
 				velocity.y = 8.4f;
 
 			cPhysics2D->SetboolGrounded(false);
+			cPhysics2D->SetBoolKnockBacked(false);
 		}
 		else
 		{
@@ -698,7 +708,7 @@ void CPlayer2D::InputUpdate(double dt)
 			glm::vec2 force = glm::clamp(distance * 200.f, glm::vec2(-2000.f, -2000.f), glm::vec2(2000.f, 2000.f));
 			shurikenobj->GetPhysics()->SetForce(force);
 
-			CEntityManager::GetInstance()->PushBullet(shurikenobj);
+			CEntityManager::GetInstance()->PushBullet(static_cast<Projectiles*>(shurikenobj));
 		}
 	}
 
@@ -715,14 +725,14 @@ void CPlayer2D::InputUpdate(double dt)
 			kunaiobj->vTransform = vTransform;
 
 			glm::vec2 direction(0.f, 0.f);
-			if (facing == LEFT)
+			if (facing == DIRECTION::LEFT)
 				direction = glm::vec2(-1.f, 0);
 			else
 				direction = glm::vec2(1.f, 0);
 			glm::vec2 force = direction * 4.f;
 				kunaiobj->GetPhysics()->SetVelocity(force);
 
-			CEntityManager::GetInstance()->PushBullet(kunaiobj);
+			CEntityManager::GetInstance()->PushBullet(static_cast<Bullet2D*>(kunaiobj));
 		}
 	}
 	cInventory->Update(dt, iTempFrameCounter ,m_KeyboardInputs, m_MouseInputs);
@@ -738,12 +748,28 @@ bool CPlayer2D::IsClone()
 	return bIsClone;
 }
 
-void CPlayer2D::Attacked(int hp) {
+void CPlayer2D::Attacked(int hp, CPhysics2D* bounceObj) {
 	if (pShield > 0) //Return if shield is enabled/ player does not get damaged
 		return;
 
 	pHealth = Math::Max(0, pHealth - 1);
 	pShield = pMaxShield + 1; //Offset by 1 frame for better synchronisation (FUTURE JEVON IF YOU KNOW YOU KNOW IF NOT THEN LMAO)
+
+	//Collision response between the objects
+	if (bounceObj) {
+		glm::vec2 ogVel = cPhysics2D->GetVelocity();
+
+		if (vTransform.x > bounceObj->GetPosition().x)
+			cPhysics2D->SetVelocity(glm::vec2(-fMovementSpeed, ogVel.y));
+		else if (vTransform.x < bounceObj->GetPosition().x)
+			cPhysics2D->SetVelocity(glm::vec2(fMovementSpeed, ogVel.y));
+
+		cPhysics2D->CollisionResponse(bounceObj,1.5f,1.5f);
+		cPhysics2D->SetBoolKnockBacked(true);
+		bounceObj->SetBoolKnockBacked(true);
+
+		//cPhysics2D->SetVelocity(ogVel);
+	}
 }
 
 void CPlayer2D::SetKeyInputs(std::vector<std::array<KeyInput, KEYBOARD_INPUTS::KEY_TOTAL>> inputs)
@@ -778,4 +804,8 @@ void CPlayer2D::LockWithinBoundary()
 CPlayer2D* const CPlayer2D::Clone()
 {
 	return new CPlayer2D(*this);
+}
+
+CPhysics2D* CPlayer2D::GetCPhysics(void) {
+	return cPhysics2D;
 }
