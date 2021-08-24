@@ -180,7 +180,7 @@ bool CPlayer2D::Init(void)
 	camera = Camera2D::GetInstance();
 
 	//fMovementSpeed = 1.f;
-	fMovementSpeed = 5.f;
+	fMovementSpeed = 3.f;
 	fJumpSpeed = 5.f;
 
 
@@ -189,7 +189,7 @@ bool CPlayer2D::Init(void)
 
 	cInputHandler = CInputHandler::GetInstance();
 
-	collider2D->Init(vTransform, glm::vec2(0.2f,0.2f), Collider2D::ColliderType::COLLIDER_QUAD);
+	collider2D->Init(vTransform, glm::vec2(0.2f, 0.5f), Collider2D::ColliderType::COLLIDER_QUAD);
 	cPhysics2D.Init(&vTransform);
 
 	CInventoryManager::GetInstance()->Add("Player");
@@ -404,7 +404,7 @@ void CPlayer2D::Update(const double dElapsedTime)
 				if (glm::dot(cPhysics2D.GetVelocity(), obj->vTransform - vTransform) > 0)
 					collider2D->ResolveAABBCircle(obj->GetCollider(), data, Collider2D::ColliderType::COLLIDER_QUAD);
 
-				if (std::get<1>(data) == Direction::DOWN)
+				if (std::get<1>(data) == Direction::UP)
 					cPhysics2D.SetboolGrounded(true);
 			}
 

@@ -4,6 +4,7 @@
 Boulder2D::Boulder2D(int iTextureID)
 {
 	this->iTextureID = iTextureID;
+	type = ENTITY_TYPE::TILE;
 }
 
 Boulder2D::~Boulder2D()
