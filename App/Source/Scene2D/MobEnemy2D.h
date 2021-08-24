@@ -33,7 +33,7 @@ class CMobEnemy2D : public CEnemy2D
 		bool clampSides; //check if enemy can jump off cliff and stuff
 		bool inView;
 
-		void UpdateMovement(void);
+		void UpdateMovement(const float dElapsedTime);
 		void CollisionUpdate(const float dElapsedTime);
 		void ClampPos(void);
 };

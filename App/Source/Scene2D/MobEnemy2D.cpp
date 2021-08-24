@@ -130,7 +130,7 @@ void CMobEnemy2D::Update(const double dElapsedTime) {
 	ClampPos();
 
 	//Physics
-	UpdateMovement();
+	UpdateMovement(dElapsedTime);
 	cPhysics2D.Update(dElapsedTime);
 
 	//Collision with world's object
@@ -277,14 +277,25 @@ void CMobEnemy2D::CollisionUpdate(const float dElapsedTime) {
 	}
 }
 
-void CMobEnemy2D::UpdateMovement(void) {
-	float force = mSpd;
+void CMobEnemy2D::UpdateMovement(const float dElapsedTime) {
+	/*float force = mSpd * 10;
+	
+	glm::vec2 forceVec = glm::vec2(0, 0);
+	glm::vec2 currSpd = cPhysics2D.GetVelocity();
 
-	if (dir == DIRECTION::LEFT)
-		force *= -1;
+	if (dir == DIRECTION::LEFT && currSpd.x > -mSpd)
+		forceVec.x = -force;
+	else if (DIRECTION::RIGHT == dir && currSpd.x < mSpd)
+		forceVec.x = force;
+
+	cPhysics2D.SetForce(forceVec);*/
 
 	glm::vec2 velocity = cPhysics2D.GetVelocity();
-	velocity.x = force;
+
+	if (dir == DIRECTION::LEFT && velocity.x > -mSpd)
+		velocity.x = Math::Max(velocity.x - mSpd, -mSpd);
+	else if (dir == DIRECTION::RIGHT && velocity.x < mSpd)
+		velocity.x = Math::Min(velocity.x + mSpd, mSpd);
 
 	cPhysics2D.SetVelocity(velocity);
 }

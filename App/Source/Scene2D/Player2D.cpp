@@ -75,6 +75,8 @@ CPlayer2D::CPlayer2D(void)
 		timerVal.first = false;
 		timerVal.second = 0;
 	}
+
+	cPhysics2D.FRICTONAL_COEFFICIENT = 2.f;
 }
 
 /**
@@ -601,13 +603,17 @@ void CPlayer2D::InputUpdate(double dt)
 
 	if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::D].bKeyDown)
 	{
-		velocity.x = fMovementSpeed;
+		//velocity.x = fMovementSpeed;
+		if (velocity.x < fMovementSpeed)
+			velocity.x = Math::Min(velocity.x + fMovementSpeed, fMovementSpeed);
+
 		state = STATE::S_MOVE;
 		facing = RIGHT;
 	}
 	else if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::A].bKeyDown)
 	{
-		velocity.x = -fMovementSpeed;
+		if (velocity.x > -fMovementSpeed)
+			velocity.x = Math::Max(velocity.x - fMovementSpeed, -fMovementSpeed);
 		state = STATE::S_MOVE;
 		facing = LEFT;
 	}
@@ -715,8 +721,7 @@ void CPlayer2D::Attacked(int hp, CPhysics2D* bounceObj) {
 
 	//Collision response between the objects
 	if (bounceObj) {
-		cPhysics2D.CollisionResponse(bounceObj);
-		cPhysics2D.SetVelocity(cPhysics2D.GetVelocity() * 5.f); //increase value for player
+		cPhysics2D.CollisionResponse(bounceObj,3,3);
 	}
 }
 
