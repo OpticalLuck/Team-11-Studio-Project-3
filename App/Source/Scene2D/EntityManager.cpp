@@ -310,9 +310,20 @@ void CEntityManager::Update(const double dElapsedTime)
 		m_eBulletList[i]->Update(dElapsedTime);
 
 		EnemyBullet2D* eBullet = dynamic_cast<EnemyBullet2D*>(m_eBulletList[i]);
-		if (eBullet && (eBullet->OutOfWorld() || eBullet->GetHealth() <= 0)) {
+		if (eBullet && (eBullet->OutOfWorld() || eBullet->GetHealth() <= 0)) 
+		{
+			cout << "bullet deleted" << endl;
 			delete m_eBulletList[i];
 			m_eBulletList[i] = nullptr;
+		}
+		if (dynamic_cast<Projectiles*>(m_eBulletList[i]))
+		{
+			if (dynamic_cast<Projectiles*>(m_eBulletList[i])->bDestroyed || dynamic_cast<Projectiles*>(m_eBulletList[i])->bOutsideBoundary())
+			{
+				cout << "bullet deleted" << endl;
+				delete m_eBulletList[i];
+				m_eBulletList[i] = nullptr;
+			}
 		}
 	}
 

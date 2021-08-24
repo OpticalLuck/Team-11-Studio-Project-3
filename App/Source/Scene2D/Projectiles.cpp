@@ -93,8 +93,7 @@ void Projectiles::MapCollision(void) {
 		{
 			if (obj->GetCollider()->colliderType == Collider2D::ColliderType::COLLIDER_QUAD)
 			{
-				collider2D->ResolveAABB(obj->GetCollider(), Direction::UP);
-				collider2D->ResolveAABB(obj->GetCollider(), Direction::RIGHT);
+				collider2D->ResolveAABB(obj->GetCollider(), data);
 
 				if (std::get<1>(data) == Direction::UP)
 					cPhysics2D.SetboolGrounded(true);
@@ -112,7 +111,8 @@ void Projectiles::MapCollision(void) {
 
 			//How the object interacts 
 			glm::vec2 normal = Collider2D::ConvertDirectionToVec2(std::get<1>(data));
-			cPhysics2D.DoBounce(normal, 0.f);
+			cout << normal.x << ", "<<normal.y << endl;
+			cPhysics2D.DoBounce(normal, 1.f);
 		}
 	}
 
