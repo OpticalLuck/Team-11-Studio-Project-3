@@ -622,10 +622,12 @@ void CPlayer2D::InputUpdate(double dt)
 	{
 		velocity.y = fMovementSpeed;
 		cPhysics2D.SetboolGrounded(false);
+		DEBUG_MSG(this << ": Frame:" << iTempFrameCounter << " Move Up");
 	}
 	else if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::S].bKeyDown)
 	{
 		//velocity.y = -fMovementSpeed;
+		DEBUG_MSG(this << ": Frame:" << iTempFrameCounter << " Move Down");
 	}
 
 	if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::D].bKeyDown)
@@ -633,12 +635,14 @@ void CPlayer2D::InputUpdate(double dt)
 		velocity.x = fMovementSpeed;
 		state = S_MOVE;
 		facing = RIGHT;
+		DEBUG_MSG(this << ": Frame:" << iTempFrameCounter << " Move Right");
 	}
 	else if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::A].bKeyDown)
 	{
 		velocity.x = -fMovementSpeed;
 		state = S_MOVE;
 		facing = LEFT;
+		DEBUG_MSG(this << ": Frame:" << iTempFrameCounter << " Move Left");
 	}
 
 	if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::SPACE].bKeyDown)
