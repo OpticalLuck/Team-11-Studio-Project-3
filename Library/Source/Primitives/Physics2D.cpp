@@ -54,6 +54,7 @@ CPhysics2D::CPhysics2D(void)
  */
 CPhysics2D::~CPhysics2D(void)
 {
+	position = nullptr;
 }
 
 /**
