@@ -1,7 +1,7 @@
 #pragma once
 
 // Include Singleton template
-#include "DesignPatterns\SingletonTemplate.h"
+#include "..\DesignPatterns\SingletonTemplate.h"
 
 // Include GLEW
 #ifndef GLEW_STATIC
@@ -15,7 +15,7 @@
 #include <includes/gtc/type_ptr.hpp>
 
 // Include CEntity2D
-#include "Primitives/Entity2D.h"
+#include "Entity2D.h"
 
 class Camera2D : public CSingletonTemplate<Camera2D>
 {

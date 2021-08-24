@@ -65,9 +65,6 @@
     <ClCompile Include="Source\Scene2D\Map2D.cpp">
       <Filter>Scene2D</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Scene2D\Physics2D.cpp">
-      <Filter>Scene2D</Filter>
-    </ClCompile>
     <ClCompile Include="Source\SoundController\SoundController.cpp">
       <Filter>SoundController</Filter>
     </ClCompile>
@@ -97,12 +94,6 @@
     </ClCompile>
     <ClCompile Include="Source\GameStateManagement\PauseMenuState.cpp">
       <Filter>GameStateManagement</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Scene2D\Camera2D.cpp">
-      <Filter>Entity2D</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Scene2D\Collider2D.cpp">
-      <Filter>Entity2D</Filter>
     </ClCompile>
     <ClCompile Include="Source\Factory\ObjectFactory.cpp">
       <Filter>Factory</Filter>
@@ -185,14 +176,8 @@
     <ClCompile Include="Source\Scene2D\Boss2D.cpp">
       <Filter>Entity2D\Enemy2D</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Scene2D\Enemy2D.cpp">
-      <Filter>Entity2D\Enemy2D</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Scene2D\Interactables.cpp">
       <Filter>Entity2D\Interactables</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Scene2D\EnemyBullet2D.cpp">
-      <Filter>Entity2D\Enemy2D</Filter>
     </ClCompile>
     <ClCompile Include="Source\Scene2D\Player2D.cpp">
       <Filter>Entity2D\LivingEntity2D</Filter>
@@ -209,6 +194,12 @@
     <ClCompile Include="Source\Scene2D\EnemyBullet2D.cpp">
       <Filter>Entity2D\Object2D</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Scene2D\Enemy2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene2D\EnemyBullet2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h">
@@ -218,9 +209,6 @@
       <Filter>Scene2D</Filter>
     </ClInclude>
     <ClInclude Include="Source\Scene2D\Map2D.h">
-      <Filter>Scene2D</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Scene2D\Physics2D.h">
       <Filter>Scene2D</Filter>
     </ClInclude>
     <ClInclude Include="Source\SoundController\SoundController.h">
@@ -255,12 +243,6 @@
     </ClInclude>
     <ClInclude Include="Source\GameStateManagement\PauseMenuState.h">
       <Filter>GameStateManagement</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Scene2D\Camera2D.h">
-      <Filter>Entity2D</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Scene2D\Collider2D.h">
-      <Filter>Entity2D</Filter>
     </ClInclude>
     <ClInclude Include="Source\Factory\ObjectFactory.h">
       <Filter>Factory</Filter>
@@ -340,14 +322,8 @@
     <ClInclude Include="Source\Scene2D\Boss2D.h">
       <Filter>Entity2D\Enemy2D</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Scene2D\Enemy2D.h">
-      <Filter>Entity2D\Enemy2D</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Scene2D\Interactables.h">
       <Filter>Entity2D\Interactables</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Scene2D\EnemyBullet2D.h">
-      <Filter>Entity2D\Enemy2D</Filter>
     </ClInclude>
     <ClInclude Include="Source\Scene2D\Player2D.h">
       <Filter>Entity2D\LivingEntity2D</Filter>
@@ -363,6 +339,12 @@
     </ClInclude>
     <ClInclude Include="Source\Scene2D\EnemyBullet2D.h">
       <Filter>Entity2D\Object2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene2D\Enemy2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene2D\EnemyBullet2D.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -100,12 +100,12 @@ bool CTextureManager::Init(void)
         return false;
     }
 
-    if (LoadTexture("Image/Switches/switch_2_off.png", INTERACTABLE_SWITCH2_OFF) == false)
+    if (LoadTexture("Image/Switches/pressureplate_1_off.png", INTERACTABLE_PRESSURE_PLATE_OFF) == false)
     {
         std::cout << "Failed to load switch_2_off tile texture" << std::endl;
         return false;
     }
-    if (LoadTexture("Image/Switches/switch_2_on.png", INTERACTABLE_SWITCH2_ON) == false)
+    if (LoadTexture("Image/Switches/pressureplate_1_on.png", INTERACTABLE_PRESSURE_PLATE_ON) == false)
     {
         std::cout << "Failed to load switch_2_on tile texture" << std::endl;
         return false;

@@ -24,6 +24,8 @@
 #include <includes/gtc/matrix_transform.hpp>
 #include <includes/gtc/type_ptr.hpp>
 
+#include <string>
+
 class CSettings : public CSingletonTemplate<CSettings>
 {
 	friend CSingletonTemplate<CSettings>;
@@ -49,8 +51,8 @@ public:
 		SSIZE_800x600 = 0,
 		SSIZE_1024x768,
 		SSIZE_1400x1050,
-		SSIZE_1600x1200,
 		SSIZE_1600x900,
+		SSIZE_1600x1200,
 		SSIZE_TOTAL
 	};
 
@@ -104,11 +106,28 @@ public:
 	glm::vec2 ConvertIndexToUVSpace(const glm::vec2 pos);
 	glm::vec2 ConvertUVSpaceToIndex(const glm::vec2 pos);
 
+	glm::vec2 GetWindowSize();
+	void LoadSettings();
+	void SaveSettings();
+
 protected:
 	// Constructor
 	CSettings(void);
 
 	// Destructor
 	virtual ~CSettings(void);
+
+	std::wstring to_wide(const std::string& multi) {
+		std::wstring wide; wchar_t w; mbstate_t mb{};
+		size_t n = 0, len = multi.length() + 1;
+		while (auto res = mbrtowc(&w, multi.c_str() + n, len - n, &mb)) {
+			if (res == size_t(-1) || res == size_t(-2))
+				throw "invalid encoding";
+
+			n += res;
+			wide += w;
+		}
+		return wide;
+	}
 };
 

@@ -1,8 +1,8 @@
 #include "Camera2D.h"
-#include "Math/MyMath.h"
-#include "System/Debug.h"
-#include "GameControl/Settings.h"
-#include "Inputs/MouseController.h"
+#include "../Math/MyMath.h"
+#include "../System/Debug.h"
+#include "../GameControl/Settings.h"
+#include "../Inputs/MouseController.h"
 
 Camera2D::Camera2D(void) 
 	: FirstTime(true)

@@ -131,6 +131,12 @@ bool CBoss2D::Init(void) {
 	// If this class is initialised properly, then set the bIsActive to true
 	bIsActive = true;
 
+
+	if (!cPhysics2D)
+		cPhysics2D = new CPhysics2D;
+	if (!collider2D)
+		collider2D = new Collider2D;
+
 	collider2D->Init(vTransform);
 	//Update collider to Boss position
 	collider2D->SetPosition(glm::vec3(vTransform, 0.f));
@@ -423,7 +429,6 @@ void CBoss2D::UpdateAttack(float dElapsedTime) {
 		}
 
 		default:
-
 			break;
 	}
 }

@@ -24,9 +24,6 @@ class CPlayer2D;
 //Math.h
 #include "Math/MyMath.h"
 
-//Camera
-#include "Camera2D.h"
-
 class CBoss2D : public CEnemy2D
 {
 	public :

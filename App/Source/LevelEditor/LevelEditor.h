@@ -24,7 +24,7 @@
 #include <string>
 
 #include <vector>
-#include "../Scene2D/Camera2D.h"
+#include "Primitives/Camera2D.h"
 #include "../Scene2D/BackgroundEntity.h"
 
 struct sCell

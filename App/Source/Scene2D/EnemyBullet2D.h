@@ -3,9 +3,6 @@
 #include "Object2D.h"
 #include "EntityManager.h"
 
-//physics
-#include "Physics2D.h"
-
 class CMap2D;
 
 class EnemyBullet2D : public CObject2D
@@ -23,6 +20,8 @@ class EnemyBullet2D : public CObject2D
 		bool OutOfWorld(void);
 		int GetHealth(void);
 
+		void ResolveMapCollision(std::vector<pair<CObject2D*, float>> aabbvector) override;
+		void ResolvePlayerCollision() override;
 	protected:
 		glm::vec2 dirVec;
 

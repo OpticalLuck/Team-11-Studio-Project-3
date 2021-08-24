@@ -23,9 +23,6 @@ class CEntityManager;
 // Include Settings
 #include "GameControl\Settings.h"
 
-// Include Physics2D
-#include "Physics2D.h"
-
 // Include Player2D
 #include "Player2D.h"
 
@@ -116,9 +113,6 @@ protected:
 
 	// Settings
 	CSettings* cSettings;
-
-	// Physics
-	//CPhysics2D cPhysics2D;
 
 	//Player target and arrays handling it...
 	CPlayer2D* currTarget;

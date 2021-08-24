@@ -1,13 +1,13 @@
 #include "Collider2D.h"
 
 // Include Shader Manager
-#include "RenderControl\ShaderManager.h"
+#include "../RenderControl/ShaderManager.h"
+#include "../GameControl/Settings.h"
+#include "../Math/MyMath.h"
 
 #include <GLFW/glfw3.h>
-#include "GameControl/Settings.h"
 #include "Camera2D.h"
 
-#include "Math/MyMath.h"
 
 Collision Collider2D::CheckAABBCollision(Collider2D* obj, Collider2D* target)
 {
@@ -335,7 +335,7 @@ void Collider2D::Render(void)
 
 	glm::vec2 actualPos = CSettings::GetInstance()->ConvertIndexToUVSpace(objCamPos);
 
-	float clampOffset = cSettings->ConvertIndexToUVSpace(CSettings::AXIS::x, 1, false) / 2;
+	float clampOffset = CSettings::GetInstance()->ConvertIndexToUVSpace(CSettings::AXIS::x, 1, false) / 2;
 	clampOffset = (clampOffset + 1);
 
 	float clampX = 1.0f + clampOffset;

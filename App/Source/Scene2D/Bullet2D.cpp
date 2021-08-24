@@ -24,9 +24,14 @@ bool Bullet2D::Init()
 	cSettings = CSettings::GetInstance();
 	mesh = CMeshBuilder::GenerateQuad(glm::vec4(1, 1, 1, 1), cSettings->TILE_WIDTH, cSettings->TILE_HEIGHT);
 
-	cPhysics2D.Init(&vTransform);
-	cPhysics2D.SetGravity(0.f);
-	cPhysics2D.MAX_SPEED = 50.f;
+	if (!cPhysics2D)
+		cPhysics2D = new CPhysics2D;
+	if (!collider2D)
+		collider2D = new Collider2D;
+
+	cPhysics2D->Init(&vTransform);
+	cPhysics2D->SetGravity(0.f);
+	cPhysics2D->MAX_SPEED = 50.f;
 
 	collider2D->Init(vTransform, glm::vec2(0.2f), Collider2D::ColliderType::COLLIDER_CIRCLE);
 	return false;
@@ -34,51 +39,17 @@ bool Bullet2D::Init()
 
 void Bullet2D::Update(double dElapsedTime)
 {
-	cPhysics2D.Update(dElapsedTime);
+	cPhysics2D->Update(dElapsedTime);
 	collider2D->SetPosition(vTransform);
 
 	CMap2D* cMap2D = CMap2D::GetInstance();
 
-	if (cPhysics2D.GetVelocity().x < 0)
+	if (cPhysics2D->GetVelocity().x < 0)
 		fRotate = 180;
 	else
 		fRotate = 0;
 
-	int range = 2;
-	cPhysics2D.SetboolGrounded(false);
-	vector<pair<CObject2D*, float>> aabbVector;
-	for (int row = -range; row <= range; row++) //y
-	{
-		for (int col = -range; col <= range; col++) //x
-		{
-			int rowCheck = vTransform.y + row;
-			int colCheck = vTransform.x + col;
-
-			if (rowCheck < 0 || colCheck < 0 || rowCheck > cMap2D->GetLevelRow() - 1 || colCheck > cMap2D->GetLevelCol() - 1) continue;
-
-			if (cMap2D->GetCObject(colCheck, rowCheck) && cMap2D->GetCObject(colCheck, rowCheck) != this)
-			{
-				CObject2D* obj = cMap2D->GetCObject(colCheck, rowCheck);
-				float distance = glm::length(obj->vTransform - vTransform);
-				aabbVector.push_back({ obj, distance });
-			}
-		}
-	}
-	//Sorts vector based on shortest dist from player to object
-	sort(aabbVector.begin(), aabbVector.end(), [](const std::pair<CObject2D*, float>& a, const std::pair<CObject2D*, float>& b)
-		{
-			return a.second < b.second;
-		});
-	aabbVector.erase(std::unique(aabbVector.begin(), aabbVector.end()), aabbVector.end());
-	for (auto aabbTuple : aabbVector)
-	{
-		CObject2D* obj = aabbTuple.first;
-		Collision data = (collider2D->CollideWith(obj->GetCollider()));
-		if (std::get<0>(data))
-		{
-			bDestroyed = true;
-		}
-	}
+	ResolveMapCollision(CheckMapCollision());
 }
 
 void Bullet2D::PreRender()
@@ -137,7 +108,16 @@ void Bullet2D::PostRender()
 	glDisable(GL_BLEND);
 }
 
-CPhysics2D& Bullet2D::GetPhysics()
+void Bullet2D::ResolveMapCollision(std::vector<pair<CObject2D*, float>> aabbvector)
 {
-	return cPhysics2D;
+	for (auto aabbTuple : aabbvector)
+	{
+		CObject2D* obj = aabbTuple.first;
+		Collision data = (collider2D->CollideWith(obj->GetCollider()));
+		if (std::get<0>(data))
+		{
+			bDestroyed = true;
+		}
+	}
 }
+

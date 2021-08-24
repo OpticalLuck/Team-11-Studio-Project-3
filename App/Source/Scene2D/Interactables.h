@@ -5,16 +5,17 @@
 
 #include "Object2D.h"
 
+	enum INTERACTABLE_TYPE
+	{
+		LEVER = OBJECT_TYPE::INTERACTABLE_SWITCH1_OFF,
+		PRESSURE_PLATE = OBJECT_TYPE::INTERACTABLE_PRESSURE_PLATE_OFF,
+
+		DOOR,
+	};
+
 class Interactables : public CObject2D
 {
 public:
-
-	enum INTERACTABLE_TYPE
-	{
-		BUTTON = 201,
-		LEVER = 202,
-		PRESSURE_PLATE = 203,
-	};
 
 	INTERACTABLE_TYPE interactableType;
 
@@ -24,7 +25,7 @@ public:
 	virtual ~Interactables(void);
 
 	// Init
-	bool Init(int iMapID);
+	bool Init();
 
 	// Update
 	void Update(const double dElapsedTime);
@@ -38,6 +39,9 @@ public:
 	// PostRender
 	void PostRender(void);
 
+	bool Activate(bool);
+	bool ActivateSwitch();
+	bool ActivatePressurePlate(bool);
 	void SetInteractableID(int);
 
 private:

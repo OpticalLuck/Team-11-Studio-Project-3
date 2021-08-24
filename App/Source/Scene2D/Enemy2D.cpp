@@ -149,6 +149,10 @@ bool CEnemy2D::Init(void)
 
 	cEntityManager = CEntityManager::GetInstance();
 
+	if (!cPhysics2D)
+		cPhysics2D = new CPhysics2D;
+	if (!collider2D)
+		collider2D = new Collider2D;
 	// Set the Physics to fall status by default
 	//cPhysics2D.Init();
 	//cPhysics2D.SetStatus(CPhysics2D::STATUS::FALL);
