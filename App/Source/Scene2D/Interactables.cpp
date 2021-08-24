@@ -67,8 +67,6 @@ bool Interactables::Init()
 
 void Interactables::Update(const double dElapsedTime)
 {
-	if (interactableType == PRESSURE_PLATE)
-		bInteraction = false;
 }
 
 void Interactables::PreRender(void)
@@ -170,7 +168,7 @@ bool Interactables::Activate(bool interaction)
 		ActivateSwitch();
 		break;
 	case PRESSURE_PLATE:
-		ActivatePressurePlate();
+		ActivatePressurePlate(interaction);
 		break;
 	default:
 		this->bInteraction = interaction;
@@ -215,8 +213,8 @@ bool Interactables::ActivateSwitch()
 	return false;
 }
 
-bool Interactables::ActivatePressurePlate()
+bool Interactables::ActivatePressurePlate(bool interaction)
 {
-	this->bInteraction = true;
+	this->bInteraction = interaction;
 	return false;
 }

@@ -383,18 +383,22 @@ void CPlayer2D::Update(const double dElapsedTime)
 
 				if (obj->type == ENTITY_TYPE::INTERACTABLES)
 				{
-					if (((Interactables*)(obj))->interactableType == INTERACTABLE_TYPE::PRESSURE_PLATE)
+					if (((Interactables*)(obj))->interactableType == INTERACTABLE_TYPE::LEVER)
 					{
 						if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::E].bKeyPressed)
 						{
 							((Interactables*)(obj))->Activate(true);
 						}
 					}
-					else if (((Interactables*)(obj))->interactableType == INTERACTABLE_TYPE::LEVER)
+					else if (((Interactables*)(obj))->interactableType == INTERACTABLE_TYPE::PRESSURE_PLATE)
 					{
-						if (glm::length(obj->vTransform - vTransform) < 0.2)
+						if (glm::length(obj->vTransform - vTransform) < 0.3)
 						{
 							((Interactables*)(obj))->Activate(true);
+						}
+						else
+						{
+							((Interactables*)(obj))->Activate(false);
 						}
 					}
 				}

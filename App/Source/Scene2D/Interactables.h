@@ -8,7 +8,7 @@
 	enum INTERACTABLE_TYPE
 	{
 		LEVER = OBJECT_TYPE::INTERACTABLE_SWITCH1_OFF,
-		PRESSURE_PLATE,
+		PRESSURE_PLATE = OBJECT_TYPE::INTERACTABLE_PRESSURE_PLATE_OFF,
 
 		DOOR,
 	};
@@ -41,7 +41,7 @@ public:
 
 	bool Activate(bool);
 	bool ActivateSwitch();
-	bool ActivatePressurePlate();
+	bool ActivatePressurePlate(bool);
 	void SetInteractableID(int);
 
 private:
