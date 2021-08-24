@@ -377,6 +377,10 @@ void CPlayer2D::Update(const double dElapsedTime)
 				CObject2D* obj = cMap2D->GetCObject(colCheck, rowCheck);
 				if (obj->GetCollider()->GetbEnabled())
 				{
+					if (obj->type == ENTITY_TYPE::INTERACTABLES)
+					{
+						DEBUG_MSG("yuh");
+					}
 					float distance = glm::length(obj->vTransform - vTransform);
 					aabbVector.push_back({ obj, distance });
 				}
