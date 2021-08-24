@@ -44,7 +44,7 @@ CPhysics2D::CPhysics2D(void)
 	, force(glm::vec2(0.f))
 	, mass(1)
 	, MAX_SPEED(10.f)
-	, FRICTONAL_COEFFICIENT(1.5f)
+	, FRICTONAL_COEFFICIENT(2.f)
 	, bGrounded(false)
 	, bKnockBacked(false)
 { 
