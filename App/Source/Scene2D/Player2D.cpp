@@ -49,6 +49,7 @@ CPlayer2D::CPlayer2D(void)
 	//, bDamaged(false)
 	, bIsClone(false)
 	, cInventory(NULL)
+	, jumpCount(0)
 
 {
 	transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
@@ -649,21 +650,18 @@ void CPlayer2D::InputUpdate(double dt)
 		if (timerArr[A_JUMP].second < 0.2)
 		{
 			timerArr[A_JUMP].first = true;
-			if(cPhysics2D->GetVelocity().y <= 0)
-				force.y = 80;
-			else
-				velocity.y = 8.4f;
-
-			cPhysics2D->SetboolGrounded(false);
-		}
-		else
-		{
-			timerArr[A_JUMP].first = false;
-
-			if (cPhysics2D->GetboolGrounded())
+			if (jumpCount < 2 &&
+				m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::SPACE].bKeyPressed)
 			{
-				timerArr[A_JUMP].second = 0;
+				cPhysics2D->SetboolGrounded(false);
+				velocity.y = 4.6f * (jumpCount + (1 - jumpCount * 0.6f));
+				jumpCount++;
 			}
+			else
+			{
+				force.y = 20;
+			}
+			cPhysics2D->SetboolGrounded(false);
 		}
 	}
 	else
@@ -672,6 +670,7 @@ void CPlayer2D::InputUpdate(double dt)
 		if (cPhysics2D->GetboolGrounded())
 		{
 			timerArr[A_JUMP].second = 0;
+			jumpCount = 0;
 		}
 	}
 

@@ -128,6 +128,8 @@ glm::vec2 CSettings::GetWindowSize()
 		return glm::vec2(1600, 900);
 	case SCREENSIZE::SSIZE_1600x1200:
 		return glm::vec2(1600, 1050);
+	default:
+		return glm::vec2(800, 600);;
 	}
 }
 
