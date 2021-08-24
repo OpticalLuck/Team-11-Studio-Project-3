@@ -67,6 +67,8 @@ bool Interactables::Init()
 
 void Interactables::Update(const double dElapsedTime)
 {
+	if (interactableType == PRESSURE_PLATE)
+		bInteraction = false;
 }
 
 void Interactables::PreRender(void)
@@ -161,23 +163,33 @@ bool Interactables::LoadTexture(const char* filename, GLuint& iTextureID)
 	return true;
 }
 
-bool Interactables::Activate()
+bool Interactables::Activate(bool interaction)
 {
-	this->bInteraction = !bInteraction;
+	switch (interactableType) {
+	case LEVER:
+		ActivateSwitch();
+		break;
+	case PRESSURE_PLATE:
+		ActivatePressurePlate();
+		break;
+	default:
+		this->bInteraction = interaction;
+		break;
+	}
 
 	// Change Texture
 	// On and Off Textures are an index apart in the texture manager
 	switch (bInteraction) {
 	case true:
-		this->iTextureID++;
+		this->iTextureID = this->interactableType + 1;
 		break;
 	case false:
-		this->iTextureID--;
+		this->iTextureID = this->interactableType;
 		break;
 	}
 
 	// Loop through the interactables to activate the corresponding Interactable IDs
-	if (this->interactableType < DOOR) 
+	if (this->interactableType < DOOR)
 	{
 		CEntityManager* entManager = CEntityManager::GetInstance();
 		for (auto& e : entManager->GetAllInteractables())
@@ -186,7 +198,7 @@ bool Interactables::Activate()
 			{
 				if (this->iInteractableID == e->iInteractableID)
 				{
-					e->Activate();
+					e->Activate(this->bInteraction);
 					e->collidable = !collidable;
 					return true;
 				}
@@ -194,6 +206,17 @@ bool Interactables::Activate()
 		}
 	}
 
-	return false;
+	return true;
+}
 
+bool Interactables::ActivateSwitch()
+{
+	this->bInteraction = !this->bInteraction;
+	return false;
+}
+
+bool Interactables::ActivatePressurePlate()
+{
+	this->bInteraction = true;
+	return false;
 }

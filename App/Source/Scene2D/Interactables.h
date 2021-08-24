@@ -5,17 +5,17 @@
 
 #include "Object2D.h"
 
-class Interactables : public CObject2D
-{
-public:
-
 	enum INTERACTABLE_TYPE
 	{
 		LEVER = OBJECT_TYPE::INTERACTABLE_SWITCH1_OFF,
-		// PRESSURE_PLATE = 203,
+		PRESSURE_PLATE,
 
 		DOOR,
 	};
+
+class Interactables : public CObject2D
+{
+public:
 
 	INTERACTABLE_TYPE interactableType;
 
@@ -39,7 +39,9 @@ public:
 	// PostRender
 	void PostRender(void);
 
-	bool Activate();
+	bool Activate(bool);
+	bool ActivateSwitch();
+	bool ActivatePressurePlate();
 	void SetInteractableID(int);
 
 private:

@@ -34,6 +34,7 @@ using namespace std;
 #include "Bullet2D.h"
 
 #include "EntityManager.h"
+#include "Interactables.h"
 
 /**
  @brief Constructor This constructor has protected access modifier as this class will be a Singleton
@@ -358,7 +359,7 @@ void CPlayer2D::Update(const double dElapsedTime)
 	collider2D->position = vTransform;
 
 	//COLLISION RESOLUTION ON Y_AXIS AND X_AXIS
-	int range = 3;
+	int range = 1;
 	cPhysics2D.SetboolGrounded(false);
 
 	//Stores nearby objects and its dist to player into a vector 
@@ -382,9 +383,19 @@ void CPlayer2D::Update(const double dElapsedTime)
 
 				if (obj->type == ENTITY_TYPE::INTERACTABLES)
 				{
-					if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::E].bKeyPressed)
+					if (((Interactables*)(obj))->interactableType == INTERACTABLE_TYPE::PRESSURE_PLATE)
 					{
-						((Interactables*)(obj))->Activate();
+						if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::E].bKeyPressed)
+						{
+							((Interactables*)(obj))->Activate(true);
+						}
+					}
+					else if (((Interactables*)(obj))->interactableType == INTERACTABLE_TYPE::LEVER)
+					{
+						if (glm::length(obj->vTransform - vTransform) < 0.2)
+						{
+							((Interactables*)(obj))->Activate(true);
+						}
 					}
 				}
 			}
