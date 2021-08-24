@@ -158,8 +158,8 @@ void CMobEnemy2D::Update(const double dElapsedTime) {
 	ClampPos();
 
 	//Physics
-	UpdateMovement(dElapsedTime);
-	cPhysics2D->Update(dElapsedTime);
+	UpdateMovement((float)dElapsedTime);
+	cPhysics2D->Update((float)dElapsedTime);
 
 	//Collision with world's object
 	collider2D->position = vTransform;
@@ -201,7 +201,7 @@ void CMobEnemy2D::ClampPos(void) {
 	switch (dir) {
 		case DIRECTION::LEFT: {
 			tileCheck.x--;
-			CObject2D* obj = cMap2D->GetCObject(tileCheck.x, tileCheck.y);
+			CObject2D* obj = cMap2D->GetCObject((unsigned int)tileCheck.x, (unsigned int)tileCheck.y);
 
 			if (!obj) {
 				dir = DIRECTION::RIGHT;
@@ -212,7 +212,7 @@ void CMobEnemy2D::ClampPos(void) {
 
 		case DIRECTION::RIGHT: {
 			tileCheck.x++;
-			CObject2D* obj = cMap2D->GetCObject(tileCheck.x, tileCheck.y);
+			CObject2D* obj = cMap2D->GetCObject((unsigned int)tileCheck.x, (unsigned int)tileCheck.y);
 
 			if (!obj) {
 				dir = DIRECTION::LEFT;
@@ -239,8 +239,8 @@ void CMobEnemy2D::CollisionUpdate(void) {
 	{
 		for (int col = -range; col <= range; col++) //x
 		{
-			int rowCheck = vTransform.y + row;
-			int colCheck = vTransform.x + col;
+			int rowCheck = (int)vTransform.y + row;
+			int colCheck = (int)vTransform.x + col;
 
 			if (rowCheck < 0 || colCheck < 0 || rowCheck > cMap2D->GetLevelRow() - 1 || colCheck > cMap2D->GetLevelCol() - 1) continue;
 			if (cMap2D->GetCObject(colCheck, rowCheck))

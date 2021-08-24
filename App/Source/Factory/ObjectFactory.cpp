@@ -2,11 +2,11 @@
 
 #include "../Scene2D/Boulder2D.h"
 
-#include "../Scene2D/EnemyBullet2D.h"
-
 #include "../Scene2D/Bullet2D.h"
 
 #include "../App/Source/TextureManager/TextureManager.h"
+
+#include "System/Debug.h"
 
 CObject2D* ObjectFactory::CreateObject(int iTextureID)
 {

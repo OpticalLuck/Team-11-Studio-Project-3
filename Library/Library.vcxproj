@@ -29,6 +29,7 @@
     <ClCompile Include="Source\Primitives\Mesh.cpp" />
     <ClCompile Include="Source\Primitives\MeshBuilder.cpp" />
     <ClCompile Include="Source\Primitives\Physics2D.cpp" />
+    <ClCompile Include="Source\Primitives\RayCast2D.cpp" />
     <ClCompile Include="Source\Primitives\SpriteAnimation.cpp" />
     <ClCompile Include="Source\RenderControl\ShaderManager.cpp" />
     <ClCompile Include="Source\RenderControl\TextRenderer.cpp" />
@@ -60,6 +61,7 @@
     <ClInclude Include="Source\Primitives\Mesh.h" />
     <ClInclude Include="Source\Primitives\MeshBuilder.h" />
     <ClInclude Include="Source\Primitives\Physics2D.h" />
+    <ClInclude Include="Source\Primitives\RayCast2D.h" />
     <ClInclude Include="Source\Primitives\SpriteAnimation.h" />
     <ClInclude Include="Source\RenderControl\Shader.h" />
     <ClInclude Include="Source\RenderControl\ShaderManager.h" />

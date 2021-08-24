@@ -31,7 +31,6 @@
     <ClCompile Include="Source\Scene2D\Boulder2D.cpp" />
     <ClCompile Include="Source\Scene2D\Bullet2D.cpp" />
     <ClCompile Include="Source\Scene2D\Enemy2D.cpp" />
-    <ClCompile Include="Source\Scene2D\EnemyBullet2D.cpp" />
     <ClCompile Include="Source\Scene2D\EntityManager.cpp" />
     <ClCompile Include="Source\Scene2D\GameManager.cpp" />
     <ClCompile Include="Source\Scene2D\Interactables.cpp" />
@@ -70,7 +69,6 @@
     <ClInclude Include="Source\Scene2D\Boulder2D.h" />
     <ClInclude Include="Source\Scene2D\Bullet2D.h" />
     <ClInclude Include="Source\Scene2D\Enemy2D.h" />
-    <ClInclude Include="Source\Scene2D\EnemyBullet2D.h" />
     <ClInclude Include="Source\Scene2D\EntityManager.h" />
     <ClInclude Include="Source\Scene2D\GameManager.h" />
     <ClInclude Include="Source\Scene2D\Interactables.h" />
