@@ -62,18 +62,6 @@ CMap2D::~CMap2D(void)
 	}
 	arrBackground.clear();
 
-	for (unsigned i = 0; i < arrBgGrid.size(); i++) {
-		for (unsigned y = 0; y < arrBgGrid[i].size(); y++) {
-			for (unsigned x = 0; x < arrBgGrid[i][y].size(); x++ ) {
-				if (arrBgGrid[i][y][x]) {
-					delete arrBgGrid[i][y][x];
-					arrBgGrid[i][y][x] = nullptr;
-				}
-			}
-		}
-	}
-	arrBgGrid.clear();
-
 	// optional: de-allocate all resources once they've outlived their purpose:
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
@@ -107,13 +95,11 @@ bool CMap2D::Init(const unsigned int uiNumLevels,
 	arrObject.clear();
 	arrBackground.clear();
 	arrAllowanceScale.clear();
-	arrBgGrid.clear();
 	arrBgObject.clear();
 	for (unsigned i = 0; i < uiNumLevels; i++) {
 		arrLevelLimit.push_back(glm::i32vec2());
 		arrObject.push_back(std::vector<CObject2D*>());
 		arrGrid.push_back(std::vector<std::vector<CObject2D*>>());
-		arrBgGrid.push_back(std::vector<std::vector<CObject2D*>>());
 		arrBackground.push_back(nullptr);
 		arrAllowanceScale.push_back(glm::vec2());
 		arrBgObject.push_back(std::vector<CObject2D*>());
@@ -528,7 +514,6 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 		}
 
 		arrGrid[uiCurLevel].push_back(std::vector<CObject2D*>());
-		arrBgGrid[uiCurLevel].push_back(std::vector<CObject2D*>());
 
 		// Load a particular CSV value into the arrMapInfo
 		for (unsigned int uiCol = 0; uiCol < (unsigned int)doc.GetColumnCount() - 1; ++uiCol)
@@ -541,7 +526,6 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 			SysMap::ExtractIDs(row[uiCol], currTexture, currObjID, backgroundID);
 
 			arrGrid[uiCurLevel][uiRow].push_back(nullptr);
-			arrBgGrid[uiCurLevel][uiRow].push_back(nullptr);
 
 			//Curr texture
 			if (currTexture > 0) {
@@ -585,7 +569,6 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 				currBg->GetCollider()->SetbEnabled(false);
 
 				arrBgObject[uiCurLevel].push_back(currBg);
-				arrBgGrid[uiCurLevel][uiRow][uiCol] = currBg;
 			}
 		}
 	}

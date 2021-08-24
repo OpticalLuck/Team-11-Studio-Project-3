@@ -39,13 +39,20 @@ public:
 
 	void DoBounce(glm::vec2 normal, float bounciness = 1.f);
 
+	void CollisionResponse(CPhysics2D* object, float scaleObj1 = 1.f, float scaleObj2 = 1.f);
+
 	void SetForce(const glm::vec2 force);
 	glm::vec2 GetForce() const;
 	void SetMass(const float mass);
 	void SetVelocity(const glm::vec2 velocity);
 	void SetboolGrounded(bool bGrounded);
+	void SetBoolKnockBacked(bool bKnockedBacked);
+
 	glm::vec2 GetVelocity() const;
+	bool GetboolKnockedBacked(void) const;
 	bool GetboolGrounded() const;
+
+	glm::vec2 GetPosition(void);
 
 	void SetGravity(float gravity);
 
@@ -60,5 +67,6 @@ protected:
 	STATUS sCurrentStatus;
 
 	bool bGrounded;
+	bool bKnockBacked;
 };
 

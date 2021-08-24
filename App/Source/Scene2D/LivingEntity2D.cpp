@@ -58,3 +58,7 @@ void LivingEntity2D::UpdateHealthLives(void) {
 int LivingEntity2D::GetHealth(void) {
 	return pHealth;
 }
+
+int LivingEntity2D::GetShield(void) {
+	return pShield;
+}

@@ -191,6 +191,9 @@
     <ClCompile Include="Source\Scene2D\EnemyBullet2D.cpp">
       <Filter>Entity2D\Object2D</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Scene2D\RayCast2D.cpp">
+      <Filter>Scene2D</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h">
@@ -330,6 +333,9 @@
     </ClInclude>
     <ClInclude Include="Source\Scene2D\EnemyBullet2D.h">
       <Filter>Entity2D\Object2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene2D\RayCast2D.h">
+      <Filter>Scene2D</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

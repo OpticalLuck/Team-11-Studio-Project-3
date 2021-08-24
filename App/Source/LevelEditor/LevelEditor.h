@@ -8,6 +8,7 @@
 #define GLEW_STATIC
 #endif
 
+#include <Windows.h>
 #include <GLFW/glfw3.h>
 
 // Include the RapidCSV

@@ -48,7 +48,7 @@ void SysMap::ExtractIDs(std::string str, int& textureID, int& objectID, int& bac
 		std::string substr;
 		getline(ss, substr, ';');
 
-		//Convert valaue from string to int if possible.
+		//Convert value from string to int if possible.
 		values.push_back(std::stoi(substr));
 	}
 

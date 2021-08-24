@@ -4,7 +4,6 @@
 
 #include "Boss2D.h"
 
-#include "EnemyBullet2D.h"
 #include "Bullet2D.h"
 #include "Projectiles.h"
 
@@ -44,11 +43,11 @@ CEntityManager::~CEntityManager()
 	}
 	m_cloneList.clear();
 
-	for (unsigned i = 0; i < m_eBulletList.size(); i++) {
-		delete m_eBulletList[i];
-		m_eBulletList[i] = nullptr;
+	for (unsigned i = 0; i < m_BulletList.size(); i++) {
+		delete m_BulletList[i];
+		m_BulletList[i] = nullptr;
 	}
-	m_eBulletList.clear();
+	m_BulletList.clear();
 }
 
 bool CEntityManager::EntityManagerInit(void)
@@ -245,12 +244,12 @@ void CEntityManager::RenderEnemy(void)
 }
 
 void CEntityManager::RenderBullets(void) {
-	for (unsigned i = 0; i < m_eBulletList.size(); i++) {
-		m_eBulletList[i]->PreRender();
-		m_eBulletList[i]->Render();
-		m_eBulletList[i]->PostRender();
+	for (unsigned i = 0; i < m_BulletList.size(); i++) {
+		m_BulletList[i]->PreRender();
+		m_BulletList[i]->Render();
+		m_BulletList[i]->PostRender();
 		
-		m_eBulletList[i]->RenderCollider();
+		m_BulletList[i]->RenderCollider();
 	}
 }
 
@@ -306,29 +305,22 @@ void CEntityManager::Update(const double dElapsedTime)
 	m_enemyList.erase(std::remove(m_enemyList.begin(), m_enemyList.end(), nullptr), m_enemyList.end()); //Remove any nullptrs in the array
 
 	//Call enemy bullets
-	for (unsigned i = 0; i < m_eBulletList.size(); i++) {
-		m_eBulletList[i]->Update(dElapsedTime);
+	for (unsigned i = 0; i < m_BulletList.size(); i++) {
+		m_BulletList[i]->Update(dElapsedTime);
 
-		EnemyBullet2D* eBullet = dynamic_cast<EnemyBullet2D*>(m_eBulletList[i]);
-		if (eBullet && (eBullet->OutOfWorld() || eBullet->GetHealth() <= 0)) 
+		if (dynamic_cast<Projectiles*>(m_BulletList[i]))
 		{
-			cout << "bullet deleted" << endl;
-			delete m_eBulletList[i];
-			m_eBulletList[i] = nullptr;
-		}
-		if (dynamic_cast<Projectiles*>(m_eBulletList[i]))
-		{
-			if (dynamic_cast<Projectiles*>(m_eBulletList[i])->bDestroyed || dynamic_cast<Projectiles*>(m_eBulletList[i])->bOutsideBoundary())
+			if (dynamic_cast<Projectiles*>(m_BulletList[i])->bDestroyed || dynamic_cast<Projectiles*>(m_BulletList[i])->bOutsideBoundary())
 			{
 				cout << "bullet deleted" << endl;
-				delete m_eBulletList[i];
-				m_eBulletList[i] = nullptr;
+				delete m_BulletList[i];
+				m_BulletList[i] = nullptr;
 			}
 		}
 	}
 
 	//Remove any nullptrs in bullet array
-	m_eBulletList.erase(std::remove(m_eBulletList.begin(), m_eBulletList.end(), nullptr), m_eBulletList.end());
+	m_BulletList.erase(std::remove(m_BulletList.begin(), m_BulletList.end(), nullptr), m_BulletList.end());
 
 	
 	//Keyboard inputs
@@ -338,8 +330,8 @@ void CEntityManager::Update(const double dElapsedTime)
 	}
 }
 
-void CEntityManager::PushBullet(CObject2D* bullet) {
-	m_eBulletList.push_back(bullet);
+void CEntityManager::PushBullet(Projectiles* bullet) {
+	m_BulletList.push_back(bullet);
 }
 
 void CEntityManager::PushInteractables(Interactables* interactable)
