@@ -722,6 +722,8 @@ void CPlayer2D::Attacked(int hp, CPhysics2D* bounceObj) {
 	//Collision response between the objects
 	if (bounceObj) {
 		cPhysics2D.CollisionResponse(bounceObj,3,3);
+		cPhysics2D.SetBoolKnockBacked(true);
+		bounceObj->SetBoolKnockBacked(true);
 	}
 }
 

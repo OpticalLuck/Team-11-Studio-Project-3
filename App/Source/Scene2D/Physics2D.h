@@ -46,7 +46,10 @@ public:
 	void SetMass(const float mass);
 	void SetVelocity(const glm::vec2 velocity);
 	void SetboolGrounded(bool bGrounded);
+	void SetBoolKnockBacked(bool bKnockedBacked);
+
 	glm::vec2 GetVelocity() const;
+	bool GetboolKnockedBacked(void) const;
 	bool GetboolGrounded() const;
 
 	void SetGravity(float gravity);
@@ -62,5 +65,6 @@ protected:
 	STATUS sCurrentStatus;
 
 	bool bGrounded;
+	bool bKnockBacked;
 };
 

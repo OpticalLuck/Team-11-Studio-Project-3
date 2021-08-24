@@ -137,11 +137,13 @@ void CMobEnemy2D::Update(const double dElapsedTime) {
 	collider2D->position = vTransform;
 	CollisionUpdate(dElapsedTime);
 
-	if (vTransform == oldVTransform) {
+	if (vTransform == oldVTransform && cPhysics2D.GetboolKnockedBacked() == false) {
 		if (dir == DIRECTION::LEFT)
 			dir = DIRECTION::RIGHT;
 		else
 			dir = DIRECTION::LEFT;
+
+		cPhysics2D.SetVelocity(glm::vec2(0, 0));
 	}
 
 	//Health lives update
@@ -278,17 +280,12 @@ void CMobEnemy2D::CollisionUpdate(const float dElapsedTime) {
 }
 
 void CMobEnemy2D::UpdateMovement(const float dElapsedTime) {
-	/*float force = mSpd * 10;
-	
-	glm::vec2 forceVec = glm::vec2(0, 0);
-	glm::vec2 currSpd = cPhysics2D.GetVelocity();
-
-	if (dir == DIRECTION::LEFT && currSpd.x > -mSpd)
-		forceVec.x = -force;
-	else if (DIRECTION::RIGHT == dir && currSpd.x < mSpd)
-		forceVec.x = force;
-
-	cPhysics2D.SetForce(forceVec);*/
+	if (cPhysics2D.GetboolKnockedBacked()) {
+		if (cPhysics2D.GetVelocity() == glm::vec2(0, 0))
+			cPhysics2D.SetBoolKnockBacked(false);
+		else
+			return;
+	}
 
 	glm::vec2 velocity = cPhysics2D.GetVelocity();
 

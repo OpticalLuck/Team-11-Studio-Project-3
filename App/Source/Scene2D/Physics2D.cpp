@@ -46,6 +46,7 @@ CPhysics2D::CPhysics2D(void)
 	, MAX_SPEED(10.f)
 	, FRICTONAL_COEFFICIENT(1.5f)
 	, bGrounded(false)
+	, bKnockBacked(false)
 { 
 }
 
@@ -149,6 +150,14 @@ glm::vec2 CPhysics2D::GetVelocity() const
 bool CPhysics2D::GetboolGrounded() const
 {
 	return bGrounded;
+}
+
+bool CPhysics2D::GetboolKnockedBacked(void) const {
+	return bKnockBacked;
+}
+
+void CPhysics2D::SetBoolKnockBacked(bool bKnockBacked) {
+	this->bKnockBacked = bKnockBacked;
 }
 
 void CPhysics2D::SetGravity(float gravity)
