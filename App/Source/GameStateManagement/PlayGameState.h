@@ -31,8 +31,6 @@ public:
 
 	virtual bool ImGuiRender();
 
-	virtual bool ImGuiEnemyRender();
-
 	//virtual bool OptionInit();
 	//virtual bool RenderOption();
 

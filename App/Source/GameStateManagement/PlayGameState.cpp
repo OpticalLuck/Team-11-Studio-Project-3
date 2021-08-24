@@ -305,6 +305,7 @@ bool CPlayGameState::ImGuiRender()
 			ImGui::PopStyleColor();
 			ImGui::End();
 		}
+<<<<<<< HEAD
 		//render enemy UI
 		std::vector<CEnemy2D*> arr;
 		arr = cEntityManager->GetAllEnemies();
@@ -335,51 +336,11 @@ bool CPlayGameState::ImGuiRender()
 			ImGui::PopStyleColor();
 			ImGui::End();
 		}
+=======
+>>>>>>> parent of b62006c (.)
 		ImGui::End();
 
 		return true;
 	}
 }
-
-bool CPlayGameState::ImGuiEnemyRender()
-{
-	float relativeScale_x = cSettings->iWindowWidth / 800.0f;
-	float relativeScale_y = cSettings->iWindowHeight / 600.0f;
-
-	relativeScale_x = Math::Max(1.f, relativeScale_x);
-	relativeScale_y = Math::Max(1.f, relativeScale_y);
-	//render enemy UI
-	std::vector<CEnemy2D*> arr;
-	arr = cEntityManager->GetAllEnemies();
-
-	for (unsigned i = 0; i < arr.size(); i++)
-	{
-		float vEnemyPosX = arr[i]->GetTransformX();
-		float vCameraposX = cCamera->GetPosX();
-		float finalPosX = vEnemyPosX - vCameraposX;
-		finalPosX = finalPosX / cSettings->NUM_TILES_XAXIS * cSettings->iWindowWidth;
-		finalPosX += 0.5 * cSettings->iWindowWidth - 20;
-
-		float vEnemyPosY = arr[i]->GetTransformY();
-		float vCameraposY = cCamera->GetPosY();
-		float finalPosY = vEnemyPosY - vCameraposY;
-		finalPosY = finalPosY / cSettings->NUM_TILES_YAXIS * cSettings->iWindowHeight;
-		finalPosY += 0.5 * cSettings->iWindowHeight;
-		finalPosY = cSettings->iWindowHeight - finalPosY - 60;
-
-
-		ImGui::Begin("Health", NULL, health_window);
-		ImGui::SetWindowPos(ImVec2(finalPosX, finalPosY));
-		ImGui::SetWindowSize(ImVec2(200.0f * relativeScale_x, 25.0f * relativeScale_y));
-		ImGui::SameLine();
-		ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.0f, 0.0f, 1.0f, 1.0f));
-		ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
-		ImGui::ProgressBar(cPlayer->GetHealth() / (float)cPlayer->GetMaxHealth(), ImVec2(50.0f, 20.0f));
-		ImGui::PopStyleColor();
-		ImGui::PopStyleColor();
-		ImGui::End();
-	}
-	return true;
-}
-
 
