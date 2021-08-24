@@ -135,10 +135,21 @@ bool CTextureManager::Init(void)
         return false;
     }
 
-
     if (LoadTexture("Image/altar.png", INTERACTABLE_ALTAR) == false)
     {
         std::cout << "Failed to load Scene2D_Spa tile texture" << std::endl;
+        return false;
+    }
+
+    if (LoadTexture("Image/Switches/door_1_closed.png", INTERACTABLE_DOOR_CLOSED) == false)
+    {
+        std::cout << "Failed to load Door Closed tile texture" << std::endl;
+        return false;
+    }
+
+    if (LoadTexture("Image/Switches/door_1_open.png", INTERACTABLE_DOOR_OPEN) == false)
+    {
+        std::cout << "Failed to load Door Open tile texture" << std::endl;
         return false;
     }
 
