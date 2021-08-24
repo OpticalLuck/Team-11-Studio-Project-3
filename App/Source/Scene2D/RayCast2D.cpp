@@ -1,8 +1,8 @@
 #include "RayCast2D.h"
 
 #include "../App/Source/Scene2D/Map2D.h"
-#include "Collider2D.h"
-#include "Entity2D.h"
+#include "../Library/Source/Primitives/Collider2D.h"
+#include "Primitives/Entity2D.h"
 
 RayCast2D::RayCast2D(void) {
 	originPoint = targetPoint = currentPoint = glm::vec2(0, 0);

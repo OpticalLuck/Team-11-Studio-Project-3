@@ -131,9 +131,6 @@
     <ClCompile Include="Source\Primitives\Camera2D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Primitives\RayCast2D.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\TimeControl\FPSCounter.h">
@@ -236,9 +233,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\Primitives\Camera2D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Primitives\RayCast2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
