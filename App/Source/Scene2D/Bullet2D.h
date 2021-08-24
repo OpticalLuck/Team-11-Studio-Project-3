@@ -1,5 +1,4 @@
 #pragma once
-#include "Physics2D.h"
 #include "Projectiles.h"
 
 // Include AnimatedSprites
@@ -18,8 +17,8 @@ public:
 	void PreRender() override;
 	void Render() override;
 	void PostRender() override;
-	CPhysics2D& GetPhysics();
 
+	void ResolveMapCollision(std::vector<pair<CObject2D*, float>> aabbvector) override;
 private:
 };
 

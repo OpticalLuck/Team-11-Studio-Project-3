@@ -28,6 +28,7 @@ CEntity2D::CEntity2D(ENTITY_TYPE type)
 	, iTextureID(0)
 	, cSettings(NULL)
 	, collider2D(NULL)
+	, cPhysics2D(NULL)
 	, camera2D(NULL)
 {
 	this->type = type;
@@ -39,8 +40,7 @@ CEntity2D::CEntity2D(ENTITY_TYPE type)
 
 	fRotate = 0.f;
 
-	collider2D = new Collider2D();
-	collider2D->Init(vTransform);
+	cSettings = CSettings::GetInstance();
 }
 
 /**
@@ -57,7 +57,7 @@ CEntity2D::~CEntity2D(void)
 	//cMap2D = nullptr;
 	camera2D = nullptr;
 
-	if (mesh) {
+ 	if (mesh) {
 		delete mesh;
 		mesh = nullptr;
 	}
@@ -65,6 +65,11 @@ CEntity2D::~CEntity2D(void)
 	if (collider2D) {
 		delete collider2D;
 		collider2D = nullptr;
+	}
+
+	if (cPhysics2D) {
+		delete cPhysics2D;
+		cPhysics2D = nullptr;
 	}
 }
 
@@ -90,7 +95,8 @@ bool CEntity2D::Init(void)
 	if (!collider2D)
 		collider2D = new Collider2D;
 
-
+	if (!cPhysics2D)
+		cPhysics2D = new CPhysics2D;
 	/*
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
@@ -207,6 +213,11 @@ void CEntity2D::SetTextureID(int iTextureID)
 int CEntity2D::GetTextureID() const
 {
 	return iTextureID;
+}
+
+CPhysics2D* CEntity2D::GetPhysics()
+{
+	return cPhysics2D;
 }
 
 /**

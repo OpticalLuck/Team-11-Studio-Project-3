@@ -25,7 +25,8 @@
 #include <vector>
 
 //Collision Detection and Resolution
-#include "../App/Source/Scene2D/Collider2D.h"
+#include "Collider2D.h"
+#include "Physics2D.h"
 
 using namespace std;
 
@@ -84,7 +85,7 @@ public:
 	//For rotation purposes (Anti clockwise)
 	float fRotate;
 
-	bool collidable;
+	CPhysics2D* GetPhysics();
 
 protected:
 	// Name of Shader Program instance
@@ -103,6 +104,7 @@ protected:
 	glm::mat4 transform;
 
 	Collider2D* collider2D;
+	CPhysics2D* cPhysics2D;
 
 	// Load a texture
 	virtual bool LoadTexture(const char* filename);

@@ -2,7 +2,7 @@
 
 #include "GameControl/Settings.h"
 
-#include "../Scene2D/Camera2D.h"
+#include "Primitives/Camera2D.h"
 
 CLevelGrid::CLevelGrid()
 	: iWorldWidth(32)

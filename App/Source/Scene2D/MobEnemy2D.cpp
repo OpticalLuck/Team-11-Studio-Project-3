@@ -2,7 +2,7 @@
 
 //Include handlers
 #include "Map2D.h"
-#include "Camera2D.h"
+#include "Primitives/Camera2D.h"
 #include "EntityManager.h"
 
 //Mesh builder
@@ -83,6 +83,10 @@ bool CMobEnemy2D::Init(void) {
 
 	// Set the Physics to fall status by default
 
+	if (!cPhysics2D)
+		cPhysics2D = new CPhysics2D;
+	if (!collider2D)
+		collider2D = new Collider2D;
 	//Collider2D
 	collider2D->Init(vTransform);
 
@@ -93,7 +97,7 @@ bool CMobEnemy2D::Init(void) {
 	animatedSprites->PlayAnimation("idle", -1, 0.6f);*/
 
 	//Physics initialisation
-	cPhysics2D.Init(&vTransform);
+	cPhysics2D->Init(&vTransform);
 	mSpd = 5;
 
 	// If this class is initialised properly, then set the bIsActive to true
@@ -131,7 +135,7 @@ void CMobEnemy2D::Update(const double dElapsedTime) {
 
 	//Physics
 	UpdateMovement();
-	cPhysics2D.Update(dElapsedTime);
+	cPhysics2D->Update(dElapsedTime);
 
 	//Collision with world's object
 	collider2D->position = vTransform;
@@ -199,7 +203,7 @@ void CMobEnemy2D::ClampPos(void) {
 }
 
 void CMobEnemy2D::CollisionUpdate(void) {
-	cPhysics2D.SetboolGrounded(false);
+	cPhysics2D->SetboolGrounded(false);
 
 	int range = 3;
 	//Stores nearby objects and its dist to player into a vector 
@@ -238,15 +242,15 @@ void CMobEnemy2D::CollisionUpdate(void) {
 				collider2D->ResolveAABB(obj->GetCollider(), data);
 
 				if (std::get<1>(data) == Direction::UP)
-					cPhysics2D.SetboolGrounded(true);
+					cPhysics2D->SetboolGrounded(true);
 			}
 			else if (obj->GetCollider()->colliderType == Collider2D::ColliderType::COLLIDER_CIRCLE)
 			{
-				if (glm::dot(cPhysics2D.GetVelocity(), obj->vTransform - vTransform) > 0)
+				if (glm::dot(cPhysics2D->GetVelocity(), obj->vTransform - vTransform) > 0)
 					collider2D->ResolveAABBCircle(obj->GetCollider(), data, Collider2D::ColliderType::COLLIDER_QUAD);
 
 				if (std::get<1>(data) == Direction::DOWN)
-					cPhysics2D.SetboolGrounded(true);
+					cPhysics2D->SetboolGrounded(true);
 			}
 
 			vTransform = collider2D->position;
@@ -257,8 +261,8 @@ void CMobEnemy2D::CollisionUpdate(void) {
 				if (dynamic_cast<Boulder2D*>(obj))
 				{
 					glm::vec2 direction = glm::normalize(obj->vTransform - vTransform);
-					static_cast<Boulder2D*>(obj)->GetPhysics().SetForce(glm::vec2(120.f, 0) * direction);
-					cPhysics2D.SetVelocity(glm::vec2(0.f));
+					obj->GetPhysics()->SetForce(glm::vec2(120.f, 0) * direction);
+					cPhysics2D->SetVelocity(glm::vec2(0.f));
 				}
 			}
 		}
@@ -287,10 +291,10 @@ void CMobEnemy2D::UpdateMovement(void) {
 	if (dir == DIRECTION::LEFT)
 		force *= -1;
 
-	glm::vec2 velocity = cPhysics2D.GetVelocity();
+	glm::vec2 velocity = cPhysics2D->GetVelocity();
 	velocity.x = force;
 
-	cPhysics2D.SetVelocity(velocity);
+	cPhysics2D->SetVelocity(velocity);
 }
 
 void CMobEnemy2D::Render(void) {

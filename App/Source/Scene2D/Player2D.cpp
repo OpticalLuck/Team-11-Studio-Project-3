@@ -22,7 +22,7 @@ using namespace std;
 // Include Game Manager
 #include "GameManager.h"
 
-#include "Camera2D.h"
+#include "Primitives/Camera2D.h"
 
 #include "Math/MyMath.h"
 
@@ -112,14 +112,14 @@ CPlayer2D::~CPlayer2D(void)
   */
 bool CPlayer2D::Init(void)
 {
-	// Store the keyboard controller singleton instance here
-	cKeyboardController = CKeyboardController::GetInstance();
-	cKeyboardController->Reset();
+	camera = Camera2D::GetInstance();
+	cSoundController = CSoundController::GetInstance();
+	cInputHandler = CInputHandler::GetInstance();
+	cSettings = CSettings::GetInstance();
 
 	cMouseController = CMouseController::GetInstance();
-
-	// Get the handler to the CSettings instance
-	cSettings = CSettings::GetInstance();
+	cKeyboardController = CKeyboardController::GetInstance();
+	cKeyboardController->Reset();
 
 	// Get the handler to the CMap2D instance
 	cMap2D = CMap2D::GetInstance();
@@ -175,23 +175,19 @@ bool CPlayer2D::Init(void)
 
 	//Blink Interval
 	pBlinkInterval = 0;
-
 	jumpCount = 0;
-
-	camera = Camera2D::GetInstance();
 
 	//fMovementSpeed = 1.f;
 	fMovementSpeed = 3.f;
 	fJumpSpeed = 5.f;
 
-
-	// Get the handler to the CSoundController
-	cSoundController = CSoundController::GetInstance();
-
-	cInputHandler = CInputHandler::GetInstance();
+	if (!cPhysics2D)
+		cPhysics2D = new CPhysics2D;
+	if (!collider2D)
+		collider2D = new Collider2D;
 
 	collider2D->Init(vTransform, glm::vec2(0.2f, 0.5f), Collider2D::ColliderType::COLLIDER_QUAD);
-	cPhysics2D.Init(&vTransform);
+	cPhysics2D->Init(&vTransform);
 
 	CInventoryManager::GetInstance()->Add("Player");
 	cInventory = CInventoryManager::GetInstance()->Get("Player");
@@ -274,9 +270,13 @@ bool CPlayer2D::Init(glm::i32vec2 spawnpoint, int iCloneIndex)
 
 	cInputHandler = CInputHandler::GetInstance();
 
-	collider2D->Init(vTransform, glm::vec2(0.2f, 0.5f));
+	if (!cPhysics2D)
+		cPhysics2D = new CPhysics2D;
+	if (!collider2D)
+		collider2D = new Collider2D;
 
-	cPhysics2D.Init(&vTransform);
+	collider2D->Init(vTransform, glm::vec2(0.2f, 0.5f));
+	cPhysics2D->Init(&vTransform);
 
 	std::stringstream ss;
 	ss << "Clone" << iCloneIndex;
@@ -354,13 +354,13 @@ void CPlayer2D::Update(const double dElapsedTime)
 
 	// Get keyboard & Mouse updates
 	InputUpdate(dElapsedTime);
-	cPhysics2D.Update(dElapsedTime);
+	cPhysics2D->Update(dElapsedTime);
 	// Update Collider2D Position
 	collider2D->position = vTransform;
 
 	//COLLISION RESOLUTION ON Y_AXIS AND X_AXIS
 	int range = 1;
-	cPhysics2D.SetboolGrounded(false);
+	cPhysics2D->SetboolGrounded(false);
 
 	//Stores nearby objects and its dist to player into a vector 
 	vector<pair<CObject2D*, float>> aabbVector;
@@ -375,7 +375,7 @@ void CPlayer2D::Update(const double dElapsedTime)
 			if (cMap2D->GetCObject(colCheck, rowCheck))
 			{
 				CObject2D* obj = cMap2D->GetCObject(colCheck, rowCheck);
-				if (obj->collidable)
+				if (obj->GetCollider()->GetbEnabled())
 				{
 					float distance = glm::length(obj->vTransform - vTransform);
 					aabbVector.push_back({ obj, distance });
@@ -423,15 +423,15 @@ void CPlayer2D::Update(const double dElapsedTime)
 				collider2D->ResolveAABB(obj->GetCollider(), data);
 
 				if (std::get<1>(data) == Direction::UP)
-					cPhysics2D.SetboolGrounded(true);
+					cPhysics2D->SetboolGrounded(true);
 			}
 			else if (obj->GetCollider()->colliderType == Collider2D::ColliderType::COLLIDER_CIRCLE)
 			{
-				if (glm::dot(cPhysics2D.GetVelocity(), obj->vTransform - vTransform) > 0)
+				if (glm::dot(cPhysics2D->GetVelocity(), obj->vTransform - vTransform) > 0)
 					collider2D->ResolveAABBCircle(obj->GetCollider(), data, Collider2D::ColliderType::COLLIDER_QUAD);
 
 				if (std::get<1>(data) == Direction::UP)
-					cPhysics2D.SetboolGrounded(true);
+					cPhysics2D->SetboolGrounded(true);
 			}
 
 			vTransform = collider2D->position;
@@ -442,17 +442,16 @@ void CPlayer2D::Update(const double dElapsedTime)
 				if (dynamic_cast<Boulder2D*>(obj))
 				{
 					glm::vec2 direction = glm::normalize(obj->vTransform - vTransform);
-					static_cast<Boulder2D*>(obj)->GetPhysics().SetForce(glm::vec2(120.f, 0) * direction);
-					cPhysics2D.SetVelocity(glm::vec2(0.f));
+					(obj)->GetPhysics()->SetForce(glm::vec2(120.f, 0) * direction);
+					cPhysics2D->SetVelocity(glm::vec2(0.f));
 				}
 			}
 
 
 			if (std::get<1>(data) == Direction::LEFT || std::get<1>(data) == Direction::RIGHT)
-				cPhysics2D.SetVelocity(glm::vec2(0, cPhysics2D.GetVelocity().y));
+				cPhysics2D->SetVelocity(glm::vec2(0, cPhysics2D->GetVelocity().y));
 		}
 	}
-
 
 	//BOUNDARY CHECK
 	LockWithinBoundary();
@@ -615,13 +614,13 @@ void CPlayer2D::InputUpdate(double dt)
 	if ((unsigned)iTempFrameCounter >= m_KeyboardInputs.size())
 		return;
 
-	glm::vec2 velocity = cPhysics2D.GetVelocity();
+	glm::vec2 velocity = cPhysics2D->GetVelocity();
 	glm::vec2 force = glm::vec2(0.f);
 
 	if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::W].bKeyDown)
 	{
 		velocity.y = fMovementSpeed;
-		cPhysics2D.SetboolGrounded(false);
+		cPhysics2D->SetboolGrounded(false);
 		DEBUG_MSG(this << ": Frame:" << iTempFrameCounter << " Move Up");
 	}
 	else if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::S].bKeyDown)
@@ -650,18 +649,18 @@ void CPlayer2D::InputUpdate(double dt)
 		if (timerArr[A_JUMP].second < 0.2)
 		{
 			timerArr[A_JUMP].first = true;
-			if(cPhysics2D.GetVelocity().y <= 0)
+			if(cPhysics2D->GetVelocity().y <= 0)
 				force.y = 80;
 			else
 				velocity.y = 8.4f;
 
-			cPhysics2D.SetboolGrounded(false);
+			cPhysics2D->SetboolGrounded(false);
 		}
 		else
 		{
 			timerArr[A_JUMP].first = false;
 
-			if (cPhysics2D.GetboolGrounded())
+			if (cPhysics2D->GetboolGrounded())
 			{
 				timerArr[A_JUMP].second = 0;
 			}
@@ -670,17 +669,17 @@ void CPlayer2D::InputUpdate(double dt)
 	else
 	{
 		timerArr[A_JUMP].first = false;
-		if (cPhysics2D.GetboolGrounded())
+		if (cPhysics2D->GetboolGrounded())
 		{
 			timerArr[A_JUMP].second = 0;
 		}
 	}
 
 	if (glm::length(velocity) > 0.f)
-		cPhysics2D.SetVelocity(velocity);
+		cPhysics2D->SetVelocity(velocity);
 
 	if (glm::length(force) > 0.f)
-		cPhysics2D.SetForce(force);
+		cPhysics2D->SetForce(force);
 
 	if (m_MouseInputs[iTempFrameCounter][MOUSE_INPUTS::LMB].bButtonPressed)
 	{
@@ -697,7 +696,7 @@ void CPlayer2D::InputUpdate(double dt)
 			shurikenobj->vTransform = vTransform;
 
 			glm::vec2 force = glm::clamp(distance * 200.f, glm::vec2(-2000.f, -2000.f), glm::vec2(2000.f, 2000.f));
-			static_cast<Projectiles*>(shurikenobj)->GetPhysics().SetForce(force);
+			shurikenobj->GetPhysics()->SetForce(force);
 
 			CEntityManager::GetInstance()->PushBullet(shurikenobj);
 		}
@@ -721,7 +720,7 @@ void CPlayer2D::InputUpdate(double dt)
 			else
 				direction = glm::vec2(1.f, 0);
 			glm::vec2 force = direction * 4.f;
-				static_cast<Bullet2D*>(kunaiobj)->GetPhysics().SetVelocity(force);
+				kunaiobj->GetPhysics()->SetVelocity(force);
 
 			CEntityManager::GetInstance()->PushBullet(kunaiobj);
 		}
@@ -760,7 +759,7 @@ void CPlayer2D::SetMouseInputs(std::vector<std::array<MouseInput, MOUSE_INPUTS::
 void CPlayer2D::ResetToCheckPoint()
 {
 	vTransform = checkpoint;
-	cPhysics2D.SetVelocity(glm::vec2(0.f));
+	cPhysics2D->SetVelocity(glm::vec2(0.f));
 	cKeyboardController->Reset();
 }
 

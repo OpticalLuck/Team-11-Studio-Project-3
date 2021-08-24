@@ -47,10 +47,15 @@ bool Interactables::Init()
 	type = CEntity2D::ENTITY_TYPE::INTERACTABLES;
 	quad = CMeshBuilder::GenerateQuad();
 
+	if (!cPhysics2D)
+		cPhysics2D = new CPhysics2D;
+	if (!collider2D)
+		collider2D = new Collider2D;
+
 	interactableType = static_cast<INTERACTABLE_TYPE>(iTextureID);
 	if (interactableType < DOOR)
 	{
-		collidable = false;
+		collider2D->SetbEnabled(false);
 	}
 	else
 	{
@@ -58,7 +63,7 @@ bool Interactables::Init()
 		// Interacted doors are open
 		if (bInteraction)
 		{
-			collidable = false;
+			collider2D->SetbEnabled(false);
 		}
 	}
 
@@ -197,7 +202,7 @@ bool Interactables::Activate(bool interaction)
 				if (this->iInteractableID == e->iInteractableID)
 				{
 					e->Activate(this->bInteraction);
-					e->collidable = !collidable;
+					collider2D->SetbEnabled(!collider2D->GetbEnabled());
 					return true;
 				}
 			}

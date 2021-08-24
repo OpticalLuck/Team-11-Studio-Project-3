@@ -34,12 +34,8 @@ class Camera2D;
 
 #include "Inputs\MouseController.h"
 
-// Include Physics2D
-#include "Physics2D.h"
-
 // Include AnimatedSprites
 #include "Primitives/SpriteAnimation.h"
-
 
 // Include SoundController
 #include "..\SoundController\SoundController.h"
@@ -151,8 +147,6 @@ protected:
 	int iTempFrameCounter; // move to game manager/scene2D/PlayGameState later
 
 	glm::vec2 vOldTransform;
-
-	CPhysics2D cPhysics2D;
 
 	glm::i32vec2 checkpoint;
 

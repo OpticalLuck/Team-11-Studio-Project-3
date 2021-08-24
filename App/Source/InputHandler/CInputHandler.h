@@ -2,7 +2,8 @@
 #include "DesignPatterns/SingletonTemplate.h"
 #include "Inputs/KeyboardController.h"
 #include "Inputs/MouseController.h"
-#include "../Scene2D/Camera2D.h"
+
+#include "Primitives/Camera2D.h"
 #include <vector>
 
 // include glm

@@ -65,17 +65,8 @@
     <ClCompile Include="Source\System\ImageLoader.cpp">
       <Filter>System</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Primitives\Entity3D.cpp">
-      <Filter>Primitives</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Primitives\Collider.cpp">
-      <Filter>Primitives</Filter>
-    </ClCompile>
     <ClCompile Include="Source\System\LoadOBJ.cpp">
       <Filter>System</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Primitives\LevelOfDetails.cpp">
-      <Filter>Primitives</Filter>
     </ClCompile>
     <ClCompile Include="Source\GUI\imgui.cpp">
       <Filter>GUI</Filter>
@@ -131,6 +122,15 @@
     <ClCompile Include="Source\System\MapLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Primitives\Collider2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Primitives\Physics2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Primitives\Camera2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\TimeControl\FPSCounter.h">
@@ -160,17 +160,8 @@
     <ClInclude Include="Source\System\ImageLoader.h">
       <Filter>System</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Primitives\Entity3D.h">
-      <Filter>Primitives</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Primitives\Collider.h">
-      <Filter>Primitives</Filter>
-    </ClInclude>
     <ClInclude Include="Source\System\LoadOBJ.h">
       <Filter>System</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Primitives\LevelOfDetails.h">
-      <Filter>Primitives</Filter>
     </ClInclude>
     <ClInclude Include="Source\GUI\imconfig.h">
       <Filter>GUI</Filter>
@@ -233,6 +224,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\System\MapLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Primitives\Collider2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Primitives\Physics2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Primitives\Camera2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

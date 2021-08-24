@@ -98,6 +98,11 @@ class CObject2D : public CEntity2D
 
 		void SetObjectID(int objectID);
 
+		std::vector<pair<CObject2D*, float>>CheckMapCollision(int range = 2);
+
+		virtual void ResolveMapCollision(std::vector<pair<CObject2D*, float>> aabbvector);
+		virtual void ResolveEnemyCollision();
+		virtual void ResolvePlayerCollision();
 	protected:
 		float width;
 		float height;
