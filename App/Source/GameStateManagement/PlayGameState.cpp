@@ -83,10 +83,6 @@ bool CPlayGameState::Init(void)
 
 	// Create and initialise the Map 2D
 	cMap2D = CMap2D::GetInstance();
-
-	
-	
-
 	cCamera = Camera2D::GetInstance();
 	return true;
 }
@@ -200,6 +196,15 @@ bool CPlayGameState::ImGuiRender()
 		health_window |= ImGuiWindowFlags_NoCollapse;
 		health_window |= ImGuiWindowFlags_NoScrollbar;
 
+		enemyHealth_window = 0;
+		enemyHealth_window |= ImGuiWindowFlags_AlwaysAutoResize;
+		enemyHealth_window |= ImGuiWindowFlags_NoBackground;
+		enemyHealth_window |= ImGuiWindowFlags_NoTitleBar;
+		enemyHealth_window |= ImGuiWindowFlags_NoMove;
+		enemyHealth_window |= ImGuiWindowFlags_NoResize;
+		enemyHealth_window |= ImGuiWindowFlags_NoCollapse;
+		enemyHealth_window |= ImGuiWindowFlags_NoScrollbar;
+
 
 		// Calculate the relative scale to our default windows width
 		float relativeScale_x = cSettings->iWindowWidth / 800.0f;
@@ -225,7 +230,7 @@ bool CPlayGameState::ImGuiRender()
 		ImGui::SetWindowFontScale(1.5f * relativeScale_y);
 
 		// Display the FPS
-		/*ImGui::TextColored(ImVec4(1, 1, 0, 1), "FPS: %d", cFPSCounter->GetFrameRate());*/
+		//ImGui::TextColored(ImVec4(1, 1, 0, 1), "FPS: %d", cFPSCounter->GetFrameRate());
 		ImGui::TextColored(ImVec4(1, 1, 1, 1), "Timer = %d : %d", iMinutes, iSeconds);
 
 		ImGui::SameLine();
@@ -305,39 +310,38 @@ bool CPlayGameState::ImGuiRender()
 			ImGui::PopStyleColor();
 			ImGui::End();
 		}
-<<<<<<< HEAD
 		//render enemy UI
-		std::vector<CEnemy2D*> arr;
-		arr = cEntityManager->GetAllEnemies();
-		for (unsigned i = 0; i < arr.size(); i++)
+		std::vector<CEnemy2D*> enemy;
+		enemy = cEntityManager->GetAllEnemies();
+		for (unsigned i = 0; i < enemy.size(); i++)
 		{
-			float vEnemyPosX = arr[i]->GetTransformX();
+			float vEnemyPosX = enemy[i]->GetTransformX();
 			float vCameraposX = cCamera->GetPosX();
 			float finalPosX = vEnemyPosX - vCameraposX;
 			finalPosX = finalPosX / cSettings->NUM_TILES_XAXIS * cSettings->iWindowWidth;
 			finalPosX += 0.5 * cSettings->iWindowWidth - 20;
 
-			float vEnemyPosY = arr[i]->GetTransformY();
+			float vEnemyPosY = enemy[i]->GetTransformY();
 			float vCameraposY = cCamera->GetPosY();
 			float finalPosY = vEnemyPosY - vCameraposY;
 			finalPosY = finalPosY / cSettings->NUM_TILES_YAXIS * cSettings->iWindowHeight;
 			finalPosY += 0.5 * cSettings->iWindowHeight;
 			finalPosY = cSettings->iWindowHeight - finalPosY - 60;
 
-
-			ImGui::Begin("Health", NULL, health_window);
+			std::stringstream enemyHealth;
+			enemyHealth.str("");
+			enemyHealth << "Enemy Health" << i;
+			ImGui::Begin(enemyHealth.str().c_str(), NULL, enemyHealth_window);
 			ImGui::SetWindowPos(ImVec2(finalPosX, finalPosY));
 			ImGui::SetWindowSize(ImVec2(200.0f * relativeScale_x, 25.0f * relativeScale_y));
 			ImGui::SameLine();
 			ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.0f, 0.0f, 1.0f, 1.0f));
 			ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
-			ImGui::ProgressBar(cPlayer->GetHealth() / (float)cPlayer->GetMaxHealth(), ImVec2(50.0f, 20.0f));
+			ImGui::ProgressBar((float) enemy[i]->GetHealth() / (float)enemy[i]->GetMaxHealth(), ImVec2(50.0f, 20.0f));
 			ImGui::PopStyleColor();
 			ImGui::PopStyleColor();
 			ImGui::End();
 		}
-=======
->>>>>>> parent of b62006c (.)
 		ImGui::End();
 
 		return true;

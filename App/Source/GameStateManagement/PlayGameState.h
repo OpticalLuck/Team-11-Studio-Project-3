@@ -45,6 +45,7 @@ protected:
 	// Flags for IMGUI
 	ImGuiWindowFlags window_flags;
 	ImGuiWindowFlags health_window;
+	ImGuiWindowFlags enemyHealth_window;
 
 	//ButtonData resumeButtonData;
 	//ButtonData restartButtonData;
