@@ -1,8 +1,8 @@
 #include "Settings.h"
-
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include "../SoundController/SoundController.h"
 
 using namespace std;
 
@@ -49,15 +49,12 @@ CSettings::CSettings(void)
 	}
 
 	LoadSettings();
-
-	BGM_VOLUME = 20;
-
-	SaveSettings();
 }
 
 
 CSettings::~CSettings(void)
 {
+	SaveSettings();
 	m_ImGuiWindow = NULL;
 }
 
@@ -156,8 +153,31 @@ void CSettings::LoadSettings()
 			int horizontal = stoi(value.substr(0, value.find('x')));
 			int vertical = stoi(value.substr(value.find('x') + 1, value.length()));
 
-			iWindowWidth = horizontal;
-			iWindowHeight = vertical;
+			if (horizontal <= 800)
+			{
+				screenSize = SCREENSIZE::SSIZE_800x600;
+			}
+			else if (horizontal <= 1024)
+			{
+				screenSize = SCREENSIZE::SSIZE_1024x768;
+			}
+			else if (horizontal <= 1400)
+			{
+				screenSize = SCREENSIZE::SSIZE_1400x1050;
+			}
+			else if (horizontal <= 1600)
+			{
+				if(vertical <= 900)
+					screenSize = SCREENSIZE::SSIZE_1600x900;
+				else if (vertical <= 1200)
+					screenSize = SCREENSIZE::SSIZE_1600x1200;
+				else
+					screenSize = SCREENSIZE::SSIZE_1600x1200;
+			}
+			else
+			{
+				screenSize = SCREENSIZE::SSIZE_800x600;
+			}
 		}
 		else if (title == "master-volume")
 		{
@@ -172,8 +192,10 @@ void CSettings::LoadSettings()
 			SFX_VOLUME = stoi(value);
 		}
 	}
-
 	cfile.close();
+
+	UpdateWindowSize();
+	//Sound will be updated in introstate
 }
 
 void CSettings::SaveSettings()
@@ -242,6 +264,33 @@ void CSettings::SaveSettings()
 	rename(tempfilename.c_str(), filename.c_str());
 }
 
+void CSettings::UpdateSoundSettings()
+{
+	UpdateMasterVolume();
+	UpdateBGMVolume(BGM_VOLUME);
+	UpdateSFXVolume(SFX_VOLUME);
+}
+
+void CSettings::UpdateMasterVolume()
+{
+	CSoundController::GetInstance()->SetMasterVolume(MASTER_VOLUME * 0.01f);
+}
+
+void CSettings::UpdateBGMVolume(float BGM_VOLUME)
+{
+	for (int i = SOUND_ID::BGM_START; i < SOUND_ID::BGM_TOTAL; i++)
+	{
+		CSoundController::GetInstance()->SetVolumeByID(i, BGM_VOLUME * 0.1f);
+	}
+	CSoundController::GetInstance()->UpdatePlayBackVolume(BGM_VOLUME * 0.01f);
+}
+
+void CSettings::UpdateSFXVolume(float SFX_VOLUME)
+{
+	for (int i = SOUND_ID::SOUND_START + 1; i < SOUND_ID::SOUND_TOTAL; i++)
+		CSoundController::GetInstance()->SetVolumeByID(i, SFX_VOLUME * 0.01f);
+}
+
 // Update the specifications of the map
 void CSettings::UpdateSpecifications(void)
 {
@@ -277,5 +326,7 @@ void CSettings::UpdateWindowSize()
 		iWindowHeight = 900;
 		break;
 	}
-	glfwSetWindowSize(pWindow, iWindowWidth, iWindowHeight);
+
+	if(pWindow)
+		glfwSetWindowSize(pWindow, iWindowWidth, iWindowHeight);
 }

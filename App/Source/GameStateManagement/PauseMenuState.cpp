@@ -33,8 +33,9 @@
 
 // Include CKeyboardController
 #include "Inputs/KeyboardController.h"
-#include "../App/Source/SoundController/SoundController.h"
+#include "SoundController/SoundController.h"
 #include <iostream>
+
 using namespace std;
 
 PauseMenuState::PauseMenuState(void)
@@ -199,7 +200,7 @@ void PauseMenuState::UpdateOption(ImGuiWindowFlags window_flags)
 	if (ImGui::SliderFloat("Master Volume", &master_Volume, 0.f, 100.f, "%.1f"))
 	{
 		CSettings::GetInstance()->MASTER_VOLUME = master_Volume;
-		CSoundController::GetInstance()->SetMasterVolume(CSettings::GetInstance()->MASTER_VOLUME * 0.01f);
+		CSettings::GetInstance()->UpdateMasterVolume();
 	}
 
 	static float bgmVolume = CSettings::GetInstance()->BGM_VOLUME;
@@ -238,8 +239,7 @@ void PauseMenuState::UpdateOption(ImGuiWindowFlags window_flags)
 		if (CSettings::GetInstance()->bBGM_Sound == true)
 			CSettings::GetInstance()->BGM_VOLUME = bgmVolume;
 
-		CSoundController::GetInstance()->SetVolumeByID(4, bgmVolume * 0.01f);
-		CSoundController::GetInstance()->UpdatePlayBackVolume(bgmVolume * 0.01f);
+		CSettings::GetInstance()->UpdateBGMVolume(bgmVolume);
 	}
 
 	//SFX Volume
@@ -278,13 +278,7 @@ void PauseMenuState::UpdateOption(ImGuiWindowFlags window_flags)
 		if (CSettings::GetInstance()->bSFX_Sound == true)
 			CSettings::GetInstance()->SFX_VOLUME = sfxVolume;
 
-		for (int i = 0; i < 10; i++)
-		{
-			if (i != 4)
-			{
-				CSoundController::GetInstance()->SetVolumeByID(i, sfxVolume * 0.01f);
-			}
-		}
+		CSettings::GetInstance()->UpdateSFXVolume(sfxVolume);
 	}
 
 	ImGui::End();

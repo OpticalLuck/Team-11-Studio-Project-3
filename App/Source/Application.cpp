@@ -344,6 +344,7 @@ void Application::Destroy(void)
 	CTextureManager::GetInstance()->Destroy();
 	// Destroy the keyboard instance
 	CKeyboardController::GetInstance()->Destroy();
+	// Destroy the settings instance
 
 	// Destroy the CFPSCounter instance
 	if (cFPSCounter)
@@ -352,13 +353,7 @@ void Application::Destroy(void)
 		cFPSCounter = NULL;
 	}
 
-	//// Destroy the cScene2D instance
-	//if (cScene2D)
-	//{
-	//	cScene2D->Destroy();
-	//	cScene2D = NULL;
-	//}
-
+	
 	m_ImGuiWindow->Shutdown();
 	m_ImGuiWindow->Destroy();
 
@@ -366,6 +361,8 @@ void Application::Destroy(void)
 	glfwDestroyWindow(cSettings->pWindow);
 	//Finalize and clean up GLFW
 	glfwTerminate();
+
+	CSettings::GetInstance()->Destroy();
 }
 
 /**

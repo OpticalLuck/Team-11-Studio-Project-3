@@ -6,7 +6,7 @@
 #pragma once
 
 // Include SingletonTemplate
-#include <DesignPatterns\SingletonTemplate.h>
+#include "../DesignPatterns/SingletonTemplate.h"
 
 // Include GLEW
 #include <includes/irrKlang.h>
@@ -22,6 +22,24 @@ using namespace std;
 // Include SoundInfo class; it stores the sound and other information
 #include "SoundInfo.h"
 
+enum SOUND_ID
+{
+	SOUND_START			= 0,
+	SOUND_BELL			= 1,
+	SOUND_EXPLOSION		= 2,
+	SOUND_JUMP			= 3,
+	SOUND_HIT			= 4,
+	SOUND_SWING			= 5,
+	SOUND_SWITCH		= 6,
+	SOUND_GAME_COMPLETE = 7,
+	SOUND_DEATH			= 8,
+	SOUND_TOTAL			   ,
+
+	BGM_START			= 50,
+	BGM_HENESYS				,
+	BGM_TOTAL			
+
+};
 class CSoundController : public CSingletonTemplate<CSoundController>
 {
 	friend CSingletonTemplate<CSoundController>;

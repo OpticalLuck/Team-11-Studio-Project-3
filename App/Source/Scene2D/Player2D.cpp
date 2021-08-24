@@ -682,6 +682,7 @@ void CPlayer2D::InputUpdate(double dt)
 
 	if (m_MouseInputs[iTempFrameCounter][MOUSE_INPUTS::LMB].bButtonPressed)
 	{
+		cSoundController->PlaySoundByID(SOUND_ID::SOUND_SWING);
 		CInventoryManager::GetInstance()->Use(cInventory->sName);
 		CItem& shuriken = CInventoryManager::GetInstance()->Get(cInventory->sName)->GetItem(0);
 		if (shuriken.iCount > 0)

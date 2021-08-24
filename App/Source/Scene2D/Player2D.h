@@ -38,7 +38,7 @@ class Camera2D;
 #include "Primitives/SpriteAnimation.h"
 
 // Include SoundController
-#include "..\SoundController\SoundController.h"
+#include "SoundController\SoundController.h"
 
 #include "../InputHandler/CInputHandler.h"
 

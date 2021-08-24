@@ -33,7 +33,7 @@
 // Include CKeyboardController
 #include "Inputs/KeyboardController.h"
 
-#include "../SoundController/SoundController.h"
+#include "SoundController/SoundController.h"
 
 #include <iostream>
 using namespace std;
@@ -67,7 +67,7 @@ bool GameOverState::Init(void)
 	gameOverImage.fileName = "Image\\GUI\\gameover.png";
 	gameOverImage.textureID = il->LoadTextureGetID(gameOverImage.fileName.c_str(), false);
 
-	CSoundController::GetInstance()->PlaySoundByID(8);
+	CSoundController::GetInstance()->PlaySoundByID(SOUND_ID::SOUND_GAME_COMPLETE);
 	return true;
 }
 
