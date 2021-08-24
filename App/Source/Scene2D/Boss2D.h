@@ -116,7 +116,6 @@ class CBoss2D : public CEnemy2D
 		ObjectFactory factory;
 
 		// Current color
-		glm::vec4 currentColor;
 		bool bIsActive;
 
 		//Functions

@@ -13,31 +13,58 @@ Collision Collider2D::CheckAABBCollision(Collider2D* obj, Collider2D* target)
 {
 	float threshold = 0.01f;
 	//vec2Dimensions is half width and half height	
-	bool collisionX = abs(obj->position.x - target->position.x) <= obj->vec2Dimensions.x + target->vec2Dimensions.x - threshold;
+	bool collisionX = abs(obj->position.x - target->position.x) <= obj->vec2Dimensions.x + target->vec2Dimensions.x;
 	bool collisionY = abs(obj->position.y - target->position.y) <= obj->vec2Dimensions.y + target->vec2Dimensions.y;
 
 
-	float diffX = (obj->position.x + obj->vec2Dimensions.x) - (target->position.x + target->vec2Dimensions.x);
-	float diffY = (obj->position.y + obj->vec2Dimensions.y) - (target->position.y + target->vec2Dimensions.y);
+	//float diffX = (obj->position.x + obj->vec2Dimensions.x) - (target->position.x + target->vec2Dimensions.x);
+	//float diffY = (obj->position.y + obj->vec2Dimensions.y) - (target->position.y + target->vec2Dimensions.y);
 
-	Direction dir;
-	
-	if (abs(diffX) > abs(diffY))
+	float shortestXDist = 10000;
+	float shortestYDist = 10000;
+
+	bool errorCheck = false;
+	Direction LorR;
+	Direction UorD;
+	Direction Dir;
+	for (int i = -1; i <= 1; i++)
 	{
-		if (diffX > 0)
-			dir = Direction::RIGHT;
-		else
-			dir = Direction::LEFT;
+		//-1 and 1 
+		if (i != 0)
+		{
+			float tempxdist = glm::length(glm::vec2(obj->position.x + obj->vec2Dimensions.x * i, 0) - glm::vec2(target->position.x + target->vec2Dimensions.x * -i, 0));
+			float tempydist = glm::length(glm::vec2(0, obj->position.y + obj->vec2Dimensions.y * i) - glm::vec2(0, target->position.y + target->vec2Dimensions.y * -i));
+
+			if (tempxdist < shortestXDist)
+			{
+				if (i == -1)
+					LorR = Direction::RIGHT;
+				else
+					LorR = Direction::LEFT;
+
+				shortestXDist = tempxdist;
+			}
+
+			if (tempydist < shortestYDist)
+			{
+				shortestYDist = tempydist;
+				if (i == -1)
+					UorD = Direction::UP;
+				else
+					UorD = Direction::DOWN;
+			}
+		}
 	}
+
+	if (shortestXDist < shortestYDist)
+		Dir = LorR;
 	else
-	{
-		if (diffY > 0)
-			dir = Direction::UP;
-		else
-			dir = Direction::DOWN;
-	}
+		Dir = UorD;
 
-	return std::make_tuple(collisionX && collisionY, dir, glm::vec2(0.0f, 0.0f));
+	if (shortestXDist == 0 || shortestYDist == 0)
+		errorCheck = true;
+
+	return std::make_tuple(collisionX && collisionY && !errorCheck, Dir, glm::vec2(shortestXDist, shortestYDist));
 }
 
 Collision Collider2D::CheckAABBCircleCollision(Collider2D* aabb, Collider2D* circle)
@@ -89,7 +116,7 @@ Collider2D::Collider2D()
 	, angle(0.f)
 {
 	sLineShaderName = "LineShader";
-	colliderType = COLLIDER_QUAD;
+	colliderType = ColliderType::COLLIDER_QUAD;
 }
 
 Collider2D::~Collider2D()
@@ -177,11 +204,11 @@ Collision Collider2D::CollideWith(Collider2D* object)
 {
 	if (object->bEnabled)
 	{
-		if (object->colliderType == COLLIDER_QUAD)
+		if (object->colliderType == ColliderType::COLLIDER_QUAD)
 		{
 			return CheckAABBCollision(this, object);
 		}
-		else if (object->colliderType == COLLIDER_CIRCLE)
+		else if (object->colliderType == ColliderType::COLLIDER_CIRCLE)
 		{
 			return CheckAABBCircleCollision(this, object);
 		}
@@ -191,55 +218,28 @@ Collision Collider2D::CollideWith(Collider2D* object)
 	return std::make_tuple(false, Direction::UP, glm::vec2(0.0f, 0.0f));
 }
 
-void Collider2D::ResolveAABB(Collider2D* object, Direction axis)
+void Collider2D::ResolveAABB(Collider2D* object, Collision data)
 {
 	glm::vec2 direction = object->position - position;
 
-	float shortestXDist = 10000;
-	float shortestYDist = 10000;
-	for (int i = -1; i <= 1; i++)
-	{
-		//-1 and 1 
-		if (i != 0)
-		{
-			float tempxdist = glm::length(glm::vec2(position.x + vec2Dimensions.x * i, 0) - glm::vec2(object->position.x + object->vec2Dimensions.x * -i, 0));
-			if (tempxdist < shortestXDist)
-				shortestXDist = tempxdist;
+	Direction dir = std::get<1>(data);
+	glm::vec2 correction = std::get<2>(data);
 
-			float tempydist = glm::length(glm::vec2(0, position.y + vec2Dimensions.y * i) - glm::vec2(0, object->position.y + object->vec2Dimensions.y * -i));
-			if (tempydist < shortestYDist)
-				shortestYDist = tempydist;
-		}
-	}
+	switch (dir)
+	{
+	case Direction::LEFT:
+		position -= glm::vec2(correction.x, 0);
+		break;
+	case Direction::RIGHT:
+		position += glm::vec2(correction.x, 0);
+		break;
+	case Direction::UP:
+		position += glm::vec2(0, correction.y);
+		break;
+	case Direction::DOWN:
+		position -= glm::vec2(0, correction.y);
+		break;
 
-	if (axis == Direction::RIGHT || axis == Direction::LEFT)
-	{
-		if (shortestXDist < shortestYDist && shortestYDist != 0)
-		{
-			glm::vec2 correctionAxis = glm::normalize(glm::vec2(direction.x * -1, 0.f));
-			position += glm::vec2(shortestXDist, 0) * correctionAxis;
-		}
-	}
-	else if (axis == Direction::UP || axis == Direction::DOWN)
-	{
-		if (shortestXDist > shortestYDist)
-		{
-			glm::vec2 correctionAxis = glm::normalize(glm::vec2(0.f, direction.y * -1));
-			position += glm::vec2(0, shortestYDist) * correctionAxis;
-		}
-	}
-	else
-	{
-		if (shortestXDist < shortestYDist)
-		{
-			glm::vec2 correctionAxis = glm::normalize(glm::vec2(direction.x * -1, 0.f));
-			position += glm::vec2(shortestXDist, 0) * correctionAxis;
-		}
-		else
-		{
-			glm::vec2 correctionAxis = glm::normalize(glm::vec2(0.f, direction.y * -1));
-			position += glm::vec2(0, shortestYDist) * correctionAxis;
-		}
 	}
 }
 
@@ -248,12 +248,12 @@ void Collider2D::ResolveAABBCircle(Collider2D* object, Collision data, ColliderT
 	Collider2D* ball = nullptr;
 	Collider2D* quad = nullptr;
 
-	if (object->colliderType == Collider2D::COLLIDER_CIRCLE)
+	if (object->colliderType == Collider2D::ColliderType::COLLIDER_CIRCLE)
 	{
 		quad = this;
 		ball = object;
 	}
-	else if (colliderType == Collider2D::COLLIDER_CIRCLE)
+	else if (colliderType == Collider2D::ColliderType::COLLIDER_CIRCLE)
 	{
 		quad = object;
 		ball = this;
@@ -264,7 +264,7 @@ void Collider2D::ResolveAABBCircle(Collider2D* object, Collision data, ColliderT
 		// collision resolution
 		Direction dir = std::get<1>(data);
 		glm::vec2 diff_vector = std::get<2>(data);
-		if (target == COLLIDER_CIRCLE)
+		if (target == ColliderType::COLLIDER_CIRCLE)
 		{
 			if (dir == Direction::LEFT || dir == Direction::RIGHT) // horizontal collision
 			{
@@ -288,7 +288,7 @@ void Collider2D::ResolveAABBCircle(Collider2D* object, Collision data, ColliderT
 
 			}
 		}
-		else if (target == COLLIDER_QUAD)
+		else if (target == ColliderType::COLLIDER_QUAD)
 		{
 			if (dir == Direction::LEFT || dir == Direction::RIGHT) // horizontal collision
 			{
@@ -350,7 +350,7 @@ void Collider2D::Render(void)
 
 		// render box
 		glBindVertexArray(VAO);
-		if (colliderType == COLLIDER_QUAD)
+		if (colliderType == ColliderType::COLLIDER_QUAD)
 			glDrawArrays(GL_LINE_LOOP, 0, 6);
 		else
 			glDrawArrays(GL_LINE_LOOP, 0, 12);

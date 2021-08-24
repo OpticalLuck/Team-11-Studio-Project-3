@@ -169,7 +169,7 @@ bool CEntityManager::Clone(void)
 
 bool CEntityManager::CheckCollision(CEntity2D* type1, CEntity2D* type2)
 {
-	if (type1->type == CEntity2D::PLAYER && type2->type == CEntity2D::ENEMY)
+	if (type1->type == CEntity2D::ENTITY_TYPE::PLAYER && type2->type == CEntity2D::ENTITY_TYPE::ENEMY)
 	{
 		return false;
 	}
@@ -314,17 +314,20 @@ void CEntityManager::Update(const double dElapsedTime)
 	for (unsigned i = 0; i < m_eBulletList.size(); i++) {
 		m_eBulletList[i]->Update(dElapsedTime);
 
-		//if (m_eBulletList[i]->OutOfWorld() || m_eBulletList[i]->GetHealth() <= 0) {
-		//	delete m_eBulletList[i];
-		//	m_eBulletList[i] = nullptr;
-		//}
-		if (dynamic_cast<Bullet2D*>(m_eBulletList[i]))
+		EnemyBullet2D* eBullet = dynamic_cast<EnemyBullet2D*>(m_eBulletList[i]);
+		if (eBullet && (eBullet->OutOfWorld() || eBullet->GetHealth() <= 0)) 
 		{
-			if (dynamic_cast<Bullet2D*>(m_eBulletList[i])->bDestroyed || dynamic_cast<Bullet2D*>(m_eBulletList[i])->bOutsideBoundary())
+			cout << "bullet deleted" << endl;
+			delete m_eBulletList[i];
+			m_eBulletList[i] = nullptr;
+		}
+		if (dynamic_cast<Projectiles*>(m_eBulletList[i]))
+		{
+			if (dynamic_cast<Projectiles*>(m_eBulletList[i])->bDestroyed || dynamic_cast<Projectiles*>(m_eBulletList[i])->bOutsideBoundary())
 			{
+				cout << "bullet deleted" << endl;
 				delete m_eBulletList[i];
 				m_eBulletList[i] = nullptr;
-				cout << "byebye";
 			}
 		}
 	}
@@ -340,7 +343,7 @@ void CEntityManager::Update(const double dElapsedTime)
 	}
 }
 
-void CEntityManager::PushBullet(CEntity2D* bullet) {
+void CEntityManager::PushBullet(CObject2D* bullet) {
 	m_eBulletList.push_back(bullet);
 }
 

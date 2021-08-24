@@ -29,10 +29,13 @@
 
 using namespace std;
 
+//Predefinitions
+class Camera2D;
+
 class CEntity2D 
 {
 public:
-	enum ENTITY_TYPE
+	enum class ENTITY_TYPE
 	{
 		NONE = 0,
 		TILE,
@@ -44,7 +47,7 @@ public:
 	};
 	ENTITY_TYPE type;
 
-	CEntity2D(ENTITY_TYPE type = NONE);
+	CEntity2D(ENTITY_TYPE type = ENTITY_TYPE::NONE);
 
 	// Destructor
 	virtual ~CEntity2D(void);
@@ -104,6 +107,8 @@ protected:
 	// Load a texture
 	virtual bool LoadTexture(const char* filename);
 
-	// Settings
+	//Handlers
 	CSettings* cSettings;
+	//CMap2D* cMap2D;
+	Camera2D* camera2D;
 };

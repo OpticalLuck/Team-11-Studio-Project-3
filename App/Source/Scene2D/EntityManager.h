@@ -43,7 +43,7 @@ public:
 	int GetCurrRound(void);
 
 	void PushEnemy(CEnemy2D*);
-	void PushBullet(CEntity2D*);
+	void PushBullet(CObject2D*);
 	void PushInteractables(Interactables*);
 
 	std::vector<CPlayer2D*> GetAllPlayers(void);
@@ -68,7 +68,7 @@ protected:
 	//list of vectors
 	std::vector<Interactables*> m_interactableList;
 	std::vector<CEnemy2D*> m_enemyList;
-	std::vector<CEntity2D*> m_eBulletList;
+	std::vector<CObject2D*> m_eBulletList;
 	std::vector<CEntity2D*> m_cloneList;
 
 	int currRound; //Current round in game. First is 0 and last is 4 (Will be storing enemies prev attacks etc using this)

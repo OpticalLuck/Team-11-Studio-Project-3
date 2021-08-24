@@ -5,6 +5,7 @@
 #endif
 
 // Include GLFW
+#include <Windows.h>
 #include <GLFW/glfw3.h>
 
 // Include GLM
@@ -47,6 +48,8 @@ char CEditorSettingsState::LevelName[1000];
 CEditorSettingsState::CEditorSettingsState(void)
 	: background(NULL)
 {
+	cLevelEditor = nullptr;
+	iWorldHeight = iWorldWidth = 0;
 }
 
 /**

@@ -308,7 +308,6 @@ bool CPlayGameState::ImGuiRender()
 		//render enemy UI
 		std::vector<CEnemy2D*> arr;
 		arr = cEntityManager->GetAllEnemies();
-
 		for (unsigned i = 0; i < arr.size(); i++)
 		{
 			float vEnemyPosX = arr[i]->GetTransformX();

@@ -6,7 +6,7 @@
 #pragma once
 
 // Include SingletonTemplate
-#include "DesignPatterns\SingletonTemplate.h"
+#include "../Library/Source/DesignPatterns/SingletonTemplate.h"
 
 // Include GLEW
 #ifndef GLEW_STATIC
@@ -20,15 +20,15 @@
 #include <includes/gtc/type_ptr.hpp>
 
 // Include the RapidCSV
-#include "System/rapidcsv.h"
+#include "../Library/Source/System/rapidcsv.h"
 // Include map storage
 #include <map>
 
 // Include Settings
-#include "GameControl\Settings.h"
+class CSettings;
 
 // Include Entity2D
-#include "Primitives/Entity2D.h"
+#include "../Library/Source/Primitives/Entity2D.h"
 
 //Include CObject2D
 #include "../Factory/ObjectFactory.h"
@@ -122,9 +122,11 @@ protected:
 
 	// Vector array that stores an array of objects level by level
 	std::vector<std::vector<CObject2D*>> arrObject;
+	std::vector< std::vector<CObject2D*>> arrBgObject;
 
 	//2D array
 	std::vector<std::vector<std::vector<CObject2D*>>> arrGrid; //Y, X
+	std::vector<std::vector<std::vector<CObject2D*>>> arrBgGrid; //Y, X
 
 	//Vector array that stores limits of each level
 	std::vector<glm::i32vec2> arrLevelLimit;

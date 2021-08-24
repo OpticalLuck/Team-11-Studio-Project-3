@@ -37,6 +37,8 @@ bool Projectiles::Init()
 
 	collider2D->Init(vTransform, glm::vec2(0.2f), Collider2D::ColliderType::COLLIDER_CIRCLE);
 
+	cEntityManager = CEntityManager::GetInstance();
+
 	return false;
 }
 
@@ -45,6 +47,9 @@ void Projectiles::Update(double dElapsedTime)
 	cPhysics2D.Update(dElapsedTime);
 	// Update Collider2D Position
 	collider2D->SetPosition(vTransform);
+
+	//Collision between projectile and enemy
+	EnemyCollision();
 
 	//Collision between objects in map space
 	MapCollision();
@@ -60,8 +65,8 @@ void Projectiles::MapCollision(void) {
 	{
 		for (int col = -range; col <= range; col++) //x
 		{
-			int rowCheck = vTransform.y + row;
-			int colCheck = vTransform.x + col;
+			int rowCheck = (int)vTransform.y + row;
+			int colCheck = (int)vTransform.x + col;
 
 			if (rowCheck < 0 || colCheck < 0 || rowCheck > cMap2D->GetLevelRow() - 1 || colCheck > cMap2D->GetLevelCol() - 1) continue;
 
@@ -86,18 +91,17 @@ void Projectiles::MapCollision(void) {
 		Collision data = (collider2D->CollideWith(obj->GetCollider()));
 		if (std::get<0>(data))
 		{
-			if (obj->GetCollider()->colliderType == Collider2D::COLLIDER_QUAD)
+			if (obj->GetCollider()->colliderType == Collider2D::ColliderType::COLLIDER_QUAD)
 			{
-				collider2D->ResolveAABB(obj->GetCollider(), Direction::UP);
-				collider2D->ResolveAABB(obj->GetCollider(), Direction::RIGHT);
+				collider2D->ResolveAABB(obj->GetCollider(), data);
 
 				if (std::get<1>(data) == Direction::UP)
 					cPhysics2D.SetboolGrounded(true);
 			}
-			else if (obj->GetCollider()->colliderType == Collider2D::COLLIDER_CIRCLE)
+			else if (obj->GetCollider()->colliderType == Collider2D::ColliderType::COLLIDER_CIRCLE)
 			{
 				if (glm::dot(cPhysics2D.GetVelocity(), obj->vTransform - vTransform) > 0)
-					collider2D->ResolveAABBCircle(obj->GetCollider(), data, Collider2D::COLLIDER_QUAD);
+					collider2D->ResolveAABBCircle(obj->GetCollider(), data, Collider2D::ColliderType::COLLIDER_QUAD);
 
 				if (std::get<1>(data) == Direction::DOWN)
 					cPhysics2D.SetboolGrounded(true);
@@ -107,17 +111,24 @@ void Projectiles::MapCollision(void) {
 
 			//How the object interacts 
 			glm::vec2 normal = Collider2D::ConvertDirectionToVec2(std::get<1>(data));
-			cPhysics2D.DoBounce(normal, 0.f);
+			cout << normal.x << ", "<<normal.y << endl;
+			cPhysics2D.DoBounce(normal, 1.f);
 		}
 	}
+
 }
 
-void Projectiles::PlayerCollision(void) {
-	std::vector<CPlayer2D*> playerArr = cEntityManager->GetAllPlayers();
+void Projectiles::EnemyCollision(void) {
+	std::vector<CEnemy2D*> enemyArr = cEntityManager->GetAllEnemies();
 
 	//collider2D->CollideWith(obj->GetCollider())
-	for (unsigned i = 0; i < playerArr.size(); i++) {
-		//Collision data = 
+	for (unsigned i = 0; i < enemyArr.size(); i++) {
+		Collision data = collider2D->CollideWith(enemyArr[i]->GetCollider());
+
+		if (std::get<0>(data)) { //If collided with 
+			//Enemy collision code activate!
+			enemyArr[i]->Attacked();
+		}
 	}
 }
 

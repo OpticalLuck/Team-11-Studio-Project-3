@@ -1,5 +1,6 @@
 #pragma once
 #include "DesignPatterns/SingletonTemplate.h"
+
 #include <map>
 
 class CTextureManager : public CSingletonTemplate<CTextureManager>

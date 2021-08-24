@@ -12,7 +12,7 @@
 #include <includes/gtc/type_ptr.hpp>
 
 // Include CEntity2D
-#include "Primitives/Entity2D.h"
+#include "../Library/Source/Primitives/Entity2D.h"
 
 //Centity manager
 class CEntityManager;
@@ -90,11 +90,13 @@ class CObject2D : public CEntity2D
 		CObject2D(int itextureID = 0);
 		virtual ~CObject2D(void);
 		
-		bool Init() override;
+		virtual bool Init();
 		void Update(const double dElapsedTime) override;
 
 		glm::i32vec2 GetCurrentIndex() const;
 		void SetCurrentIndex(glm::i32vec2 currentIndex);
+
+		void SetObjectID(int objectID);
 
 	protected:
 		float width;
@@ -102,6 +104,9 @@ class CObject2D : public CEntity2D
 
 		//Current Index in map Grid
 		glm::i32vec2 currentIndex;
+
+		//Object ID
+		int ObjectID;
 
 		//Handlers
 		CEntityManager* cEntityManager;

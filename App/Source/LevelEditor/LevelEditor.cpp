@@ -244,8 +244,9 @@ bool CLevelEditor::LoadLevel(const char* filePath)
             //Init of objects values
             int currTexture = 0;
             int currObjID = 0;
+            int currBackgroundID = 0;
 
-            SysMap::ExtractIDs(row[iCol], currTexture, currObjID);
+            SysMap::ExtractIDs(row[iCol], currTexture, currObjID, currBackgroundID);
 
             sCell cell;
             m_CurrentLevel[iRow].push_back(cell);

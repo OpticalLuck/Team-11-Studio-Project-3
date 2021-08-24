@@ -12,6 +12,8 @@
 // Include ImageLoader
 #include "..\System\ImageLoader.h"
 
+//#include "Scene2D/Map2D.h"
+
 #include <iostream>
 using namespace std;
 
@@ -26,6 +28,7 @@ CEntity2D::CEntity2D(ENTITY_TYPE type)
 	, iTextureID(0)
 	, cSettings(NULL)
 	, collider2D(NULL)
+	, camera2D(NULL)
 {
 	this->type = type;
 
@@ -51,6 +54,8 @@ CEntity2D::~CEntity2D(void)
 	//glDeleteBuffers(1, &EBO);
 	//CS: Delete the mesh
 	cSettings = nullptr;
+	//cMap2D = nullptr;
+	camera2D = nullptr;
 
 	if (mesh) {
 		delete mesh;
@@ -70,6 +75,8 @@ bool CEntity2D::Init(void)
 {
 	// Get the handler to the CSettings instance
 	cSettings = CSettings::GetInstance();
+	//Map handler
+	//cMap2D = CMap2D::GetInstance();
 
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
