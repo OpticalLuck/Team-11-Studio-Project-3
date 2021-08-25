@@ -30,6 +30,7 @@ public:
 	// Destroy this class instance
 	virtual void Destroy(void);
 	virtual bool ImGuiRender();
+	virtual bool OptionImGui();
 
 protected:
 	CBackgroundEntity* background;

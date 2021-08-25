@@ -406,3 +406,8 @@ bool CMenuState::ImGuiRender()
 
 	return true;
 }
+
+bool CMenuState::OptionImGui()
+{
+	return false;
+}

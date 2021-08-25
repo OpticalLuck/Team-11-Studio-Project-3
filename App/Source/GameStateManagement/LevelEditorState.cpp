@@ -849,6 +849,11 @@ bool CLevelEditorState::ImGuiRender()
 	return true;
 }
 
+bool CLevelEditorState::OptionImGui()
+{
+	return false;
+}
+
 void CLevelEditorState::RenderCursor()
 {
 	// Activate blending mode

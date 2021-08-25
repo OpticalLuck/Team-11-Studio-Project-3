@@ -1,5 +1,4 @@
 #include "GameStateManager.h"
-
 #include <iostream>
 
 using namespace std;
@@ -7,12 +6,13 @@ using namespace std;
 /**
  @brief Constructor
  */
-CGameStateManager::CGameStateManager(void) 
+CGameStateManager::CGameStateManager(void)
 	: activeGameState(nullptr)
 	, nextGameState(nullptr)
 	, prevGameState(nullptr)
 	, pauseGameState(nullptr)
-	, bPause (false)
+	, bPause(false)
+	, bOption(false)
 {
 }
 
@@ -110,6 +110,13 @@ bool CGameStateManager::Render(void)
 		if (!activeGameState->ImGuiRender())
 		{
 			return false;
+		}
+		if (bOption)
+		{
+			if (!activeGameState->OptionImGui())
+			{
+				return false;
+			}
 		}
 	}
 }
@@ -225,5 +232,6 @@ bool CGameStateManager::SetPauseGameState(const std::string& _name)
 void CGameStateManager::OffPauseGameState()
 {
 	//Cannot delete imgui context inside the gamestate, must be handled after update
-	bPause = false;
+	//bPause = false;
+	bOption = false;
 }

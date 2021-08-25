@@ -8,6 +8,8 @@
  */
 
 #include "GameStateBase.h"
+ // Include CGameStateManager
+#include "GameStateManager.h"
 #include "../InputHandler/CInputHandler.h"
 #include "TimeControl/FPSCounter.h"
 #include "..\Scene2D\Scene2D.h"
@@ -31,6 +33,8 @@ public:
 
 	virtual bool ImGuiRender();
 
+	virtual bool OptionImGui();
+
 	//virtual bool OptionInit();
 	//virtual bool RenderOption();
 
@@ -38,6 +42,7 @@ protected:
 	// The handler to the CScene2D instance
 	CScene2D* cScene2D;
 	CInputHandler* cInputHandler;
+	CGameStateManager* cGameStateManager;
 
 	// FPS Control
 	CFPSCounter* cFPSCounter;
@@ -46,15 +51,14 @@ protected:
 	ImGuiWindowFlags window_flags;
 	ImGuiWindowFlags health_window;
 	ImGuiWindowFlags enemyHealth_window;
+	ImGuiWindowFlags option_window;
 
-	//ButtonData resumeButtonData;
-	//ButtonData restartButtonData;
-	//ButtonData exitButtonData;
-	//ButtonData optionButtonData;
-	//ButtonData backButtonData;
-	//ButtonData applyButtonData;
-
-	bool bOption;
+	ButtonData resumeButtonData;
+	ButtonData restartButtonData;
+	ButtonData exitButtonData;
+	ButtonData optionButtonData;
+	ButtonData backButtonData;
+	ButtonData applyButtonData;
 
 	float m_fProgressBar;
 
