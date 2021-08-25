@@ -92,6 +92,7 @@ void PauseMenuState::Destroy(void)
 
 bool PauseMenuState::UpdateMenu(ImGuiWindowFlags window_flags)
 {
+	option_window = 0;
 	option_window |= ImGuiWindowFlags_NoTitleBar;
 	option_window |= ImGuiWindowFlags_NoScrollbar;
 	//window_flags |= ImGuiWindowFlags_MenuBar;

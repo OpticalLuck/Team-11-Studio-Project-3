@@ -204,6 +204,14 @@ bool CPlayGameState::ImGuiRender()
 		enemyHealth_window |= ImGuiWindowFlags_NoCollapse;
 		enemyHealth_window |= ImGuiWindowFlags_NoScrollbar;
 
+		cloneHealth_window = 0;
+		cloneHealth_window |= ImGuiWindowFlags_AlwaysAutoResize;
+		cloneHealth_window |= ImGuiWindowFlags_NoBackground;
+		cloneHealth_window |= ImGuiWindowFlags_NoTitleBar;
+		cloneHealth_window |= ImGuiWindowFlags_NoMove;
+		cloneHealth_window |= ImGuiWindowFlags_NoResize;
+		cloneHealth_window |= ImGuiWindowFlags_NoCollapse;
+		cloneHealth_window |= ImGuiWindowFlags_NoScrollbar;
 
 		// Calculate the relative scale to our default windows width
 		float relativeScale_x = cSettings->iWindowWidth / 800.0f;
@@ -338,6 +346,41 @@ bool CPlayGameState::ImGuiRender()
 				ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.0f, 0.0f, 1.0f, 1.0f));
 				ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
 				ImGui::ProgressBar((float)enemy[i]->GetHealth() / (float)enemy[i]->GetMaxHealth(), ImVec2(50.0f, 20.0f));
+				ImGui::PopStyleColor();
+				ImGui::PopStyleColor();
+				ImGui::End();
+			}
+		}
+		{
+			//render clone health
+			std::vector<CPlayer2D*> clone;
+			clone = cEntityManager->GetAllPlayers();
+
+			for (unsigned i = 1; i < clone.size(); i++)
+			{
+				float vClonePosX = clone[i]->GetTransformX();
+				float vCameraposX = cCamera->GetPosX();
+				float finalPosX = vClonePosX - vCameraposX;
+				finalPosX = finalPosX / cSettings->NUM_TILES_XAXIS * cSettings->iWindowWidth;
+				finalPosX += 0.5 * cSettings->iWindowWidth - 20;
+
+				float vClonePosY = clone[i]->GetTransformY();
+				float vCameraposY = cCamera->GetPosY();
+				float finalPosY = vClonePosY - vCameraposY;
+				finalPosY = finalPosY / cSettings->NUM_TILES_YAXIS * cSettings->iWindowHeight;
+				finalPosY += 0.5 * cSettings->iWindowHeight;
+				finalPosY = cSettings->iWindowHeight - finalPosY - 60;
+
+				std::stringstream enemyHealth;
+				enemyHealth.str("");
+				enemyHealth << "Clone Health" << i;
+				ImGui::Begin(enemyHealth.str().c_str(), NULL, cloneHealth_window);
+				ImGui::SetWindowPos(ImVec2(finalPosX, finalPosY));
+				ImGui::SetWindowSize(ImVec2(200.0f * relativeScale_x, 25.0f * relativeScale_y));
+				ImGui::SameLine();
+				ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.0f, 0.0f, 1.0f, 1.0f));
+				ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
+				ImGui::ProgressBar((float)clone[i]->GetHealth() / (float)clone[i]->GetMaxHealth(), ImVec2(50.0f, 20.0f));
 				ImGui::PopStyleColor();
 				ImGui::PopStyleColor();
 				ImGui::End();

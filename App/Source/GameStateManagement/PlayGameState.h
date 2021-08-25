@@ -47,6 +47,7 @@ protected:
 	ImGuiWindowFlags health_window;
 	ImGuiWindowFlags enemyHealth_window;
 	ImGuiWindowFlags option_window;
+	ImGuiWindowFlags cloneHealth_window;
 
 	ButtonData resumeButtonData;
 	ButtonData restartButtonData;
