@@ -37,6 +37,8 @@ CMobEnemy2D::CMobEnemy2D(void) {
 	maxIntervalTimer[1] = 0;
 	maxIntervalTimer[2] = 0;
 	maxIntervalTimer[3] = 0;
+
+	recording = false;
 }
 
 CMobEnemy2D::~CMobEnemy2D(void) {
@@ -146,6 +148,29 @@ bool CMobEnemy2D::Init(void) {
 	return true;
 }
 
+void CMobEnemy2D::RandomiseStateTimer(FSM state) {
+	if (state == FSM::NUM_FSM)
+		state = sCurrentFSM;
+
+	switch (state) {
+		case FSM::IDLE:
+			maxStateTimer[(int)state] = int(Math::RandFloatMinMax(1.f,2.5f) * (float)cSettings->FPS);
+			break;
+
+		case FSM::PATROL:
+			maxStateTimer[(int)state] = int(Math::RandFloatMinMax(3.f, 5.5f) * (float)cSettings->FPS);
+			break;
+
+		case FSM::ATTACK:
+			maxStateTimer[(int)state] = int(Math::RandFloatMinMax(2.f, 4.f) * (float)cSettings->FPS);
+			break;
+
+		default:
+			maxStateTimer[(int)state] = 0;
+			break;
+	}
+}
+
 void CMobEnemy2D::SaveCurrData(void) {
 	data dStore;
 	dStore.currDir = dir;
@@ -153,6 +178,7 @@ void CMobEnemy2D::SaveCurrData(void) {
 	dStore.currInterval = intervalTimer;
 	dStore.currStatus = sCurrentFSM;
 	dStore.currTimer = stateTimer;
+	dStore.currVel = cPhysics2D->GetVelocity();
 
 	savedData[currFrame] = dStore;
 }
@@ -223,8 +249,106 @@ void CMobEnemy2D::Update(const double dElapsedTime) {
 	currFrame++;
 }
 
-void CMobEnemy2D::UpdateSmart(float dElapsedTime) {
+int CMobEnemy2D::GetNearestDataKey(void) {
+	//Looping through map
+	std::vector<std::pair<int, CMobEnemy2D::data>> arr = SortSavedData();
 
+	for (unsigned i = 0; i < arr.size(); i++) {
+		int value = arr[i].first;
+
+		if (value >= currFrame && i < arr.size() - 1)
+			return value;
+	}
+
+	//If there are no keys available, return curr Frame
+	return currFrame;
+}
+
+void CMobEnemy2D::LockWithinBoundary(void) {
+	glm::vec2 minVal = glm::vec2(0.5f, 0.f) - glm::vec2(collider2D->vec2Dimensions.x, 0);
+	minVal *= -1;
+
+	glm::vec2 mapDimensions = cMap2D->GetLevelLimit();
+	glm::vec2 maxVel = mapDimensions - glm::vec2(1.f, 1.f) + glm::vec2(0.5f - collider2D->vec2Dimensions.x, 0);
+
+	glm::vec2 oldVTransform = vTransform;
+	vTransform = glm::clamp(vTransform, minVal, maxVel);
+	collider2D->SetPosition(vTransform);
+
+	if (oldVTransform != vTransform)
+		cPhysics2D->SetVelocity(glm::vec2(0, 0));
+}
+
+void CMobEnemy2D::LoadCurrData(int frame) {
+	if (savedData.find(frame) == savedData.end())
+		return;
+
+	data loaded = savedData[frame];
+
+	sCurrentFSM = loaded.currStatus;
+	vTransform = loaded.currPos;
+	dir = loaded.currDir;
+	stateTimer = loaded.currTimer;
+	intervalTimer = loaded.currInterval;
+	cPhysics2D->SetVelocity(loaded.currVel);
+}
+
+std::vector<std::pair<int, CMobEnemy2D::data>> CMobEnemy2D::SortSavedData(void) {
+	std::vector<std::pair<int, data>> A;
+
+	for (auto& it : savedData)
+		A.push_back(it);
+
+	sort(A.begin(), A.end(), DataCheck);
+
+	return A;
+}
+
+bool CMobEnemy2D::DataCheck(std::pair<int, data>& a, std::pair<int, data>& b) {
+	return a.first < b.first;
+}
+
+void CMobEnemy2D::OnStateTimerTriggered(FSM state) {
+	if (stateTimer > 0)
+		return;
+
+	switch (state) {
+		case FSM::IDLE:
+
+	}
+}
+
+void CMobEnemy2D::OnIntervalTriggered(FSM state) {
+	if (intervalTimer > 0)
+		return;
+
+	switch (state) {
+		case FSM::IDLE:
+			if (dir == DIRECTION::LEFT)
+				dir = DIRECTION::RIGHT;
+			else
+				dir = DIRECTION::LEFT;
+
+			//Reset values
+			intervalTimer = maxIntervalTimer[(int)state];
+
+			break;
+
+		default: //Lmao nothing is done
+			break;
+	}
+}
+
+void CMobEnemy2D::UpdateSmart(float dElapsedTime) {
+	switch (sCurrentFSM) {
+		case FSM::IDLE:
+			intervalTimer = Math::Max(0, intervalTimer - 1);
+			stateTimer = Math::Max(0, stateTimer - 1);
+
+			OnIntervalTriggered(sCurrentFSM);
+
+			break;
+	}
 }
 
 void CMobEnemy2D::UpdateDumb(float dElapsedTime) {
@@ -250,7 +374,7 @@ void CMobEnemy2D::UpdateDumb(float dElapsedTime) {
 }
 
 void CMobEnemy2D::ClampPos(void) {
-	if (!clampSides)
+	if (!clampSides && !patrol)
 		return; //Do not clamp sides if option is not set
 
 	glm::vec2 tileCheck = glm::vec2(round(vTransform.x), round(vTransform.y));
