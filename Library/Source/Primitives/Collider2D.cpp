@@ -13,12 +13,8 @@ Collision Collider2D::CheckAABBCollision(Collider2D* obj, Collider2D* target)
 {
 	float threshold = 0.01f;
 	//vec2Dimensions is half width and half height	
-	bool collisionX = abs(obj->position.x - target->position.x) <= obj->vec2Dimensions.x + target->vec2Dimensions.x;
-	bool collisionY = abs(obj->position.y - target->position.y) <= obj->vec2Dimensions.y + target->vec2Dimensions.y;
-
-
-	//float diffX = (obj->position.x + obj->vec2Dimensions.x) - (target->position.x + target->vec2Dimensions.x);
-	//float diffY = (obj->position.y + obj->vec2Dimensions.y) - (target->position.y + target->vec2Dimensions.y);
+	bool collisionX = abs((obj->position.x + obj->offset.x) - (target->position.x + target->offset.x)) <= obj->vec2Dimensions.x + target->vec2Dimensions.x;
+	bool collisionY = abs((obj->position.y + obj->offset.y) - (target->position.y + target->offset.y)) <= obj->vec2Dimensions.y + target->vec2Dimensions.y;
 
 	float shortestXDist = 10000;
 	float shortestYDist = 10000;
@@ -32,8 +28,8 @@ Collision Collider2D::CheckAABBCollision(Collider2D* obj, Collider2D* target)
 		//-1 and 1 
 		if (i != 0)
 		{
-			float tempxdist = glm::length(glm::vec2(obj->position.x + obj->vec2Dimensions.x * i, 0) - glm::vec2(target->position.x + target->vec2Dimensions.x * -i, 0));
-			float tempydist = glm::length(glm::vec2(0, obj->position.y + obj->vec2Dimensions.y * i) - glm::vec2(0, target->position.y + target->vec2Dimensions.y * -i));
+			float tempxdist = glm::length(glm::vec2((obj->position.x + obj->offset.x) + obj->vec2Dimensions.x * i, 0) - glm::vec2((target->position.x + target->offset.x) + target->vec2Dimensions.x * -i, 0));
+			float tempydist = glm::length(glm::vec2(0, (obj->position.y + obj->offset.y) + obj->vec2Dimensions.y * i) - glm::vec2(0, (target->position.y + target->offset.y) + target->vec2Dimensions.y * -i));
 
 			if (tempxdist < shortestXDist)
 			{
@@ -64,18 +60,21 @@ Collision Collider2D::CheckAABBCollision(Collider2D* obj, Collider2D* target)
 	if (shortestXDist == 0 || shortestYDist == 0)
 		errorCheck = true;
 
+	// if (collisionX && collisionY && !errorCheck)
+		// std::cout << "yes" << endl;
+
 	return std::make_tuple(collisionX && collisionY && !errorCheck, Dir, glm::vec2(shortestXDist, shortestYDist));
 }
 
 Collision Collider2D::CheckAABBCircleCollision(Collider2D* aabb, Collider2D* circle)
 {
 	// get difference vector between both centers
-	glm::vec2 difference = circle->position - aabb->position;
+	glm::vec2 difference = (circle->position + circle->offset) - (aabb->position + aabb->offset);
 	glm::vec2 clamped = glm::clamp(difference, -aabb->vec2Dimensions, aabb->vec2Dimensions);
 	// now that we know the the clamped values, add this to AABB_center and we get the value of box closest to circle
 	glm::vec2 closest = aabb->position + clamped;
 	// now retrieve vector between center circle and closest point AABB and check if length < radius
-	difference = closest - circle->position;
+	difference = closest - (circle->position + circle->offset);
 
 	if (glm::length(difference) < circle->vec2Dimensions.x) // not <= since in that case a collision also occurs when object one exactly touches object two, which they are at the end of each collision resolution stage.
 		return std::make_tuple(true, VectorDirection(difference), difference);
@@ -107,7 +106,8 @@ Direction Collider2D::VectorDirection(glm::vec2 target)
 
 Collider2D::Collider2D()
 	: vec2Dimensions(glm::vec2(0.5f, 0.5f))
-	, position(glm::vec3(1.f))
+	, position(glm::vec2(1.f))
+	, offset(glm::vec2(0.f))
 	, vec4Colour(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f))
 	, bIsDisplayed(true)
 	, fLineWidth(1.0f)
@@ -189,6 +189,11 @@ bool Collider2D::Init(glm::vec2 position, glm::vec2 vec2Dimensions, ColliderType
 	angle = 0;
 	 
 	return true;
+}
+
+void Collider2D::SetOffset(glm::vec2 offsetVec)
+{
+	offset = offsetVec;
 }
 
 void Collider2D::SetLineShader(const std::string& name)
@@ -327,11 +332,11 @@ void Collider2D::Render(void)
 		return;
 
 	//Camera init
-	glm::vec2 offset = glm::vec2(float(CSettings::GetInstance()->NUM_TILES_XAXIS / 2.f), float(CSettings::GetInstance()->NUM_TILES_YAXIS / 2.f));
+	glm::vec2 tileoffset = glm::vec2(float(CSettings::GetInstance()->NUM_TILES_XAXIS / 2.f), float(CSettings::GetInstance()->NUM_TILES_YAXIS / 2.f));
 
 	glm::vec2 cameraPos = Camera2D::GetInstance()->getCurrPos();
 
-	glm::vec2 objCamPos = position - cameraPos + offset;
+	glm::vec2 objCamPos = (position + offset)- cameraPos + tileoffset;
 
 	glm::vec2 actualPos = CSettings::GetInstance()->ConvertIndexToUVSpace(objCamPos);
 

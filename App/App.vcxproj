@@ -45,8 +45,6 @@
     <ClCompile Include="Source\Scene2D\Projectiles.cpp" />
     <ClCompile Include="Source\Scene2D\RayCast2D.cpp" />
     <ClCompile Include="Source\Scene2D\Scene2D.cpp" />
-    <ClCompile Include="Source\SoundController\SoundController.cpp" />
-    <ClCompile Include="Source\SoundController\SoundInfo.cpp" />
     <ClCompile Include="Source\TextureManager\TextureManager.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -84,8 +82,6 @@
     <ClInclude Include="Source\Scene2D\Projectiles.h" />
     <ClInclude Include="Source\Scene2D\RayCast2D.h" />
     <ClInclude Include="Source\Scene2D\Scene2D.h" />
-    <ClInclude Include="Source\SoundController\SoundController.h" />
-    <ClInclude Include="Source\SoundController\SoundInfo.h" />
     <ClInclude Include="Source\TextureManager\TextureManager.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

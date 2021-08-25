@@ -14,8 +14,8 @@ class LivingEntity2D
 		virtual void Attacked(int hp = 1);
 
 		int GetHealth(void);
+		int GetMaxHealth(void);
 		int GetShield(void);
-
 	protected:
 		//Health and stuff
 		int pHealth;

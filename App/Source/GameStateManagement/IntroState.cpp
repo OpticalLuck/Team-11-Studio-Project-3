@@ -33,7 +33,7 @@
 
 // Include CKeyboardController
 #include "Inputs/KeyboardController.h"
-#include "../App/Source/SoundController/SoundController.h"
+#include "SoundController/SoundController.h"
 #include "System/filesystem.h"
 
 #include <iostream>
@@ -72,16 +72,17 @@ bool CIntroState::Init(void)
 	background->SetShader("2DShader");
 	background->Init();
 
-	CSoundController::GetInstance()->LoadSound(FileSystem::getPath("Sounds\\Sound_Bell.ogg"), 1, true);
-	CSoundController::GetInstance()->LoadSound(FileSystem::getPath("Sounds\\Sound_Explosion.ogg"), 2, true);
-	CSoundController::GetInstance()->LoadSound(FileSystem::getPath("Sounds\\Sound_Jump.ogg"), 3, true);
-	CSoundController::GetInstance()->LoadSound(FileSystem::getPath("Sounds\\Henesys_BGM.ogg"), 4, true, true);
-	CSoundController::GetInstance()->LoadSound(FileSystem::getPath("Sounds\\Hit.ogg"), 5, true);
-	CSoundController::GetInstance()->LoadSound(FileSystem::getPath("Sounds\\Swing.ogg"), 6, true);
-	CSoundController::GetInstance()->LoadSound(FileSystem::getPath("Sounds\\Switch.ogg"), 7, true);
-	CSoundController::GetInstance()->LoadSound(FileSystem::getPath("Sounds\\GameComplete.ogg"), 8, true);
-	CSoundController::GetInstance()->LoadSound(FileSystem::getPath("Sounds\\Dead.ogg"), 9, true);
+	CSoundController::GetInstance()->LoadSound(FileSystem::getPath("Sounds\\Sound_Bell.ogg"), SOUND_ID::SOUND_BELL, true);
+	CSoundController::GetInstance()->LoadSound(FileSystem::getPath("Sounds\\Sound_Explosion.ogg"), SOUND_ID::SOUND_EXPLOSION, true);
+	CSoundController::GetInstance()->LoadSound(FileSystem::getPath("Sounds\\Sound_Jump.ogg"), SOUND_ID::SOUND_JUMP, true);
+	CSoundController::GetInstance()->LoadSound(FileSystem::getPath("Sounds\\Henesys_BGM.ogg"), SOUND_ID::BGM_HENESYS, true, true);
+	CSoundController::GetInstance()->LoadSound(FileSystem::getPath("Sounds\\Hit.ogg"), SOUND_ID::SOUND_HIT, true);
+	CSoundController::GetInstance()->LoadSound(FileSystem::getPath("Sounds\\Swing.ogg"), SOUND_ID::SOUND_SWING, true);
+	CSoundController::GetInstance()->LoadSound(FileSystem::getPath("Sounds\\Switch.ogg"), SOUND_ID::SOUND_SWITCH, true);
+	CSoundController::GetInstance()->LoadSound(FileSystem::getPath("Sounds\\GameComplete.ogg"), SOUND_ID::SOUND_GAME_COMPLETE, true);
+	CSoundController::GetInstance()->LoadSound(FileSystem::getPath("Sounds\\Dead.ogg"), SOUND_ID::SOUND_DEATH, true);
 
+	CSettings::GetInstance()->UpdateSoundSettings();
 	return true;
 }
 
@@ -137,3 +138,4 @@ bool CIntroState::ImGuiRender()
 {
 	return true;
 }
+

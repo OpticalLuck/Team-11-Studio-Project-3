@@ -49,6 +49,7 @@ CPlayer2D::CPlayer2D(void)
 	//, bDamaged(false)
 	, bIsClone(false)
 	, cInventory(NULL)
+	, jumpCount(0)
 
 {
 	transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
@@ -136,6 +137,8 @@ bool CPlayer2D::Init(void)
 	checkpoint = glm::vec2(uiCol, uiRow);
 	// Set the start position of the Player to iRow and iCol
 	vTransform = glm::vec2(uiCol, uiRow);
+	vTransform.x;
+	vTransform.y;
 
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
@@ -178,7 +181,7 @@ bool CPlayer2D::Init(void)
 	jumpCount = 0;
 
 	//fMovementSpeed = 1.f;
-	fMovementSpeed = 5.f;
+	fMovementSpeed = 3.f;
 	fJumpSpeed = 5.f;
 
 	if (!cPhysics2D)
@@ -187,6 +190,7 @@ bool CPlayer2D::Init(void)
 		collider2D = new Collider2D;
 
 	collider2D->Init(vTransform, glm::vec2(0.2f, 0.5f), Collider2D::ColliderType::COLLIDER_QUAD);
+	// collider2D->SetOffset(glm::vec2(0.f, -0.5f));
 	cPhysics2D->Init(&vTransform);
 
 	CInventoryManager::GetInstance()->Add("Player");
@@ -291,6 +295,11 @@ int CPlayer2D::GetHealth(void) {
 	return pHealth;
 }
 
+int CPlayer2D::GetMaxHealth(void)
+{
+	return pMaxHealth;
+}
+
 glm::i32vec2 CPlayer2D::GetCheckpoint(void) {
 	return checkpoint;
 }
@@ -359,7 +368,7 @@ void CPlayer2D::Update(const double dElapsedTime)
 	collider2D->position = vTransform;
 
 	//COLLISION RESOLUTION ON Y_AXIS AND X_AXIS
-	int range = 1;
+	int range = 2;
 	cPhysics2D->SetboolGrounded(false);
 
 	//Stores nearby objects and its dist to player into a vector 
@@ -379,28 +388,6 @@ void CPlayer2D::Update(const double dElapsedTime)
 				{
 					float distance = glm::length(obj->vTransform - vTransform);
 					aabbVector.push_back({ obj, distance });
-				}
-
-				if (obj->type == ENTITY_TYPE::INTERACTABLES)
-				{
-					if (((Interactables*)(obj))->interactableType == INTERACTABLE_TYPE::LEVER)
-					{
-						if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::E].bKeyPressed)
-						{
-							((Interactables*)(obj))->Activate(true);
-						}
-					}
-					else if (((Interactables*)(obj))->interactableType == INTERACTABLE_TYPE::PRESSURE_PLATE)
-					{
-						if (glm::length(obj->vTransform - vTransform) < 0.3)
-						{
-							((Interactables*)(obj))->Activate(true);
-						}
-						else
-						{
-							((Interactables*)(obj))->Activate(false);
-						}
-					}
 				}
 			}
 		}
@@ -627,12 +614,12 @@ void CPlayer2D::InputUpdate(double dt)
 	{
 		velocity.y = fMovementSpeed;
 		cPhysics2D->SetboolGrounded(false);
-		DEBUG_MSG(this << ": Frame:" << iTempFrameCounter << " Move Up");
+		//DEBUG_MSG(this << ": Frame:" << iTempFrameCounter << " Move Up");
 	}
 	else if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::S].bKeyDown)
 	{
 		//velocity.y = -fMovementSpeed;
-		DEBUG_MSG(this << ": Frame:" << iTempFrameCounter << " Move Down");
+		//DEBUG_MSG(this << ": Frame:" << iTempFrameCounter << " Move Down");
 	}
 
 	if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::D].bKeyDown)
@@ -643,7 +630,7 @@ void CPlayer2D::InputUpdate(double dt)
 
 		state = STATE::S_MOVE;
 		facing = DIRECTION::RIGHT;
-		DEBUG_MSG(this << ": Frame:" << iTempFrameCounter << " Move Right");
+		//DEBUG_MSG(this << ": Frame:" << iTempFrameCounter << " Move Right");
 	}
 	else if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::A].bKeyDown)
 	{
@@ -651,7 +638,7 @@ void CPlayer2D::InputUpdate(double dt)
 			velocity.x = Math::Max(velocity.x - fMovementSpeed, -fMovementSpeed);
 		state = STATE::S_MOVE;
 		facing = DIRECTION::LEFT;
-		DEBUG_MSG(this << ": Frame:" << iTempFrameCounter << " Move Left");
+		//DEBUG_MSG(this << ": Frame:" << iTempFrameCounter << " Move Left");
 	}
 
 	if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::SPACE].bKeyDown)
@@ -659,8 +646,13 @@ void CPlayer2D::InputUpdate(double dt)
 		if (timerArr[A_JUMP].second < 0.2)
 		{
 			timerArr[A_JUMP].first = true;
-			if(cPhysics2D->GetVelocity().y <= 0)
-				force.y = 80;
+			if (jumpCount < 2 &&
+				m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::SPACE].bKeyPressed)
+			{
+				cPhysics2D->SetboolGrounded(false);
+				velocity.y = 4.6f * (jumpCount + (1 - jumpCount * 0.6f));
+				jumpCount++;
+			}
 			else
 				velocity.y = 8.4f;
 
@@ -673,8 +665,9 @@ void CPlayer2D::InputUpdate(double dt)
 
 			if (cPhysics2D->GetboolGrounded())
 			{
-				timerArr[A_JUMP].second = 0;
+				force.y = 20;
 			}
+			cPhysics2D->SetboolGrounded(false);
 		}
 	}
 	else
@@ -683,6 +676,7 @@ void CPlayer2D::InputUpdate(double dt)
 		if (cPhysics2D->GetboolGrounded())
 		{
 			timerArr[A_JUMP].second = 0;
+			jumpCount = 0;
 		}
 	}
 
@@ -694,6 +688,7 @@ void CPlayer2D::InputUpdate(double dt)
 
 	if (m_MouseInputs[iTempFrameCounter][MOUSE_INPUTS::LMB].bButtonPressed)
 	{
+		cSoundController->PlaySoundByID(SOUND_ID::SOUND_SWING);
 		CInventoryManager::GetInstance()->Use(cInventory->sName);
 		CItem& shuriken = CInventoryManager::GetInstance()->Get(cInventory->sName)->GetItem(0);
 		if (shuriken.iCount > 0)
@@ -739,7 +734,6 @@ void CPlayer2D::InputUpdate(double dt)
 	}
 	cInventory->Update(dt, iTempFrameCounter ,m_KeyboardInputs, m_MouseInputs);
 }
-
 void CPlayer2D::SetClone(bool bIsClone)
 {
 	this->bIsClone = bIsClone;
@@ -770,6 +764,16 @@ void CPlayer2D::Attacked(int hp, CPhysics2D* bounceObj) {
 		cPhysics2D->SetBoolKnockBacked(true);
 		bounceObj->SetBoolKnockBacked(true);
 	}
+}
+
+float CPlayer2D::GetTransformX(void)
+{
+	return vTransform.x;
+}
+
+float CPlayer2D::GetTransformY(void)
+{
+	return vTransform.y;
 }
 
 void CPlayer2D::SetKeyInputs(std::vector<std::array<KeyInput, KEYBOARD_INPUTS::KEY_TOTAL>> inputs)

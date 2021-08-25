@@ -31,6 +31,7 @@ public:
 	virtual void Destroy(void);
 	virtual bool ImGuiRender();
 
+
 protected:
 	CBackgroundEntity* background;
 	double countdown;

@@ -33,6 +33,7 @@ public:
 	void RenderClone(void);
 	void RenderPlayer(void);
 	void RenderBullets(void);
+	void RenderInteractables(void);
 
 	void Update(const double dElapsedTime);
 	bool Clone(void);
@@ -40,6 +41,7 @@ public:
 	void RemoveEntity(string type, int amount);
 
 	CPlayer2D* GetPlayer();
+	CBoss2D* GetBoss();
 	int GetCurrRound(void);
 
 	void PushEnemy(CEnemy2D*);

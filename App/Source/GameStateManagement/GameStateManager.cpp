@@ -1,5 +1,4 @@
 #include "GameStateManager.h"
-
 #include <iostream>
 
 using namespace std;
@@ -7,12 +6,13 @@ using namespace std;
 /**
  @brief Constructor
  */
-CGameStateManager::CGameStateManager(void) 
+CGameStateManager::CGameStateManager(void)
 	: activeGameState(nullptr)
 	, nextGameState(nullptr)
 	, prevGameState(nullptr)
 	, pauseGameState(nullptr)
-	, bPause (false)
+	, bPause(false)
+	, bOption(false)
 {
 }
 
@@ -65,7 +65,7 @@ bool CGameStateManager::Update(const double dElapsedTime)
 		// Init the new active CGameState
  		activeGameState->Init();
 	}
-	
+
 	// Update the active CGameState
 	if (activeGameState && !pauseGameState)
 	{
@@ -99,17 +99,20 @@ bool CGameStateManager::Update(const double dElapsedTime)
  */
 bool CGameStateManager::Render(void)
 {
-	if (pauseGameState)
-	{
-		pauseGameState->Render();
-		pauseGameState->ImGuiRender();
-	}
-	else if (activeGameState)
+	if (activeGameState)
 	{
 		activeGameState->Render();
 		if (!activeGameState->ImGuiRender())
 		{
 			return false;
+		}
+		if (pauseGameState)
+		{
+			//pauseGameState->Render();
+			if (!pauseGameState->ImGuiRender())
+			{
+				return false;
+			}
 		}
 	}
 
@@ -118,7 +121,7 @@ bool CGameStateManager::Render(void)
 
 /**
  @brief Add a new CGameState to this
- @param _name A const std::string& variable which is the name of the CGameState 
+ @param _name A const std::string& variable which is the name of the CGameState
  @param _scene A CGameState* variable which is the CGameState
  */
 bool CGameStateManager::AddGameState(const std::string& _name, CGameStateBase* _scene)
@@ -228,4 +231,5 @@ void CGameStateManager::OffPauseGameState()
 {
 	//Cannot delete imgui context inside the gamestate, must be handled after update
 	bPause = false;
+	bOption = false;
 }

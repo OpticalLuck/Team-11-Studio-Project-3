@@ -69,6 +69,12 @@ class CBoss2D : public CEnemy2D
 		void SetMaxPauseDuration(float val);
 		void SetMinPauseDuration(float val);
 
+
+		//returns transform x
+		float GetTransformX(void);
+		//returns transform y
+		float GetTransformY(void);
+
 	protected:
 		int id;
 

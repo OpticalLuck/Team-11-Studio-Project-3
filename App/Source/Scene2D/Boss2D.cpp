@@ -228,6 +228,16 @@ void CBoss2D::SetMinPauseDuration(float val) {
 	minPauseDuration = val;
 }
 
+float CBoss2D::GetTransformX(void)
+{
+	return vTransform.x;
+}
+
+float CBoss2D::GetTransformY(void)
+{
+	return vTransform.y;
+}
+
 void CBoss2D::SetAtkTypes(std::vector<CBoss2D::ATK> atkTypes) {
 	this->atkTypes = atkTypes;
 }

@@ -97,15 +97,23 @@ public:
 	void UpdateSpecifications(void);
 
 	void UpdateWindowSize();
-
 	// Convert an index number of a tile to a coordinate in UV Space
 	float ConvertIndexToUVSpace(const AXIS sAxis, const int iIndex, const bool bInvert, const float fOffset = 0.0f);
+	float ConvertIndexToXScreenSpace(const float posX, const float transformX);
+	float ConvertIndexToYScreenSpace(const float posY, const float transformY);
+	glm::vec2 ConvertIndexToScreenSpace(const glm::vec2 pos, const glm::vec2 transform);
 	glm::vec2 ConvertIndexToUVSpace(const glm::vec2 pos);
 	glm::vec2 ConvertUVSpaceToIndex(const glm::vec2 pos);
+
+	glm::vec2 GetScreenSize();
 
 	glm::vec2 GetWindowSize();
 	void LoadSettings();
 	void SaveSettings();
+	void UpdateSoundSettings();
+	void UpdateMasterVolume();
+	void UpdateBGMVolume(float BGM_VOLUME);
+	void UpdateSFXVolume(float SFX_VOLUME);
 
 protected:
 	// Constructor

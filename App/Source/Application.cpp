@@ -179,10 +179,12 @@ bool Application::Init(void)
 		glfwTerminate();
 		return false;
 	}
+	int window_width = 0 , window_height = 0;
 
+	glm::vec2 screensize = CSettings::GetInstance()->GetScreenSize();
+	glm::vec2 windowposition = glm::vec2(screensize.x / 2 - cSettings->iWindowWidth / 2, screensize.y / 2 - cSettings->iWindowHeight / 2);
 	// Set OpenGL window position
-	glfwSetWindowPos(cSettings->pWindow, cSettings->iWindowPosX, cSettings->iWindowPosY);
-
+	glfwSetWindowPos(cSettings->pWindow, windowposition.x, windowposition.y);
 	//This function makes the context of the specified window current on the calling thread. 
 	glfwMakeContextCurrent(cSettings->pWindow);
 
@@ -344,6 +346,7 @@ void Application::Destroy(void)
 	CTextureManager::GetInstance()->Destroy();
 	// Destroy the keyboard instance
 	CKeyboardController::GetInstance()->Destroy();
+	// Destroy the settings instance
 
 	// Destroy the CFPSCounter instance
 	if (cFPSCounter)
@@ -352,13 +355,7 @@ void Application::Destroy(void)
 		cFPSCounter = NULL;
 	}
 
-	//// Destroy the cScene2D instance
-	//if (cScene2D)
-	//{
-	//	cScene2D->Destroy();
-	//	cScene2D = NULL;
-	//}
-
+	
 	m_ImGuiWindow->Shutdown();
 	m_ImGuiWindow->Destroy();
 
@@ -366,6 +363,8 @@ void Application::Destroy(void)
 	glfwDestroyWindow(cSettings->pWindow);
 	//Finalize and clean up GLFW
 	glfwTerminate();
+
+	CSettings::GetInstance()->Destroy();
 }
 
 /**

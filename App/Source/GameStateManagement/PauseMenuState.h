@@ -49,6 +49,8 @@ protected:
 	ButtonData backButtonData;
 	ButtonData applyButtonData;
 
+	ImGuiWindowFlags option_window;
+
 	bool pendingChange;
 
 	bool UpdateMenu(ImGuiWindowFlags window_flags);

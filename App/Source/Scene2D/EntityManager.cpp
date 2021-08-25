@@ -103,6 +103,16 @@ bool CEntityManager::EntityManagerInit(void)
 			DEBUG_MSG("ERROR: TOO MANY BOSS IN LEVEL. THERE SHOULD ONLY BE ONE BOSS");
 			return false;
 		}
+		if (cBoss2D->Init() == false)
+		{
+			cout << "Failed to load CBoss2D" << endl;
+			return false;
+		}
+	}
+
+	for (Interactables* i : m_interactableList)
+	{
+		i->Init();
 	}
 
 	//clone init
@@ -219,6 +229,11 @@ CPlayer2D* CEntityManager::GetPlayer()
 	return cPlayer2D;
 }
 
+CBoss2D* CEntityManager::GetBoss()
+{
+	return cBoss2D;
+}
+
 std::vector<CPlayer2D*> CEntityManager::GetAllPlayers(void) 
 {
 	std::vector<CPlayer2D*> arr;
@@ -268,6 +283,18 @@ void CEntityManager::RenderBullets(void) {
 	}
 }
 
+void CEntityManager::RenderInteractables(void)
+{
+	for (Interactables* i : m_interactableList)
+	{
+		i->PreRender();
+		i->Render();
+		i->PostRender();
+
+		i->RenderCollider();
+	}
+}
+
 void CEntityManager::RenderClone(void)
 {
 	for (unsigned i = 0; i < m_cloneList.size(); ++i)
@@ -294,16 +321,23 @@ void CEntityManager::RenderPlayer(void)
 
 void CEntityManager::Update(const double dElapsedTime)
 {
+	
+	for (Interactables* i : m_interactableList)
+	{
+		i->Update(dElapsedTime);
+	}
+
+	for (unsigned i = 0; i < m_cloneList.size(); ++i)
+	{
+		m_cloneList[i]->Update(dElapsedTime);
+	}
+
 	// Call the cPlayer2D's update method before Map2D as we want to capture the inputs before map2D update
 	cPlayer2D->Update(dElapsedTime);
 
 	if (cBoss2D)
 		cBoss2D->Update(dElapsedTime);
 
-	for (unsigned i = 0; i < m_cloneList.size(); ++i)
-	{
-		m_cloneList[i]->Update(dElapsedTime);
-	}
 
 	// Call all the cEnemy2D's update method before Map2D 
 	// as we want to capture the updates before map2D update
