@@ -53,6 +53,8 @@ class Camera2D;
 class CPlayer2D : public CEntity2D, public LivingEntity2D
 {
 public:
+	int iTempFrameCounter; // move to game manager/scene2D/PlayGameState later
+	int iFrameCounterEnd = 0;
 	enum class STATE
 	{
 		S_IDLE = 0,
@@ -154,7 +156,6 @@ protected:
 	std::vector<std::array<KeyInput, KEYBOARD_INPUTS::KEY_TOTAL>> m_KeyboardInputs;
 	std::vector<std::array<MouseInput, MOUSE_INPUTS::MOUSE_TOTAL>> m_MouseInputs;
 
-	int iTempFrameCounter; // move to game manager/scene2D/PlayGameState later
 
 	glm::vec2 vOldTransform;
 

@@ -72,7 +72,7 @@ Collision Collider2D::CheckAABBCircleCollision(Collider2D* aabb, Collider2D* cir
 	glm::vec2 difference = (circle->position + circle->offset) - (aabb->position + aabb->offset);
 	glm::vec2 clamped = glm::clamp(difference, -aabb->vec2Dimensions, aabb->vec2Dimensions);
 	// now that we know the the clamped values, add this to AABB_center and we get the value of box closest to circle
-	glm::vec2 closest = aabb->position + clamped;
+	glm::vec2 closest = (aabb->position + aabb->offset) + clamped;
 	// now retrieve vector between center circle and closest point AABB and check if length < radius
 	difference = closest - (circle->position + circle->offset);
 
@@ -338,7 +338,7 @@ void Collider2D::Render(void)
 
 	glm::vec2 objCamPos = (position + offset)- cameraPos + tileoffset;
 
-	glm::vec2 actualPos = CSettings::GetInstance()->ConvertIndexToUVSpace(objCamPos);
+	glm::vec2 actualPos = CSettings::GetInstance()->ConvertIndexToUVSpace(objCamPos) * Camera2D::GetInstance()->getZoom();
 
 	float clampOffset = CSettings::GetInstance()->ConvertIndexToUVSpace(CSettings::AXIS::x, 1, false) / 2;
 	clampOffset = (clampOffset + 1);
@@ -351,6 +351,7 @@ void Collider2D::Render(void)
 		transform = glm::translate(transform, glm::vec3(actualPos.x, actualPos.y, 0.f));
 		transform = glm::rotate(transform, angle, glm::vec3(0, 0, 1));
 		transform = glm::scale(transform, glm::vec3(CSettings::GetInstance()->TILE_WIDTH, CSettings::GetInstance()->TILE_HEIGHT, 1.f));
+		transform = glm::scale(transform, glm::vec3(Camera2D::GetInstance()->getZoom()));
 		CShaderManager::GetInstance()->activeShader->setMat4("transform", transform);
 
 		// render box

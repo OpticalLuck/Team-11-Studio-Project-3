@@ -266,7 +266,7 @@ bool CPlayer2D::Init(glm::i32vec2 spawnpoint, int iCloneIndex)
 
 	jumpCount = 0;
 
-	fMovementSpeed = 5.f;
+	fMovementSpeed = 3.f;
 	fJumpSpeed = 5.f;
 
 	// Get the handler to the CSoundController
@@ -522,9 +522,10 @@ void CPlayer2D::Render(void)
 	glm::vec2 IndexPos = vTransform;
 
 	glm::vec2 actualPos = IndexPos - cameraPos + offset;
-	actualPos = cSettings->ConvertIndexToUVSpace(actualPos);
+	actualPos = cSettings->ConvertIndexToUVSpace(actualPos) * Camera2D::GetInstance()->getZoom();
 
 	transform = glm::translate(transform, glm::vec3(actualPos.x, actualPos.y, 0.f));
+	transform = glm::scale(transform, glm::vec3(Camera2D::GetInstance()->getZoom()));
 
 	if (facing == DIRECTION::LEFT)
 		transform = glm::rotate(transform, glm::radians(180.f), glm::vec3(0.f, 1.f, 0.f));
@@ -643,18 +644,19 @@ void CPlayer2D::InputUpdate(double dt)
 
 	if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::SPACE].bKeyDown)
 	{
+		if (jumpCount < 2 &&
+			m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::SPACE].bKeyPressed)
+		{
+			cPhysics2D->SetboolGrounded(false);
+			velocity.y = 5.f * (jumpCount + (1 - jumpCount * 0.6f));
+			jumpCount++;
+			timerArr[A_JUMP].second = 0.1;
+		}
+
 		if (timerArr[A_JUMP].second < 0.2)
 		{
 			timerArr[A_JUMP].first = true;
-			if (jumpCount < 2 &&
-				m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::SPACE].bKeyPressed)
-			{
-				cPhysics2D->SetboolGrounded(false);
-				velocity.y = 4.6f * (jumpCount + (1 - jumpCount * 0.6f));
-				jumpCount++;
-			}
-			else
-				velocity.y = 8.4f;
+			force.y = 20;
 
 			cPhysics2D->SetboolGrounded(false);
 			cPhysics2D->SetBoolKnockBacked(false);
@@ -718,16 +720,14 @@ void CPlayer2D::InputUpdate(double dt)
 			shuriken.Use();
 			
 			CObject2D*kunaiobj = ObjectFactory::CreateObject(OBJECT_TYPE::BULLETS_KUNAI);
-			kunaiobj->Init();
-			kunaiobj->vTransform = vTransform;
-
-			glm::vec2 direction(0.f, 0.f);
+			float angle = 0;
 			if (facing == DIRECTION::LEFT)
-				direction = glm::vec2(-1.f, 0);
+				angle = 180;
 			else
-				direction = glm::vec2(1.f, 0);
-			glm::vec2 force = direction * 4.f;
-				kunaiobj->GetPhysics()->SetVelocity(force);
+				angle = 0;
+
+			dynamic_cast<Bullet2D*>(kunaiobj)->Init(true, angle, 10);
+			kunaiobj->vTransform = vTransform;
 
 			CEntityManager::GetInstance()->PushBullet(static_cast<Bullet2D*>(kunaiobj));
 		}

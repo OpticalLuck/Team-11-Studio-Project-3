@@ -190,6 +190,8 @@ void CMobEnemy2D::Attacked(int hp, CPhysics2D* bounceObj) {
 	pHealth = Math::Max(0, pHealth - 1);
 	pShield = pMaxShield + 1; //Offset by 1 frame for better synchronisation (FUTURE JEVON IF YOU KNOW YOU KNOW IF NOT THEN LMAO)
 
+	std::cout << "HEALTH: " << pHealth << std::endl;
+
 	//Collision response between the objects
 	if (bounceObj) {
 		glm::vec2 ogVel = cPhysics2D->GetVelocity();
@@ -224,8 +226,6 @@ void CMobEnemy2D::SetClampSlides(bool clamp) {
 }
 
 void CMobEnemy2D::Update(const double dElapsedTime) {
-	//Raycast  test
-
 	if (!inView) { //Do not activate if enemy is out of view
 		if (WithinProjectedCamera(cEntityManager->GetPlayer()))
 			inView = true;
@@ -504,16 +504,6 @@ void CMobEnemy2D::CollisionUpdate(void) {
 
 			vTransform = collider2D->position;
 			obj->vTransform = obj->GetCollider()->position;
-
-			if (obj->type == ENTITY_TYPE::TILE)
-			{
-				if (dynamic_cast<Boulder2D*>(obj))
-				{
-					glm::vec2 direction = glm::normalize(obj->vTransform - vTransform);
-					obj->GetPhysics()->SetForce(glm::vec2(120.f, 0) * direction);
-					cPhysics2D->SetVelocity(glm::vec2(0.f));
-				}
-			}
 		}
 	}
 
@@ -570,7 +560,7 @@ void CMobEnemy2D::Render(void) {
 	glm::vec2 IndexPos = vTransform;
 
 	glm::vec2 actualPos = IndexPos - cameraPos + offset;
-	actualPos = cSettings->ConvertIndexToUVSpace(actualPos);
+	actualPos = cSettings->ConvertIndexToUVSpace(actualPos) * Camera2D::GetInstance()->getZoom();
 
 	float clampOffset = cSettings->ConvertIndexToUVSpace(CSettings::AXIS::x, 1, false);
 	clampOffset = (clampOffset + 1);
@@ -581,6 +571,7 @@ void CMobEnemy2D::Render(void) {
 		return; //Exit code if enemy is too far to be rendered
 
 	transform = glm::translate(transform, glm::vec3(actualPos.x, actualPos.y, 0.f));
+	transform = glm::scale(transform, glm::vec3(Camera2D::GetInstance()->getZoom()));
 
 	if (dir == DIRECTION::LEFT) //Rotate if facing other way
 		transform = glm::rotate(transform, glm::radians(180.f), glm::vec3(0.f, 1.f, 0.f));

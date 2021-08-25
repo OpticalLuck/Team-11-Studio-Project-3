@@ -36,6 +36,7 @@ class RayCast2D
 		void SetTarget(CEntity2D* target);
 
 		float GetAngle(void);
+		void SetEntityArr(std::vector<CEntity2D*> entityArr);
 
 	private:
 		//Misc information

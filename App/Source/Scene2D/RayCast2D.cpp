@@ -105,7 +105,7 @@ bool RayCast2D::RayCheck(void) {
 			Collision data = collider2D->CollideWith(collided);
 
 			//Collision successful
-			if (std::get<0>(data)) {
+ 			if (std::get<0>(data)) {
 				if (collided->colliderType == Collider2D::ColliderType::COLLIDER_QUAD)
 					collider2D->ResolveAABB(collided, data);
 				else if (collided->colliderType == Collider2D::ColliderType::COLLIDER_CIRCLE)
@@ -145,6 +145,10 @@ bool RayCast2D::RayCheck(void) {
 	return true;
 }
 
+void RayCast2D::SetEntityArr(std::vector<CEntity2D*> entityArr) {
+	this->entityArr = entityArr;
+}
+
 void RayCast2D::PreRender(void) {
 	// Use the shader defined for this class
 	CShaderManager::GetInstance()->Use("2DShader");
@@ -165,6 +169,7 @@ void RayCast2D::Render(void) {
 	glBindVertexArray(VAO);
 	
 	transform = glm::mat4(1.0f);
+	transform = glm::scale(transform, glm::vec3(Camera2D::GetInstance()->getZoom()));
 	//transform = glm::translate(transform, glm::vec3(0, 0, 0.f));
 
 	unsigned int transformLoc = glGetUniformLocation(CShaderManager::GetInstance()->activeShader->ID, "transform");

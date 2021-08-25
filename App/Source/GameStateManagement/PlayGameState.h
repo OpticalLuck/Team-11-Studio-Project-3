@@ -69,6 +69,7 @@ protected:
 	Camera2D* cCamera;
 	CTextureManager* cTextureManager;
 	CInventory* cPlayerInventory;
+	CSoundController* cSoundController;
 
 	CPlayer2D* cPlayer;
 	CEntityManager* cEntityManager;

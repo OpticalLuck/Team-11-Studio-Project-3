@@ -38,6 +38,16 @@
 
 #include "EntityManager.h"
 
+struct FrameStorage
+{
+	unsigned int iCounter = 0;
+	unsigned int iCurrentFrame = 0;
+	unsigned int iStoredFrame = 0;
+	unsigned int iEndFrame = 0;
+
+	glm::vec2 spawnPos = { 0 , 0 };
+};
+
 class CScene2D : public CSingletonTemplate<CScene2D>
 {
 	friend CSingletonTemplate<CScene2D>;
@@ -57,12 +67,12 @@ public:
 	// PostRender
 	void PostRender(void);
 
-	void CreateIMGUI();
-	void DeleteIMGUI();
-
 	bool isCompleted;
 
 	float fCooldown = 0.f;
+
+	FrameStorage m_FrameStorage;
+
 protected:
 	// The handler containing the instance of the 2D Map
 	CMap2D* cMap2D;

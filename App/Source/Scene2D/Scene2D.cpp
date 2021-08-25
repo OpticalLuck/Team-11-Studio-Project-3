@@ -135,6 +135,7 @@ bool CScene2D::Init(void)
 	// Load the sounds into CSoundController
 	cSoundController = CSoundController::GetInstance();
 	cSoundController->PlaySoundByID(SOUND_ID::BGM_HENESYS);
+	//CSettings::SongPlaylist();
 
 	CInputHandler = CInputHandler::GetInstance();
 
@@ -149,10 +150,21 @@ bool CScene2D::Init(void)
 */
 bool CScene2D::Update(const double dElapsedTime)
 {
+	++m_FrameStorage.iCurrentFrame;
+
 	cEntityManager->Update(dElapsedTime);
 
 	// Call the Map2D's update method
 	cMap2D->Update(dElapsedTime);
+
+	if (CMouseController::GetInstance()->GetMouseScrollStatus(CMouseController::SCROLL_TYPE_YOFFSET) > 0)
+	{
+		Camera2D::GetInstance()->UpdateZoom(Camera2D::GetInstance()->getTargetZoom() + 0.1f);
+	}
+	if (CMouseController::GetInstance()->GetMouseScrollStatus(CMouseController::SCROLL_TYPE_YOFFSET) < 0)
+	{
+		Camera2D::GetInstance()->UpdateZoom(Camera2D::GetInstance()->getTargetZoom() - 0.1f);
+	}
 
 	if (fCooldown > 0)
 	{
@@ -174,6 +186,29 @@ bool CScene2D::Update(const double dElapsedTime)
 		{
 			cout << "Runtime error: " << e.what();
 			return false;
+		}
+	}
+
+	// Paradoxium ability
+	if (cKeyboardController->IsKeyPressed(GLFW_KEY_ENTER))
+	{
+		++m_FrameStorage.iCounter;
+		switch (m_FrameStorage.iCounter)
+		{
+		case 1:
+			m_FrameStorage.iStoredFrame = m_FrameStorage.iCurrentFrame;
+			m_FrameStorage.spawnPos = cPlayer2D->vTransform;
+			break;
+		case 2:
+			CPlayer2D* clone = CEntityManager::GetInstance()->Clone();
+			clone->vTransform = m_FrameStorage.spawnPos;
+			clone->iTempFrameCounter = m_FrameStorage.iStoredFrame;
+			clone->iFrameCounterEnd = m_FrameStorage.iCurrentFrame;
+			m_FrameStorage.iStoredFrame = 0;
+			cPlayer2D->vTransform = m_FrameStorage.spawnPos;
+
+			m_FrameStorage.iCounter = 0;
+			break;
 		}
 	}
 
@@ -218,6 +253,14 @@ bool CScene2D::Update(const double dElapsedTime)
 	{
 		cSoundController->PlaySoundByID(SOUND_ID::SOUND_EXPLOSION);
 		return false;
+	}
+	if (cPlayer2D->GetHealth() < 3) // change bgm if the health is dying 
+	{
+		if (!cSoundController->isCurrentlyPlaying(cSoundController->GetNamebyID(SOUND_ID::SOUND_TROUBLE)))
+		{
+			cSoundController->StopPlayBack();
+			cSoundController->PlaySoundByID(SOUND_ID::SOUND_TROUBLE);
+		}
 	}
 	return true;
 }
