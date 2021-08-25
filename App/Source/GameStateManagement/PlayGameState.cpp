@@ -242,7 +242,6 @@ bool CPlayGameState::ImGuiRender()
 		ImGui::SetWindowPos(ImVec2(0.0f, 0.0f));
 		ImGui::SetWindowSize(ImVec2((float)cSettings->iWindowWidth, (float)cSettings->iWindowHeight));
 		ImGui::SetWindowFontScale(1.5f * relativeScale_y);
-
 		// Display the FPS
 		ImGui::TextColored(ImVec4(1, 1, 0, 1), "FPS: %d", cFPSCounter->GetFrameRate());
 		ImGui::SameLine();
