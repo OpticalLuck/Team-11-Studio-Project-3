@@ -21,7 +21,8 @@ CScene2D::CScene2D(void)
 	, isCompleted(false)
 	, cEntityManager(NULL)
 	, cameraHandler(NULL)
-
+	, cInventoryM(NULL)
+	, transform(glm::mat4(1))
 {
 }
 
@@ -95,7 +96,7 @@ bool CScene2D::Init(void)
 		return false;
 	}
 	// Load the map into an array
-	if (cMap2D->LoadMap("Maps/DM2213_Map_Level_Test.csv") == false)
+	if (cMap2D->LoadMap("Maps/DM2213_Map_Level_01.csv") == false)
 	{
 		// The loading of a map has failed. Return false
 		return false;

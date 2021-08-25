@@ -101,3 +101,33 @@ CSpriteAnimation* CMeshBuilder::GenerateSpriteAnimation(unsigned numRow, unsigne
 
 	return mesh;
 }
+
+CMesh* CMeshBuilder::GenerateLine(glm::vec2 endPos, glm::vec2 startPos, glm::vec4 color) {
+
+	Vertex v;
+	std::vector<Vertex> vertex_buffer_data;
+	std::vector<GLuint> index_buffer_data;
+
+	v.position = glm::vec3(startPos.x, startPos.y, 0);
+	v.color = color;
+	vertex_buffer_data.push_back(v);
+
+	v.position = glm::vec3(endPos.x, endPos.y, 0);
+	v.color = color;
+	vertex_buffer_data.push_back(v);
+
+	index_buffer_data.push_back(0);
+	index_buffer_data.push_back(1);
+
+	CMesh* mesh = new CMesh();
+
+	glBindBuffer(GL_ARRAY_BUFFER, mesh->vertexBuffer);
+	glBufferData(GL_ARRAY_BUFFER, vertex_buffer_data.size() * sizeof(Vertex), &vertex_buffer_data[0], GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->indexBuffer);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, index_buffer_data.size() * sizeof(GLuint), &index_buffer_data[0], GL_STATIC_DRAW);
+
+	mesh->indexSize = index_buffer_data.size();
+	mesh->mode = CMesh::DRAW_LINES;
+
+	return mesh;
+}

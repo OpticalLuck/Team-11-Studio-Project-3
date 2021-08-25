@@ -41,6 +41,7 @@ bool Projectiles::Init()
 	cPhysics2D->Init(&vTransform);
 	cPhysics2D->MAX_SPEED = 50.f;
 	cPhysics2D->FRICTONAL_COEFFICIENT = 0.8f;
+	cPhysics2D->SetMass(1.5f);
 
 	collider2D->Init(vTransform, glm::vec2(0.2f), Collider2D::ColliderType::COLLIDER_CIRCLE);
 

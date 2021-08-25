@@ -1,8 +1,11 @@
 #include "RayCast2D.h"
 
-#include "../App/Source/Scene2D/Map2D.h"
-#include "../Library/Source/Primitives/Collider2D.h"
+#include "../Scene2D/Map2D.h"
+#include "Primitives/Collider2D.h"
 #include "Primitives/Entity2D.h"
+#include "RenderControl/ShaderManager.h"
+#include "Primitives/MeshBuilder.h"
+#include "Primitives/Camera2D.h"
 
 RayCast2D::RayCast2D(void) {
 	originPoint = targetPoint = currentPoint = glm::vec2(0, 0);
@@ -11,38 +14,67 @@ RayCast2D::RayCast2D(void) {
 	collider2D->SetbEnabled(true);
 	collider2D->Init(currentPoint, glm::vec2(0.1f, 0.1f));
 
-	currentTarget = nullptr;
+	transform = glm::mat4();
+
+	VAO = VBO = 0;
+
+	client = nullptr;
 	cMap2D = nullptr;
+	castedEntity = nullptr;
+	cSettings = nullptr;
+	camera2D = nullptr;
 }
 
 RayCast2D::~RayCast2D(void) {
 	delete collider2D;
 	collider2D = nullptr;
 
-	currentTarget = nullptr;
+	client = nullptr;
 	cMap2D = nullptr;
+	castedEntity = nullptr;
+	cSettings = nullptr;
+	camera2D = nullptr;
 
 	entityArr.clear();
+
+	//Delete buffers when done
+	glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(1, &VBO);
 }
 
 void RayCast2D::Init(CEntity2D* currentTarget, std::vector<CEntity2D*> entityArr) {
-	this->currentTarget = currentTarget;
+	this->client = currentTarget;
 	this->entityArr = entityArr;
 
 	cMap2D = CMap2D::GetInstance();
+	cSettings = CSettings::GetInstance();
+	camera2D = Camera2D::GetInstance();
+
+	//Initialise rendering
+	glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &VBO);
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+}
+
+void RayCast2D::SetTarget(CEntity2D* target) {
+	castedEntity = target;
 }
 
 bool RayCast2D::RayCheck(void) {
-	//Reset current point
+	//Reset current point and update targetPoint
+	originPoint = client->vTransform;
 	currentPoint = originPoint;
+	if (castedEntity)
+		targetPoint = castedEntity->vTransform;
 
 	//Initialise speed, etc
 	glm::vec2 dirVec = glm::normalize(targetPoint - originPoint);
-	glm::vec2 spdVec = dirVec * 0.5f;
+	glm::vec2 spdVec = dirVec * 0.1f;
 
 	std::vector<glm::i32vec2> positionChecked; //Areas where the ray cast have already checked
 
-	while ((targetPoint - currentPoint).length() > dirVec.length()) {
+	while (glm::length(targetPoint - currentPoint) > glm::length(spdVec)) {
 		currentPoint += spdVec;
 		collider2D->SetPosition(currentPoint);
 
@@ -60,7 +92,7 @@ bool RayCast2D::RayCheck(void) {
 		for (unsigned i = 0; i < entityArr.size(); i++) {
 			CEntity2D* entity = entityArr[i];
 
-			if (entity == currentTarget) //Ignore if its the client 
+			if (entity == client) //Ignore if its the client 
 				continue;
 
 			//Collision check
@@ -74,14 +106,17 @@ bool RayCast2D::RayCheck(void) {
 				else if (collided->colliderType == Collider2D::ColliderType::COLLIDER_CIRCLE)
 					collider2D->ResolveAABBCircle(collided, data, Collider2D::ColliderType::COLLIDER_QUAD);
 
-				return true;
+				if (entity == castedEntity)
+					return true;
+				else
+					return false;
 			}
 		}
 
 		//Map based checking
 		CObject2D* obj = cMap2D->GetCObject(posToCheck.x, posToCheck.y);
 
-		if (obj && obj != currentTarget) { //If object is available, check object
+		if (obj && obj != client) { //If object is available, check object
 			Collider2D* collided = obj->GetCollider();
 			Collision data = collider2D->CollideWith(collided);
 
@@ -92,10 +127,64 @@ bool RayCast2D::RayCheck(void) {
 				else if (collided->colliderType == Collider2D::ColliderType::COLLIDER_CIRCLE)
 					collider2D->ResolveAABBCircle(collided, data, Collider2D::ColliderType::COLLIDER_QUAD);
 
-				return true;
+				if (obj == castedEntity)
+					return true;
+				else
+					return false;
 			}
 		}
 	}
 
-	return false;
+
+
+	return true;
+}
+
+void RayCast2D::PreRender(void) {
+	// Use the shader defined for this class
+	CShaderManager::GetInstance()->Use("2DShader");
+}
+
+void RayCast2D::Render(void) {
+
+
+	//Camera init
+	glm::vec2 offset = glm::i32vec2((cSettings->NUM_TILES_XAXIS / 2), (cSettings->NUM_TILES_YAXIS / 2));
+	glm::vec2 cameraPos = camera2D->getCurrPos();
+
+	glm::vec2 uvStart = cSettings->ConvertIndexToUVSpace(originPoint - cameraPos + offset);
+	glm::vec2 uvEnd = cSettings->ConvertIndexToUVSpace(currentPoint - cameraPos + offset);
+
+	CMesh* mesh = CMeshBuilder::GenerateLine(uvEnd, uvStart, glm::vec4(0, 1, 0, 1));
+
+	glBindVertexArray(VAO);
+	
+	transform = glm::mat4(1.0f);
+	//transform = glm::translate(transform, glm::vec3(0, 0, 0.f));
+
+	unsigned int transformLoc = glGetUniformLocation(CShaderManager::GetInstance()->activeShader->ID, "transform");
+	unsigned int colorLoc = glGetUniformLocation(CShaderManager::GetInstance()->activeShader->ID, "runtime_color");
+	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
+	glUniform4f(colorLoc, 0, 1, 0, 0);
+
+	glBindTexture(GL_TEXTURE0, NULL);
+	mesh->Render();
+
+	delete mesh;
+	mesh = nullptr;
+	
+	glBindVertexArray(0);
+}
+
+void RayCast2D::PostRender(void) {
+	//Render bounding box
+	collider2D->PreRender();
+	collider2D->Render();
+	collider2D->PostRender();
+}
+
+void RayCast2D::RenderRayCast(void) {
+	PreRender();
+	Render();
+	PostRender();
 }
