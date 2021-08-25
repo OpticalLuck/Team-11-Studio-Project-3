@@ -43,7 +43,6 @@ public:
 
 	virtual bool ImGuiRender();
 
-	virtual bool OptionImGui();
 protected:
 
 	CLevelEditor* cLevelEditor;

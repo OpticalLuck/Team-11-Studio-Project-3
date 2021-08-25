@@ -86,12 +86,6 @@ bool CPlayGameState::Init(void)
 	cMap2D = CMap2D::GetInstance();
 	cCamera = Camera2D::GetInstance();
 
-	CImageLoader* il = CImageLoader::GetInstance();
-	resumeButtonData.fileName = "Image\\GUI\\ResumeButton.png";
-	resumeButtonData.textureID = il->LoadTextureGetID(resumeButtonData.fileName.c_str(), false);
-	exitButtonData.fileName = "Image\\GUI\\ExitButton.png";
-	exitButtonData.textureID = il->LoadTextureGetID(exitButtonData.fileName.c_str(), false);
-
 	//optionButtonData.fileName = "Image\\GUI\\OptionButton.png";
 	//optionButtonData.textureID = il->LoadTextureGetID(optionButtonData.fileName.c_str(), false);
 
@@ -109,14 +103,7 @@ bool CPlayGameState::Update(const double dElapsedTime)
 	if (CKeyboardController::GetInstance()->IsKeyReleased(GLFW_KEY_ESCAPE))
 	{
 		cGameStateManager->bOption = true;
-	}
-	if (cGameStateManager->bOption)
-	{
-		if (CKeyboardController::GetInstance()->IsKeyReleased(GLFW_KEY_F1))
-		{
-			//cGameStateManager->bOption = false;
-			CGameStateManager::GetInstance()->OffPauseGameState();
-		}
+		CGameStateManager::GetInstance()->SetPauseGameState("PauseState");
 	}
 	if (!cGameStateManager->bOption)
 	{
@@ -361,63 +348,3 @@ bool CPlayGameState::ImGuiRender()
 		return true;
 	}
 }
-
-bool CPlayGameState::OptionImGui()
-{
-	option_window |= ImGuiWindowFlags_NoTitleBar;
-	option_window |= ImGuiWindowFlags_NoScrollbar;
-	//window_flags |= ImGuiWindowFlags_MenuBar;
-	option_window |= ImGuiWindowFlags_NoBackground;
-	option_window |= ImGuiWindowFlags_NoMove;
-	option_window |= ImGuiWindowFlags_NoCollapse;
-	option_window |= ImGuiWindowFlags_NoNav;
-
-	float buttonWidth = 256;
-	float buttonHeight = 108;
-	// 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
-	{
-		static float f = 0.0f;
-		static int counter = 0;
-
-		// Create a window called "Hello, world!" and append into it.
-		ImGui::Begin("Main Menu", NULL, window_flags);
-		ImGui::SetWindowPos(ImVec2(CSettings::GetInstance()->iWindowWidth / 2.0 - buttonWidth / 2.0,
-			CSettings::GetInstance()->iWindowHeight / 3.0));				// Set the top-left of the window at (10,10)
-		ImGui::SetWindowSize(ImVec2(CSettings::GetInstance()->iWindowWidth, CSettings::GetInstance()->iWindowHeight));
-
-
-		//Added rounding for nicer effect
-		ImGuiStyle& style = ImGui::GetStyle();
-		style.FrameRounding = 200.0f;
-		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.f, 0.f, 0.f, 0.f));
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.f, 0.f, 0.f, 0.f));
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.f, 0.f, 0.f, 0.f));
-
-
-		// Play button
-		if (ImGui::ImageButton((ImTextureID)resumeButtonData.textureID,
-			ImVec2(buttonWidth, buttonHeight), ImVec2(0.0, 0.0), ImVec2(1.0, 1.0)))
-		{
-			// Reset the CKeyboardController
-			CKeyboardController::GetInstance()->Reset();
-
-			// Load the menu state
-			cout << "Returning to PlayGameState" << endl;
-			CGameStateManager::GetInstance()->OffPauseGameState();
-		}
-		//end button
-		if (ImGui::ImageButton((ImTextureID)exitButtonData.textureID,
-			ImVec2(buttonWidth, buttonHeight), ImVec2(0.0, 0.0), ImVec2(1.0, 1.0)))
-		{
-
-			// Reset the CKeyboardController
-			CKeyboardController::GetInstance()->Reset();
-
-			return false;
-		}
-		ImGui::PopStyleColor(3);
-		ImGui::End();
-	}
-	return true;
-}
-

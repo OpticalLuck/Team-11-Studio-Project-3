@@ -117,7 +117,6 @@ public:
 	virtual void Destroy(void);
 
 	virtual bool ImGuiRender();
-	virtual bool OptionImGui();
 protected:
 
 	EditorProperties eProperties;

@@ -33,11 +33,6 @@ public:
 
 	virtual bool ImGuiRender();
 
-	virtual bool OptionImGui();
-
-	//virtual bool OptionInit();
-	//virtual bool RenderOption();
-
 protected:
 	// The handler to the CScene2D instance
 	CScene2D* cScene2D;

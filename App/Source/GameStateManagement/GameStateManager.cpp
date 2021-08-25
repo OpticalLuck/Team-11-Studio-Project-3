@@ -99,24 +99,17 @@ bool CGameStateManager::Update(const double dElapsedTime)
  */
 bool CGameStateManager::Render(void)
 {
-	if (pauseGameState)
-	{
-		pauseGameState->Render();
-		pauseGameState->ImGuiRender();
-	}
-	else if (activeGameState)
+	if (activeGameState)
 	{
 		activeGameState->Render();
 		if (!activeGameState->ImGuiRender())
 		{
 			return false;
 		}
-		if (bOption)
+		if (pauseGameState)
 		{
-			if (!activeGameState->OptionImGui())
-			{
-				return false;
-			}
+			//pauseGameState->Render();
+			pauseGameState->ImGuiRender();
 		}
 	}
 }
@@ -232,6 +225,6 @@ bool CGameStateManager::SetPauseGameState(const std::string& _name)
 void CGameStateManager::OffPauseGameState()
 {
 	//Cannot delete imgui context inside the gamestate, must be handled after update
-	//bPause = false;
+	bPause = false;
 	bOption = false;
 }

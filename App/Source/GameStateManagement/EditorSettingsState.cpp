@@ -257,7 +257,3 @@ bool CEditorSettingsState::ImGuiRender()
 	return true;
 }
 
-bool CEditorSettingsState::OptionImGui()
-{
-	return false;
-}

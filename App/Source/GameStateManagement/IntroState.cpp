@@ -138,7 +138,3 @@ bool CIntroState::ImGuiRender()
 	return true;
 }
 
-bool CIntroState::OptionImGui()
-{
-	return false;
-}

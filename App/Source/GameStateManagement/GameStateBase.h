@@ -23,7 +23,6 @@ public:
 	virtual void Destroy() = 0;
 
 	virtual bool ImGuiRender() = 0;
-	virtual bool OptionImGui() = 0;
 };
 
 struct ButtonData

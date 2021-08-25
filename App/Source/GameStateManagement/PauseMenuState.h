@@ -32,8 +32,6 @@ public:
 	virtual void Destroy(void);
 
 	virtual bool ImGuiRender();
-
-	virtual bool OptionImGui();
 protected:
 	enum MENUSTATE
 	{
@@ -50,6 +48,8 @@ protected:
 	ButtonData optionButtonData;
 	ButtonData backButtonData;
 	ButtonData applyButtonData;
+
+	ImGuiWindowFlags option_window;
 
 	bool pendingChange;
 

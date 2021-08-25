@@ -170,7 +170,3 @@ bool GameOverState::ImGuiRender()
 	return true;
 }
 
-bool GameOverState::OptionImGui()
-{
-	return false;
-}
