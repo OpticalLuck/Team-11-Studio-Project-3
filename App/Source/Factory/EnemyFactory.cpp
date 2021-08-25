@@ -15,6 +15,7 @@ CEnemy2D* EnemyFactory::CreateEnemy(int type) {
 	switch (type) {
 		case 300: {
 			CMobEnemy2D* clampedEnemy = new CMobEnemy2D;
+			clampedEnemy->SetID(300);
 			clampedEnemy->SetShader("2DColorShader");
 			clampedEnemy->SetClampSlides(true);
 			if (clampedEnemy->Init() == false) {
@@ -38,6 +39,7 @@ CEnemy2D* EnemyFactory::CreateEnemy(int type) {
 		case 301: {
 			CMobEnemy2D* enemy = new CMobEnemy2D;
 			enemy->SetShader("2DColorShader");
+			enemy->SetID(301);
 			enemy->SetClampSlides(false);
 			if (enemy->Init() == false) {
 				delete enemy;
@@ -57,7 +59,7 @@ CEnemy2D* EnemyFactory::CreateEnemy(int type) {
 			return enemy;
 		}
 
-		case 303: {
+		case 302: {
 			CBoss2D* mcgun = new CBoss2D;
 			mcgun->SetShader("2DColorShader");
 
@@ -67,7 +69,7 @@ CEnemy2D* EnemyFactory::CreateEnemy(int type) {
 			mcgun->SetAtkTypes(atk);
 			mcgun->SetPauseEnabled(true);
 
-			mcgun->SetID(303);
+			mcgun->SetID(302);
 
 			//Changing values of default timers...
 			mcgun->SetMinAtkDuration(2.75f);
@@ -86,7 +88,7 @@ CEnemy2D* EnemyFactory::CreateEnemy(int type) {
 			return mcgun;
 		}
 
-		case 304: {
+		case 303: {
 			CBoss2D* mcgun = new CBoss2D;
 			mcgun->SetShader("2DColorShader");
 
@@ -96,7 +98,7 @@ CEnemy2D* EnemyFactory::CreateEnemy(int type) {
 			mcgun->SetAtkTypes(atk);
 			mcgun->SetPauseEnabled(false);
 
-			mcgun->SetID(304);
+			mcgun->SetID(303);
 
 			//Changing values of default timers...
 			mcgun->SetMinAtkDuration(2.75f);
@@ -113,6 +115,30 @@ CEnemy2D* EnemyFactory::CreateEnemy(int type) {
 			}
 
 			return mcgun;
+		}
+
+		case 304: {
+			CMobEnemy2D* enemy = new CMobEnemy2D;
+			enemy->SetShader("2DColorShader");
+			enemy->SetID(304);
+
+			if (!enemy->Init()) {
+				delete enemy;
+				enemy = nullptr;
+			}
+			else {
+				//Other values to change from init
+				enemy->SetPatrol(true);
+
+				//Initialisation of texture and animation
+				enemy->SetTexture("Image/Enemy/pig.png");
+				enemy->SetAnimatedSprites(CMeshBuilder::GenerateSpriteAnimation(5, 3, cSettings->TILE_WIDTH, cSettings->TILE_HEIGHT));
+
+				enemy->GetAnimatedSprites()->AddAnimation("move", 0, 2);
+				enemy->GetAnimatedSprites()->PlayAnimation("move", -1, 0.3f);
+			}
+
+			return enemy;
 		}
 
 		case 305: {

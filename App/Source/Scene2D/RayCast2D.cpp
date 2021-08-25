@@ -61,6 +61,11 @@ void RayCast2D::SetTarget(CEntity2D* target) {
 	castedEntity = target;
 }
 
+float RayCast2D::GetAngle(void) {
+	glm::vec2 finalVec = currentPoint - originPoint;
+	return atan2f(finalVec.y, finalVec.x);
+}
+
 bool RayCast2D::RayCheck(void) {
 	//Reset current point and update targetPoint
 	originPoint = client->vTransform;

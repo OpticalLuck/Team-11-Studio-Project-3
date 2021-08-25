@@ -35,6 +35,8 @@ class RayCast2D
 		void RenderRayCast(void);
 		void SetTarget(CEntity2D* target);
 
+		float GetAngle(void);
+
 	private:
 		//Misc information
 		glm::vec2 originPoint;

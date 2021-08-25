@@ -51,6 +51,9 @@ class CMobEnemy2D : public CEnemy2D
 		static bool DataCheck(std::pair<int, data>& a, std::pair<int, data>& b);
 
 		void LoadCurrData(int frame);
+		void SetPatrol(bool);
+
+		void SetID(int id);
 
 	protected:
 		glm::vec2 oldVTransform;
@@ -72,6 +75,7 @@ class CMobEnemy2D : public CEnemy2D
 		void LockWithinBoundary(void);
 
 		void RandomiseStateTimer(FSM state = FSM::NUM_FSM);
+		void RandomiseIntervalTimer(void);
 
 		void OnIntervalTriggered(FSM);
 		void OnStateTimerTriggered(FSM);
@@ -84,7 +88,8 @@ class CMobEnemy2D : public CEnemy2D
 		int maxStateTimer[(int)FSM::NUM_FSM];
 
 		int intervalTimer;
-		int maxIntervalTimer[(int)FSM::NUM_FSM];
+
+		int id;
 
 		bool recording;
 };

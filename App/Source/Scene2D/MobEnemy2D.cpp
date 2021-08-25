@@ -33,10 +33,7 @@ CMobEnemy2D::CMobEnemy2D(void) {
 	maxStateTimer[2] = 0;
 	maxStateTimer[3] = 0;
 
-	maxIntervalTimer[0] = 0;
-	maxIntervalTimer[1] = 0;
-	maxIntervalTimer[2] = 0;
-	maxIntervalTimer[3] = 0;
+	id = 300;
 
 	recording = false;
 }
@@ -67,10 +64,6 @@ bool CMobEnemy2D::Init(void) {
 	// Find the indices for the player in arrMapInfo, and assign it to cPlayer2D
 	unsigned int uiRow = -1;
 	unsigned int uiCol = -1;
-
-	int id = 300;
-	if (!clampSides)
-		id = 301;
 
 	if (cMap2D->FindValue(id, uiRow, uiCol) == false)
 		return false;	// Unable to find the start position of the player, so quit this game
@@ -127,15 +120,13 @@ bool CMobEnemy2D::Init(void) {
 	mSpd = 5;
 
 	//Smart AI stuff
-	maxStateTimer[(int)FSM::IDLE] = int(2.f * (float)cSettings->FPS);
-	maxStateTimer[(int)FSM::PATROL] = int(4.f * (float)cSettings->FPS);
-	maxStateTimer[(int)FSM::ATTACK] = int(3.f * (float)cSettings->FPS);
 
-	maxIntervalTimer[(int)FSM::IDLE] = int(0.2f * (float)cSettings->FPS);
+	for (int i = 0; i < (int)FSM::NUM_FSM; i++)
+		RandomiseStateTimer((FSM)i);
 
 	sCurrentFSM = RandomiseFSM();
 	stateTimer = maxStateTimer[(int)sCurrentFSM];
-	intervalTimer = maxIntervalTimer[(int)sCurrentFSM];
+	RandomiseIntervalTimer();
 
 	dir = RandomiseDir();
 
@@ -148,21 +139,30 @@ bool CMobEnemy2D::Init(void) {
 	return true;
 }
 
+void CMobEnemy2D::RandomiseIntervalTimer(void) {
+	intervalTimer = int(Math::RandFloatMinMax(0.5f, 1.5f) * (float)cSettings->FPS);
+}
+
+void CMobEnemy2D::SetID(int id) {
+	this->id = id;
+}
+
 void CMobEnemy2D::RandomiseStateTimer(FSM state) {
 	if (state == FSM::NUM_FSM)
 		state = sCurrentFSM;
 
 	switch (state) {
 		case FSM::IDLE:
-			maxStateTimer[(int)state] = int(Math::RandFloatMinMax(1.f,2.5f) * (float)cSettings->FPS);
+			maxStateTimer[(int)state] = int(Math::RandFloatMinMax(1.5f,3.f) * (float)cSettings->FPS);
 			break;
 
 		case FSM::PATROL:
-			maxStateTimer[(int)state] = int(Math::RandFloatMinMax(3.f, 5.5f) * (float)cSettings->FPS);
+			maxStateTimer[(int)state] = int(Math::RandFloatMinMax(3.5f, 7.f) * (float)cSettings->FPS);
 			break;
 
 		case FSM::ATTACK:
-			maxStateTimer[(int)state] = int(Math::RandFloatMinMax(2.f, 4.f) * (float)cSettings->FPS);
+		case FSM::RETURNBACK:
+			maxStateTimer[(int)state] = int(Math::RandFloatMinMax(2.f, 3.5f) * (float)cSettings->FPS);
 			break;
 
 		default:
@@ -225,7 +225,6 @@ void CMobEnemy2D::SetClampSlides(bool clamp) {
 
 void CMobEnemy2D::Update(const double dElapsedTime) {
 	//Raycast  test
-	rayCast2D->RayCheck();
 
 	if (!inView) { //Do not activate if enemy is out of view
 		if (WithinProjectedCamera(cEntityManager->GetPlayer()))
@@ -312,10 +311,28 @@ void CMobEnemy2D::OnStateTimerTriggered(FSM state) {
 	if (stateTimer > 0)
 		return;
 
+	RandomiseIntervalTimer();
 	switch (state) {
 		case FSM::IDLE:
+			sCurrentFSM = FSM::PATROL;
+			stateTimer = maxStateTimer[(int)sCurrentFSM];
 
+			dir = RandomiseDir();
+
+			break;
+
+		case FSM::PATROL:
+			sCurrentFSM = FSM::IDLE;
+			stateTimer = maxStateTimer[(int)sCurrentFSM];
+
+			dir = RandomiseDir();
+
+			break;
 	}
+}
+
+void CMobEnemy2D::SetPatrol(bool patrol) {
+	this->patrol = patrol;
 }
 
 void CMobEnemy2D::OnIntervalTriggered(FSM state) {
@@ -330,7 +347,7 @@ void CMobEnemy2D::OnIntervalTriggered(FSM state) {
 				dir = DIRECTION::LEFT;
 
 			//Reset values
-			intervalTimer = maxIntervalTimer[(int)state];
+			RandomiseIntervalTimer();;
 
 			break;
 
@@ -346,6 +363,18 @@ void CMobEnemy2D::UpdateSmart(float dElapsedTime) {
 			stateTimer = Math::Max(0, stateTimer - 1);
 
 			OnIntervalTriggered(sCurrentFSM);
+			OnStateTimerTriggered(sCurrentFSM);
+
+			break;
+
+		case FSM::PATROL:
+			stateTimer = Math::Max(0, stateTimer - 1);
+			UpdateDumb(dElapsedTime);
+
+			OnStateTimerTriggered(sCurrentFSM);
+			break;
+
+		case FSM::ATTACK:
 
 			break;
 	}
@@ -574,5 +603,5 @@ void CMobEnemy2D::PostRender(void) {
 	glDisable(GL_BLEND);
 
 	//Raycasting code if needed...
-	rayCast2D->RenderRayCast();
+	//rayCast2D->RenderRayCast();
 }
