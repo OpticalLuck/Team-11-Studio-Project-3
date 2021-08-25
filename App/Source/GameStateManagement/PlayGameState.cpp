@@ -38,6 +38,7 @@ CPlayGameState::CPlayGameState(void)
 	, transformX(0.f)
 	, transformY(0.f)
 	, cCamera(NULL)
+	, cSoundController(NULL)
 {
 
 }
@@ -86,6 +87,8 @@ bool CPlayGameState::Init(void)
 	cMap2D = CMap2D::GetInstance();
 	cCamera = Camera2D::GetInstance();
 
+	cSoundController = CSoundController::GetInstance();
+
 	//optionButtonData.fileName = "Image\\GUI\\OptionButton.png";
 	//optionButtonData.textureID = il->LoadTextureGetID(optionButtonData.fileName.c_str(), false);
 
@@ -132,6 +135,10 @@ bool CPlayGameState::Update(const double dElapsedTime)
 		cout << "Loading GameOverState" << endl;
 		CGameStateManager::GetInstance()->SetActiveGameState("GameOverState");
 		return true;
+	}
+	if (cPlayer->GetHealth() < 3)
+	{
+		cSoundController->PlaySoundByID(SOUND_ID::SOUND_TROUBLE);
 	}
 	
 
@@ -245,8 +252,8 @@ bool CPlayGameState::ImGuiRender()
 		ImGui::InvisibleButton("temp", ImVec2(50, 1));
 
 
-
-		{// Render the inventory items
+		//render inventory
+		{
 
 			ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 1.0f, 1.0f));  // Set a background color
 			ImGuiWindowFlags inventoryWindowFlags = ImGuiWindowFlags_AlwaysAutoResize |
@@ -291,7 +298,8 @@ bool CPlayGameState::ImGuiRender()
 
 			}
 		}
-		{		//render health on player
+		//render player health
+		{	
 			float vPlayerPosX = cPlayer->GetTransformX();
 			float vCameraposX = cCamera->GetPosX();
 			float finalPosX = vPlayerPosX - vCameraposX;
@@ -317,8 +325,8 @@ bool CPlayGameState::ImGuiRender()
 			ImGui::PopStyleColor();
 			ImGui::End();
 		}
+		//render enemy UI
 		{
-			//render enemy UI
 			std::vector<CEnemy2D*> enemy;
 			enemy = cEntityManager->GetAllEnemies();
 			for (unsigned i = 0; i < enemy.size(); i++)
@@ -351,6 +359,7 @@ bool CPlayGameState::ImGuiRender()
 				ImGui::End();
 			}
 		}
+		//render clone health
 		{
 			//render clone health
 			std::vector<CPlayer2D*> clone;
@@ -385,7 +394,7 @@ bool CPlayGameState::ImGuiRender()
 				ImGui::PopStyleColor();
 				ImGui::End();
 			}
-		}
+		} 
 		ImGui::End();
 
 		return true;

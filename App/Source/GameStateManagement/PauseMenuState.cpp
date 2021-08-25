@@ -102,7 +102,7 @@ bool PauseMenuState::UpdateMenu(ImGuiWindowFlags window_flags)
 	option_window |= ImGuiWindowFlags_NoNav;
 
 	float buttonWidth = 256;
-	float buttonHeight = 108;
+	float buttonHeight = 128;
 	// 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
 	{
 		static float f = 0.0f;

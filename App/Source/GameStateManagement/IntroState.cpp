@@ -81,6 +81,7 @@ bool CIntroState::Init(void)
 	CSoundController::GetInstance()->LoadSound(FileSystem::getPath("Sounds\\Switch.ogg"), SOUND_ID::SOUND_SWITCH, true);
 	CSoundController::GetInstance()->LoadSound(FileSystem::getPath("Sounds\\GameComplete.ogg"), SOUND_ID::SOUND_GAME_COMPLETE, true);
 	CSoundController::GetInstance()->LoadSound(FileSystem::getPath("Sounds\\Dead.ogg"), SOUND_ID::SOUND_DEATH, true);
+	CSoundController::GetInstance()->LoadSound(FileSystem::getPath("Sounds\\Trouble.ogg"), SOUND_ID::SOUND_TROUBLE, true);
 
 	CSettings::GetInstance()->UpdateSoundSettings();
 	return true;

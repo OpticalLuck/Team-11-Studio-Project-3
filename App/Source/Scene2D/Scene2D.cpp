@@ -134,6 +134,7 @@ bool CScene2D::Init(void)
 	// Load the sounds into CSoundController
 	cSoundController = CSoundController::GetInstance();
 	cSoundController->PlaySoundByID(SOUND_ID::BGM_HENESYS);
+	//CSettings::SongPlaylist();
 
 	CInputHandler = CInputHandler::GetInstance();
 
@@ -217,6 +218,14 @@ bool CScene2D::Update(const double dElapsedTime)
 	{
 		cSoundController->PlaySoundByID(SOUND_ID::SOUND_EXPLOSION);
 		return false;
+	}
+	if (cPlayer2D->GetHealth() < 3) // change bgm if the health is dying 
+	{
+		if (!cSoundController->isCurrentlyPlaying(cSoundController->GetNamebyID(SOUND_ID::SOUND_TROUBLE)))
+		{
+			cSoundController->StopPlayBack();
+			cSoundController->PlaySoundByID(SOUND_ID::SOUND_TROUBLE);
+		}
 	}
 	return true;
 }
