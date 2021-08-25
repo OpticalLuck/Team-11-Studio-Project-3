@@ -189,8 +189,8 @@ bool CPlayer2D::Init(void)
 	if (!collider2D)
 		collider2D = new Collider2D;
 
-	collider2D->Init(vTransform, glm::vec2(0.5f, 0.2f), Collider2D::ColliderType::COLLIDER_QUAD);
-	collider2D->SetOffset(glm::vec2(0.f, -0.5f));
+	collider2D->Init(vTransform, glm::vec2(0.2f, 0.5f), Collider2D::ColliderType::COLLIDER_QUAD);
+	// collider2D->SetOffset(glm::vec2(0.f, -0.5f));
 	cPhysics2D->Init(&vTransform);
 
 	CInventoryManager::GetInstance()->Add("Player");
@@ -386,30 +386,8 @@ void CPlayer2D::Update(const double dElapsedTime)
 				CObject2D* obj = cMap2D->GetCObject(colCheck, rowCheck);
 				if (obj->GetCollider()->GetbEnabled())
 				{
-					if (obj->type == ENTITY_TYPE::INTERACTABLES)
-					{
-						DEBUG_MSG("yuh");
-					}
 					float distance = glm::length(obj->vTransform - vTransform);
 					aabbVector.push_back({ obj, distance });
-				}
-
-				if (obj->type == ENTITY_TYPE::INTERACTABLES)
-				{
-					if (((Interactables*)(obj))->interactableType == INTERACTABLE_TYPE::LEVER)
-					{
-						if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::E].bKeyPressed)
-						{
-							((Interactables*)(obj))->Activate(!((Interactables*)(obj))->GetInteracted());
-						}
-					}
-					else if (((Interactables*)(obj))->interactableType == INTERACTABLE_TYPE::PRESSURE_PLATE)
-					{
-						if (glm::length(obj->vTransform - vTransform) < 0.3)
-						{
-							((Interactables*)(obj))->Activate(true);
-						}
-					}
 				}
 			}
 		}
