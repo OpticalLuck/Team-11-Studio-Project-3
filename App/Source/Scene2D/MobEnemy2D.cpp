@@ -223,6 +223,10 @@ void CMobEnemy2D::Update(const double dElapsedTime) {
 	currFrame++;
 }
 
+void CMobEnemy2D::UpdateSmart(float dElapsedTime) {
+
+}
+
 void CMobEnemy2D::UpdateDumb(float dElapsedTime) {
 	//Clamping of position
 	ClampPos();
