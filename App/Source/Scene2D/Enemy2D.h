@@ -85,8 +85,6 @@ protected:
 		IDLE = 0,
 		PATROL,
 		ATTACK,
-		HIT,
-		RUN,
 		DEATH,
 		NUM_FSM
 	};
@@ -126,6 +124,7 @@ protected:
 
 	// Current FSM
 	FSM sCurrentFSM;
+	int currFrame;
 
 	//Current round
 	int roundIndex;
@@ -140,6 +139,8 @@ protected:
 
 	//Check if its within the projected camera of the player entity
 	bool WithinProjectedCamera(CPlayer2D* player);
+
+	FSM RandomiseFSM(void);
 
 	//Randomise direction
 	DIRECTION RandomiseDir(void);
