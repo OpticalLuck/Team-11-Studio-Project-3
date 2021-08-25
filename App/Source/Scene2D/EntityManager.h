@@ -33,6 +33,7 @@ public:
 	void RenderClone(void);
 	void RenderPlayer(void);
 	void RenderBullets(void);
+	void RenderInteractables(void);
 
 	void Update(const double dElapsedTime);
 	bool Clone(void);

@@ -252,6 +252,7 @@ void CScene2D::Render(void)
 	// Call the Map2D's PostRender()
 	cMap2D->PostRender();
 
+	cEntityManager->RenderInteractables();
 	cEntityManager->RenderBullets();
 	cEntityManager->RenderEnemy();
 	cEntityManager->RenderClone();

@@ -146,7 +146,8 @@ bool PauseMenuState::UpdateMenu(ImGuiWindowFlags window_flags)
 
 			// Reset the CKeyboardController
 			CKeyboardController::GetInstance()->Reset();
-
+			ImGui::PopStyleColor(3);
+			ImGui::End();
 			return false;
 		}
 		ImGui::PopStyleColor(3);
@@ -188,7 +189,7 @@ void PauseMenuState::UpdateOption(ImGuiWindowFlags window_flags)
 
 	static float bgmVolume = CSettings::GetInstance()->BGM_VOLUME;
 	bool bgmChange = false;
-	
+
 	if (ImGui::Checkbox("Enable BackGround Music", &CSettings::GetInstance()->bBGM_Sound))
 	{
 		bgmChange = true;

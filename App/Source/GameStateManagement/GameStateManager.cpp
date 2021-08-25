@@ -65,7 +65,7 @@ bool CGameStateManager::Update(const double dElapsedTime)
 		// Init the new active CGameState
  		activeGameState->Init();
 	}
-	
+
 	// Update the active CGameState
 	if (activeGameState && !pauseGameState)
 	{
@@ -109,7 +109,10 @@ bool CGameStateManager::Render(void)
 		if (pauseGameState)
 		{
 			//pauseGameState->Render();
-			pauseGameState->ImGuiRender();
+			if (!pauseGameState->ImGuiRender())
+			{
+				return false;
+			}
 		}
 	}
 
@@ -118,7 +121,7 @@ bool CGameStateManager::Render(void)
 
 /**
  @brief Add a new CGameState to this
- @param _name A const std::string& variable which is the name of the CGameState 
+ @param _name A const std::string& variable which is the name of the CGameState
  @param _scene A CGameState* variable which is the CGameState
  */
 bool CGameStateManager::AddGameState(const std::string& _name, CGameStateBase* _scene)

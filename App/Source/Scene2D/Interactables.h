@@ -43,6 +43,7 @@ public:
 	bool ActivateSwitch();
 	bool ActivatePressurePlate(bool);
 	void SetInteractableID(int);
+	bool GetInteracted();
 
 private:
 

@@ -539,18 +539,20 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 				currIndex.y = (float)doc.GetRowCount() - (float)uiRow - 1.f;
 				currObj->vTransform = currIndex;
 
+
+				currObj->Init();
+				currObj->SetObjectID(currObjID);
+
 				if (currObjID != 0)
 				{
 					((Interactables*)(currObj))->SetInteractableID(currObjID);
 					CEntityManager::GetInstance()->PushInteractables((Interactables*)currObj);
 				}
-
-				currObj->Init();
-				currObj->SetObjectID(currObjID);
-
-				arrObject[uiCurLevel].push_back(currObj);
-				//Add in new CObj pointer if available
-				arrGrid[uiCurLevel][uiRow][uiCol] = currObj;
+				else {
+					arrObject[uiCurLevel].push_back(currObj);
+				}
+					//Add in new CObj pointer if available
+					arrGrid[uiCurLevel][uiRow][uiCol] = currObj;
 			}
 
 			//Background texture
