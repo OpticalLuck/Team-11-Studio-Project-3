@@ -137,6 +137,8 @@ bool CPlayer2D::Init(void)
 	checkpoint = glm::vec2(uiCol, uiRow);
 	// Set the start position of the Player to iRow and iCol
 	vTransform = glm::vec2(uiCol, uiRow);
+	vTransform.x;
+	vTransform.y;
 
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
@@ -290,6 +292,11 @@ bool CPlayer2D::Init(glm::i32vec2 spawnpoint, int iCloneIndex)
 
 int CPlayer2D::GetHealth(void) {
 	return pHealth;
+}
+
+int CPlayer2D::GetMaxHealth(void)
+{
+	return pMaxHealth;
 }
 
 glm::i32vec2 CPlayer2D::GetCheckpoint(void) {
@@ -746,7 +753,6 @@ void CPlayer2D::InputUpdate(double dt)
 	}
 	cInventory->Update(dt, iTempFrameCounter ,m_KeyboardInputs, m_MouseInputs);
 }
-
 void CPlayer2D::SetClone(bool bIsClone)
 {
 	this->bIsClone = bIsClone;
@@ -779,6 +785,16 @@ void CPlayer2D::Attacked(int hp, CPhysics2D* bounceObj) {
 
 		//cPhysics2D->SetVelocity(ogVel);
 	}
+}
+
+float CPlayer2D::GetTransformX(void)
+{
+	return vTransform.x;
+}
+
+float CPlayer2D::GetTransformY(void)
+{
+	return vTransform.y;
 }
 
 void CPlayer2D::SetKeyInputs(std::vector<std::array<KeyInput, KEYBOARD_INPUTS::KEY_TOTAL>> inputs)

@@ -103,6 +103,11 @@ bool CEntityManager::EntityManagerInit(void)
 			DEBUG_MSG("ERROR: TOO MANY BOSS IN LEVEL. THERE SHOULD ONLY BE ONE BOSS");
 			return false;
 		}
+		if (cBoss2D->Init() == false)
+		{
+			cout << "Failed to load CBoss2D" << endl;
+			return false;
+		}
 	}
 
 	for (Interactables* i : m_interactableList)
@@ -207,6 +212,11 @@ void CEntityManager::RemoveEntity(string type, int amount)
 CPlayer2D* CEntityManager::GetPlayer()
 {
 	return cPlayer2D;
+}
+
+CBoss2D* CEntityManager::GetBoss()
+{
+	return cBoss2D;
 }
 
 std::vector<CPlayer2D*> CEntityManager::GetAllPlayers(void) 

@@ -8,6 +8,8 @@
  */
 
 #include "GameStateBase.h"
+ // Include CGameStateManager
+#include "GameStateManager.h"
 #include "../InputHandler/CInputHandler.h"
 #include "TimeControl/FPSCounter.h"
 #include "..\Scene2D\Scene2D.h"
@@ -30,25 +32,46 @@ public:
 	virtual void Destroy(void);
 
 	virtual bool ImGuiRender();
+
 protected:
 	// The handler to the CScene2D instance
 	CScene2D* cScene2D;
 	CInputHandler* cInputHandler;
+	CGameStateManager* cGameStateManager;
 
 	// FPS Control
 	CFPSCounter* cFPSCounter;
 
 	// Flags for IMGUI
 	ImGuiWindowFlags window_flags;
+	ImGuiWindowFlags health_window;
+	ImGuiWindowFlags enemyHealth_window;
+	ImGuiWindowFlags option_window;
+
+	ButtonData resumeButtonData;
+	ButtonData restartButtonData;
+	ButtonData exitButtonData;
+	ButtonData optionButtonData;
+	ButtonData backButtonData;
+	ButtonData applyButtonData;
+
 	float m_fProgressBar;
 
 	float fInterval;
 	int iMinutes;
 	int iSeconds;
 
+	float transformX;
+	float transformY;
+
 	CSettings* cSettings;
+	Camera2D* cCamera;
 	CTextureManager* cTextureManager;
 	CInventory* cPlayerInventory;
+
+	CPlayer2D* cPlayer;
+	CEntityManager* cEntityManager;
+	CMap2D* cMap2D;
 
 	CKeyboardController* cKeyboardController;
 };

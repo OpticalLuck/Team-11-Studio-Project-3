@@ -42,6 +42,7 @@ public:
 	virtual void Destroy(void);
 
 	virtual bool ImGuiRender();
+
 protected:
 
 	CLevelEditor* cLevelEditor;

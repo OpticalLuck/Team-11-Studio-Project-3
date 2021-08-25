@@ -41,6 +41,7 @@ public:
 	void RemoveEntity(string type, int amount);
 
 	CPlayer2D* GetPlayer();
+	CBoss2D* GetBoss();
 	int GetCurrRound(void);
 
 	void PushEnemy(CEnemy2D*);

@@ -51,15 +51,8 @@ PauseMenuState::~PauseMenuState(void)
 
 bool PauseMenuState::Init(void)
 {
-	cout << "CMenuState::Init()\n" << endl;
+	cout << "CPauseState::Init()\n" << endl;
 
-	CShaderManager::GetInstance()->Use("2DShader");
-	CShaderManager::GetInstance()->activeShader->setInt("texture1", 0);
-
-	//Create Background Entity
-	background = new CBackgroundEntity("Image/MenuBackground.png");
-	background->SetShader("2DShader");
-	background->Init();
 
 	// Load the images for buttons
 	CImageLoader* il = CImageLoader::GetInstance();
@@ -75,6 +68,7 @@ bool PauseMenuState::Init(void)
 	applyButtonData.fileName = "Image\\GUI\\ApplyButton.png";
 	applyButtonData.textureID = il->LoadTextureGetID(applyButtonData.fileName.c_str(), false);
 
+
 	return true;
 
 }
@@ -89,43 +83,48 @@ void PauseMenuState::Render(void)
 	// Clear the screen and buffer
 	glClearColor(0.0f, 0.55f, 1.00f, 1.00f);
 
-	//Render Background
-	background->Render();
-
 }
 
 void PauseMenuState::Destroy(void)
 {
-	// Delete the background
-	if (background)
-	{
-		delete background;
-		background = NULL;
-	}
-
 	cout << "CMenuState::Destroy()\n" << endl;
 }
 
 bool PauseMenuState::UpdateMenu(ImGuiWindowFlags window_flags)
 {
+	option_window |= ImGuiWindowFlags_NoTitleBar;
+	option_window |= ImGuiWindowFlags_NoScrollbar;
+	//window_flags |= ImGuiWindowFlags_MenuBar;
+	option_window |= ImGuiWindowFlags_NoBackground;
+	option_window |= ImGuiWindowFlags_NoMove;
+	option_window |= ImGuiWindowFlags_NoCollapse;
+	option_window |= ImGuiWindowFlags_NoNav;
+
 	float buttonWidth = 256;
-	float buttonHeight = 128;
-	// Create a window called "Hello, world!" and append into it.
-	ImGui::Begin("Pause Menu", NULL, window_flags);
-	ImGui::SetWindowPos(ImVec2(CSettings::GetInstance()->iWindowWidth / 2.0f - buttonWidth / 2.0f,
-		CSettings::GetInstance()->iWindowHeight / 6.0f));				// Set the top-left of the window at (10,10)
-	ImGui::SetWindowSize(ImVec2(buttonWidth + 25, buttonHeight * 3 + 50));
+	float buttonHeight = 108;
+	// 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
+	{
+		static float f = 0.0f;
+		static int counter = 0;
 
-	//Added rounding for nicer effect
-	ImGuiStyle& style = ImGui::GetStyle();
-	style.FrameRounding = 200.0f;
-	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.f, 0.f, 0.f, 0.f));
-	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.f, 0.f, 0.f, 0.f));
-	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.f, 0.f, 0.f, 0.f));
+		// Create a window called "Hello, world!" and append into it.
+		ImGui::Begin("Option", NULL, window_flags);
+		ImGui::SetWindowPos(ImVec2(CSettings::GetInstance()->iWindowWidth / 2.0 - buttonWidth / 2.0,
+			CSettings::GetInstance()->iWindowHeight / 3.0));				// Set the top-left of the window at (10,10)
+		ImGui::SetWindowSize(ImVec2(CSettings::GetInstance()->iWindowWidth, CSettings::GetInstance()->iWindowHeight));
 
-	// Add codes for Start button here
-	if (ImGui::ImageButton((ImTextureID)resumeButtonData.textureID,
-		ImVec2(buttonWidth, buttonHeight), ImVec2(0.0, 0.0), ImVec2(1.0, 1.0)))
+
+		//Added rounding for nicer effect
+		ImGuiStyle& style = ImGui::GetStyle();
+		style.FrameRounding = 200.0f;
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.f, 0.f, 0.f, 0.f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.f, 0.f, 0.f, 0.f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.f, 0.f, 0.f, 0.f));
+
+
+		// Play button
+		if (ImGui::ImageButton((ImTextureID)resumeButtonData.textureID,
+			ImVec2(buttonWidth, buttonHeight), ImVec2(0.0, 0.0), ImVec2(1.0, 1.0)))
 		{
 			// Reset the CKeyboardController
 			CKeyboardController::GetInstance()->Reset();
@@ -134,41 +133,24 @@ bool PauseMenuState::UpdateMenu(ImGuiWindowFlags window_flags)
 			cout << "Returning to PlayGameState" << endl;
 			CGameStateManager::GetInstance()->OffPauseGameState();
 		}
-
-	if (ImGui::ImageButton((ImTextureID)optionButtonData.textureID,
-		ImVec2(buttonWidth, buttonHeight), ImVec2(0.0, 0.0), ImVec2(1.0, 1.0)))
+		if (ImGui::ImageButton((ImTextureID)optionButtonData.textureID,
+			ImVec2(buttonWidth, buttonHeight), ImVec2(0.0, 0.0), ImVec2(1.0, 1.0)))
 		{
 			menuState = STATE_OPTION;
 		}
+		//end button
+		if (ImGui::ImageButton((ImTextureID)exitButtonData.textureID,
+			ImVec2(buttonWidth, buttonHeight), ImVec2(0.0, 0.0), ImVec2(1.0, 1.0)))
+		{
 
-	// Add codes for Exit button here
-	else if (ImGui::ImageButton((ImTextureID)exitButtonData.textureID,
-		ImVec2(buttonWidth, buttonHeight), ImVec2(0.0, 0.0), ImVec2(1.0, 1.0)))
-	{
-		// Reset the CKeyboardController
-		CKeyboardController::GetInstance()->Reset();
-
-		// Load the menu state
-		cout << "Quitting the game from PauseMenu" << endl;
+			// Reset the CKeyboardController
+			CKeyboardController::GetInstance()->Reset();
+			ImGui::PopStyleColor(3);
+			ImGui::End();
+			return false;
+		}
 		ImGui::PopStyleColor(3);
 		ImGui::End();
-		return false;
-	}
-
-	ImGui::PopStyleColor(3);
-	ImGui::End();
-
-	//For keyboard controls
-	if (CKeyboardController::GetInstance()->IsKeyReleased(GLFW_KEY_SPACE) ||
-		CKeyboardController::GetInstance()->IsKeyReleased(GLFW_KEY_ESCAPE))
-	{
-		// Reset the CKeyboardController
-		CKeyboardController::GetInstance()->Reset();
-
-		// Load the menu state
-		cout << "Returning to PlayGameState" << endl;
-		CGameStateManager::GetInstance()->OffPauseGameState();
-		return true;
 	}
 
 	return true;
@@ -206,7 +188,7 @@ void PauseMenuState::UpdateOption(ImGuiWindowFlags window_flags)
 
 	static float bgmVolume = CSettings::GetInstance()->BGM_VOLUME;
 	bool bgmChange = false;
-	
+
 	if (ImGui::Checkbox("Enable BackGround Music", &CSettings::GetInstance()->bBGM_Sound))
 	{
 		bgmChange = true;
@@ -347,6 +329,7 @@ bool PauseMenuState::ImGuiRender()
 	window_flags |= ImGuiWindowFlags_NoNav;
 	window_flags |= ImGuiWindowFlags_NoResize;
 
+	//UpdateMenu(window_flags);
 	switch (menuState)
 	{
 	case STATE_MAIN:
@@ -364,3 +347,8 @@ bool PauseMenuState::ImGuiRender()
 
 	return true;
 }
+
+//bool PauseMenuState::OptionImGui()
+//{
+//	return false;
+//}

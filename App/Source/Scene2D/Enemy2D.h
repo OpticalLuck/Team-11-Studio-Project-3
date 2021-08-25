@@ -64,8 +64,13 @@ public:
 	//Set texture
 	void SetTexture(const char* fileName);
 
+	//returns transform x
+	float GetTransformX(void);
+	//returns transform y
+	float GetTransformY(void);
 	//If get attacked
 	void Attacked(int hp = 1);
+
 
 protected:
 	enum class DIRECTION

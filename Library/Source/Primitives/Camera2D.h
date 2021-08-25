@@ -39,6 +39,8 @@ class Camera2D : public CSingletonTemplate<Camera2D>
 		float getTargetZoom();
 		bool IsFirstTime(void);
 		void ClampCamPos(glm::i32vec2 clampPos);
+		float GetPosX(void);
+		float GetPosY(void);
 
 		glm::vec2 GetCursorPosInWorldSpace(float offset = 0.f);
 

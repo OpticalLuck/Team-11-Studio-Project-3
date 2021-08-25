@@ -170,6 +170,16 @@ void CEnemy2D::SetTexture(const char* fileName) {
 	}
 }
 
+float CEnemy2D::GetTransformX(void)
+{
+	return vTransform.x;
+}
+
+float CEnemy2D::GetTransformY(void)
+{
+	return vTransform.y;
+}
+
 CPlayer2D* CEnemy2D::GetNearestTarget(float dist) {
 	float indexDist = dist; //Approx distance the target has to be within to be counted on
 	float minDist = indexDist;

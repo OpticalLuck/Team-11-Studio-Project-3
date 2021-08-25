@@ -7,7 +7,7 @@
 LivingEntity2D::LivingEntity2D(void) {
 	CSettings* cSettings = CSettings::GetInstance();
 
-	pMaxHealth = 1;
+	pMaxHealth = 5;
 	pHealth = 1;
 
 	//Shield
@@ -59,6 +59,11 @@ int LivingEntity2D::GetHealth(void) {
 	return pHealth;
 }
 
+
+int LivingEntity2D::GetMaxHealth(void)
+{
+	return pMaxHealth;
+}
 int LivingEntity2D::GetShield(void) {
 	return pShield;
 }

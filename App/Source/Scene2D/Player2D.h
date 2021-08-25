@@ -121,12 +121,19 @@ public:
 
 	//Get health
 	int GetHealth(void);
+	//Get Max health
+	int GetMaxHealth(void);
 
 	//Function to call if player gets hit
 	void Attacked(int hp = 1, CPhysics2D* bounceObj = nullptr);
 
 	//return cphysics
 	CPhysics2D* GetCPhysics(void);
+
+	//returns transform x
+	float GetTransformX(void);
+	//returns transform y
+	float GetTransformY(void);
 
 protected:
 	bool bIsClone;

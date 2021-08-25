@@ -29,6 +29,8 @@ public:
 
 	bool SetPauseGameState(const std::string& _name);
 	void OffPauseGameState();
+
+	bool bOption;
 protected:
 	// Constructor
 	CGameStateManager();
