@@ -718,16 +718,14 @@ void CPlayer2D::InputUpdate(double dt)
 			shuriken.Use();
 			
 			CObject2D*kunaiobj = ObjectFactory::CreateObject(OBJECT_TYPE::BULLETS_KUNAI);
-			kunaiobj->Init();
-			kunaiobj->vTransform = vTransform;
-
-			glm::vec2 direction(0.f, 0.f);
+			float angle = 0;
 			if (facing == DIRECTION::LEFT)
-				direction = glm::vec2(-1.f, 0);
+				angle = 180;
 			else
-				direction = glm::vec2(1.f, 0);
-			glm::vec2 force = direction * 4.f;
-				kunaiobj->GetPhysics()->SetVelocity(force);
+				angle = 0;
+
+			dynamic_cast<Bullet2D*>(kunaiobj)->Init(true, angle, 10);
+			kunaiobj->vTransform = vTransform;
 
 			CEntityManager::GetInstance()->PushBullet(static_cast<Bullet2D*>(kunaiobj));
 		}
