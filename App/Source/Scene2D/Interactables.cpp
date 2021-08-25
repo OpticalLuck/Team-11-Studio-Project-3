@@ -25,6 +25,7 @@ Interactables::Interactables(int iTextureID)
 
 	type = ENTITY_TYPE::INTERACTABLES;
 
+	this->sShaderName = "2DShader";
 	Init();
 }
 
@@ -45,12 +46,14 @@ bool Interactables::Init()
 	glBindVertexArray(VAO);
 
 	type = CEntity2D::ENTITY_TYPE::INTERACTABLES;
-	quad = CMeshBuilder::GenerateQuad();
+	quad = CMeshBuilder::GenerateQuad(glm::vec4(1, 1, 1, 1), cSettings->TILE_WIDTH, cSettings->TILE_HEIGHT);
 
 	if (!cPhysics2D)
 		cPhysics2D = new CPhysics2D;
 	if (!collider2D)
 		collider2D = new Collider2D;
+
+	collider2D->Init(vTransform);
 
 	interactableType = static_cast<INTERACTABLE_TYPE>(iTextureID);
 	if (interactableType < DOOR)
@@ -62,6 +65,7 @@ bool Interactables::Init()
 		// Initialise Doors
 		// Interacted doors are open
 		collider2D->SetbEnabled(true);
+		collider2D->bIsDisplayed = true;
 	}
 
  	return true;
@@ -69,6 +73,10 @@ bool Interactables::Init()
 
 void Interactables::Update(const double dElapsedTime)
 {
+	if (this->interactableType == PRESSURE_PLATE)
+	{
+		Activate(false);
+	}
 }
 
 void Interactables::PreRender(void)
@@ -86,28 +94,42 @@ void Interactables::PreRender(void)
 
 void Interactables::Render(void)
 {
-	glBindVertexArray(VAO);
-	// get matrix's uniform location and set matrix
-	unsigned int transformLoc = glGetUniformLocation(CShaderManager::GetInstance()->activeShader->ID, "transform");
-	unsigned int colorLoc = glGetUniformLocation(CShaderManager::GetInstance()->activeShader->ID, "runtime_color");
-	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
+	//Camera init
+	glm::vec2 offset = glm::vec2(float(cSettings->NUM_TILES_XAXIS / 2.f), float(cSettings->NUM_TILES_YAXIS / 2.f));
+	glm::vec2 cameraPos = Camera2D::GetInstance()->getCurrPos();
 
-	transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-	transform = glm::translate(transform, glm::vec3(
-		CSettings::GetInstance()->ConvertIndexToUVSpace(glm::vec2(vTransform.x, vTransform.y)),
-		0.0f));
+	glm::vec2 objCamPos = vTransform - cameraPos + offset;
 
-	// Update the shaders with the latest transform
-	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
-	glUniform4fv(colorLoc, 1, glm::value_ptr(currentColor));
+	glm::vec2 actualPos = cSettings->ConvertIndexToUVSpace(objCamPos);
 
-	// Get the texture to be rendered
-	glBindTexture(GL_TEXTURE_2D, CTextureManager::GetInstance()->MapOfTextureIDs.at(iTextureID));
+	float clampOffset = cSettings->ConvertIndexToUVSpace(CSettings::AXIS::x, 1, false) / 2;
 
-	//CS: Render the animated sprite
-	quad->Render();
+	float clampX = 2.0f + clampOffset;
+	float clampY = 2.0f + clampOffset;
 
-	glBindVertexArray(0);
+	if (actualPos.x >= -clampX && actualPos.x <= clampX && actualPos.y >= -clampY && actualPos.y <= clampY)
+	{
+		// get matrix's uniform location and set matrix
+		unsigned int transformLoc = glGetUniformLocation(CShaderManager::GetInstance()->activeShader->ID, "transform");
+		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
+
+		transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
+		transform = glm::translate(transform, glm::vec3(glm::vec2(actualPos.x, actualPos.y),
+			0.0f));
+		transform = glm::rotate(transform, glm::radians(fRotate), glm::vec3(0.f, 0.f, 1.f));
+		// Update the shaders with the latest transform
+		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
+
+		// Get the texture to be rendered
+		glBindTexture(GL_TEXTURE_2D, CTextureManager::GetInstance()->MapOfTextureIDs.at(iTextureID));
+
+		glBindVertexArray(VAO);
+
+		//CS: Use mesh to render
+		quad->Render();
+
+		glBindVertexArray(0);
+	}
 }
 
 void Interactables::PostRender(void)
@@ -119,6 +141,11 @@ void Interactables::PostRender(void)
 void Interactables::SetInteractableID(int id)
 {
 	iInteractableID = id;
+}
+
+bool Interactables::GetInteracted()
+{
+	return bInteraction;
 }
 
 /**
@@ -198,7 +225,7 @@ bool Interactables::Activate(bool interaction)
 			{
 				if (this->iInteractableID == e->iInteractableID)
 				{
-					e->Activate(this->bInteraction);
+					e->Activate(interaction);
 					e->collider2D->SetbEnabled(!interaction);
 					return true;
 				}

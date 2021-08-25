@@ -150,7 +150,8 @@ bool PauseMenuState::UpdateMenu(ImGuiWindowFlags window_flags)
 
 		// Load the menu state
 		cout << "Quitting the game from PauseMenu" << endl;
-
+		ImGui::PopStyleColor(3);
+		ImGui::End();
 		return false;
 	}
 

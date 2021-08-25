@@ -102,7 +102,10 @@ bool CGameStateManager::Render(void)
 	if (pauseGameState)
 	{
 		pauseGameState->Render();
-		pauseGameState->ImGuiRender();
+		if (!pauseGameState->ImGuiRender())
+		{
+			return false;
+		}
 	}
 	else if (activeGameState)
 	{
