@@ -53,17 +53,8 @@ void RayCast2D::Init(CEntity2D* currentTarget, std::vector<CEntity2D*> entityArr
 	//Initialise rendering
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
-
 	glBindVertexArray(VAO);
-
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-	/*float vertices[] = {
-		-1,0,0,1,0,
-		1,0,0,1,0
-	};
-
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);*/
 }
 
 void RayCast2D::SetTarget(CEntity2D* target) {
@@ -155,6 +146,8 @@ void RayCast2D::PreRender(void) {
 }
 
 void RayCast2D::Render(void) {
+
+
 	//Camera init
 	glm::vec2 offset = glm::i32vec2((cSettings->NUM_TILES_XAXIS / 2), (cSettings->NUM_TILES_YAXIS / 2));
 	glm::vec2 cameraPos = camera2D->getCurrPos();
@@ -172,6 +165,7 @@ void RayCast2D::Render(void) {
 	unsigned int transformLoc = glGetUniformLocation(CShaderManager::GetInstance()->activeShader->ID, "transform");
 	unsigned int colorLoc = glGetUniformLocation(CShaderManager::GetInstance()->activeShader->ID, "runtime_color");
 	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
+	glUniform4f(colorLoc, 0, 1, 0, 0);
 
 	glBindTexture(GL_TEXTURE0, NULL);
 	mesh->Render();

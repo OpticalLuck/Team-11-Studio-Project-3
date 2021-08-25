@@ -7,6 +7,18 @@ class RayCast2D;
 class CMobEnemy2D : public CEnemy2D
 {
 	public:
+		struct data {
+			FSM currStatus;
+
+			glm::vec2 currPos;
+			DIRECTION currDir;
+
+			int currTimer;
+			int currInterval; //Patrolling
+		};
+
+		std::map<int, data> savedData;
+
 		CMobEnemy2D(void);
 		~CMobEnemy2D(void);
 
@@ -29,12 +41,15 @@ class CMobEnemy2D : public CEnemy2D
 		//Function to call if Entity gets hit
 		virtual void Attacked(int hp = 1, CPhysics2D* bounceObj = nullptr);
 
+		void SaveCurrData(void);
+
 	protected:
 		glm::vec2 oldVTransform;
 		float mSpd;
 
 		CSpriteAnimation* animatedSprites;
 
+		bool patrol;
 		bool clampSides; //check if enemy can jump off cliff and stuff
 		bool inView;
 
@@ -42,7 +57,17 @@ class CMobEnemy2D : public CEnemy2D
 		void CollisionUpdate(void);
 		void ClampPos(void);
 
+		void UpdateDumb(float dElapsedTime);
+		void UpdateSmart(float dElapsedTime);
+
 		//Raycasting client
 		RayCast2D* rayCast2D;
+
+		//Smart ai
+		int stateTimer;
+		int maxStateTimer[(int)FSM::NUM_FSM];
+
+		int intervalTimer;
+		int maxIntervalTimer[(int)FSM::NUM_FSM];
 };
 

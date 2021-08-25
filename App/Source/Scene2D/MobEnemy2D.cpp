@@ -24,6 +24,19 @@ CMobEnemy2D::CMobEnemy2D(void) {
 	clampSides = true;
 	inView = false;
 	rayCast2D = nullptr;
+	patrol = false;
+
+	intervalTimer = stateTimer = 0;
+
+	maxStateTimer[0] = 0;
+	maxStateTimer[1] = 0;
+	maxStateTimer[2] = 0;
+	maxStateTimer[3] = 0;
+
+	maxIntervalTimer[0] = 0;
+	maxIntervalTimer[1] = 0;
+	maxIntervalTimer[2] = 0;
+	maxIntervalTimer[3] = 0;
 }
 
 CMobEnemy2D::~CMobEnemy2D(void) {
@@ -111,11 +124,37 @@ bool CMobEnemy2D::Init(void) {
 	cPhysics2D->Init(&vTransform);
 	mSpd = 5;
 
+	//Smart AI stuff
+	maxStateTimer[(int)FSM::IDLE] = int(2.f * (float)cSettings->FPS);
+	maxStateTimer[(int)FSM::PATROL] = int(4.f * (float)cSettings->FPS);
+	maxStateTimer[(int)FSM::ATTACK] = int(3.f * (float)cSettings->FPS);
+
+	maxIntervalTimer[(int)FSM::IDLE] = int(0.2f * (float)cSettings->FPS);
+
+	sCurrentFSM = RandomiseFSM();
+	stateTimer = maxStateTimer[(int)sCurrentFSM];
+	intervalTimer = maxIntervalTimer[(int)sCurrentFSM];
+
+	dir = RandomiseDir();
+
+	SaveCurrData();
+
 	// If this class is initialised properly, then set the bIsActive to true
 	bIsActive = true;
 	inView = false;
 
 	return true;
+}
+
+void CMobEnemy2D::SaveCurrData(void) {
+	data dStore;
+	dStore.currDir = dir;
+	dStore.currPos = vTransform;
+	dStore.currInterval = intervalTimer;
+	dStore.currStatus = sCurrentFSM;
+	dStore.currTimer = stateTimer;
+
+	savedData[currFrame] = dStore;
 }
 
 void CMobEnemy2D::Attacked(int hp, CPhysics2D* bounceObj) {
@@ -172,6 +211,19 @@ void CMobEnemy2D::Update(const double dElapsedTime) {
 	// Store the old position
 	oldVTransform = vTransform;
 
+	if (!patrol)
+		UpdateDumb(dElapsedTime);
+	else
+		UpdateSmart(dElapsedTime);
+
+	//Health lives update
+	UpdateHealthLives();
+
+	animatedSprites->Update(dElapsedTime);
+	currFrame++;
+}
+
+void CMobEnemy2D::UpdateDumb(float dElapsedTime) {
 	//Clamping of position
 	ClampPos();
 
@@ -191,11 +243,6 @@ void CMobEnemy2D::Update(const double dElapsedTime) {
 
 		cPhysics2D->SetVelocity(glm::vec2(0, 0));
 	}
-
-	//Health lives update
-	UpdateHealthLives();
-
-	animatedSprites->Update(dElapsedTime);
 }
 
 void CMobEnemy2D::ClampPos(void) {

@@ -65,6 +65,8 @@ CEnemy2D::CEnemy2D(void)
 
 	pMaxShield = int(2.3f * (float)cSettings->FPS);
 	pMaxBlinkInterval = int(0.175f * (float)cSettings->FPS);
+
+	currFrame = 0;
 }
 
 /**
@@ -162,6 +164,11 @@ bool CEnemy2D::Init(void)
 	pHealth = 1;
 
 	return true;
+}
+
+CEnemy2D::FSM CEnemy2D::RandomiseFSM(void) {
+	int rand = Math::RandIntMinMax((int)FSM::IDLE, (int)FSM::PATROL);
+	return FSM(rand);
 }
 
 void CEnemy2D::SetTexture(const char* fileName) {
