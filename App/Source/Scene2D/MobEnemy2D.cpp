@@ -315,6 +315,7 @@ void CMobEnemy2D::OnStateTimerTriggered(FSM state) {
 	switch (state) {
 		case FSM::IDLE:
 			sCurrentFSM = FSM::PATROL;
+			RandomiseStateTimer(FSM::PATROL);
 			stateTimer = maxStateTimer[(int)sCurrentFSM];
 
 			dir = RandomiseDir();
@@ -323,6 +324,7 @@ void CMobEnemy2D::OnStateTimerTriggered(FSM state) {
 
 		case FSM::PATROL:
 			sCurrentFSM = FSM::IDLE;
+			RandomiseStateTimer(FSM::IDLE);
 			stateTimer = maxStateTimer[(int)sCurrentFSM];
 
 			dir = RandomiseDir();
@@ -357,6 +359,41 @@ void CMobEnemy2D::OnIntervalTriggered(FSM state) {
 }
 
 void CMobEnemy2D::UpdateSmart(float dElapsedTime) {
+	rayCast2D->SetEntityArr(cEntityManager->GetAllLivingEntities());
+	std::vector<CPlayer2D*> playerArr = cEntityManager->GetAllPlayers();
+
+	bool enemySee = false;
+	float dist = cSettings->NUM_TILES_XAXIS;
+
+	for (unsigned i = 0; i < playerArr.size(); i++) {
+		rayCast2D->SetTarget(playerArr[i]);
+		if (glm::length(vTransform - playerArr[i]->vTransform) < dist)
+			enemySee = rayCast2D->RayCheck();
+	}
+
+	//Further checking of enemysee
+	if (enemySee) {
+		float angleCheck = 80.f;
+		float rayAng = rayCast2D->GetAngle();
+
+		if (dir == DIRECTION::LEFT) {
+			float max = 180 + angleCheck;
+			float min = 180 - angleCheck;
+
+			if (rayAng >= min && rayAng <= max)
+				enemySee = true;
+			else
+				enemySee = false;
+		}
+		else {
+			float top = angleCheck;
+			float bottom = 360 - angleCheck;
+
+			if (rayAng > angleCheck && rayAng < bottom)
+				enemySee = false;
+		}
+	}
+
 	switch (sCurrentFSM) {
 		case FSM::IDLE:
 			intervalTimer = Math::Max(0, intervalTimer - 1);
@@ -365,6 +402,13 @@ void CMobEnemy2D::UpdateSmart(float dElapsedTime) {
 			OnIntervalTriggered(sCurrentFSM);
 			OnStateTimerTriggered(sCurrentFSM);
 
+			if (enemySee) {
+				sCurrentFSM = FSM::ATTACK;
+				RandomiseIntervalTimer();
+				RandomiseStateTimer(FSM::ATTACK);
+				stateTimer = maxStateTimer[(int)FSM::ATTACK];
+			}
+
 			break;
 
 		case FSM::PATROL:
@@ -372,6 +416,13 @@ void CMobEnemy2D::UpdateSmart(float dElapsedTime) {
 			UpdateDumb(dElapsedTime);
 
 			OnStateTimerTriggered(sCurrentFSM);
+
+			if (enemySee) {
+				sCurrentFSM = FSM::ATTACK;
+				RandomiseIntervalTimer();
+				RandomiseStateTimer(FSM::ATTACK);
+				stateTimer = maxStateTimer[(int)FSM::ATTACK];
+			}
 			break;
 
 		case FSM::ATTACK:
@@ -594,5 +645,6 @@ void CMobEnemy2D::PostRender(void) {
 	glDisable(GL_BLEND);
 
 	//Raycasting code if needed...
-	//rayCast2D->RenderRayCast();
+	if (patrol)
+		rayCast2D->RenderRayCast();
 }
