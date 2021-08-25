@@ -2,6 +2,7 @@
 #include <iostream>
 
 #include "EntityManager.h"
+#include "MobEnemy2D.h"
 
 CObject2D::CObject2D(int iTextureID) 
 	: width(1.f)
@@ -98,7 +99,12 @@ void CObject2D::ResolveEnemyCollision()
 
 		if (std::get<0>(data)) { //If collided with 
 			//Enemy collision code activate!
-			enemyArr[i]->Attacked();
+			CMobEnemy2D* mobEnemy = dynamic_cast<CMobEnemy2D*>(enemyArr[i]);
+
+			if (mobEnemy)
+				mobEnemy->Attacked(1, cPhysics2D);
+			else
+				enemyArr[i]->Attacked();
 		}
 	}
 }

@@ -705,6 +705,7 @@ void CPlayer2D::InputUpdate(double dt)
 			shurikenobj->Init();
 			shurikenobj->vTransform = vTransform;
 
+
 			glm::vec2 force = glm::clamp(distance * 200.f, glm::vec2(-2000.f, -2000.f), glm::vec2(2000.f, 2000.f));
 			shurikenobj->GetPhysics()->SetForce(force);
 
@@ -767,8 +768,6 @@ void CPlayer2D::Attacked(int hp, CPhysics2D* bounceObj) {
 		cPhysics2D->CollisionResponse(bounceObj,1.5f,1.5f);
 		cPhysics2D->SetBoolKnockBacked(true);
 		bounceObj->SetBoolKnockBacked(true);
-
-		//cPhysics2D->SetVelocity(ogVel);
 	}
 }
 

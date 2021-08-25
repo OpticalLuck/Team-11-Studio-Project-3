@@ -127,7 +127,11 @@ void CMobEnemy2D::Attacked(int hp, CPhysics2D* bounceObj) {
 		cPhysics2D->SetBoolKnockBacked(true);
 		bounceObj->SetBoolKnockBacked(true);
 
-		//cPhysics2D->SetVelocity(ogVel);
+		DEBUG_MSG("ENEMYHIT!");
+
+		/*float maxSpd = 2.f;
+		if (cPhysics2D->GetVelocity().length() > maxSpd)
+			cPhysics2D->SetVelocity(glm::normalize(cPhysics2D->GetVelocity()) * maxSpd);*/
 	}
 }
 
