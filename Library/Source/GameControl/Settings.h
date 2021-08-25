@@ -105,6 +105,8 @@ public:
 	glm::vec2 ConvertIndexToUVSpace(const glm::vec2 pos);
 	glm::vec2 ConvertUVSpaceToIndex(const glm::vec2 pos);
 
+	glm::vec2 GetScreenSize();
+
 	glm::vec2 GetWindowSize();
 	void LoadSettings();
 	void SaveSettings();

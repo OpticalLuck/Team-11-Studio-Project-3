@@ -140,6 +140,15 @@ glm::vec2 CSettings::ConvertUVSpaceToIndex(const glm::vec2 pos)
 	return output;
 }
 
+glm::vec2 CSettings::GetScreenSize()
+{
+	const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+
+	glm::vec2 screensize = glm::vec2(mode->width, mode->height);
+	return screensize;
+}
+
+
 glm::vec2 CSettings::GetWindowSize()
 {
 	switch (screenSize)
@@ -358,6 +367,14 @@ void CSettings::UpdateWindowSize()
 		break;
 	}
 
-	if(pWindow)
+	if (pWindow)
+	{
 		glfwSetWindowSize(pWindow, iWindowWidth, iWindowHeight);
+
+		glm::vec2 screensize = CSettings::GetInstance()->GetScreenSize();
+		glm::vec2 windowposition = glm::vec2(screensize.x / 2 -iWindowWidth / 2, screensize.y / 2 - iWindowHeight / 2);
+		// Set OpenGL window position
+		glfwSetWindowPos(pWindow, windowposition.x, windowposition.y);
+
+	}
 }
