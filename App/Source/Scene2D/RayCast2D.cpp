@@ -100,7 +100,7 @@ bool RayCast2D::RayCheck(void) {
 			Collision data = collider2D->CollideWith(collided);
 
 			//Collision successful
-			if (std::get<0>(data)) {
+ 			if (std::get<0>(data)) {
 				if (collided->colliderType == Collider2D::ColliderType::COLLIDER_QUAD)
 					collider2D->ResolveAABB(collided, data);
 				else if (collided->colliderType == Collider2D::ColliderType::COLLIDER_CIRCLE)
@@ -138,6 +138,10 @@ bool RayCast2D::RayCheck(void) {
 
 
 	return true;
+}
+
+void RayCast2D::SetEntityArr(std::vector<CEntity2D*> entityArr) {
+	this->entityArr = entityArr;
 }
 
 void RayCast2D::PreRender(void) {
