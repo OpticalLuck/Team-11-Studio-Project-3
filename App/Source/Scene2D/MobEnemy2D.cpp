@@ -351,16 +351,6 @@ void CMobEnemy2D::CollisionUpdate(void) {
 
 			vTransform = collider2D->position;
 			obj->vTransform = obj->GetCollider()->position;
-
-			if (obj->type == ENTITY_TYPE::TILE)
-			{
-				if (dynamic_cast<Boulder2D*>(obj))
-				{
-					glm::vec2 direction = glm::normalize(obj->vTransform - vTransform);
-					obj->GetPhysics()->SetForce(glm::vec2(120.f, 0) * direction);
-					cPhysics2D->SetVelocity(glm::vec2(0.f));
-				}
-			}
 		}
 	}
 

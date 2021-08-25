@@ -72,7 +72,7 @@ Collision Collider2D::CheckAABBCircleCollision(Collider2D* aabb, Collider2D* cir
 	glm::vec2 difference = (circle->position + circle->offset) - (aabb->position + aabb->offset);
 	glm::vec2 clamped = glm::clamp(difference, -aabb->vec2Dimensions, aabb->vec2Dimensions);
 	// now that we know the the clamped values, add this to AABB_center and we get the value of box closest to circle
-	glm::vec2 closest = aabb->position + clamped;
+	glm::vec2 closest = (aabb->position + aabb->offset) + clamped;
 	// now retrieve vector between center circle and closest point AABB and check if length < radius
 	difference = closest - (circle->position + circle->offset);
 

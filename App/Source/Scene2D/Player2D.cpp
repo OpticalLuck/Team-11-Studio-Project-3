@@ -643,18 +643,19 @@ void CPlayer2D::InputUpdate(double dt)
 
 	if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::SPACE].bKeyDown)
 	{
+		if (jumpCount < 2 &&
+			m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::SPACE].bKeyPressed)
+		{
+			cPhysics2D->SetboolGrounded(false);
+			velocity.y = 5.f * (jumpCount + (1 - jumpCount * 0.6f));
+			jumpCount++;
+			timerArr[A_JUMP].second = 0.1;
+		}
+
 		if (timerArr[A_JUMP].second < 0.2)
 		{
 			timerArr[A_JUMP].first = true;
-			if (jumpCount < 2 &&
-				m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::SPACE].bKeyPressed)
-			{
-				cPhysics2D->SetboolGrounded(false);
-				velocity.y = 4.6f * (jumpCount + (1 - jumpCount * 0.6f));
-				jumpCount++;
-			}
-			else
-				velocity.y = 8.4f;
+			force.y = 20;
 
 			cPhysics2D->SetboolGrounded(false);
 			cPhysics2D->SetBoolKnockBacked(false);
@@ -718,16 +719,14 @@ void CPlayer2D::InputUpdate(double dt)
 			shuriken.Use();
 			
 			CObject2D*kunaiobj = ObjectFactory::CreateObject(OBJECT_TYPE::BULLETS_KUNAI);
-			kunaiobj->Init();
-			kunaiobj->vTransform = vTransform;
-
-			glm::vec2 direction(0.f, 0.f);
+			float angle = 0;
 			if (facing == DIRECTION::LEFT)
-				direction = glm::vec2(-1.f, 0);
+				angle = 180;
 			else
-				direction = glm::vec2(1.f, 0);
-			glm::vec2 force = direction * 4.f;
-				kunaiobj->GetPhysics()->SetVelocity(force);
+				angle = 0;
+
+			dynamic_cast<Bullet2D*>(kunaiobj)->Init(true, angle, 10);
+			kunaiobj->vTransform = vTransform;
 
 			CEntityManager::GetInstance()->PushBullet(static_cast<Bullet2D*>(kunaiobj));
 		}
