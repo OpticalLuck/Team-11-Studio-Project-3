@@ -181,7 +181,7 @@ bool CPlayer2D::Init(void)
 	jumpCount = 0;
 
 	//fMovementSpeed = 1.f;
-	fMovementSpeed = 5.f;
+	fMovementSpeed = 3.f;
 	fJumpSpeed = 5.f;
 
 	if (!cPhysics2D)
@@ -189,7 +189,8 @@ bool CPlayer2D::Init(void)
 	if (!collider2D)
 		collider2D = new Collider2D;
 
-	collider2D->Init(vTransform, glm::vec2(0.2f, 0.5f), Collider2D::ColliderType::COLLIDER_QUAD);
+	collider2D->Init(vTransform, glm::vec2(0.5f, 0.2f), Collider2D::ColliderType::COLLIDER_QUAD);
+	collider2D->SetOffset(glm::vec2(0.f, -0.5f));
 	cPhysics2D->Init(&vTransform);
 
 	CInventoryManager::GetInstance()->Add("Player");
@@ -367,7 +368,7 @@ void CPlayer2D::Update(const double dElapsedTime)
 	collider2D->position = vTransform;
 
 	//COLLISION RESOLUTION ON Y_AXIS AND X_AXIS
-	int range = 1;
+	int range = 2;
 	cPhysics2D->SetboolGrounded(false);
 
 	//Stores nearby objects and its dist to player into a vector 
@@ -634,12 +635,12 @@ void CPlayer2D::InputUpdate(double dt)
 	{
 		velocity.y = fMovementSpeed;
 		cPhysics2D->SetboolGrounded(false);
-		DEBUG_MSG(this << ": Frame:" << iTempFrameCounter << " Move Up");
+		//DEBUG_MSG(this << ": Frame:" << iTempFrameCounter << " Move Up");
 	}
 	else if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::S].bKeyDown)
 	{
 		//velocity.y = -fMovementSpeed;
-		DEBUG_MSG(this << ": Frame:" << iTempFrameCounter << " Move Down");
+		//DEBUG_MSG(this << ": Frame:" << iTempFrameCounter << " Move Down");
 	}
 
 	if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::D].bKeyDown)
@@ -650,7 +651,7 @@ void CPlayer2D::InputUpdate(double dt)
 
 		state = STATE::S_MOVE;
 		facing = DIRECTION::RIGHT;
-		DEBUG_MSG(this << ": Frame:" << iTempFrameCounter << " Move Right");
+		//DEBUG_MSG(this << ": Frame:" << iTempFrameCounter << " Move Right");
 	}
 	else if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::A].bKeyDown)
 	{
@@ -658,7 +659,7 @@ void CPlayer2D::InputUpdate(double dt)
 			velocity.x = Math::Max(velocity.x - fMovementSpeed, -fMovementSpeed);
 		state = STATE::S_MOVE;
 		facing = DIRECTION::LEFT;
-		DEBUG_MSG(this << ": Frame:" << iTempFrameCounter << " Move Left");
+		//DEBUG_MSG(this << ": Frame:" << iTempFrameCounter << " Move Left");
 	}
 
 	if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::SPACE].bKeyDown)

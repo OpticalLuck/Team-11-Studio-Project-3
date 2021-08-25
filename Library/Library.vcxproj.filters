@@ -42,6 +42,9 @@
     <Filter Include="ImGuiWindow">
       <UniqueIdentifier>{ee54dd8b-caf6-4133-9f63-82f609eb680f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="SoundController">
+      <UniqueIdentifier>{09226244-3b72-4a11-92ff-c40aa101a2fc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\TimeControl\FPSCounter.cpp">
@@ -122,20 +125,20 @@
     <ClCompile Include="Source\System\MapLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Primitives\Camera2D.cpp">
+      <Filter>Primitives</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Primitives\Collider2D.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Primitives</Filter>
     </ClCompile>
     <ClCompile Include="Source\Primitives\Physics2D.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Primitives\Camera2D.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Primitives</Filter>
     </ClCompile>
     <ClCompile Include="Source\SoundController\SoundController.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>SoundController</Filter>
     </ClCompile>
     <ClCompile Include="Source\SoundController\SoundInfo.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>SoundController</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -233,19 +236,19 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\Primitives\Collider2D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Primitives\Physics2D.h">
-      <Filter>Header Files</Filter>
+      <Filter>Primitives</Filter>
     </ClInclude>
     <ClInclude Include="Source\Primitives\Camera2D.h">
-      <Filter>Header Files</Filter>
+      <Filter>Primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Primitives\Physics2D.h">
+      <Filter>Primitives</Filter>
     </ClInclude>
     <ClInclude Include="Source\SoundController\SoundController.h">
-      <Filter>Header Files</Filter>
+      <Filter>SoundController</Filter>
     </ClInclude>
     <ClInclude Include="Source\SoundController\SoundInfo.h">
-      <Filter>Header Files</Filter>
+      <Filter>SoundController</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
