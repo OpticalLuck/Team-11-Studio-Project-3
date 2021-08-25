@@ -33,6 +33,7 @@ enum SOUND_ID
 	SOUND_SWITCH		= 6,
 	SOUND_GAME_COMPLETE = 7,
 	SOUND_DEATH			= 8,
+	SOUND_TROUBLE       = 9,
 	SOUND_TOTAL			   ,
 
 	BGM_START			= 50,
@@ -75,12 +76,16 @@ public:
 	void UpdatePlayBackVolume(float volume);
 
 	void StopPlayBack();
+
+	bool isCurrentlyPlaying(std::string name);
+
 	// For 3D sounds only
 	// Set Listener position
 	void SetListenerPosition(const float x, const float y, const float z);
 	// Set Listener direction
 	void SetListenerDirection(const float x, const float y, const float z);
 
+	std::string GetNamebyID(int ID);
 protected:
 	// Constructor
 	CSoundController(void);
@@ -94,6 +99,7 @@ protected:
 	bool RemoveSound(const int ID);
 	// Get the number of sounds in this map
 	int GetNumOfSounds(void) const;
+
 
 	// The handler to the irrklang Sound Engine
 	ISoundEngine* cSoundEngine;

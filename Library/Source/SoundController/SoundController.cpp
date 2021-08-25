@@ -293,6 +293,11 @@ void CSoundController::StopPlayBack()
 	cSoundEngine->stopAllSounds();
 }
 
+bool CSoundController::isCurrentlyPlaying(std::string name)
+{
+	return cSoundEngine->isCurrentlyPlaying(name.c_str());
+}
+
 // For 3D sounds only
 /**
  @brief Set Listener position
@@ -314,6 +319,11 @@ void CSoundController::SetListenerPosition(const float x, const float y, const f
 void CSoundController::SetListenerDirection(const float x, const float y, const float z)
 {
 	vec3dfListenerDir.set(x, y, z);
+}
+
+std::string CSoundController::GetNamebyID(int ID)
+{
+	return GetSound(ID)->GetSound()->getName();
 }
 
 /**
