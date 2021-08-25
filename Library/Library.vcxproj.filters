@@ -43,7 +43,7 @@
       <UniqueIdentifier>{ee54dd8b-caf6-4133-9f63-82f609eb680f}</UniqueIdentifier>
     </Filter>
     <Filter Include="SoundController">
-      <UniqueIdentifier>{7c67c2e0-9b30-471b-89c5-cdb0c588a32f}</UniqueIdentifier>
+      <UniqueIdentifier>{09226244-3b72-4a11-92ff-c40aa101a2fc}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -125,13 +125,13 @@
     <ClCompile Include="Source\System\MapLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Primitives\Physics2D.cpp">
+    <ClCompile Include="Source\Primitives\Camera2D.cpp">
       <Filter>Primitives</Filter>
     </ClCompile>
     <ClCompile Include="Source\Primitives\Collider2D.cpp">
       <Filter>Primitives</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Primitives\Camera2D.cpp">
+    <ClCompile Include="Source\Primitives\Physics2D.cpp">
       <Filter>Primitives</Filter>
     </ClCompile>
     <ClCompile Include="Source\SoundController\SoundController.cpp">

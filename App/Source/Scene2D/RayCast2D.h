@@ -1,5 +1,7 @@
 #pragma once
 
+#include "GL/glew.h"
+
 // Include GLM
 #include <includes/glm.hpp>
 #include <includes/gtc/matrix_transform.hpp>
@@ -11,6 +13,9 @@
 class Collider2D;
 class CEntity2D;
 class CMap2D;
+class Camera2D;
+
+#include "GameControl/Settings.h"
 
 class RayCast2D
 {
@@ -21,7 +26,14 @@ class RayCast2D
 		//Initialisation
 		void Init(CEntity2D* currentTarget , std::vector<CEntity2D*> entityArr = std::vector<CEntity2D*>());
 
-		bool RayCheck(void);
+		bool RayCheck(void); //True if raycast is successful and there's no object in the way
+
+		void PreRender(void);
+		void Render(void);
+		void PostRender(void);
+
+		void RenderRayCast(void);
+		void SetTarget(CEntity2D* target);
 
 	private:
 		//Misc information
@@ -29,7 +41,8 @@ class RayCast2D
 		glm::vec2 currentPoint;
 		glm::vec2 targetPoint;
 
-		CEntity2D* currentTarget;
+		CEntity2D* client;
+		CEntity2D* castedEntity;
 
 		//Collider2D
 		Collider2D* collider2D;
@@ -37,6 +50,13 @@ class RayCast2D
 		//Mapping
 		std::vector<CEntity2D*> entityArr;
 		CMap2D* cMap2D;
-		
+
+		//Rendering
+		unsigned int VAO, VBO;
+		glm::mat4 transform;
+
+		//Handler
+		CSettings* cSettings;
+		Camera2D* camera2D;
 };
 

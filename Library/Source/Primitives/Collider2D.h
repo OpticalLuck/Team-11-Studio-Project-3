@@ -44,6 +44,8 @@ public:
 	ColliderType colliderType;
 	// Attributes of the Shader
 	glm::vec2 position;
+	glm::vec2 offset;
+
 	glm::mat4 transform;
 
 	// Bounding Box specifications
@@ -60,6 +62,7 @@ public:
 	virtual ~Collider2D();
 
 	bool Init(glm::vec2 position, glm::vec2 vec2Dimensions = glm::vec2(0.5f,0.5f), ColliderType colliderType = Collider2D::ColliderType::COLLIDER_QUAD);
+	void SetOffset(glm::vec2 offsetVec);
 
 	virtual void SetLineShader(const std::string & name);
 

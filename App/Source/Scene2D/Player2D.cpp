@@ -181,7 +181,7 @@ bool CPlayer2D::Init(void)
 	jumpCount = 0;
 
 	//fMovementSpeed = 1.f;
-	fMovementSpeed = 5.f;
+	fMovementSpeed = 3.f;
 	fJumpSpeed = 5.f;
 
 	if (!cPhysics2D)
@@ -190,6 +190,7 @@ bool CPlayer2D::Init(void)
 		collider2D = new Collider2D;
 
 	collider2D->Init(vTransform, glm::vec2(0.2f, 0.5f), Collider2D::ColliderType::COLLIDER_QUAD);
+	// collider2D->SetOffset(glm::vec2(0.f, -0.5f));
 	cPhysics2D->Init(&vTransform);
 
 	CInventoryManager::GetInstance()->Add("Player");
@@ -367,7 +368,7 @@ void CPlayer2D::Update(const double dElapsedTime)
 	collider2D->position = vTransform;
 
 	//COLLISION RESOLUTION ON Y_AXIS AND X_AXIS
-	int range = 1;
+	int range = 2;
 	cPhysics2D->SetboolGrounded(false);
 
 	//Stores nearby objects and its dist to player into a vector 
@@ -385,30 +386,8 @@ void CPlayer2D::Update(const double dElapsedTime)
 				CObject2D* obj = cMap2D->GetCObject(colCheck, rowCheck);
 				if (obj->GetCollider()->GetbEnabled())
 				{
-					if (obj->type == ENTITY_TYPE::INTERACTABLES)
-					{
-						DEBUG_MSG("yuh");
-					}
 					float distance = glm::length(obj->vTransform - vTransform);
 					aabbVector.push_back({ obj, distance });
-				}
-
-				if (obj->type == ENTITY_TYPE::INTERACTABLES)
-				{
-					if (((Interactables*)(obj))->interactableType == INTERACTABLE_TYPE::LEVER)
-					{
-						if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::E].bKeyPressed)
-						{
-							((Interactables*)(obj))->Activate(!((Interactables*)(obj))->GetInteracted());
-						}
-					}
-					else if (((Interactables*)(obj))->interactableType == INTERACTABLE_TYPE::PRESSURE_PLATE)
-					{
-						if (glm::length(obj->vTransform - vTransform) < 0.3)
-						{
-							((Interactables*)(obj))->Activate(true);
-						}
-					}
 				}
 			}
 		}
@@ -503,7 +482,8 @@ void CPlayer2D::Update(const double dElapsedTime)
 	//CS: Update the animated sprite
 	animatedSprites->Update(dElapsedTime);
 
-	iTempFrameCounter++;
+	if (!bIsClone || iTempFrameCounter < m_KeyboardInputs.size() - 1)
+		iTempFrameCounter++;
 }
 
 /**
@@ -634,12 +614,12 @@ void CPlayer2D::InputUpdate(double dt)
 	{
 		velocity.y = fMovementSpeed;
 		cPhysics2D->SetboolGrounded(false);
-		DEBUG_MSG(this << ": Frame:" << iTempFrameCounter << " Move Up");
+		//DEBUG_MSG(this << ": Frame:" << iTempFrameCounter << " Move Up");
 	}
 	else if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::S].bKeyDown)
 	{
 		//velocity.y = -fMovementSpeed;
-		DEBUG_MSG(this << ": Frame:" << iTempFrameCounter << " Move Down");
+		//DEBUG_MSG(this << ": Frame:" << iTempFrameCounter << " Move Down");
 	}
 
 	if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::D].bKeyDown)
@@ -650,7 +630,7 @@ void CPlayer2D::InputUpdate(double dt)
 
 		state = STATE::S_MOVE;
 		facing = DIRECTION::RIGHT;
-		DEBUG_MSG(this << ": Frame:" << iTempFrameCounter << " Move Right");
+		//DEBUG_MSG(this << ": Frame:" << iTempFrameCounter << " Move Right");
 	}
 	else if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::A].bKeyDown)
 	{
@@ -658,7 +638,7 @@ void CPlayer2D::InputUpdate(double dt)
 			velocity.x = Math::Max(velocity.x - fMovementSpeed, -fMovementSpeed);
 		state = STATE::S_MOVE;
 		facing = DIRECTION::LEFT;
-		DEBUG_MSG(this << ": Frame:" << iTempFrameCounter << " Move Left");
+		//DEBUG_MSG(this << ": Frame:" << iTempFrameCounter << " Move Left");
 	}
 
 	if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::SPACE].bKeyDown)
@@ -721,6 +701,7 @@ void CPlayer2D::InputUpdate(double dt)
 			shurikenobj->Init();
 			shurikenobj->vTransform = vTransform;
 
+
 			glm::vec2 force = glm::clamp(distance * 200.f, glm::vec2(-2000.f, -2000.f), glm::vec2(2000.f, 2000.f));
 			shurikenobj->GetPhysics()->SetForce(force);
 
@@ -737,16 +718,14 @@ void CPlayer2D::InputUpdate(double dt)
 			shuriken.Use();
 			
 			CObject2D*kunaiobj = ObjectFactory::CreateObject(OBJECT_TYPE::BULLETS_KUNAI);
-			kunaiobj->Init();
-			kunaiobj->vTransform = vTransform;
-
-			glm::vec2 direction(0.f, 0.f);
+			float angle = 0;
 			if (facing == DIRECTION::LEFT)
-				direction = glm::vec2(-1.f, 0);
+				angle = 180;
 			else
-				direction = glm::vec2(1.f, 0);
-			glm::vec2 force = direction * 4.f;
-				kunaiobj->GetPhysics()->SetVelocity(force);
+				angle = 0;
+
+			dynamic_cast<Bullet2D*>(kunaiobj)->Init(true, angle, 10);
+			kunaiobj->vTransform = vTransform;
 
 			CEntityManager::GetInstance()->PushBullet(static_cast<Bullet2D*>(kunaiobj));
 		}
@@ -782,8 +761,6 @@ void CPlayer2D::Attacked(int hp, CPhysics2D* bounceObj) {
 		cPhysics2D->CollisionResponse(bounceObj,1.5f,1.5f);
 		cPhysics2D->SetBoolKnockBacked(true);
 		bounceObj->SetBoolKnockBacked(true);
-
-		//cPhysics2D->SetVelocity(ogVel);
 	}
 }
 

@@ -15,15 +15,36 @@
 #include "Interactables.h"
 #include "Boulder2D.h"
 
+#include "RayCast2D.h"
+
 CMobEnemy2D::CMobEnemy2D(void) {
 	animatedSprites = nullptr;
 	mSpd = 0;
 	oldVTransform = glm::vec2();
 	clampSides = true;
 	inView = false;
+	rayCast2D = nullptr;
+	patrol = false;
+
+	intervalTimer = stateTimer = 0;
+
+	maxStateTimer[0] = 0;
+	maxStateTimer[1] = 0;
+	maxStateTimer[2] = 0;
+	maxStateTimer[3] = 0;
+
+	maxIntervalTimer[0] = 0;
+	maxIntervalTimer[1] = 0;
+	maxIntervalTimer[2] = 0;
+	maxIntervalTimer[3] = 0;
 }
 
 CMobEnemy2D::~CMobEnemy2D(void) {
+	if (rayCast2D) {
+		delete rayCast2D;
+		rayCast2D = nullptr;
+	}
+
 	// de-allocate all resources once they've outlived their purpose:
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
@@ -38,6 +59,8 @@ bool CMobEnemy2D::Init(void) {
 	cMap2D = CMap2D::GetInstance();
 
 	camera = Camera2D::GetInstance();
+
+	cEntityManager = CEntityManager::GetInstance();
 
 	// Find the indices for the player in arrMapInfo, and assign it to cPlayer2D
 	unsigned int uiRow = -1;
@@ -90,21 +113,48 @@ bool CMobEnemy2D::Init(void) {
 	//Collider2D
 	collider2D->Init(vTransform);
 
-	//Animation
-	/*animatedSprites = CMeshBuilder::GenerateSpriteAnimation(4, 3, cSettings->TILE_WIDTH, cSettings->TILE_HEIGHT);
-	animatedSprites->AddAnimation("idle", 0, 2);
-
-	animatedSprites->PlayAnimation("idle", -1, 0.6f);*/
+	//Animation is initialised in factory...
+	
+	//Raycast
+	rayCast2D = new RayCast2D;
+	rayCast2D->Init(this, cEntityManager->GetAllLivingEntities());
+	rayCast2D->SetTarget(cEntityManager->GetPlayer());
 
 	//Physics initialisation
 	cPhysics2D->Init(&vTransform);
 	mSpd = 5;
+
+	//Smart AI stuff
+	maxStateTimer[(int)FSM::IDLE] = int(2.f * (float)cSettings->FPS);
+	maxStateTimer[(int)FSM::PATROL] = int(4.f * (float)cSettings->FPS);
+	maxStateTimer[(int)FSM::ATTACK] = int(3.f * (float)cSettings->FPS);
+
+	maxIntervalTimer[(int)FSM::IDLE] = int(0.2f * (float)cSettings->FPS);
+
+	sCurrentFSM = RandomiseFSM();
+	stateTimer = maxStateTimer[(int)sCurrentFSM];
+	intervalTimer = maxIntervalTimer[(int)sCurrentFSM];
+
+	dir = RandomiseDir();
+
+	SaveCurrData();
 
 	// If this class is initialised properly, then set the bIsActive to true
 	bIsActive = true;
 	inView = false;
 
 	return true;
+}
+
+void CMobEnemy2D::SaveCurrData(void) {
+	data dStore;
+	dStore.currDir = dir;
+	dStore.currPos = vTransform;
+	dStore.currInterval = intervalTimer;
+	dStore.currStatus = sCurrentFSM;
+	dStore.currTimer = stateTimer;
+
+	savedData[currFrame] = dStore;
 }
 
 void CMobEnemy2D::Attacked(int hp, CPhysics2D* bounceObj) {
@@ -127,7 +177,11 @@ void CMobEnemy2D::Attacked(int hp, CPhysics2D* bounceObj) {
 		cPhysics2D->SetBoolKnockBacked(true);
 		bounceObj->SetBoolKnockBacked(true);
 
-		//cPhysics2D->SetVelocity(ogVel);
+		DEBUG_MSG("ENEMYHIT!");
+
+		/*float maxSpd = 2.f;
+		if (cPhysics2D->GetVelocity().length() > maxSpd)
+			cPhysics2D->SetVelocity(glm::normalize(cPhysics2D->GetVelocity()) * maxSpd);*/
 	}
 }
 
@@ -144,6 +198,9 @@ void CMobEnemy2D::SetClampSlides(bool clamp) {
 }
 
 void CMobEnemy2D::Update(const double dElapsedTime) {
+	//Raycast  test
+	rayCast2D->RayCheck();
+
 	if (!inView) { //Do not activate if enemy is out of view
 		if (WithinProjectedCamera(cEntityManager->GetPlayer()))
 			inView = true;
@@ -154,6 +211,23 @@ void CMobEnemy2D::Update(const double dElapsedTime) {
 	// Store the old position
 	oldVTransform = vTransform;
 
+	if (!patrol)
+		UpdateDumb(dElapsedTime);
+	else
+		UpdateSmart(dElapsedTime);
+
+	//Health lives update
+	UpdateHealthLives();
+
+	animatedSprites->Update(dElapsedTime);
+	currFrame++;
+}
+
+void CMobEnemy2D::UpdateSmart(float dElapsedTime) {
+
+}
+
+void CMobEnemy2D::UpdateDumb(float dElapsedTime) {
 	//Clamping of position
 	ClampPos();
 
@@ -173,11 +247,6 @@ void CMobEnemy2D::Update(const double dElapsedTime) {
 
 		cPhysics2D->SetVelocity(glm::vec2(0, 0));
 	}
-
-	//Health lives update
-	UpdateHealthLives();
-
-	animatedSprites->Update(dElapsedTime);
 }
 
 void CMobEnemy2D::ClampPos(void) {
@@ -282,16 +351,6 @@ void CMobEnemy2D::CollisionUpdate(void) {
 
 			vTransform = collider2D->position;
 			obj->vTransform = obj->GetCollider()->position;
-
-			if (obj->type == ENTITY_TYPE::TILE)
-			{
-				if (dynamic_cast<Boulder2D*>(obj))
-				{
-					glm::vec2 direction = glm::normalize(obj->vTransform - vTransform);
-					obj->GetPhysics()->SetForce(glm::vec2(120.f, 0) * direction);
-					cPhysics2D->SetVelocity(glm::vec2(0.f));
-				}
-			}
 		}
 	}
 
@@ -374,4 +433,12 @@ void CMobEnemy2D::Render(void) {
 	animatedSprites->Render();
 
 	glBindVertexArray(0);
+}
+
+void CMobEnemy2D::PostRender(void) {
+	// Disable blending
+	glDisable(GL_BLEND);
+
+	//Raycasting code if needed...
+	rayCast2D->RenderRayCast();
 }

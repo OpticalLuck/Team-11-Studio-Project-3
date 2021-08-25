@@ -22,11 +22,12 @@ Bullet2D::~Bullet2D()
 	glDeleteVertexArrays(1, &VAO);
 }
 
-bool Bullet2D::Init(bool player, float angle, float force)
+bool Bullet2D::Init(bool bFriendly, float angle, float force)
 {
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
 
+	mFriendly = bFriendly;
 	fRotate = angle;
 
 	cSettings = CSettings::GetInstance();
@@ -171,5 +172,10 @@ void Bullet2D::ResolveMapCollision(std::vector<pair<CObject2D*, float>> aabbvect
 			bDestroyed = true;
 		}
 	}
+}
+
+void Bullet2D::SetFriendly(bool mFriendly)
+{
+	this->mFriendly = mFriendly;
 }
 

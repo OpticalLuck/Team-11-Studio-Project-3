@@ -11,7 +11,7 @@ public:
 	Bullet2D(int iTextureID = OBJECT_TYPE::BULLETS_KUNAI);
 	virtual ~Bullet2D();
 
-	bool Init(bool player, float angle, float force = 10);
+	bool Init(bool bFriendly, float angle, float force = 10);
 	void Update(double dElapsedTime) override;
 
 	void PreRender() override;
@@ -23,6 +23,8 @@ public:
 	void EntityCollision(void);
 
 	void ResolveMapCollision(std::vector<pair<CObject2D*, float>> aabbvector) override;
+
+	void SetFriendly(bool mFriendly);
 private:
 	bool mFriendly; //If true, it came from player, if not, enemy
 };
