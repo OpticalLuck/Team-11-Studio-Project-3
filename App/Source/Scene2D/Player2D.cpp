@@ -522,9 +522,10 @@ void CPlayer2D::Render(void)
 	glm::vec2 IndexPos = vTransform;
 
 	glm::vec2 actualPos = IndexPos - cameraPos + offset;
-	actualPos = cSettings->ConvertIndexToUVSpace(actualPos);
+	actualPos = cSettings->ConvertIndexToUVSpace(actualPos) * Camera2D::GetInstance()->getZoom();
 
 	transform = glm::translate(transform, glm::vec3(actualPos.x, actualPos.y, 0.f));
+	transform = glm::scale(transform, glm::vec3(Camera2D::GetInstance()->getZoom()));
 
 	if (facing == DIRECTION::LEFT)
 		transform = glm::rotate(transform, glm::radians(180.f), glm::vec3(0.f, 1.f, 0.f));

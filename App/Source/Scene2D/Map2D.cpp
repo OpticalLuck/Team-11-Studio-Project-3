@@ -172,7 +172,7 @@ void CMap2D::Render(void)
 
 		glm::vec2 objCamPos = currObj->vTransform - cameraPos + offset;
 
-		glm::vec2 actualPos = cSettings->ConvertIndexToUVSpace(objCamPos);
+		glm::vec2 actualPos = cSettings->ConvertIndexToUVSpace(objCamPos) * camera->getZoom();
 
 		float clampOffset = cSettings->ConvertIndexToUVSpace(CSettings::AXIS::x, 1, false) / 2;
 
@@ -185,6 +185,7 @@ void CMap2D::Render(void)
 		transform = glm::mat4(1.f);
 		transform = glm::translate(transform, glm::vec3(actualPos.x, actualPos.y, 0.f));
 		transform = glm::rotate(transform, glm::radians(currObj->fRotate), glm::vec3(0.f, 0.f, 1.f));
+		transform = glm::scale(transform, glm::vec3(camera->getZoom()));
 
 		// Update the shaders with the latest transform
 		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
@@ -197,7 +198,7 @@ void CMap2D::Render(void)
 
 		glm::vec2 objCamPos = currObj->vTransform - cameraPos + offset;
 
-		glm::vec2 actualPos = cSettings->ConvertIndexToUVSpace(objCamPos);
+		glm::vec2 actualPos = cSettings->ConvertIndexToUVSpace(objCamPos) * camera->getZoom();
 
 		float clampOffset = cSettings->ConvertIndexToUVSpace(CSettings::AXIS::x, 1, false) / 2;
 
@@ -210,6 +211,7 @@ void CMap2D::Render(void)
 		transform = glm::mat4(1.f);
 		transform = glm::translate(transform, glm::vec3(actualPos.x, actualPos.y, 0.f));
 		transform = glm::rotate(transform, glm::radians(currObj->fRotate), glm::vec3(0.f, 0.f, 1.f));
+		transform = glm::scale(transform, glm::vec3(camera->getZoom()));
 
 		// Update the shaders with the latest transform
 		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));

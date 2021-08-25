@@ -338,7 +338,7 @@ void Collider2D::Render(void)
 
 	glm::vec2 objCamPos = (position + offset)- cameraPos + tileoffset;
 
-	glm::vec2 actualPos = CSettings::GetInstance()->ConvertIndexToUVSpace(objCamPos);
+	glm::vec2 actualPos = CSettings::GetInstance()->ConvertIndexToUVSpace(objCamPos) * Camera2D::GetInstance()->getZoom();
 
 	float clampOffset = CSettings::GetInstance()->ConvertIndexToUVSpace(CSettings::AXIS::x, 1, false) / 2;
 	clampOffset = (clampOffset + 1);
@@ -351,6 +351,7 @@ void Collider2D::Render(void)
 		transform = glm::translate(transform, glm::vec3(actualPos.x, actualPos.y, 0.f));
 		transform = glm::rotate(transform, angle, glm::vec3(0, 0, 1));
 		transform = glm::scale(transform, glm::vec3(CSettings::GetInstance()->TILE_WIDTH, CSettings::GetInstance()->TILE_HEIGHT, 1.f));
+		transform = glm::scale(transform, glm::vec3(Camera2D::GetInstance()->getZoom()));
 		CShaderManager::GetInstance()->activeShader->setMat4("transform", transform);
 
 		// render box

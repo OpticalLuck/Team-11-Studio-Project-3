@@ -160,6 +160,7 @@ void RayCast2D::Render(void) {
 	glBindVertexArray(VAO);
 	
 	transform = glm::mat4(1.0f);
+	transform = glm::scale(transform, glm::vec3(Camera2D::GetInstance()->getZoom()));
 	//transform = glm::translate(transform, glm::vec3(0, 0, 0.f));
 
 	unsigned int transformLoc = glGetUniformLocation(CShaderManager::GetInstance()->activeShader->ID, "transform");

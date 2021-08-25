@@ -72,7 +72,7 @@ void Projectiles::Render()
 
 	glm::vec2 objCamPos = vTransform - cameraPos + offset;
 
-	glm::vec2 actualPos = cSettings->ConvertIndexToUVSpace(objCamPos);
+	glm::vec2 actualPos = cSettings->ConvertIndexToUVSpace(objCamPos) * Camera2D::GetInstance()->getZoom();
 
 	float clampOffset = cSettings->ConvertIndexToUVSpace(CSettings::AXIS::x, 1, false) / 2;
 
@@ -89,6 +89,7 @@ void Projectiles::Render()
 		transform = glm::translate(transform, glm::vec3(glm::vec2(actualPos.x, actualPos.y),
 			0.0f));
 		transform = glm::rotate(transform, glm::radians(fRotate), glm::vec3(0.f, 0.f, 1.f));
+		transform = glm::scale(transform, glm::vec3(Camera2D::GetInstance()->getZoom()));
 		// Update the shaders with the latest transform
 		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
 

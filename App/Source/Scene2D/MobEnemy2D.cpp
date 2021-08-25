@@ -407,7 +407,7 @@ void CMobEnemy2D::Render(void) {
 	glm::vec2 IndexPos = vTransform;
 
 	glm::vec2 actualPos = IndexPos - cameraPos + offset;
-	actualPos = cSettings->ConvertIndexToUVSpace(actualPos);
+	actualPos = cSettings->ConvertIndexToUVSpace(actualPos) * Camera2D::GetInstance()->getZoom();
 
 	float clampOffset = cSettings->ConvertIndexToUVSpace(CSettings::AXIS::x, 1, false);
 	clampOffset = (clampOffset + 1);
@@ -418,6 +418,7 @@ void CMobEnemy2D::Render(void) {
 		return; //Exit code if enemy is too far to be rendered
 
 	transform = glm::translate(transform, glm::vec3(actualPos.x, actualPos.y, 0.f));
+	transform = glm::scale(transform, glm::vec3(Camera2D::GetInstance()->getZoom()));
 
 	if (dir == DIRECTION::LEFT) //Rotate if facing other way
 		transform = glm::rotate(transform, glm::radians(180.f), glm::vec3(0.f, 1.f, 0.f));
