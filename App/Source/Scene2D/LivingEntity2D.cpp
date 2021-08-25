@@ -59,7 +59,11 @@ int LivingEntity2D::GetHealth(void) {
 	return pHealth;
 }
 
+
 int LivingEntity2D::GetMaxHealth(void)
 {
 	return pMaxHealth;
+}
+int LivingEntity2D::GetShield(void) {
+	return pShield;
 }

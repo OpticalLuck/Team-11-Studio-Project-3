@@ -34,7 +34,7 @@
 #include "GameManager.h"
 
 // Include SoundController
-#include "..\SoundController\SoundController.h"
+#include "SoundController\SoundController.h"
 
 #include "EntityManager.h"
 

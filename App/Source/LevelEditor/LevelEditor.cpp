@@ -23,6 +23,11 @@ CLevelEditor::CLevelEditor()
     , vAllowanceScale(1.f)
     , vUVCoords(2.f)
     , cBackgroundEntity(NULL)
+    , EBO(0)
+    , VAO(0)
+    , VBO(0)
+    , iTextureID(0)
+    , transform(glm::mat4())
 {
 }
 

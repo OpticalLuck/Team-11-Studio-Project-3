@@ -61,13 +61,10 @@ bool Interactables::Init()
 	{
 		// Initialise Doors
 		// Interacted doors are open
-		if (bInteraction)
-		{
-			collider2D->SetbEnabled(false);
-		}
+		collider2D->SetbEnabled(true);
 	}
 
-	return true;
+ 	return true;
 }
 
 void Interactables::Update(const double dElapsedTime)
@@ -202,7 +199,7 @@ bool Interactables::Activate(bool interaction)
 				if (this->iInteractableID == e->iInteractableID)
 				{
 					e->Activate(this->bInteraction);
-					collider2D->SetbEnabled(!collider2D->GetbEnabled());
+					e->collider2D->SetbEnabled(!interaction);
 					return true;
 				}
 			}

@@ -126,7 +126,6 @@ protected:
 
 	//2D array
 	std::vector<std::vector<std::vector<CObject2D*>>> arrGrid; //Y, X
-	std::vector<std::vector<std::vector<CObject2D*>>> arrBgGrid; //Y, X
 
 	//Vector array that stores limits of each level
 	std::vector<glm::i32vec2> arrLevelLimit;

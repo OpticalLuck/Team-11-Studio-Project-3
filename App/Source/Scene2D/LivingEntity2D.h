@@ -15,6 +15,7 @@ class LivingEntity2D
 
 		int GetHealth(void);
 		int GetMaxHealth(void);
+		int GetShield(void);
 	protected:
 		//Health and stuff
 		int pHealth;

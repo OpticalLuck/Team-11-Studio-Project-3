@@ -12,9 +12,6 @@
     <Filter Include="Scene2D">
       <UniqueIdentifier>{a357a60d-f2e7-4675-b29d-d35641c7a73c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="SoundController">
-      <UniqueIdentifier>{65b0c8b6-254f-4d24-982b-66a0a0af1c87}</UniqueIdentifier>
-    </Filter>
     <Filter Include="GameStateManagement">
       <UniqueIdentifier>{aa10578d-5881-490b-9125-bd687e1c699c}</UniqueIdentifier>
     </Filter>
@@ -64,12 +61,6 @@
     </ClCompile>
     <ClCompile Include="Source\Scene2D\Map2D.cpp">
       <Filter>Scene2D</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\SoundController\SoundController.cpp">
-      <Filter>SoundController</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\SoundController\SoundInfo.cpp">
-      <Filter>SoundController</Filter>
     </ClCompile>
     <ClCompile Include="Source\GameStateManagement\IntroState.cpp">
       <Filter>GameStateManagement</Filter>
@@ -189,16 +180,19 @@
       <Filter>Entity2D\LivingEntity2D\Enemy2D</Filter>
     </ClCompile>
     <ClCompile Include="Source\Scene2D\Enemy2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene2D\EnemyBullet2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene2D\Enemy2D.cpp">
       <Filter>Entity2D\LivingEntity2D\Enemy2D</Filter>
     </ClCompile>
     <ClCompile Include="Source\Scene2D\EnemyBullet2D.cpp">
       <Filter>Entity2D\Object2D</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Scene2D\Enemy2D.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Scene2D\EnemyBullet2D.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\Scene2D\RayCast2D.cpp">
+      <Filter>Scene2D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -210,12 +204,6 @@
     </ClInclude>
     <ClInclude Include="Source\Scene2D\Map2D.h">
       <Filter>Scene2D</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\SoundController\SoundController.h">
-      <Filter>SoundController</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\SoundController\SoundInfo.h">
-      <Filter>SoundController</Filter>
     </ClInclude>
     <ClInclude Include="Source\GameStateManagement\IntroState.h">
       <Filter>GameStateManagement</Filter>
@@ -335,16 +323,19 @@
       <Filter>Entity2D\LivingEntity2D\Enemy2D</Filter>
     </ClInclude>
     <ClInclude Include="Source\Scene2D\Enemy2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene2D\EnemyBullet2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene2D\Enemy2D.h">
       <Filter>Entity2D\LivingEntity2D\Enemy2D</Filter>
     </ClInclude>
     <ClInclude Include="Source\Scene2D\EnemyBullet2D.h">
       <Filter>Entity2D\Object2D</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Scene2D\Enemy2D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Scene2D\EnemyBullet2D.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Source\Scene2D\RayCast2D.h">
+      <Filter>Scene2D</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

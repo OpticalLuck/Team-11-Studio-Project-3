@@ -133,7 +133,7 @@ bool CScene2D::Init(void)
 
 	// Load the sounds into CSoundController
 	cSoundController = CSoundController::GetInstance();
-	cSoundController->PlaySoundByID(4);
+	cSoundController->PlaySoundByID(SOUND_ID::BGM_HENESYS);
 
 	CInputHandler = CInputHandler::GetInstance();
 
@@ -161,7 +161,6 @@ bool CScene2D::Update(const double dElapsedTime)
 	// Get keyboard updates
 	if (cKeyboardController->IsKeyDown(GLFW_KEY_F6))
 	{
-		cSoundController->PlaySoundByID(4);
 		// Save the current game to a save file
 		// Make sure the file is open
 		try {
@@ -216,7 +215,7 @@ bool CScene2D::Update(const double dElapsedTime)
 	// Check if the game should be ended
 	else if (cGameManager->bPlayerLost == true)
 	{
-		cSoundController->PlaySoundByID(2);
+		cSoundController->PlaySoundByID(SOUND_ID::SOUND_EXPLOSION);
 		return false;
 	}
 	return true;

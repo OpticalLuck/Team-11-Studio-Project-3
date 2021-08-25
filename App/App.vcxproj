@@ -31,7 +31,6 @@
     <ClCompile Include="Source\Scene2D\Boulder2D.cpp" />
     <ClCompile Include="Source\Scene2D\Bullet2D.cpp" />
     <ClCompile Include="Source\Scene2D\Enemy2D.cpp" />
-    <ClCompile Include="Source\Scene2D\EnemyBullet2D.cpp" />
     <ClCompile Include="Source\Scene2D\EntityManager.cpp" />
     <ClCompile Include="Source\Scene2D\GameManager.cpp" />
     <ClCompile Include="Source\Scene2D\Interactables.cpp" />
@@ -44,9 +43,8 @@
     <ClCompile Include="Source\Scene2D\Object2D.cpp" />
     <ClCompile Include="Source\Scene2D\Player2D.cpp" />
     <ClCompile Include="Source\Scene2D\Projectiles.cpp" />
+    <ClCompile Include="Source\Scene2D\RayCast2D.cpp" />
     <ClCompile Include="Source\Scene2D\Scene2D.cpp" />
-    <ClCompile Include="Source\SoundController\SoundController.cpp" />
-    <ClCompile Include="Source\SoundController\SoundInfo.cpp" />
     <ClCompile Include="Source\TextureManager\TextureManager.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -70,7 +68,6 @@
     <ClInclude Include="Source\Scene2D\Boulder2D.h" />
     <ClInclude Include="Source\Scene2D\Bullet2D.h" />
     <ClInclude Include="Source\Scene2D\Enemy2D.h" />
-    <ClInclude Include="Source\Scene2D\EnemyBullet2D.h" />
     <ClInclude Include="Source\Scene2D\EntityManager.h" />
     <ClInclude Include="Source\Scene2D\GameManager.h" />
     <ClInclude Include="Source\Scene2D\Interactables.h" />
@@ -83,9 +80,8 @@
     <ClInclude Include="Source\Scene2D\Object2D.h" />
     <ClInclude Include="Source\Scene2D\Player2D.h" />
     <ClInclude Include="Source\Scene2D\Projectiles.h" />
+    <ClInclude Include="Source\Scene2D\RayCast2D.h" />
     <ClInclude Include="Source\Scene2D\Scene2D.h" />
-    <ClInclude Include="Source\SoundController\SoundController.h" />
-    <ClInclude Include="Source\SoundController\SoundInfo.h" />
     <ClInclude Include="Source\TextureManager\TextureManager.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

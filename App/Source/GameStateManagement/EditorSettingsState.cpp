@@ -34,7 +34,7 @@
 // Include CKeyboardController
 #include "Inputs/KeyboardController.h"
 #include "Inputs/MouseController.h"
-#include "../App/Source/SoundController/SoundController.h"
+#include "SoundController/SoundController.h"
 
 #include <iostream>
 #include <System/Debug.h>

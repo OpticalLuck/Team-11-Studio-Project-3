@@ -112,6 +112,8 @@ bool CGameStateManager::Render(void)
 			pauseGameState->ImGuiRender();
 		}
 	}
+
+	return true;
 }
 
 /**

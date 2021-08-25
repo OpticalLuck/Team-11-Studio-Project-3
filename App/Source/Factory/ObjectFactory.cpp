@@ -2,11 +2,11 @@
 
 #include "../Scene2D/Boulder2D.h"
 
-#include "../Scene2D/EnemyBullet2D.h"
-
-#include "../Scene2D/Projectiles.h"
 #include "../Scene2D/Bullet2D.h"
 
+#include "../App/Source/TextureManager/TextureManager.h"
+
+#include "System/Debug.h"
 
 CObject2D* ObjectFactory::CreateObject(int iTextureID)
 {
@@ -45,14 +45,16 @@ CObject2D* ObjectFactory::CreateObject(int iTextureID)
     return newObj;
 }
 
-EnemyBullet2D* ObjectFactory::CreateBullet(float angle, glm::vec2 vTransform) {
-	EnemyBullet2D* bullet = new EnemyBullet2D;
-	if (!bullet->Init(angle, vTransform)) {
+Bullet2D* ObjectFactory::CreateBullet(float angle, glm::vec2 vTransform, bool friendly) {
+	Bullet2D* bullet = dynamic_cast<Bullet2D*>(ObjectFactory::CreateObject(BULLETS_ENEMY));
+	if (!bullet->Init(friendly, angle)) {
 		delete bullet;
 		bullet = nullptr; //Delete bullet if initialisation fails
+		DEBUG_MSG("BULLET FAILED TO BE CREATED FROM OBJECT FACTORY");
 	}
 	else {
 		bullet->SetShader("2DColorShader");
+		bullet->vTransform = vTransform;
 	}
 
 	return bullet;

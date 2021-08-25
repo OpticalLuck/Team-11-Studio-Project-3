@@ -4,9 +4,14 @@
 #include <vector>
 #include "RenderControl/ShaderManager.h"
 #include "Primitives/MeshBuilder.h"
+#include "Math/MyMath.h"
+#include "EntityManager.h"
+#include "MobEnemy2D.h"
+
 Bullet2D::Bullet2D(int iTextureID)
 {
 	this->iTextureID = iTextureID; //Shuriken also by default
+	mFriendly = false;
 }
 
 Bullet2D::~Bullet2D()
@@ -17,10 +22,13 @@ Bullet2D::~Bullet2D()
 	glDeleteVertexArrays(1, &VAO);
 }
 
-bool Bullet2D::Init()
+bool Bullet2D::Init(bool player, float angle, float force)
 {
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
+
+	fRotate = angle;
+
 	cSettings = CSettings::GetInstance();
 	mesh = CMeshBuilder::GenerateQuad(glm::vec4(1, 1, 1, 1), cSettings->TILE_WIDTH, cSettings->TILE_HEIGHT);
 
@@ -33,8 +41,15 @@ bool Bullet2D::Init()
 	cPhysics2D->SetGravity(0.f);
 	cPhysics2D->MAX_SPEED = 50.f;
 
-	collider2D->Init(vTransform, glm::vec2(0.2f), Collider2D::ColliderType::COLLIDER_CIRCLE);
-	return false;
+	float radAng = Math::DegreeToRadian(angle);
+	cPhysics2D->SetVelocity(glm::vec2(cosf(radAng), sinf(radAng)) * force);
+	cPhysics2D->SetMass(0.75f);
+
+	collider2D->Init(vTransform, glm::vec2(0.25f), Collider2D::ColliderType::COLLIDER_CIRCLE);
+
+	//Handlers
+	cEntityManager = CEntityManager::GetInstance();
+	return true;
 }
 
 void Bullet2D::Update(double dElapsedTime)
@@ -42,12 +57,48 @@ void Bullet2D::Update(double dElapsedTime)
 	cPhysics2D->Update(dElapsedTime);
 	collider2D->SetPosition(vTransform);
 
-	CMap2D* cMap2D = CMap2D::GetInstance();
+	MapCollision();
+	if (!bDestroyed)
+		EntityCollision();
+}
 
-	if (cPhysics2D->GetVelocity().x < 0)
-		fRotate = 180;
-	else
-		fRotate = 0;
+void Bullet2D::EntityCollision(void) {
+	std::vector<LivingEntity2D*> arr;
+	if (mFriendly) {
+		std::vector<CEnemy2D*> ogArr = cEntityManager->GetAllEnemies();
+		arr = std::vector<LivingEntity2D*>(ogArr.begin(), ogArr.end());
+	}
+	else {
+		std::vector<CPlayer2D*> ogArr = cEntityManager->GetAllPlayers();
+		arr = std::vector<LivingEntity2D*>(ogArr.begin(), ogArr.end());
+	}
+
+	for (unsigned i = 0; i < arr.size(); i++) {
+		Collider2D* playerCollider = dynamic_cast<CEntity2D*>(arr[i])->GetCollider();
+		Collision data = (collider2D->CollideWith(playerCollider));
+
+		if (std::get<0>(data)) {
+			//collision code below
+			CPlayer2D* player = dynamic_cast<CPlayer2D*>(arr[i]);
+			CMobEnemy2D* enemy = dynamic_cast<CMobEnemy2D*>(arr[i]);
+
+			//For knockback effect
+			if (player)
+				player->Attacked(1, cPhysics2D);
+			else if (enemy)
+				enemy->Attacked(1, cPhysics2D);
+			else
+				arr[i]->Attacked(); //Default
+
+			//Remove bullet from worldspace
+			bDestroyed = true;
+			return;
+		}
+	}
+}
+
+void Bullet2D::MapCollision(void) {
+	CMap2D* cMap2D = CMap2D::GetInstance();
 
 	ResolveMapCollision(CheckMapCollision());
 }
@@ -89,6 +140,7 @@ void Bullet2D::Render()
 		transform = glm::translate(transform, glm::vec3(glm::vec2(actualPos.x, actualPos.y),
 			0.0f));
 		transform = glm::rotate(transform, glm::radians(fRotate), glm::vec3(0.f, 0.f, 1.f));
+		transform = glm::scale(transform, glm::vec3(collider2D->vec2Dimensions.x*2, collider2D->vec2Dimensions.y*2,1));
 		// Update the shaders with the latest transform
 		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
 
