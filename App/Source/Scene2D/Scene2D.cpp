@@ -148,6 +148,8 @@ bool CScene2D::Init(void)
 */
 bool CScene2D::Update(const double dElapsedTime)
 {
+	++m_FrameStorage.iCurrentFrame;
+
 	cEntityManager->Update(dElapsedTime);
 
 	// Call the Map2D's update method
@@ -173,6 +175,29 @@ bool CScene2D::Update(const double dElapsedTime)
 		{
 			cout << "Runtime error: " << e.what();
 			return false;
+		}
+	}
+
+	// Paradoxium ability
+	if (cKeyboardController->IsKeyPressed(GLFW_KEY_ENTER))
+	{
+		++m_FrameStorage.iCounter;
+		switch (m_FrameStorage.iCounter)
+		{
+		case 1:
+			m_FrameStorage.iStoredFrame = m_FrameStorage.iCurrentFrame;
+			m_FrameStorage.spawnPos = cPlayer2D->vTransform;
+			break;
+		case 2:
+			CPlayer2D* clone = CEntityManager::GetInstance()->Clone();
+			clone->vTransform = m_FrameStorage.spawnPos;
+			clone->iTempFrameCounter = m_FrameStorage.iStoredFrame;
+			clone->iFrameCounterEnd = m_FrameStorage.iCurrentFrame;
+			m_FrameStorage.iStoredFrame = 0;
+			cPlayer2D->vTransform = m_FrameStorage.spawnPos;
+
+			m_FrameStorage.iCounter = 0;
+			break;
 		}
 	}
 

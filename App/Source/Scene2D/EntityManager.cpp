@@ -157,22 +157,22 @@ void CEntityManager::PushEnemy(CEnemy2D* enemy) {
 		DEBUG_MSG("ENEMY NOT ADDED AS IT IS A NULLPTR.");
 }
 
-bool CEntityManager::Clone(void)
+CPlayer2D* CEntityManager::Clone(void)
 {
 	CPlayer2D* clone = new CPlayer2D();
 	clone->SetShader("2DColorShader");
 
-	if (!clone->Init(cPlayer2D->GetCheckpoint(),m_cloneList.size()))
+	if (!clone->Init(cPlayer2D->GetCheckpoint(), m_cloneList.size()))
 	{
 		std::cout << "Failed to clone Player\n";
-		return false;
+		return nullptr;
 	}
 	clone->SetClone(true);
 	clone->SetKeyInputs(cInputHandler->GetAllKeyboardInputs());
 	clone->SetMouseInputs(cInputHandler->GetAllMouseInputs());
 	m_cloneList.push_back(clone);
 
-	return true;
+	return clone;
 }
 
 
@@ -314,6 +314,14 @@ void CEntityManager::Update(const double dElapsedTime)
 
 	for (unsigned i = 0; i < m_cloneList.size(); ++i)
 	{
+		if (m_cloneList[i]->iTempFrameCounter - m_cloneList[i]->iFrameCounterEnd > 180)
+		{
+			delete m_cloneList[i];
+			m_cloneList[i] = nullptr;
+			m_cloneList.erase(std::remove(std::begin(m_cloneList), std::end(m_cloneList), nullptr), std::end(m_cloneList));
+			continue;
+		}
+
 		m_cloneList[i]->Update(dElapsedTime);
 	}
 

@@ -36,7 +36,7 @@ public:
 	void RenderInteractables(void);
 
 	void Update(const double dElapsedTime);
-	bool Clone(void);
+	CPlayer2D* Clone(void);
 	bool CheckCollision(CEntity2D* type1, CEntity2D* type2);
 	void RemoveEntity(string type, int amount);
 
@@ -72,7 +72,7 @@ protected:
 	std::vector<Interactables*> m_interactableList;
 	std::vector<CEnemy2D*> m_enemyList;
 	std::vector<Projectiles*> m_BulletList;
-	std::vector<CEntity2D*> m_cloneList;
+	std::vector<CPlayer2D*> m_cloneList;
 
 	int currRound; //Current round in game. First is 0 and last is 4 (Will be storing enemies prev attacks etc using this)
 
