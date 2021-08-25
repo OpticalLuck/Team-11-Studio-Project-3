@@ -643,18 +643,19 @@ void CPlayer2D::InputUpdate(double dt)
 
 	if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::SPACE].bKeyDown)
 	{
+		if (jumpCount < 2 &&
+			m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::SPACE].bKeyPressed)
+		{
+			cPhysics2D->SetboolGrounded(false);
+			velocity.y = 5.f * (jumpCount + (1 - jumpCount * 0.6f));
+			jumpCount++;
+			timerArr[A_JUMP].second = 0.1;
+		}
+
 		if (timerArr[A_JUMP].second < 0.2)
 		{
 			timerArr[A_JUMP].first = true;
-			if (jumpCount < 2 &&
-				m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::SPACE].bKeyPressed)
-			{
-				cPhysics2D->SetboolGrounded(false);
-				velocity.y = 4.6f * (jumpCount + (1 - jumpCount * 0.6f));
-				jumpCount++;
-			}
-			else
-				velocity.y = 8.4f;
+			force.y = 20;
 
 			cPhysics2D->SetboolGrounded(false);
 			cPhysics2D->SetBoolKnockBacked(false);
