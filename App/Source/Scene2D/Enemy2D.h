@@ -85,6 +85,7 @@ protected:
 		IDLE = 0,
 		PATROL,
 		ATTACK,
+		RETURNBACK,
 		DEATH,
 		NUM_FSM
 	};

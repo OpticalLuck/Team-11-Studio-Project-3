@@ -6,6 +6,7 @@
 #include "RenderControl/ShaderManager.h"
 #include "Primitives/MeshBuilder.h"
 #include "Primitives/Camera2D.h"
+#include "Math/MyMath.h"
 
 RayCast2D::RayCast2D(void) {
 	originPoint = targetPoint = currentPoint = glm::vec2(0, 0);
@@ -61,6 +62,17 @@ void RayCast2D::SetTarget(CEntity2D* target) {
 	castedEntity = target;
 }
 
+float RayCast2D::GetAngle(void) {
+	glm::vec2 finalVec = currentPoint - originPoint;
+	float angle = atan2f(finalVec.y, finalVec.x);
+	angle = Math::RadianToDegree(angle);
+
+	while (angle < 0)
+		angle += 360;
+
+	return angle;
+}
+
 bool RayCast2D::RayCheck(void) {
 	//Reset current point and update targetPoint
 	originPoint = client->vTransform;
@@ -70,7 +82,7 @@ bool RayCast2D::RayCheck(void) {
 
 	//Initialise speed, etc
 	glm::vec2 dirVec = glm::normalize(targetPoint - originPoint);
-	glm::vec2 spdVec = dirVec * 0.1f;
+	glm::vec2 spdVec = dirVec * 0.5f;
 
 	std::vector<glm::i32vec2> positionChecked; //Areas where the ray cast have already checked
 

@@ -33,10 +33,9 @@ CMobEnemy2D::CMobEnemy2D(void) {
 	maxStateTimer[2] = 0;
 	maxStateTimer[3] = 0;
 
-	maxIntervalTimer[0] = 0;
-	maxIntervalTimer[1] = 0;
-	maxIntervalTimer[2] = 0;
-	maxIntervalTimer[3] = 0;
+	id = 300;
+
+	recording = false;
 }
 
 CMobEnemy2D::~CMobEnemy2D(void) {
@@ -65,10 +64,6 @@ bool CMobEnemy2D::Init(void) {
 	// Find the indices for the player in arrMapInfo, and assign it to cPlayer2D
 	unsigned int uiRow = -1;
 	unsigned int uiCol = -1;
-
-	int id = 300;
-	if (!clampSides)
-		id = 301;
 
 	if (cMap2D->FindValue(id, uiRow, uiCol) == false)
 		return false;	// Unable to find the start position of the player, so quit this game
@@ -125,15 +120,13 @@ bool CMobEnemy2D::Init(void) {
 	mSpd = 5;
 
 	//Smart AI stuff
-	maxStateTimer[(int)FSM::IDLE] = int(2.f * (float)cSettings->FPS);
-	maxStateTimer[(int)FSM::PATROL] = int(4.f * (float)cSettings->FPS);
-	maxStateTimer[(int)FSM::ATTACK] = int(3.f * (float)cSettings->FPS);
 
-	maxIntervalTimer[(int)FSM::IDLE] = int(0.2f * (float)cSettings->FPS);
+	for (int i = 0; i < (int)FSM::NUM_FSM; i++)
+		RandomiseStateTimer((FSM)i);
 
 	sCurrentFSM = RandomiseFSM();
 	stateTimer = maxStateTimer[(int)sCurrentFSM];
-	intervalTimer = maxIntervalTimer[(int)sCurrentFSM];
+	RandomiseIntervalTimer();
 
 	dir = RandomiseDir();
 
@@ -146,6 +139,38 @@ bool CMobEnemy2D::Init(void) {
 	return true;
 }
 
+void CMobEnemy2D::RandomiseIntervalTimer(void) {
+	intervalTimer = int(Math::RandFloatMinMax(0.5f, 1.5f) * (float)cSettings->FPS);
+}
+
+void CMobEnemy2D::SetID(int id) {
+	this->id = id;
+}
+
+void CMobEnemy2D::RandomiseStateTimer(FSM state) {
+	if (state == FSM::NUM_FSM)
+		state = sCurrentFSM;
+
+	switch (state) {
+		case FSM::IDLE:
+			maxStateTimer[(int)state] = int(Math::RandFloatMinMax(1.5f,3.f) * (float)cSettings->FPS);
+			break;
+
+		case FSM::PATROL:
+			maxStateTimer[(int)state] = int(Math::RandFloatMinMax(3.5f, 7.f) * (float)cSettings->FPS);
+			break;
+
+		case FSM::ATTACK:
+		case FSM::RETURNBACK:
+			maxStateTimer[(int)state] = int(Math::RandFloatMinMax(2.f, 3.5f) * (float)cSettings->FPS);
+			break;
+
+		default:
+			maxStateTimer[(int)state] = 0;
+			break;
+	}
+}
+
 void CMobEnemy2D::SaveCurrData(void) {
 	data dStore;
 	dStore.currDir = dir;
@@ -153,6 +178,7 @@ void CMobEnemy2D::SaveCurrData(void) {
 	dStore.currInterval = intervalTimer;
 	dStore.currStatus = sCurrentFSM;
 	dStore.currTimer = stateTimer;
+	dStore.currVel = cPhysics2D->GetVelocity();
 
 	savedData[currFrame] = dStore;
 }
@@ -200,10 +226,6 @@ void CMobEnemy2D::SetClampSlides(bool clamp) {
 }
 
 void CMobEnemy2D::Update(const double dElapsedTime) {
-	//Raycast  test
-	rayCast2D->SetEntityArr(cEntityManager->GetAllLivingEntities());
-	rayCast2D->RayCheck();
-
 	if (!inView) { //Do not activate if enemy is out of view
 		if (WithinProjectedCamera(cEntityManager->GetPlayer()))
 			inView = true;
@@ -226,8 +248,187 @@ void CMobEnemy2D::Update(const double dElapsedTime) {
 	currFrame++;
 }
 
-void CMobEnemy2D::UpdateSmart(float dElapsedTime) {
+int CMobEnemy2D::GetNearestDataKey(void) {
+	//Looping through map
+	std::vector<std::pair<int, CMobEnemy2D::data>> arr = SortSavedData();
 
+	for (unsigned i = 0; i < arr.size(); i++) {
+		int value = arr[i].first;
+
+		if (value >= currFrame && i < arr.size() - 1)
+			return value;
+	}
+
+	//If there are no keys available, return curr Frame
+	return currFrame;
+}
+
+void CMobEnemy2D::LockWithinBoundary(void) {
+	glm::vec2 minVal = glm::vec2(0.5f, 0.f) - glm::vec2(collider2D->vec2Dimensions.x, 0);
+	minVal *= -1;
+
+	glm::vec2 mapDimensions = cMap2D->GetLevelLimit();
+	glm::vec2 maxVel = mapDimensions - glm::vec2(1.f, 1.f) + glm::vec2(0.5f - collider2D->vec2Dimensions.x, 0);
+
+	glm::vec2 oldVTransform = vTransform;
+	vTransform = glm::clamp(vTransform, minVal, maxVel);
+	collider2D->SetPosition(vTransform);
+
+	if (oldVTransform != vTransform)
+		cPhysics2D->SetVelocity(glm::vec2(0, 0));
+}
+
+void CMobEnemy2D::LoadCurrData(int frame) {
+	if (savedData.find(frame) == savedData.end())
+		return;
+
+	data loaded = savedData[frame];
+
+	sCurrentFSM = loaded.currStatus;
+	vTransform = loaded.currPos;
+	dir = loaded.currDir;
+	stateTimer = loaded.currTimer;
+	intervalTimer = loaded.currInterval;
+	cPhysics2D->SetVelocity(loaded.currVel);
+}
+
+std::vector<std::pair<int, CMobEnemy2D::data>> CMobEnemy2D::SortSavedData(void) {
+	std::vector<std::pair<int, data>> A;
+
+	for (auto& it : savedData)
+		A.push_back(it);
+
+	sort(A.begin(), A.end(), DataCheck);
+
+	return A;
+}
+
+bool CMobEnemy2D::DataCheck(std::pair<int, data>& a, std::pair<int, data>& b) {
+	return a.first < b.first;
+}
+
+void CMobEnemy2D::OnStateTimerTriggered(FSM state) {
+	if (stateTimer > 0)
+		return;
+
+	RandomiseIntervalTimer();
+	switch (state) {
+		case FSM::IDLE:
+			sCurrentFSM = FSM::PATROL;
+			RandomiseStateTimer(FSM::PATROL);
+			stateTimer = maxStateTimer[(int)sCurrentFSM];
+
+			dir = RandomiseDir();
+
+			break;
+
+		case FSM::PATROL:
+			sCurrentFSM = FSM::IDLE;
+			RandomiseStateTimer(FSM::IDLE);
+			stateTimer = maxStateTimer[(int)sCurrentFSM];
+
+			dir = RandomiseDir();
+
+			break;
+	}
+}
+
+void CMobEnemy2D::SetPatrol(bool patrol) {
+	this->patrol = patrol;
+}
+
+void CMobEnemy2D::OnIntervalTriggered(FSM state) {
+	if (intervalTimer > 0)
+		return;
+
+	switch (state) {
+		case FSM::IDLE:
+			if (dir == DIRECTION::LEFT)
+				dir = DIRECTION::RIGHT;
+			else
+				dir = DIRECTION::LEFT;
+
+			//Reset values
+			RandomiseIntervalTimer();;
+
+			break;
+
+		default: //Lmao nothing is done
+			break;
+	}
+}
+
+void CMobEnemy2D::UpdateSmart(float dElapsedTime) {
+	rayCast2D->SetEntityArr(cEntityManager->GetAllLivingEntities());
+	std::vector<CPlayer2D*> playerArr = cEntityManager->GetAllPlayers();
+
+	bool enemySee = false;
+	float dist = cSettings->NUM_TILES_XAXIS;
+
+	for (unsigned i = 0; i < playerArr.size(); i++) {
+		rayCast2D->SetTarget(playerArr[i]);
+		if (glm::length(vTransform - playerArr[i]->vTransform) < dist)
+			enemySee = rayCast2D->RayCheck();
+	}
+
+	//Further checking of enemysee
+	if (enemySee) {
+		float angleCheck = 80.f;
+		float rayAng = rayCast2D->GetAngle();
+
+		if (dir == DIRECTION::LEFT) {
+			float max = 180 + angleCheck;
+			float min = 180 - angleCheck;
+
+			if (rayAng >= min && rayAng <= max)
+				enemySee = true;
+			else
+				enemySee = false;
+		}
+		else {
+			float top = angleCheck;
+			float bottom = 360 - angleCheck;
+
+			if (rayAng > angleCheck && rayAng < bottom)
+				enemySee = false;
+		}
+	}
+
+	switch (sCurrentFSM) {
+		case FSM::IDLE:
+			intervalTimer = Math::Max(0, intervalTimer - 1);
+			stateTimer = Math::Max(0, stateTimer - 1);
+
+			OnIntervalTriggered(sCurrentFSM);
+			OnStateTimerTriggered(sCurrentFSM);
+
+			if (enemySee) {
+				sCurrentFSM = FSM::ATTACK;
+				RandomiseIntervalTimer();
+				RandomiseStateTimer(FSM::ATTACK);
+				stateTimer = maxStateTimer[(int)FSM::ATTACK];
+			}
+
+			break;
+
+		case FSM::PATROL:
+			stateTimer = Math::Max(0, stateTimer - 1);
+			UpdateDumb(dElapsedTime);
+
+			OnStateTimerTriggered(sCurrentFSM);
+
+			if (enemySee) {
+				sCurrentFSM = FSM::ATTACK;
+				RandomiseIntervalTimer();
+				RandomiseStateTimer(FSM::ATTACK);
+				stateTimer = maxStateTimer[(int)FSM::ATTACK];
+			}
+			break;
+
+		case FSM::ATTACK:
+
+			break;
+	}
 }
 
 void CMobEnemy2D::UpdateDumb(float dElapsedTime) {
@@ -253,7 +454,7 @@ void CMobEnemy2D::UpdateDumb(float dElapsedTime) {
 }
 
 void CMobEnemy2D::ClampPos(void) {
-	if (!clampSides)
+	if (!clampSides && !patrol)
 		return; //Do not clamp sides if option is not set
 
 	glm::vec2 tileCheck = glm::vec2(round(vTransform.x), round(vTransform.y));
@@ -444,5 +645,6 @@ void CMobEnemy2D::PostRender(void) {
 	glDisable(GL_BLEND);
 
 	//Raycasting code if needed...
-	rayCast2D->RenderRayCast();
+	if (patrol)
+		rayCast2D->RenderRayCast();
 }

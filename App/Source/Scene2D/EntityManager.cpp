@@ -87,6 +87,10 @@ bool CEntityManager::EntityManagerInit(void)
 		m_enemyList.push_back(enemyFactory.CreateEnemy(301));
 	}
 
+	while (cMap2D->FindValue(302, uiRow, uiCol)) {
+		m_enemyList.push_back(enemyFactory.CreateEnemy(302));
+	}
+
 	while (cMap2D->FindValue(303, uiRow, uiCol)) {
 		m_enemyList.push_back(enemyFactory.CreateEnemy(303));
 	}

@@ -2,6 +2,8 @@
 #include "Enemy2D.h"
 #include "Primitives/SpriteAnimation.h"
 
+#include <algorithm> 
+
 class RayCast2D;
 
 class CMobEnemy2D : public CEnemy2D
@@ -9,6 +11,7 @@ class CMobEnemy2D : public CEnemy2D
 	public:
 		struct data {
 			FSM currStatus;
+			glm::vec2 currVel;
 
 			glm::vec2 currPos;
 			DIRECTION currDir;
@@ -42,6 +45,15 @@ class CMobEnemy2D : public CEnemy2D
 		virtual void Attacked(int hp = 1, CPhysics2D* bounceObj = nullptr);
 
 		void SaveCurrData(void);
+		int GetNearestDataKey(void);
+
+		std::vector<std::pair<int, CMobEnemy2D::data>> SortSavedData(void);
+		static bool DataCheck(std::pair<int, data>& a, std::pair<int, data>& b);
+
+		void LoadCurrData(int frame);
+		void SetPatrol(bool);
+
+		void SetID(int id);
 
 	protected:
 		glm::vec2 oldVTransform;
@@ -60,6 +72,14 @@ class CMobEnemy2D : public CEnemy2D
 		void UpdateDumb(float dElapsedTime);
 		void UpdateSmart(float dElapsedTime);
 
+		void LockWithinBoundary(void);
+
+		void RandomiseStateTimer(FSM state = FSM::NUM_FSM);
+		void RandomiseIntervalTimer(void);
+
+		void OnIntervalTriggered(FSM);
+		void OnStateTimerTriggered(FSM);
+
 		//Raycasting client
 		RayCast2D* rayCast2D;
 
@@ -68,6 +88,9 @@ class CMobEnemy2D : public CEnemy2D
 		int maxStateTimer[(int)FSM::NUM_FSM];
 
 		int intervalTimer;
-		int maxIntervalTimer[(int)FSM::NUM_FSM];
+
+		int id;
+
+		bool recording;
 };
 

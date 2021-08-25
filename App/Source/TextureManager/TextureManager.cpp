@@ -165,13 +165,13 @@ bool CTextureManager::Init(void)
         return false;
     }
 
-    if (LoadTexture("Image/Enemy/PigPreview.png", ENEMY_2) == false)
+    if (LoadTexture("Image/Enemy/SnailPreview.png", ENEMY_2) == false)
     {
         std::cout << "Failed to load Pig tile texture" << std::endl;
         return false;
     }
 
-    if (LoadTexture("Image/Enemy/SnailPreview.png", ENEMY_3) == false)
+    if (LoadTexture("Image/Enemy/PauseMachineGun.png", ENEMY_3) == false)
     {
         std::cout << "Failed to load Snail tile texture" << std::endl;
         return false;
@@ -180,6 +180,12 @@ bool CTextureManager::Init(void)
     if (LoadTexture("Image/Enemy/MachineGun.png", ENEMY_4) == false)
     {
         std::cout << "Failed to load Machine Gun tile texture" << std::endl;
+        return false;
+    }
+
+    if (LoadTexture("Image/Enemy/PigPreview.png", ENEMY_5) == false)
+    {
+        std::cout << "Failed to load Pig tile texture" << std::endl;
         return false;
     }
 

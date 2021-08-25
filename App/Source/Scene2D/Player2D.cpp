@@ -181,7 +181,7 @@ bool CPlayer2D::Init(void)
 	jumpCount = 0;
 
 	//fMovementSpeed = 1.f;
-	fMovementSpeed = 3.f;
+	fMovementSpeed = 4.f;
 	fJumpSpeed = 5.f;
 
 	if (!cPhysics2D)
@@ -801,8 +801,13 @@ void CPlayer2D::LockWithinBoundary()
 	glm::vec2 mapDimensions = cMap2D->GetLevelLimit();
 	glm::vec2 maxVel = mapDimensions - glm::vec2(1.f, 1.f) + glm::vec2(0.5f - collider2D->vec2Dimensions.x, 0);
 
+	glm::vec2 oldTransform = vTransform;
+
 	vTransform = glm::clamp(vTransform, minVal, maxVel);
 	collider2D->SetPosition(vTransform);
+
+	if (oldTransform != vTransform)
+		cPhysics2D->SetVelocity(glm::vec2(0, 0));
 }
 
 CPlayer2D* const CPlayer2D::Clone()
