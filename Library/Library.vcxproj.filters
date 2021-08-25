@@ -235,19 +235,19 @@
     <ClInclude Include="Source\System\MapLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Primitives\Collider2D.h">
+    <ClInclude Include="Source\Primitives\Physics2D.h">
       <Filter>Primitives</Filter>
     </ClInclude>
     <ClInclude Include="Source\Primitives\Camera2D.h">
       <Filter>Primitives</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Primitives\Physics2D.h">
+    <ClInclude Include="Source\Primitives\Collider2D.h">
       <Filter>Primitives</Filter>
     </ClInclude>
-    <ClInclude Include="Source\SoundController\SoundController.h">
+    <ClInclude Include="Source\SoundController\SoundInfo.h">
       <Filter>SoundController</Filter>
     </ClInclude>
-    <ClInclude Include="Source\SoundController\SoundInfo.h">
+    <ClInclude Include="Source\SoundController\SoundController.h">
       <Filter>SoundController</Filter>
     </ClInclude>
   </ItemGroup>

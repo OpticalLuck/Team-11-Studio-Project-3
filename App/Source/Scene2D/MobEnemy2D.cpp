@@ -164,6 +164,8 @@ void CMobEnemy2D::Attacked(int hp, CPhysics2D* bounceObj) {
 	pHealth = Math::Max(0, pHealth - 1);
 	pShield = pMaxShield + 1; //Offset by 1 frame for better synchronisation (FUTURE JEVON IF YOU KNOW YOU KNOW IF NOT THEN LMAO)
 
+	std::cout << "HEALTH: " << pHealth << std::endl;
+
 	//Collision response between the objects
 	if (bounceObj) {
 		glm::vec2 ogVel = cPhysics2D->GetVelocity();
@@ -199,6 +201,7 @@ void CMobEnemy2D::SetClampSlides(bool clamp) {
 
 void CMobEnemy2D::Update(const double dElapsedTime) {
 	//Raycast  test
+	rayCast2D->SetEntityArr(cEntityManager->GetAllLivingEntities());
 	rayCast2D->RayCheck();
 
 	if (!inView) { //Do not activate if enemy is out of view

@@ -35,6 +35,8 @@ class RayCast2D
 		void RenderRayCast(void);
 		void SetTarget(CEntity2D* target);
 
+		void SetEntityArr(std::vector<CEntity2D*> entityArr);
+
 	private:
 		//Misc information
 		glm::vec2 originPoint;

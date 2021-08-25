@@ -331,6 +331,7 @@ void CSettings::UpdateSFXVolume(float SFX_VOLUME)
 		CSoundController::GetInstance()->SetVolumeByID(i, SFX_VOLUME * 0.01f);
 }
 
+
 // Update the specifications of the map
 void CSettings::UpdateSpecifications(void)
 {
