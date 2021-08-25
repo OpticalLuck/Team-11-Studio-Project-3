@@ -1,5 +1,7 @@
 #pragma once
 
+#include "GL/glew.h"
+
 // Include GLM
 #include <includes/glm.hpp>
 #include <includes/gtc/matrix_transform.hpp>
@@ -11,6 +13,9 @@
 class Collider2D;
 class CEntity2D;
 class CMap2D;
+class Camera2D;
+
+#include "GameControl/Settings.h"
 
 class RayCast2D
 {
@@ -28,6 +33,7 @@ class RayCast2D
 		void PostRender(void);
 
 		void RenderRayCast(void);
+		void SetTarget(CEntity2D* target);
 
 	private:
 		//Misc information
@@ -48,5 +54,9 @@ class RayCast2D
 		//Rendering
 		unsigned int VAO, VBO;
 		glm::mat4 transform;
+
+		//Handler
+		CSettings* cSettings;
+		Camera2D* camera2D;
 };
 

@@ -1,9 +1,11 @@
 #include "RayCast2D.h"
 
-#include "../App/Source/Scene2D/Map2D.h"
-#include "../Library/Source/Primitives/Collider2D.h"
+#include "../Scene2D/Map2D.h"
+#include "Primitives/Collider2D.h"
 #include "Primitives/Entity2D.h"
 #include "RenderControl/ShaderManager.h"
+#include "Primitives/MeshBuilder.h"
+#include "Primitives/Camera2D.h"
 
 RayCast2D::RayCast2D(void) {
 	originPoint = targetPoint = currentPoint = glm::vec2(0, 0);
@@ -19,6 +21,8 @@ RayCast2D::RayCast2D(void) {
 	client = nullptr;
 	cMap2D = nullptr;
 	castedEntity = nullptr;
+	cSettings = nullptr;
+	camera2D = nullptr;
 }
 
 RayCast2D::~RayCast2D(void) {
@@ -28,6 +32,8 @@ RayCast2D::~RayCast2D(void) {
 	client = nullptr;
 	cMap2D = nullptr;
 	castedEntity = nullptr;
+	cSettings = nullptr;
+	camera2D = nullptr;
 
 	entityArr.clear();
 
@@ -41,6 +47,8 @@ void RayCast2D::Init(CEntity2D* currentTarget, std::vector<CEntity2D*> entityArr
 	this->entityArr = entityArr;
 
 	cMap2D = CMap2D::GetInstance();
+	cSettings = CSettings::GetInstance();
+	camera2D = Camera2D::GetInstance();
 
 	//Initialise rendering
 	glGenVertexArrays(1, &VAO);
@@ -50,26 +58,32 @@ void RayCast2D::Init(CEntity2D* currentTarget, std::vector<CEntity2D*> entityArr
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-	float vertices[] = {
+	/*float vertices[] = {
 		-1,0,0,1,0,
 		1,0,0,1,0
 	};
 
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);*/
+}
+
+void RayCast2D::SetTarget(CEntity2D* target) {
+	castedEntity = target;
 }
 
 bool RayCast2D::RayCheck(void) {
 	//Reset current point and update targetPoint
+	originPoint = client->vTransform;
 	currentPoint = originPoint;
-	targetPoint = castedEntity->vTransform;
+	if (castedEntity)
+		targetPoint = castedEntity->vTransform;
 
 	//Initialise speed, etc
 	glm::vec2 dirVec = glm::normalize(targetPoint - originPoint);
-	glm::vec2 spdVec = dirVec * 0.5f;
+	glm::vec2 spdVec = dirVec * 0.1f;
 
 	std::vector<glm::i32vec2> positionChecked; //Areas where the ray cast have already checked
 
-	while ((targetPoint - currentPoint).length() > dirVec.length()) {
+	while (glm::length(targetPoint - currentPoint) > glm::length(spdVec)) {
 		currentPoint += spdVec;
 		collider2D->SetPosition(currentPoint);
 
@@ -130,49 +144,42 @@ bool RayCast2D::RayCheck(void) {
 		}
 	}
 
+
+
 	return true;
 }
 
 void RayCast2D::PreRender(void) {
 	// Use the shader defined for this class
-	CShaderManager::GetInstance()->Use("LineShader");
+	CShaderManager::GetInstance()->Use("2DShader");
 }
 
 void RayCast2D::Render(void) {
 	//Camera init
-	glm::vec2 offset = glm::vec2(float(CSettings::GetInstance()->NUM_TILES_XAXIS / 2.f), float(CSettings::GetInstance()->NUM_TILES_YAXIS / 2.f));
+	glm::vec2 offset = glm::i32vec2((cSettings->NUM_TILES_XAXIS / 2), (cSettings->NUM_TILES_YAXIS / 2));
+	glm::vec2 cameraPos = camera2D->getCurrPos();
 
-	glm::vec2 dirVec = (currentPoint - originPoint);
-	dirVec = glm::normalize(dirVec);
+	glm::vec2 uvStart = cSettings->ConvertIndexToUVSpace(originPoint - cameraPos + offset);
+	glm::vec2 uvEnd = cSettings->ConvertIndexToUVSpace(currentPoint - cameraPos + offset);
 
-	//Necessary values
-	float angle = atan2f(dirVec.y, dirVec.x);
-	glm::vec2 position = (currentPoint + originPoint) * 0.5f;
-	float scale = (currentPoint - originPoint).length();
+	CMesh* mesh = CMeshBuilder::GenerateLine(uvEnd, uvStart, glm::vec4(0, 1, 0, 1));
 
-	glm::vec2 cameraPos = Camera2D::GetInstance()->getCurrPos();
+	glBindVertexArray(VAO);
+	
+	transform = glm::mat4(1.0f);
+	//transform = glm::translate(transform, glm::vec3(0, 0, 0.f));
 
-	glm::vec2 objCamPos = position - cameraPos + offset;
+	unsigned int transformLoc = glGetUniformLocation(CShaderManager::GetInstance()->activeShader->ID, "transform");
+	unsigned int colorLoc = glGetUniformLocation(CShaderManager::GetInstance()->activeShader->ID, "runtime_color");
+	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
 
-	glm::vec2 actualPos = CSettings::GetInstance()->ConvertIndexToUVSpace(objCamPos);
+	glBindTexture(GL_TEXTURE0, NULL);
+	mesh->Render();
 
-	float clampOffset = CSettings::GetInstance()->ConvertIndexToUVSpace(CSettings::AXIS::x, 1, false) / 2;
-	clampOffset = (clampOffset + 1);
-
-	float clampX = 1.0f + clampOffset;
-	float clampY = 1.0f + clampOffset;
-	//if (fabs(actualPos.x) < clampX && fabs(actualPos.y) < clampY)
-	{
-		transform = glm::mat4(1.f);
-		transform = glm::translate(transform, glm::vec3(actualPos.x, actualPos.y, 0.f));
-		transform = glm::rotate(transform, angle, glm::vec3(0, 0, 1));
-		transform = glm::scale(transform, glm::vec3(CSettings::GetInstance()->TILE_WIDTH * scale, CSettings::GetInstance()->TILE_HEIGHT, 1.f));
-		CShaderManager::GetInstance()->activeShader->setMat4("transform", transform);
-
-		// render box
-		glBindVertexArray(VAO);
-		glDrawArrays(GL_LINE_LOOP, 0, 2);
-	}
+	delete mesh;
+	mesh = nullptr;
+	
+	glBindVertexArray(0);
 }
 
 void RayCast2D::PostRender(void) {

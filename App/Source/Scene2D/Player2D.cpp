@@ -495,7 +495,8 @@ void CPlayer2D::Update(const double dElapsedTime)
 	//CS: Update the animated sprite
 	animatedSprites->Update(dElapsedTime);
 
-	iTempFrameCounter++;
+	if (!bIsClone || iTempFrameCounter < m_KeyboardInputs.size() - 1)
+		iTempFrameCounter++;
 }
 
 /**

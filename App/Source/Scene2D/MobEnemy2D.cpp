@@ -15,15 +15,23 @@
 #include "Interactables.h"
 #include "Boulder2D.h"
 
+#include "RayCast2D.h"
+
 CMobEnemy2D::CMobEnemy2D(void) {
 	animatedSprites = nullptr;
 	mSpd = 0;
 	oldVTransform = glm::vec2();
 	clampSides = true;
 	inView = false;
+	rayCast2D = nullptr;
 }
 
 CMobEnemy2D::~CMobEnemy2D(void) {
+	if (rayCast2D) {
+		delete rayCast2D;
+		rayCast2D = nullptr;
+	}
+
 	// de-allocate all resources once they've outlived their purpose:
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
@@ -38,6 +46,8 @@ bool CMobEnemy2D::Init(void) {
 	cMap2D = CMap2D::GetInstance();
 
 	camera = Camera2D::GetInstance();
+
+	cEntityManager = CEntityManager::GetInstance();
 
 	// Find the indices for the player in arrMapInfo, and assign it to cPlayer2D
 	unsigned int uiRow = -1;
@@ -90,11 +100,12 @@ bool CMobEnemy2D::Init(void) {
 	//Collider2D
 	collider2D->Init(vTransform);
 
-	//Animation
-	/*animatedSprites = CMeshBuilder::GenerateSpriteAnimation(4, 3, cSettings->TILE_WIDTH, cSettings->TILE_HEIGHT);
-	animatedSprites->AddAnimation("idle", 0, 2);
-
-	animatedSprites->PlayAnimation("idle", -1, 0.6f);*/
+	//Animation is initialised in factory...
+	
+	//Raycast
+	rayCast2D = new RayCast2D;
+	rayCast2D->Init(this, cEntityManager->GetAllLivingEntities());
+	rayCast2D->SetTarget(cEntityManager->GetPlayer());
 
 	//Physics initialisation
 	cPhysics2D->Init(&vTransform);
@@ -148,6 +159,9 @@ void CMobEnemy2D::SetClampSlides(bool clamp) {
 }
 
 void CMobEnemy2D::Update(const double dElapsedTime) {
+	//Raycast  test
+	rayCast2D->RayCheck();
+
 	if (!inView) { //Do not activate if enemy is out of view
 		if (WithinProjectedCamera(cEntityManager->GetPlayer()))
 			inView = true;
@@ -378,4 +392,12 @@ void CMobEnemy2D::Render(void) {
 	animatedSprites->Render();
 
 	glBindVertexArray(0);
+}
+
+void CMobEnemy2D::PostRender(void) {
+	// Disable blending
+	glDisable(GL_BLEND);
+
+	//Raycasting code if needed...
+	rayCast2D->RenderRayCast();
 }

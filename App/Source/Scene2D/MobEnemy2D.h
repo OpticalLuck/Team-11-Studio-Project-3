@@ -2,6 +2,8 @@
 #include "Enemy2D.h"
 #include "Primitives/SpriteAnimation.h"
 
+class RayCast2D;
+
 class CMobEnemy2D : public CEnemy2D
 {
 	public:
@@ -15,6 +17,7 @@ class CMobEnemy2D : public CEnemy2D
 
 		//Render
 		void Render(void);
+		void PostRender(void);
 
 		//Set clamp sides
 		void SetClampSlides(bool clamp);
@@ -38,5 +41,8 @@ class CMobEnemy2D : public CEnemy2D
 		void UpdateMovement(const float dElapsedTime);
 		void CollisionUpdate(void);
 		void ClampPos(void);
+
+		//Raycasting client
+		RayCast2D* rayCast2D;
 };
 

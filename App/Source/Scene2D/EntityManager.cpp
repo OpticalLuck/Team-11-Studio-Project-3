@@ -135,6 +135,21 @@ std::vector<CEnemy2D*> CEntityManager::GetAllEnemies(void) {
 	return arr;
 }
 
+std::vector<CEntity2D*> CEntityManager::GetAllLivingEntities(void) {
+	std::vector<CEnemy2D*> enemyArr = GetAllEnemies();
+	std::vector<CEntity2D*> convertedEnemyArr(enemyArr.begin(), enemyArr.end());
+
+	std::vector<CPlayer2D*> playerArr = GetAllPlayers();
+	std::vector<CEntity2D*> convertedPlayerArr(playerArr.begin(), playerArr.end());
+
+	std::vector<CEntity2D*> totalArr;
+	totalArr.reserve(convertedPlayerArr.size() + convertedEnemyArr.size());
+	totalArr.insert(totalArr.end(), convertedPlayerArr.begin(), convertedPlayerArr.end());
+	totalArr.insert(totalArr.end(), convertedEnemyArr.begin(), convertedEnemyArr.end());
+
+	return totalArr;
+}
+
 std::vector<Interactables*> CEntityManager::GetAllInteractables(void)
 {
 	return m_interactableList;
