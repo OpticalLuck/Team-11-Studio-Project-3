@@ -3,6 +3,7 @@
 #include "../App/Source/Scene2D/Map2D.h"
 #include "../Library/Source/Primitives/Collider2D.h"
 #include "Primitives/Entity2D.h"
+#include "RenderControl/ShaderManager.h"
 
 RayCast2D::RayCast2D(void) {
 	originPoint = targetPoint = currentPoint = glm::vec2(0, 0);
@@ -11,29 +12,56 @@ RayCast2D::RayCast2D(void) {
 	collider2D->SetbEnabled(true);
 	collider2D->Init(currentPoint, glm::vec2(0.1f, 0.1f));
 
-	currentTarget = nullptr;
+	transform = glm::mat4();
+
+	VAO = VBO = 0;
+
+	client = nullptr;
+	cMap2D = nullptr;
+	castedEntity = nullptr;
 }
 
 RayCast2D::~RayCast2D(void) {
 	delete collider2D;
 	collider2D = nullptr;
 
-	currentTarget = nullptr;
+	client = nullptr;
 	cMap2D = nullptr;
+	castedEntity = nullptr;
 
 	entityArr.clear();
+
+	//Delete buffers when done
+	glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(1, &VBO);
 }
 
 void RayCast2D::Init(CEntity2D* currentTarget, std::vector<CEntity2D*> entityArr) {
-	this->currentTarget = currentTarget;
+	this->client = currentTarget;
 	this->entityArr = entityArr;
 
 	cMap2D = CMap2D::GetInstance();
+
+	//Initialise rendering
+	glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &VBO);
+
+	glBindVertexArray(VAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+	float vertices[] = {
+		-1,0,0,1,0,
+		1,0,0,1,0
+	};
+
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 }
 
 bool RayCast2D::RayCheck(void) {
-	//Reset current point
+	//Reset current point and update targetPoint
 	currentPoint = originPoint;
+	targetPoint = castedEntity->vTransform;
 
 	//Initialise speed, etc
 	glm::vec2 dirVec = glm::normalize(targetPoint - originPoint);
@@ -59,7 +87,7 @@ bool RayCast2D::RayCheck(void) {
 		for (unsigned i = 0; i < entityArr.size(); i++) {
 			CEntity2D* entity = entityArr[i];
 
-			if (entity == currentTarget) //Ignore if its the client 
+			if (entity == client) //Ignore if its the client 
 				continue;
 
 			//Collision check
@@ -73,14 +101,17 @@ bool RayCast2D::RayCheck(void) {
 				else if (collided->colliderType == Collider2D::ColliderType::COLLIDER_CIRCLE)
 					collider2D->ResolveAABBCircle(collided, data, Collider2D::ColliderType::COLLIDER_QUAD);
 
-				return true;
+				if (entity == castedEntity)
+					return true;
+				else
+					return false;
 			}
 		}
 
 		//Map based checking
 		CObject2D* obj = cMap2D->GetCObject(posToCheck.x, posToCheck.y);
 
-		if (obj && obj != currentTarget) { //If object is available, check object
+		if (obj && obj != client) { //If object is available, check object
 			Collider2D* collided = obj->GetCollider();
 			Collision data = collider2D->CollideWith(collided);
 
@@ -91,10 +122,68 @@ bool RayCast2D::RayCheck(void) {
 				else if (collided->colliderType == Collider2D::ColliderType::COLLIDER_CIRCLE)
 					collider2D->ResolveAABBCircle(collided, data, Collider2D::ColliderType::COLLIDER_QUAD);
 
-				return true;
+				if (obj == castedEntity)
+					return true;
+				else
+					return false;
 			}
 		}
 	}
 
-	return false;
+	return true;
+}
+
+void RayCast2D::PreRender(void) {
+	// Use the shader defined for this class
+	CShaderManager::GetInstance()->Use("LineShader");
+}
+
+void RayCast2D::Render(void) {
+	//Camera init
+	glm::vec2 offset = glm::vec2(float(CSettings::GetInstance()->NUM_TILES_XAXIS / 2.f), float(CSettings::GetInstance()->NUM_TILES_YAXIS / 2.f));
+
+	glm::vec2 dirVec = (currentPoint - originPoint);
+	dirVec = glm::normalize(dirVec);
+
+	//Necessary values
+	float angle = atan2f(dirVec.y, dirVec.x);
+	glm::vec2 position = (currentPoint + originPoint) * 0.5f;
+	float scale = (currentPoint - originPoint).length();
+
+	glm::vec2 cameraPos = Camera2D::GetInstance()->getCurrPos();
+
+	glm::vec2 objCamPos = position - cameraPos + offset;
+
+	glm::vec2 actualPos = CSettings::GetInstance()->ConvertIndexToUVSpace(objCamPos);
+
+	float clampOffset = CSettings::GetInstance()->ConvertIndexToUVSpace(CSettings::AXIS::x, 1, false) / 2;
+	clampOffset = (clampOffset + 1);
+
+	float clampX = 1.0f + clampOffset;
+	float clampY = 1.0f + clampOffset;
+	//if (fabs(actualPos.x) < clampX && fabs(actualPos.y) < clampY)
+	{
+		transform = glm::mat4(1.f);
+		transform = glm::translate(transform, glm::vec3(actualPos.x, actualPos.y, 0.f));
+		transform = glm::rotate(transform, angle, glm::vec3(0, 0, 1));
+		transform = glm::scale(transform, glm::vec3(CSettings::GetInstance()->TILE_WIDTH * scale, CSettings::GetInstance()->TILE_HEIGHT, 1.f));
+		CShaderManager::GetInstance()->activeShader->setMat4("transform", transform);
+
+		// render box
+		glBindVertexArray(VAO);
+		glDrawArrays(GL_LINE_LOOP, 0, 2);
+	}
+}
+
+void RayCast2D::PostRender(void) {
+	//Render bounding box
+	collider2D->PreRender();
+	collider2D->Render();
+	collider2D->PostRender();
+}
+
+void RayCast2D::RenderRayCast(void) {
+	PreRender();
+	Render();
+	PostRender();
 }
