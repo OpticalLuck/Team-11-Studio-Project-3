@@ -60,8 +60,9 @@ Collision Collider2D::CheckAABBCollision(Collider2D* obj, Collider2D* target)
 	if (shortestXDist == 0 || shortestYDist == 0)
 		errorCheck = true;
 
-	if (collisionX && collisionY && !errorCheck)
-		std::cout << "yes" << endl;
+	// if (collisionX && collisionY && !errorCheck)
+		// std::cout << "yes" << endl;
+
 	return std::make_tuple(collisionX && collisionY && !errorCheck, Dir, glm::vec2(shortestXDist, shortestYDist));
 }
 

@@ -59,6 +59,11 @@ bool Interactables::Init()
 	if (interactableType < DOOR)
 	{
 		collider2D->SetbEnabled(false);
+		if (interactableType == PRESSURE_PLATE)
+		{
+			collider2D->Init(vTransform, glm::vec2(0.5f, 0.1f), Collider2D::ColliderType::COLLIDER_QUAD);
+			collider2D->SetOffset(glm::vec2(0.f, -0.5f));
+		}
 	}
 	else
 	{
@@ -73,9 +78,28 @@ bool Interactables::Init()
 
 void Interactables::Update(const double dElapsedTime)
 {
+	bool bCollided = false;
+
 	if (this->interactableType == PRESSURE_PLATE)
 	{
-		Activate(false);
+		CEntityManager* em = CEntityManager::GetInstance();
+
+		for (auto& e : em->GetAllPlayers())
+		{
+			/*Collision data = e->GetCollider()->CollideWith(this->collider2D);
+			if (std::get<0>(data))
+			{
+				bCollided = true;
+			}*/
+
+			float distance = glm::length(e->vTransform - this->vTransform);
+			if (distance < 0.4)
+			{
+				bCollided = true;
+			}
+		}
+
+		Activate(bCollided);
 	}
 }
 

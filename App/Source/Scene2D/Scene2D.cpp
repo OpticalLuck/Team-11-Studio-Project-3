@@ -21,7 +21,8 @@ CScene2D::CScene2D(void)
 	, isCompleted(false)
 	, cEntityManager(NULL)
 	, cameraHandler(NULL)
-
+	, cInventoryM(NULL)
+	, transform(glm::mat4(1))
 {
 }
 
