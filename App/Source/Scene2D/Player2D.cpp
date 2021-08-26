@@ -720,7 +720,7 @@ void CPlayer2D::Attacked(int hp, CPhysics2D* bounceObj) {
 		cPhysics2D->SetBoolKnockBacked(true);
 		bounceObj->SetBoolKnockBacked(true);
 
-		float maxSpd = 2;
+		float maxSpd = 5;
 		if (glm::length(cPhysics2D->GetVelocity()) > maxSpd)
 			cPhysics2D->SetVelocity(glm::normalize(cPhysics2D->GetVelocity()) * maxSpd);
 

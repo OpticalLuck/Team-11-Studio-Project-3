@@ -222,7 +222,7 @@ void CMobEnemy2D::Attacked(int hp, CPhysics2D* bounceObj) {
 
 		//DEBUG_MSG("ENEMYHIT!");
 
-		float maxSpd = 2.f;
+		float maxSpd = 5.f;
 		if (glm::length(cPhysics2D->GetVelocity()) > maxSpd)
 			cPhysics2D->SetVelocity(glm::normalize(cPhysics2D->GetVelocity()) * maxSpd);
 
