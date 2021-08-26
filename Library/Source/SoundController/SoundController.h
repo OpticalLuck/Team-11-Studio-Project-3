@@ -49,15 +49,17 @@ public:
 	bool Init(void);
 
 	// Load a sound
-	bool LoadSound(	string filename, 
-					const int ID,
-					const bool bPreload = true,
-					const bool bIsLooped = false,
-					CSoundInfo::SOUNDTYPE eSoundType = CSoundInfo::SOUNDTYPE::_2D,
-					vec3df vec3dfSoundPos = vec3df(0.0f, 0.0f, 0.0f));
+	bool LoadSound(string filename,
+		const int ID,
+		const bool bPreload = true,
+		const bool bIsLooped = false,
+		const bool bIsOverlappable = false,
+		CSoundInfo::SOUNDTYPE eSoundType = CSoundInfo::SOUNDTYPE::_2D,
+		vec3df vec3dfSoundPos = vec3df(0.0f, 0.0f, 0.0f));
 
 	// Play a sound by its ID
 	void PlaySoundByID(const int ID);
+	void StopSoundByID(const int ID);
 
 	// Increase Master volume
 	bool MasterVolumeIncrease(void);

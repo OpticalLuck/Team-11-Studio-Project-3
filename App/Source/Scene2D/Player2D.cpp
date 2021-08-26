@@ -196,9 +196,6 @@ bool CPlayer2D::Init(void)
 	// collider2D->SetOffset(glm::vec2(0.f, -0.5f));
 	cPhysics2D->Init(&vTransform);
 
-	iTempFrameCounter = 0;
-	iFrameCounterEnd = 0;
-
 	CInventoryManager::GetInstance()->Add("Player", this);
 	cInventory = CInventoryManager::GetInstance()->Get("Player");
 
@@ -272,7 +269,7 @@ bool CPlayer2D::Init(glm::i32vec2 spawnpoint, int iCloneIndex)
 
 	jumpCount = 0;
 
-	fMovementSpeed = 3.f;
+	fMovementSpeed = 4.f;
 	fJumpSpeed = 5.f;
 
 	// Get the handler to the CSoundController
@@ -416,19 +413,18 @@ void CPlayer2D::Update(const double dElapsedTime)
 			if (obj->GetCollider()->colliderType == Collider2D::ColliderType::COLLIDER_QUAD)
 			{
 				collider2D->ResolveAABB(obj->GetCollider(), data);
-
-				if (std::get<1>(data) == Direction::UP)
-					cPhysics2D->SetboolGrounded(true);
 			}
 			else if (obj->GetCollider()->colliderType == Collider2D::ColliderType::COLLIDER_CIRCLE)
 			{
 				if (glm::dot(cPhysics2D->GetVelocity(), obj->vTransform - vTransform) > 0)
 					collider2D->ResolveAABBCircle(obj->GetCollider(), data, Collider2D::ColliderType::COLLIDER_QUAD);
-
-				if (std::get<1>(data) == Direction::UP)
-					cPhysics2D->SetboolGrounded(true);
 			}
 
+			if (std::get<1>(data) == Direction::UP)
+				cPhysics2D->SetboolGrounded(true);
+			
+			if (std::get<1>(data) == Direction::LEFT || std::get<1>(data) == Direction::RIGHT)
+				cPhysics2D->SetVelocity(glm::vec2(0, cPhysics2D->GetVelocity().y));
 			vTransform = collider2D->position;
 			obj->vTransform = obj->GetCollider()->position;
 		}
@@ -476,7 +472,7 @@ void CPlayer2D::Update(const double dElapsedTime)
 	//CS: Update the animated sprite
 	animatedSprites->Update(dElapsedTime);
 
-	if (!bIsClone || iTempFrameCounter < m_KeyboardInputs.size() - 1)
+	// if (!bIsClone || iTempFrameCounter < m_KeyboardInputs.size() - 1)
 		iTempFrameCounter++;
 }
 
@@ -642,7 +638,7 @@ void CPlayer2D::InputUpdate(double dt)
 			m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::SPACE].bKeyPressed)
 		{
 			cPhysics2D->SetboolGrounded(false);
-			velocity.y = 5.f * (jumpCount + (1 - jumpCount * 0.6f));
+			velocity.y = 6.5f * (jumpCount + (1 - jumpCount * 0.6f));
 			jumpCount++;
 			timerArr[A_JUMP].second = 0.1;
 		}

@@ -125,6 +125,8 @@ class CObject2D : public CEntity2D
 		//Object ID
 		int ObjectID;
 
+		bool bCollided;
+
 		//Handlers
 		CEntityManager* cEntityManager;
 };
