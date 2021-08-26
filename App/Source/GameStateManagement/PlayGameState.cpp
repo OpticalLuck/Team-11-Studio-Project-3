@@ -90,6 +90,9 @@ bool CPlayGameState::Init(void)
 
 	cSoundController = CSoundController::GetInstance();
 
+	CImageLoader* il = CImageLoader::GetInstance();
+	background.fileName = "Image\\UI.png";
+	background.textureID = il->LoadTextureGetID(background.fileName.c_str(), false);
 	//optionButtonData.fileName = "Image\\GUI\\OptionButton.png";
 	//optionButtonData.textureID = il->LoadTextureGetID(optionButtonData.fileName.c_str(), false);
 
@@ -221,6 +224,15 @@ bool CPlayGameState::ImGuiRender()
 		cloneHealth_window |= ImGuiWindowFlags_NoCollapse;
 		cloneHealth_window |= ImGuiWindowFlags_NoScrollbar;
 
+		UI_window = 0;
+		UI_window |= ImGuiWindowFlags_NoTitleBar;
+		UI_window |= ImGuiWindowFlags_NoScrollbar;
+		UI_window |= ImGuiWindowFlags_NoBackground;
+		UI_window |= ImGuiWindowFlags_NoMove;
+		UI_window |= ImGuiWindowFlags_NoCollapse;
+		UI_window |= ImGuiWindowFlags_NoNav;
+		UI_window |= ImGuiWindowFlags_NoMouseInputs;
+
 		// Calculate the relative scale to our default windows width
 		float relativeScale_x = cSettings->iWindowWidth / 800.0f;
 		float relativeScale_y = cSettings->iWindowHeight / 600.0f;
@@ -242,6 +254,7 @@ bool CPlayGameState::ImGuiRender()
 		ImGui::Begin("Invisible window", NULL, window_flags);
 		ImGui::SetWindowPos(ImVec2(0.0f, 0.0f));
 		ImGui::SetWindowSize(ImVec2((float)cSettings->iWindowWidth, (float)cSettings->iWindowHeight));
+		ImGui::SetNextWindowPos(ImVec2(cSettings->iWindowWidth * 0.000001, cSettings->iWindowHeight * 0.825f));
 		ImGui::SetWindowFontScale(1.5f * relativeScale_y);
 		// Display the FPS
 		ImGui::TextColored(ImVec4(1, 1, 0, 1), "FPS: %d", cFPSCounter->GetFrameRate());
@@ -250,7 +263,20 @@ bool CPlayGameState::ImGuiRender()
 
 		ImGui::SameLine();
 		ImGui::InvisibleButton("temp", ImVec2(50, 1));
+		
+		//UI bar
+		{
+			//render a window
+			ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
+			ImGui::PopStyleColor();
+			ImGui::Begin("UI window", NULL, UI_window);
+			ImGui::SetWindowPos(ImVec2(0, cSettings->iWindowHeight * 0.825f));
+			ImGui::SetWindowSize(ImVec2(900.0f * relativeScale_x, 200.0f * relativeScale_y));
+			//ImGui::ImageButton((ImTextureID)background.textureID, ImVec2(cSettings->iWindowWidth * 0.7, cSettings->iWindowHeight * 0.7), ImVec2(0.0, 0.0), ImVec2(1.0, 1.0));
+			ImGui::Image((void*)(intptr_t)background.textureID,ImVec2(800 * relativeScale_x, 100 * relativeScale_y),ImVec2(0, 1), ImVec2(1, 0));
+			ImGui::End();
 
+		}
 
 		//render inventory
 		{
@@ -263,11 +289,10 @@ bool CPlayGameState::ImGuiRender()
 				ImGuiWindowFlags_NoCollapse |
 				ImGuiWindowFlags_NoScrollbar;
 			ImGui::PopStyleColor();
-
 			//looping to render the invetory cgui
-			for (int i = 0; i < cPlayerInventory->GetNumofUniqueItems(); i++)
+			for (unsigned int i = 0; i < cPlayerInventory->GetNumofUniqueItems(); i++)
 			{
-				ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 1.0f, 1.0f));
+				ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(.0f, .0f, .0f, 1.0f));
 				if (cPlayerInventory->iCurrentIndex == i)
 				{
 					ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1.f, 0.f, 0.f, 1.f));
@@ -281,14 +306,14 @@ bool CPlayGameState::ImGuiRender()
 				if (i == 0) //shuriken
 				{
 					ImGui::SameLine();
-					ImGui::SetWindowPos(ImVec2(cSettings->iWindowWidth * 0.52f , cSettings->iWindowHeight * 0.94f));
+					ImGui::SetWindowPos(ImVec2(cSettings->iWindowWidth * 0.52f , cSettings->iWindowHeight * 0.87f));
 				}
 				else if (i == 1) //potion
 				{
 					ImGui::SameLine();
-					ImGui::SetWindowPos(ImVec2(cSettings->iWindowWidth * 0.77f, cSettings->iWindowHeight * 0.94f));
+					ImGui::SetWindowPos(ImVec2(cSettings->iWindowWidth * 0.77f, cSettings->iWindowHeight * 0.87f));
 				}
-				ImGui::SetWindowSize(ImVec2(200.0f * relativeScale_x, 2500.0f * relativeScale_y));
+				ImGui::SetWindowSize(ImVec2(200.0f * relativeScale_x, 25.0f * relativeScale_y));
 				ImGui::Image((void*)(intptr_t)cTextureManager->MapOfTextureIDs.at(cPlayerInventory->GetItem(i).get_ID()),
 					ImVec2(25 * relativeScale_x, 15 * relativeScale_y),
 					ImVec2(0, 1), ImVec2(1, 0));
@@ -309,33 +334,43 @@ bool CPlayGameState::ImGuiRender()
 		}
 		//render player health
 		{	
-			//float vPlayerPosX = cPlayer->GetTransformX();
-			//float vCameraposX = cCamera->GetPosX();
-			//float finalPosX = vPlayerPosX - vCameraposX;
-			//finalPosX = finalPosX / cSettings->NUM_TILES_XAXIS * cSettings->iWindowWidth;
-			//finalPosX += 0.5 * cSettings->iWindowWidth - 25;
+			if (cPlayer->GetHealth() < 3)
+			{
+				if (iSeconds % 1 == 0)
+				{
+					displayHP = Math::Lerp(displayHP, cPlayer->GetHealth(), 0.2f);
+					ImGui::Begin("Health", NULL, health_window);
+					ImGui::SetWindowPos(ImVec2(cSettings->iWindowWidth * 0.05, cSettings->iWindowHeight * 0.9));
+					ImGui::SetWindowSize(ImVec2(200.0f * relativeScale_x, 25.0f * relativeScale_y));
+					ImGui::SameLine();
 
-			//float vPlayerPosY = cPlayer->GetTransformY();
-			//float vCameraposY = cCamera->GetPosY();
-			//float finalPosY = vPlayerPosY - vCameraposY;
-			//finalPosY = finalPosY / cSettings->NUM_TILES_YAXIS * cSettings->iWindowHeight;
-			//finalPosY += 0.5 * cSettings->iWindowHeight;
-			//finalPosY = cSettings->iWindowHeight - finalPosY;
+					//i think this looks better 
+					ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.8f, 0.0f, 0.0f, 1.0f));
+					ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.4f, 0.4f, 0.4f, 1.0f));
 
-			displayHP = Math::Lerp(displayHP, cPlayer->GetHealth(), 0.2f);
-			ImGui::Begin("Health", NULL, health_window);
-			ImGui::SetWindowPos(ImVec2(cSettings->iWindowWidth * 0.0001, cSettings->iWindowHeight * 0.95));
-			ImGui::SetWindowSize(ImVec2(200.0f * relativeScale_x, 25.0f * relativeScale_y));
-			ImGui::SameLine();
+					ImGui::ProgressBar(displayHP / (float)cPlayer->GetMaxHealth(), ImVec2(cSettings->iWindowWidth * 0.4f, cSettings->iWindowHeight * 0.03f));
+					ImGui::PopStyleColor();
+					ImGui::PopStyleColor();
+					ImGui::End();
+				}
+			}
+			else
+			{
+				displayHP = Math::Lerp(displayHP, cPlayer->GetHealth(), 0.2f);
+				ImGui::Begin("Health", NULL, health_window);
+				ImGui::SetWindowPos(ImVec2(cSettings->iWindowWidth * 0.05, cSettings->iWindowHeight * 0.9));
+				ImGui::SetWindowSize(ImVec2(200.0f * relativeScale_x, 25.0f * relativeScale_y));
+				ImGui::SameLine();
 
-			//i think this looks better 
-			ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.8f, 0.0f, 0.0f, 1.0f));
-			ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.4f, 0.4f, 0.4f, 1.0f));
+				//i think this looks better 
+				ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.8f, 0.0f, 0.0f, 1.0f));
+				ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.4f, 0.4f, 0.4f, 1.0f));
 
-			ImGui::ProgressBar(displayHP / (float)cPlayer->GetMaxHealth(), ImVec2(cSettings->iWindowWidth * 0.5f, cSettings->iWindowHeight * 0.03f));
-			ImGui::PopStyleColor();
-			ImGui::PopStyleColor();
-			ImGui::End();
+				ImGui::ProgressBar(displayHP / (float)cPlayer->GetMaxHealth(), ImVec2(cSettings->iWindowWidth * 0.4f, cSettings->iWindowHeight * 0.03f));
+				ImGui::PopStyleColor();
+				ImGui::PopStyleColor();
+				ImGui::End();
+			}
 		}
 		//render enemy UI
 		{

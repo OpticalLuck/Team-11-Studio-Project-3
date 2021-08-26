@@ -110,7 +110,7 @@ bool PauseMenuState::UpdateMenu(ImGuiWindowFlags window_flags)
 
 		// Create a window called "Hello, world!" and append into it.
 		ImGui::Begin("Option", NULL, window_flags);
-		ImGui::SetWindowPos(ImVec2(CSettings::GetInstance()->iWindowWidth / 2.0 - buttonWidth / 2.0,
+		ImGui::SetWindowPos(ImVec2(CSettings::GetInstance()->iWindowWidth / 2.0 - (buttonWidth / 2.0),
 			CSettings::GetInstance()->iWindowHeight / 3.0));				// Set the top-left of the window at (10,10)
 		ImGui::SetWindowSize(ImVec2(CSettings::GetInstance()->iWindowWidth, CSettings::GetInstance()->iWindowHeight));
 

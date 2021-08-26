@@ -48,13 +48,9 @@ protected:
 	ImGuiWindowFlags enemyHealth_window;
 	ImGuiWindowFlags option_window;
 	ImGuiWindowFlags cloneHealth_window;
+	ImGuiWindowFlags UI_window;
 
-	ButtonData resumeButtonData;
-	ButtonData restartButtonData;
-	ButtonData exitButtonData;
-	ButtonData optionButtonData;
-	ButtonData backButtonData;
-	ButtonData applyButtonData;
+	ButtonData background;
 
 	float m_fProgressBar;
 
