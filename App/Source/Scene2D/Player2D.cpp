@@ -272,7 +272,7 @@ bool CPlayer2D::Init(glm::i32vec2 spawnpoint, int iCloneIndex)
 
 	jumpCount = 0;
 
-	fMovementSpeed = 3.f;
+	fMovementSpeed = 4.f;
 	fJumpSpeed = 5.f;
 
 	// Get the handler to the CSoundController
