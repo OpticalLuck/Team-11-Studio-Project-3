@@ -159,6 +159,31 @@ bool CTextureManager::Init(void)
         return false;
     }
 
+
+    if (LoadTexture("Image/Chests/Common_Chest_Closed.png", INTERACTABLE_COMMON_CHEST_CLOSED) == false)
+    {
+        std::cout << "Failed to load Common Chest Closed tile texture" << std::endl;
+        return false;
+    }
+
+    if (LoadTexture("Image/Chests/Common_Chest_Opened.png", INTERACTABLE_RARE_CHEST_OPENED) == false)
+    {
+        std::cout << "Failed to load Rare Chest Open tile texture" << std::endl;
+        return false;
+    }
+
+    if (LoadTexture("Image/Chests/Rare_Chest_Closed.png", INTERACTABLE_RARE_CHEST_CLOSED) == false)
+    {
+        std::cout << "Failed to load Rare Chest Closed tile texture" << std::endl;
+        return false;
+    }
+
+    if (LoadTexture("Image/Chests/Rare_Chest_Opened.png", INTERACTABLE_COMMON_CHEST_OPENED) == false)
+    {
+        std::cout << "Failed to load Common Chest Open tile texture" << std::endl;
+        return false;
+    }
+
     if (LoadTexture("Image/Enemy/MushroomPreview.png", ENEMY_1) == false)
     {
         std::cout << "Failed to load Mushroom tile texture" << std::endl;

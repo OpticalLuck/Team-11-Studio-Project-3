@@ -45,9 +45,6 @@
     <Filter Include="Entity2D\Projectiles">
       <UniqueIdentifier>{a7550fef-c1ec-41c0-a138-7099839b0113}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Entity2D\Drops">
-      <UniqueIdentifier>{8ad2ca7e-2713-4991-91f1-e7729e6781f0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Inventory">
       <UniqueIdentifier>{3b664dd3-f778-43dd-9188-98d0618c77bf}</UniqueIdentifier>
     </Filter>
@@ -194,9 +191,6 @@
     <ClCompile Include="Source\Scene2D\Object2D.cpp">
       <Filter>Entity2D</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Scene2D\Drops.cpp">
-      <Filter>Entity2D\Drops</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h">
@@ -336,9 +330,6 @@
     </ClInclude>
     <ClInclude Include="Source\Scene2D\Object2D.h">
       <Filter>Entity2D</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Scene2D\Drops.h">
-      <Filter>Entity2D\Drops</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
