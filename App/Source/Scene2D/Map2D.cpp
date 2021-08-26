@@ -559,6 +559,7 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 						((Interactables*)(currObj))->SetInteractableID(currObjID);
 					}
 					CEntityManager::GetInstance()->PushInteractables((Interactables*)currObj);
+					arrGrid[uiCurLevel][uiRow][uiCol] = currObj;
 				}
 				else if (currTexture > OBSTACLES_START && currTexture < OBSTACLES_TOTAL)
 				{
