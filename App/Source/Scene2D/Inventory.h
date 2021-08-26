@@ -27,6 +27,8 @@ public:
 	int GetNumofUniqueItems();
 
 	void UseItem(void);
+
+	void SetPlayer(CPlayer2D* player);
 	
 	float fCooldown;
 
