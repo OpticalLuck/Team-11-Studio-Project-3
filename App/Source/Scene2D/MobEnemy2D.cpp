@@ -199,8 +199,8 @@ void CMobEnemy2D::SaveCurrData(void) {
 }
 
 void CMobEnemy2D::Attacked(int hp, CPhysics2D* bounceObj) {
-	if (pShield > 0)
-		return;
+	//if (pShield > 0)
+	//	return;
 
 	pHealth = Math::Max(0, pHealth - 1);
 	pShield = pMaxShield + 1; //Offset by 1 frame for better synchronisation (FUTURE JEVON IF YOU KNOW YOU KNOW IF NOT THEN LMAO)
