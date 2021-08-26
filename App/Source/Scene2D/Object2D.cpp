@@ -166,3 +166,4 @@ void CObject2D::ResolveMapCollision(std::vector<pair<CObject2D*, float>> aabbvec
 }
 
 
+

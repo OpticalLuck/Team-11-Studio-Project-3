@@ -78,9 +78,9 @@ bool CLevelEditorState::Init(void)
 	eProperties.Reset();
 
 	cSettings = CSettings::GetInstance();
-	cSettings->screenSize = CSettings::SCREENSIZE::SSIZE_1024x768;
+	// cSettings->screenSize = CSettings::SCREENSIZE::SSIZE_1024x768;
 	// cSettings->m_ImGuiWindow->Update(cSettings->ImGuiProperties);
-	CSettings::GetInstance()->UpdateWindowSize();
+	// CSettings::GetInstance()->UpdateWindowSize();
 
 	glGenVertexArrays(1, &quadVAO);
 	glGenBuffers(1, &quadVBO);

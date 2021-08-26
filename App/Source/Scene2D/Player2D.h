@@ -53,8 +53,13 @@ class Camera2D;
 class CPlayer2D : public CEntity2D, public LivingEntity2D
 {
 public:
+	std::vector<std::array<KeyInput, KEYBOARD_INPUTS::KEY_TOTAL>> m_KeyboardInputs;
+	std::vector<std::array<MouseInput, MOUSE_INPUTS::MOUSE_TOTAL>> m_MouseInputs;
+
 	int iTempFrameCounter; // move to game manager/scene2D/PlayGameState later
 	int iFrameCounterEnd = 0;
+
+	bool bJustTeleported;
 	enum class STATE
 	{
 		S_IDLE = 0,
@@ -77,6 +82,13 @@ public:
 		A_TOTAL,
 	};
 
+	enum class FACING_DIR
+	{
+		LEFT = 0,
+		RIGHT = 1,
+		NUM_DIRECTIONS
+	};
+	FACING_DIR facing;
 
 	// Constructor
 	CPlayer2D(void);
@@ -137,25 +149,15 @@ public:
 	//returns transform y
 	float GetTransformY(void);
 
+	CInventory* GetInventory(void);
+
 protected:
 	bool bIsClone;
 	
 	//Timer for actions that need cooldown
 	std::pair<bool, double> timerArr[A_TOTAL];
 
-	enum class DIRECTION
-	{
-		LEFT = 0,
-		RIGHT = 1,
-		UP = 2,
-		DOWN = 3,
-		NUM_DIRECTIONS
-	};
-
 	CInputHandler* cInputHandler;
-	std::vector<std::array<KeyInput, KEYBOARD_INPUTS::KEY_TOTAL>> m_KeyboardInputs;
-	std::vector<std::array<MouseInput, MOUSE_INPUTS::MOUSE_TOTAL>> m_MouseInputs;
-
 
 	glm::vec2 vOldTransform;
 
@@ -183,7 +185,6 @@ protected:
 	CSoundController* cSoundController;
 
 	// Facing direction for rendering and ease of animation
-	DIRECTION facing;
 	STATE state;
 
 	// Load a texture

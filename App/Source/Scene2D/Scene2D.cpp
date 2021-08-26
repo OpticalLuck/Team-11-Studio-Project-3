@@ -49,18 +49,7 @@ CScene2D::~CScene2D(void)
 	CInputHandler = NULL;
 
 	// Destroy the enemies
-	for (unsigned i = 0; i < enemyVector.size(); i++)
-	{
-		delete enemyVector[i];
-		enemyVector[i] = NULL;
-	}
-	enemyVector.clear();
-
-	if (cPlayer2D)
-	{
-		delete cPlayer2D;
-		cPlayer2D = NULL;
-	}
+	cEntityManager->Clear();
 
 	if (cMap2D)
 	{
@@ -78,7 +67,7 @@ CScene2D::~CScene2D(void)
 /**
 @brief Init Initialise this instance
 */ 
-bool CScene2D::Init(void)
+bool CScene2D::Init(std::string levelPath)
 {
 	Math::InitRNG();
 	// Include Shader Manager
@@ -96,7 +85,7 @@ bool CScene2D::Init(void)
 		return false;
 	}
 	// Load the map into an array
-	if (cMap2D->LoadMap("Maps/DM2213_Map_Level_01.csv") == false)
+	if (cMap2D->LoadMap(levelPath) == false)
 	{
 		// The loading of a map has failed. Return false
 		return false;
@@ -301,6 +290,7 @@ void CScene2D::Render(void)
 	cEntityManager->RenderEnemy();
 	cEntityManager->RenderClone();
 	cEntityManager->RenderPlayer();
+	cEntityManager->RenderObstacles();
 }
 
 /**

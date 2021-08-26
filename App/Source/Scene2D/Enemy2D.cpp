@@ -5,6 +5,7 @@
  */
 #include "Enemy2D.h"
 
+#include "System/Debug.h"
 #include <iostream>
 using namespace std;
 
@@ -133,7 +134,7 @@ bool CEnemy2D::Init(void)
 	// Load the enemy2D texture
 	if (LoadTexture("Image/Scene2D_EnemyTile.tga", iTextureID) == false)
 	{
-		std::cout << "Failed to load enemy2D tile texture" << std::endl;
+		DEBUG_MSG("Failed to load enemy2D tile texture");
 		return false;
 	}
 

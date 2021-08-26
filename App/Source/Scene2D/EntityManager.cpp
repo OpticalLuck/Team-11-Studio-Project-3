@@ -21,33 +21,7 @@ CEntityManager::CEntityManager()
 
 CEntityManager::~CEntityManager()
 {
-	if (cPlayer2D) {
-		delete cPlayer2D;
-		cPlayer2D = nullptr;
-	}
-
-	if (cBoss2D) {
-		delete cBoss2D;
-		cBoss2D = nullptr;
-	}
-
-	for (unsigned i = 0; i < m_enemyList.size(); i++) {
-		delete m_enemyList[i];
-		m_enemyList[i] = nullptr;
-	}
-	m_enemyList.clear();
-
-	for (unsigned i = 0; i < m_cloneList.size(); i++) {
-		delete m_cloneList[i];
-		m_cloneList[i] = nullptr;
-	}
-	m_cloneList.clear();
-
-	for (unsigned i = 0; i < m_BulletList.size(); i++) {
-		delete m_BulletList[i];
-		m_BulletList[i] = nullptr;
-	}
-	m_BulletList.clear();
+	Clear();
 }
 
 bool CEntityManager::EntityManagerInit(void)
@@ -169,6 +143,11 @@ std::vector<Interactables*> CEntityManager::GetAllInteractables(void)
 	return m_interactableList;
 }
 
+std::vector<Obstacle2D*> CEntityManager::GetallObstacles(void)
+{
+	return std::vector<Obstacle2D*>(m_ObstacleList);
+}
+
 void CEntityManager::PushEnemy(CEnemy2D* enemy) {
 	if (enemy)
 		m_enemyList.push_back(enemy);
@@ -183,7 +162,7 @@ CPlayer2D* CEntityManager::Clone(void)
 
 	if (!clone->Init(cPlayer2D->GetCheckpoint(), m_cloneList.size()))
 	{
-		std::cout << "Failed to clone Player\n";
+		DEBUG_MSG("Failed to clone Player");
 		return nullptr;
 	}
 	clone->SetClone(true);
@@ -299,6 +278,18 @@ void CEntityManager::RenderInteractables(void)
 	}
 }
 
+void CEntityManager::RenderObstacles(void)
+{
+	for (Obstacle2D* i : m_ObstacleList)
+	{
+		i->PreRender();
+		i->Render();
+		i->PostRender();
+
+		i->RenderCollider();
+	}
+}
+
 void CEntityManager::RenderClone(void)
 {
 	for (unsigned i = 0; i < m_cloneList.size(); ++i)
@@ -373,7 +364,7 @@ void CEntityManager::Update(const double dElapsedTime)
 		{
 			if (dynamic_cast<Projectiles*>(m_BulletList[i])->bDestroyed || dynamic_cast<Projectiles*>(m_BulletList[i])->bOutsideBoundary())
 			{
-				cout << "bullet deleted" << endl;
+				DEBUG_MSG("bullet deleted");
 				delete m_BulletList[i];
 				m_BulletList[i] = nullptr;
 			}
@@ -383,7 +374,11 @@ void CEntityManager::Update(const double dElapsedTime)
 	//Remove any nullptrs in bullet array
 	m_BulletList.erase(std::remove(m_BulletList.begin(), m_BulletList.end(), nullptr), m_BulletList.end());
 
-	
+	for (Obstacle2D* i : m_ObstacleList)
+	{
+		i->Update(dElapsedTime);
+	}
+
 	//Keyboard inputs
 	if (cKeyboardController->IsKeyPressed(GLFW_KEY_C))
 	{
@@ -399,3 +394,52 @@ void CEntityManager::PushInteractables(Interactables* interactable)
 {
 	m_interactableList.push_back(interactable);
 }
+
+void CEntityManager::PushObstacles(Obstacle2D* obstacle)
+{
+	m_ObstacleList.push_back(obstacle);
+}
+
+void CEntityManager::Clear(void)
+{
+	if (cPlayer2D) {
+		delete cPlayer2D;
+		cPlayer2D = nullptr;
+	}
+
+	if (cBoss2D) {
+		delete cBoss2D;
+		cBoss2D = nullptr;
+	}
+
+	for (unsigned i = 0; i < m_enemyList.size(); i++) {
+		delete m_enemyList[i];
+		m_enemyList[i] = nullptr;
+	}
+	m_enemyList.clear();
+
+	for (unsigned i = 0; i < m_cloneList.size(); i++) {
+		delete m_cloneList[i];
+		m_cloneList[i] = nullptr;
+	}
+	m_cloneList.clear();
+
+	for (unsigned i = 0; i < m_BulletList.size(); i++) {
+		delete m_BulletList[i];
+		m_BulletList[i] = nullptr;
+	}
+	m_BulletList.clear();
+
+	for (unsigned i = 0; i < m_interactableList.size(); i++) {
+		delete m_interactableList[i];
+		m_interactableList[i] = nullptr;
+	}
+	m_interactableList.clear();
+
+	for (unsigned i = 0; i < m_ObstacleList.size(); i++) {
+		delete m_ObstacleList[i];
+		m_ObstacleList[i] = nullptr;
+	}
+	m_ObstacleList.clear();
+}
+

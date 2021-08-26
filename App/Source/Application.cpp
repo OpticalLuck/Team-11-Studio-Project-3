@@ -44,6 +44,8 @@ using namespace std;
 #include "GameStateManagement/EditorSettingsState.h"
 #include "GameStateManagement/LevelEditorState.h"
 
+#include "LevelEditor/LevelEditor.h"
+
 /**
  @brief Define an error callback
  @param error The error code
@@ -245,7 +247,8 @@ bool Application::Init(void)
 	CShaderManager::GetInstance()->Add("Shader", "Shader//Shader.vs", "Shader//Shader.fs");
 
 	// Initialise the TextureManager Instance
-	CTextureManager::GetInstance()->Init();
+	if (!CTextureManager::GetInstance()->Init())
+		return false;
 
 	// Initialise the CFPSCounter instance
 	cFPSCounter = CFPSCounter::GetInstance();
@@ -262,9 +265,13 @@ bool Application::Init(void)
 
 	// Set the active scene
 	CGameStateManager::GetInstance()->SetActiveGameState("IntroState");
+	
+	CLevelEditor* cLevelEditor = CLevelEditor::GetInstance();
+	cLevelEditor = CLevelEditor::GetInstance();
+	cLevelEditor->SetShader("2DShader");
+	cLevelEditor->Init();
 
-
-	cSettings->ImGuiProperties.IsDockingEnabled = false;
+	// cSettings->ImGuiProperties.IsDockingEnabled = false;
 	// cSettings->ImGuiProperties.IsViewportEnabled = true;
 	m_ImGuiWindow->Create(cSettings->ImGuiProperties);
 

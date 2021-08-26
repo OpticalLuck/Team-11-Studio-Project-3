@@ -33,7 +33,11 @@ public:
 
 	virtual bool ImGuiRender();
 
+	void SetLevel(std::string levelPath);
+
 protected:
+	std::string levelPath;
+
 	// The handler to the CScene2D instance
 	CScene2D* cScene2D;
 	CInputHandler* cInputHandler;
@@ -72,6 +76,7 @@ protected:
 	CSoundController* cSoundController;
 
 	CPlayer2D* cPlayer;
+	float displayHP;
 	CEntityManager* cEntityManager;
 	CMap2D* cMap2D;
 

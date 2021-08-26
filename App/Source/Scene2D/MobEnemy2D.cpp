@@ -13,7 +13,7 @@
 
 //Interactables
 #include "Interactables.h"
-#include "Boulder2D.h"
+#include "Obstacle2D.h"
 
 #include "RayCast2D.h"
 
@@ -205,7 +205,7 @@ void CMobEnemy2D::Attacked(int hp, CPhysics2D* bounceObj) {
 	pHealth = Math::Max(0, pHealth - 1);
 	pShield = pMaxShield + 1; //Offset by 1 frame for better synchronisation (FUTURE JEVON IF YOU KNOW YOU KNOW IF NOT THEN LMAO)
 
-	std::cout << "HEALTH: " << pHealth << std::endl;
+	DEBUG_MSG("HEALTH: " << pHealth);
 
 	//Collision response between the objects
 	if (bounceObj) {

@@ -1,5 +1,6 @@
 #include "InventoryManager.h"
 #include "Math/MyMath.h"
+#include "System/Debug.h"
 CInventoryManager::CInventoryManager()
 	:cActiveInventory(NULL)
 {
@@ -10,11 +11,11 @@ CInventoryManager::~CInventoryManager()
 	m_Inventory.clear();
 }
 
-void CInventoryManager::Add(std::string sName)
+void CInventoryManager::Add(std::string sName, CPlayer2D* target)
 {
 	if (m_Inventory.find(sName) == m_Inventory.end()) //if the inventory doesn't exist 
 	{
-		CInventory newInventory = CInventory(sName);
+		CInventory newInventory = CInventory(sName, target);
 		newInventory.Init();
 		std::pair<std::string, CInventory> pairInventory = std::pair<std::string, CInventory>(sName, newInventory);
 		m_Inventory.insert(pairInventory);
@@ -28,7 +29,7 @@ void CInventoryManager::Use(std::string sName)
 		cActiveInventory = &m_Inventory.at(sName);
 	}
 	else
-		std::cout << "Inventory does not exist\n";
+		DEBUG_MSG("Inventory does not exist");
 }
 
 CInventory* CInventoryManager::Get(std::string sName)
@@ -39,7 +40,7 @@ CInventory* CInventoryManager::Get(std::string sName)
 	}
 	else
 	{
-		std::cout << "Inventory does not exist\n";
+		DEBUG_MSG("Inventory does not exist\n");
 		return nullptr;
 	}
 }

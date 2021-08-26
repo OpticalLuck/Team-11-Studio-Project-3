@@ -146,9 +146,9 @@ bool PauseMenuState::UpdateMenu(ImGuiWindowFlags window_flags)
 
 			// Reset the CKeyboardController
 			CKeyboardController::GetInstance()->Reset();
-			ImGui::PopStyleColor(3);
-			ImGui::End();
-			return false;
+
+			CGameStateManager::GetInstance()->OffPauseGameState();
+			CGameStateManager::GetInstance()->SetActiveGameState("MenuState");
 		}
 		ImGui::PopStyleColor(3);
 		ImGui::End();

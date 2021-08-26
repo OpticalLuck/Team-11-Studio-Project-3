@@ -80,10 +80,10 @@ void Interactables::Update(const double dElapsedTime)
 {
 	bool bCollided = false;
 
-	if (this->interactableType == PRESSURE_PLATE)
-	{
-		CEntityManager* em = CEntityManager::GetInstance();
+	CEntityManager* em = CEntityManager::GetInstance();
 
+	if (this->interactableType < PRESSURE_PLATE)
+	{
 		for (auto& e : em->GetAllPlayers())
 		{
 			/*Collision data = e->GetCollider()->CollideWith(this->collider2D);
@@ -93,6 +93,26 @@ void Interactables::Update(const double dElapsedTime)
 			}*/
 
 			float distance = glm::length(e->vTransform - this->vTransform);
+			if (distance < 1 && e->m_KeyboardInputs[e->iTempFrameCounter - 1][KEYBOARD_INPUTS::E].bKeyPressed)
+			{
+				Activate();
+			}
+		}
+	}
+	else if (this->interactableType == PRESSURE_PLATE)
+	{
+		for (auto& e : em->GetAllPlayers())
+		{
+			float distance = glm::length(e->vTransform - this->vTransform);
+			if (distance < 0.4)
+			{
+				bCollided = true;
+			}
+		}
+
+		for (auto& e : em->GetallObstacles())
+		{
+			float distance = glm::length(e->vTransform - this->vTransform);
 			if (distance < 0.4)
 			{
 				bCollided = true;
@@ -100,6 +120,43 @@ void Interactables::Update(const double dElapsedTime)
 		}
 
 		Activate(bCollided);
+	}
+	else if (this->interactableType == PORTAL)
+	{
+		for (auto& e : em->GetAllPlayers())
+		{
+			float distance = glm::length(e->vTransform - this->vTransform);
+			if (distance < 0.3)
+			{
+				for (auto* i : em->GetAllInteractables())
+				{
+					if (i != this && i->iInteractableID == this->iInteractableID)
+					{
+						if (!this->bJustTeleported)
+						{
+							e->vTransform = i->vTransform;
+							i->bJustTeleported = true;
+							this->bJustTeleported = true;
+						}
+					}
+				}
+			}
+			else
+			{
+				this->bJustTeleported = false;
+			}
+		}
+	}
+	else if (this->interactableType == COMMON_CHEST || this->interactableType == RARE_CHEST)
+	{
+		for (auto& e : em->GetAllPlayers())
+		{
+			float distance = glm::length(e->vTransform - this->vTransform);
+			if (distance < 1 && e->m_KeyboardInputs[e->iTempFrameCounter - 1][KEYBOARD_INPUTS::E].bKeyPressed)
+			{
+				Activate(true, e);
+			}
+		}
 	}
 }
 
@@ -215,7 +272,7 @@ bool Interactables::LoadTexture(const char* filename, GLuint& iTextureID)
 	return true;
 }
 
-bool Interactables::Activate(bool interaction)
+bool Interactables::Activate(bool interaction, CPlayer2D* player)
 {
 	switch (interactableType) {
 	case LEVER:
@@ -223,6 +280,16 @@ bool Interactables::Activate(bool interaction)
 		break;
 	case PRESSURE_PLATE:
 		ActivatePressurePlate(interaction);
+		break;
+	case COMMON_CHEST:
+		OpenChest(player, "Shuriken", 5);
+		OpenChest(player, "Kunai", 5);
+		this->bInteraction = interaction;
+		break;
+	case RARE_CHEST:
+		OpenChest(player, "Shuriken", 10);
+		OpenChest(player, "Kunai", 10);
+		this->bInteraction = interaction;
 		break;
 	default:
 		this->bInteraction = interaction;
@@ -250,8 +317,8 @@ bool Interactables::Activate(bool interaction)
 			{
 				if (this->iInteractableID == e->iInteractableID)
 				{
-					e->Activate(interaction);
-					e->collider2D->SetbEnabled(!interaction);
+					e->Activate(this->bInteraction);
+					e->collider2D->SetbEnabled(!this->bInteraction);
 					return true;
 				}
 			}
@@ -259,6 +326,15 @@ bool Interactables::Activate(bool interaction)
 	}
 
 	return true;
+}
+
+bool Interactables::OpenChest(CPlayer2D* player, std::string itemName, int itemCount)
+{
+	CInventory* inv = player->GetInventory();
+	if (!this->bInteraction)
+		inv->AddItem(itemName, itemCount);
+
+	return false;
 }
 
 bool Interactables::ActivateSwitch()
