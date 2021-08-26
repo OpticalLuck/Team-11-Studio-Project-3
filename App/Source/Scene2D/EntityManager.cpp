@@ -395,6 +395,11 @@ void CEntityManager::PushInteractables(Interactables* interactable)
 	m_interactableList.push_back(interactable);
 }
 
+void CEntityManager::PushObstacles(Obstacle2D* obstacle)
+{
+	m_ObstacleList.push_back(obstacle);
+}
+
 void CEntityManager::Clear(void)
 {
 	if (cPlayer2D) {
