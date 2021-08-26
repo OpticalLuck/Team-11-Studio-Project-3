@@ -416,19 +416,18 @@ void CPlayer2D::Update(const double dElapsedTime)
 			if (obj->GetCollider()->colliderType == Collider2D::ColliderType::COLLIDER_QUAD)
 			{
 				collider2D->ResolveAABB(obj->GetCollider(), data);
-
-				if (std::get<1>(data) == Direction::UP)
-					cPhysics2D->SetboolGrounded(true);
 			}
 			else if (obj->GetCollider()->colliderType == Collider2D::ColliderType::COLLIDER_CIRCLE)
 			{
 				if (glm::dot(cPhysics2D->GetVelocity(), obj->vTransform - vTransform) > 0)
 					collider2D->ResolveAABBCircle(obj->GetCollider(), data, Collider2D::ColliderType::COLLIDER_QUAD);
-
-				if (std::get<1>(data) == Direction::UP)
-					cPhysics2D->SetboolGrounded(true);
 			}
 
+			if (std::get<1>(data) == Direction::UP)
+				cPhysics2D->SetboolGrounded(true);
+			
+			if (std::get<1>(data) == Direction::LEFT || std::get<1>(data) == Direction::RIGHT)
+				cPhysics2D->SetVelocity(glm::vec2(0, cPhysics2D->GetVelocity().y));
 			vTransform = collider2D->position;
 			obj->vTransform = obj->GetCollider()->position;
 		}
@@ -642,7 +641,7 @@ void CPlayer2D::InputUpdate(double dt)
 			m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::SPACE].bKeyPressed)
 		{
 			cPhysics2D->SetboolGrounded(false);
-			velocity.y = 5.f * (jumpCount + (1 - jumpCount * 0.6f));
+			velocity.y = 6.5f * (jumpCount + (1 - jumpCount * 0.6f));
 			jumpCount++;
 			timerArr[A_JUMP].second = 0.1;
 		}
