@@ -152,12 +152,11 @@ void Obstacle2D::ResolvePlayerCollision()
 		Collision data = (playerCollider->CollideWith(collider2D));
 		if (std::get<0>(data)) {
 			//Player collision code below
-			playerCollider->ResolveAABB(collider2D, data);
-			//collider2D->ResolveAABB(collider2D, data);
+			playerCollider->ResolveAABBCircle(collider2D, data, Collider2D::ColliderType::COLLIDER_QUAD);
 
-			//glm::vec2 direction = glm::normalize(vTransform - cPlayer->vTransform);
-			//cPhysics2D->SetForce(glm::vec2(120.f, 0) * direction);
-			//cPlayer->GetCPhysics()->SetVelocity(glm::vec2(0.f));
+			glm::vec2 direction = glm::normalize(vTransform - cPlayer->vTransform);
+			cPhysics2D->SetForce(glm::vec2(120.f, 0) * direction);
+			cPlayer->GetCPhysics()->SetVelocity(glm::vec2(0.f));
 
 			cPlayer->vTransform = cPlayer->GetCollider()->position;
 			vTransform = collider2D->position;
