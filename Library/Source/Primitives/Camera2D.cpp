@@ -8,7 +8,7 @@ Camera2D::Camera2D(void)
 	: FirstTime(true)
 	, pos(0.f, 0.f)
 	, targetPos(0.f, 0.f)
-	, fZoom(1.f)
+	, fZoom(1.5f)
 	, fTargetZoom(1.f)
 	, vMousePosInWindow(0.f)
 	, vMousePosConvertedRatio(0.f)
@@ -36,8 +36,8 @@ void Camera2D::Update(float dElapsedTime) {
 	pos.y = Math::Lerp(pos.y, targetPos.y, spd);
 
 	fZoom = Math::Lerp(fZoom, fTargetZoom, spd);
-	fZoom = Math::Clamp(fZoom, 0.7f, 2.f);
-	fTargetZoom = Math::Clamp(fTargetZoom, 0.7f, 2.f);
+	fZoom = Math::Clamp(fZoom, 1.f, 2.f);
+	fTargetZoom = Math::Clamp(fTargetZoom, 1.f, 2.f);
 
 	// DEBUG_MSG(fZoom);
 }
@@ -91,20 +91,20 @@ float Camera2D::getTargetZoom()
 
 void Camera2D::ClampCamPos(glm::i32vec2 clampPos) {
 	CSettings* cSettings = CSettings::GetInstance();
-	float xOffset = (((float)cSettings->NUM_TILES_XAXIS) / 2.f);
-	float yOffset = (((float)cSettings->NUM_TILES_YAXIS) / 2.f);
+	float xOffset = 1 / fZoom * (((float)cSettings->NUM_TILES_XAXIS) / 2.f);
+	float yOffset = 1 / fZoom * (((float)cSettings->NUM_TILES_YAXIS) / 2.f);
 
 	//Clamping of X axis
-	if (pos.x < xOffset / fZoom)
-		pos.x = xOffset / fZoom;
-	else if (pos.x > clampPos.x - xOffset / fZoom)
-		pos.x = clampPos.x - xOffset / fZoom;
+	if (pos.x < xOffset)
+		pos.x = xOffset;
+	else if (pos.x > clampPos.x - xOffset)
+		pos.x = clampPos.x - xOffset;
 
 	//Clamping of Y axis
-	if (pos.y < yOffset / fZoom)
-		pos.y = yOffset * fZoom;
-	else if (pos.y > clampPos.y - yOffset / fZoom)
-		pos.y = clampPos.y - yOffset / fZoom;
+	if (pos.y < yOffset)
+		pos.y = yOffset;
+	else if (pos.y > clampPos.y - yOffset)
+		pos.y = clampPos.y - yOffset;
 
 
 }
