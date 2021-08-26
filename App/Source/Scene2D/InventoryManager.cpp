@@ -1,5 +1,6 @@
 #include "InventoryManager.h"
 #include "Math/MyMath.h"
+#include "System/Debug.h"
 CInventoryManager::CInventoryManager()
 	:cActiveInventory(NULL)
 {
@@ -28,7 +29,7 @@ void CInventoryManager::Use(std::string sName)
 		cActiveInventory = &m_Inventory.at(sName);
 	}
 	else
-		std::cout << "Inventory does not exist\n";
+		DEBUG_MSG("Inventory does not exist");
 }
 
 CInventory* CInventoryManager::Get(std::string sName)
@@ -39,7 +40,7 @@ CInventory* CInventoryManager::Get(std::string sName)
 	}
 	else
 	{
-		std::cout << "Inventory does not exist\n";
+		DEBUG_MSG("Inventory does not exist\n");
 		return nullptr;
 	}
 }

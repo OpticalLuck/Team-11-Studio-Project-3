@@ -21,33 +21,7 @@ CEntityManager::CEntityManager()
 
 CEntityManager::~CEntityManager()
 {
-	if (cPlayer2D) {
-		delete cPlayer2D;
-		cPlayer2D = nullptr;
-	}
-
-	if (cBoss2D) {
-		delete cBoss2D;
-		cBoss2D = nullptr;
-	}
-
-	for (unsigned i = 0; i < m_enemyList.size(); i++) {
-		delete m_enemyList[i];
-		m_enemyList[i] = nullptr;
-	}
-	m_enemyList.clear();
-
-	for (unsigned i = 0; i < m_cloneList.size(); i++) {
-		delete m_cloneList[i];
-		m_cloneList[i] = nullptr;
-	}
-	m_cloneList.clear();
-
-	for (unsigned i = 0; i < m_BulletList.size(); i++) {
-		delete m_BulletList[i];
-		m_BulletList[i] = nullptr;
-	}
-	m_BulletList.clear();
+	Clear();
 }
 
 bool CEntityManager::EntityManagerInit(void)
@@ -183,7 +157,7 @@ CPlayer2D* CEntityManager::Clone(void)
 
 	if (!clone->Init(cPlayer2D->GetCheckpoint(), m_cloneList.size()))
 	{
-		std::cout << "Failed to clone Player\n";
+		DEBUG_MSG("Failed to clone Player");
 		return nullptr;
 	}
 	clone->SetClone(true);
@@ -373,7 +347,7 @@ void CEntityManager::Update(const double dElapsedTime)
 		{
 			if (dynamic_cast<Projectiles*>(m_BulletList[i])->bDestroyed || dynamic_cast<Projectiles*>(m_BulletList[i])->bOutsideBoundary())
 			{
-				cout << "bullet deleted" << endl;
+				DEBUG_MSG("bullet deleted");
 				delete m_BulletList[i];
 				m_BulletList[i] = nullptr;
 			}
@@ -398,4 +372,41 @@ void CEntityManager::PushBullet(Projectiles* bullet) {
 void CEntityManager::PushInteractables(Interactables* interactable)
 {
 	m_interactableList.push_back(interactable);
+}
+
+void CEntityManager::Clear(void)
+{
+	if (cPlayer2D) {
+		delete cPlayer2D;
+		cPlayer2D = nullptr;
+	}
+
+	if (cBoss2D) {
+		delete cBoss2D;
+		cBoss2D = nullptr;
+	}
+
+	for (unsigned i = 0; i < m_enemyList.size(); i++) {
+		delete m_enemyList[i];
+		m_enemyList[i] = nullptr;
+	}
+	m_enemyList.clear();
+
+	for (unsigned i = 0; i < m_cloneList.size(); i++) {
+		delete m_cloneList[i];
+		m_cloneList[i] = nullptr;
+	}
+	m_cloneList.clear();
+
+	for (unsigned i = 0; i < m_BulletList.size(); i++) {
+		delete m_BulletList[i];
+		m_BulletList[i] = nullptr;
+	}
+	m_BulletList.clear();
+
+	for (unsigned i = 0; i < m_interactableList.size(); i++) {
+		delete m_interactableList[i];
+		m_interactableList[i] = nullptr;
+	}
+	m_interactableList.clear();
 }

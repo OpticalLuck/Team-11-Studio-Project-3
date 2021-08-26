@@ -54,6 +54,8 @@ public:
 
 	std::vector<Interactables*> GetAllInteractables(void);
 
+	void Clear(void);
+
 protected:
 	CEntityManager();
 	~CEntityManager();

@@ -107,12 +107,6 @@ void Interactables::Update(const double dElapsedTime)
 
 		for (auto& e : em->GetAllPlayers())
 		{
-			/*Collision data = e->GetCollider()->CollideWith(this->collider2D);
-			if (std::get<0>(data))
-			{
-				bCollided = true;
-			}*/
-
 			float distance = glm::length(e->vTransform - this->vTransform);
 			if (distance < 1 && e->m_KeyboardInputs[e->iTempFrameCounter - 1][KEYBOARD_INPUTS::E].bKeyPressed)
 			{
@@ -126,13 +120,6 @@ void Interactables::Update(const double dElapsedTime)
 
 		for (auto& e : em->GetAllPlayers())
 		{
-			// e->bJustTeleported = false;
-			/*Collision data = e->GetCollider()->CollideWith(this->collider2D);
-			if (std::get<0>(data))
-			{
-				bCollided = true;
-			}*/
-
 			float distance = glm::length(e->vTransform - this->vTransform);
 			if (distance < 0.3)
 			{

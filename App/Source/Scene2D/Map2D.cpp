@@ -328,7 +328,7 @@ bool CMap2D::InsertMapInfo(unsigned int uiRow, unsigned int uiCol, const int iTe
 	}
 	else
 	{
-		cout << "Something is in Current TileGrid" << endl;
+		DEBUG_MSG("Something is in Current TileGrid");
 		return false;
 	}
 	return true;
@@ -418,7 +418,7 @@ void CMap2D::UpdateGridInfo(const unsigned int uiRow, const unsigned uiCol, CObj
 	}
 	else
 	{
-		cout << "SOMETHING IN GRID SPACE" << endl;
+		DEBUG_MSG("SOMETHING IN GRID SPACE");
 	}
 }
 
@@ -506,13 +506,13 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 				arrBackground[uiCurLevel] = bgEntity; //Else put background into array
 
 			//Cout for debugging purposes
-			std::cout << "Background settings for level " << uiCurLevel + 1 << ": \n";
-			std::cout << "Scale: " << scaleFloat[0] << ", " << scaleFloat[1] << std::endl;
-			std::cout << "Allowance Scale: " << allowanceScaleFloat[0] << ", " << allowanceScaleFloat[1] << std::endl;
+			DEBUG_MSG("Background settings for level " << uiCurLevel + 1);
+			DEBUG_MSG("Scale: " << scaleFloat[0] << ", " << scaleFloat[1]);
+			DEBUG_MSG("Allowance Scale: " << allowanceScaleFloat[0] << ", " << allowanceScaleFloat[1]);
 			if (arrBackground[uiCurLevel])
-				std::cout << "Background loaded!\n";
+				DEBUG_MSG("Background loaded!");
 			else
-				std::cout << "Background is disabled\n";
+				DEBUG_MSG("Background is disabled");
 		}
 
 		arrGrid[uiCurLevel].push_back(std::vector<CObject2D*>());

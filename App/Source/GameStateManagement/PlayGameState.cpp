@@ -61,7 +61,7 @@ bool CPlayGameState::Init(void)
 
 	// Initialise the cScene2D instance
 	cScene2D = CScene2D::GetInstance();
-	if (cScene2D->Init() == false)
+	if (cScene2D->Init(levelPath) == false)
 	{
 		cout << "Failed to load Scene2D" << endl;
 		return false;
@@ -405,4 +405,9 @@ bool CPlayGameState::ImGuiRender()
 
 		return true;
 	}
+}
+
+void CPlayGameState::SetLevel(std::string levelPath)
+{
+	this->levelPath = levelPath;
 }
