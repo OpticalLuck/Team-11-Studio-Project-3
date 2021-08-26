@@ -152,6 +152,10 @@ void Interactables::Update(const double dElapsedTime)
 		for (auto& e : em->GetAllPlayers())
 		{
 			float distance = glm::length(e->vTransform - this->vTransform);
+
+			if (e->m_KeyboardInputs.size() >= e->iTempFrameCounter)
+				continue;
+
 			if (distance < 1 && e->m_KeyboardInputs[e->iTempFrameCounter - 1][KEYBOARD_INPUTS::E].bKeyPressed)
 			{
 				Activate(true, e);
