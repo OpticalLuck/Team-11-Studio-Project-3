@@ -80,10 +80,9 @@ void Interactables::Update(const double dElapsedTime)
 {
 	bool bCollided = false;
 
+	CEntityManager* em = CEntityManager::GetInstance();
 	if (this->interactableType == PRESSURE_PLATE)
 	{
-		CEntityManager* em = CEntityManager::GetInstance();
-
 		for (auto& e : em->GetAllPlayers())
 		{
 			/*Collision data = e->GetCollider()->CollideWith(this->collider2D);
@@ -103,8 +102,6 @@ void Interactables::Update(const double dElapsedTime)
 	}
 	else if (this->interactableType == LEVER)
 	{
-		CEntityManager* em = CEntityManager::GetInstance();
-
 		for (auto& e : em->GetAllPlayers())
 		{
 			/*Collision data = e->GetCollider()->CollideWith(this->collider2D);
@@ -122,8 +119,6 @@ void Interactables::Update(const double dElapsedTime)
 	}
 	else if (this->interactableType == PORTAL)
 	{
-		CEntityManager* em = CEntityManager::GetInstance();
-
 		for (auto& e : em->GetAllPlayers())
 		{
 			// e->bJustTeleported = false;
@@ -154,6 +149,12 @@ void Interactables::Update(const double dElapsedTime)
 				this->bJustTeleported = false;
 			}
 		}
+	}
+	else if (this->interactableType == COMMON_CHEST)
+	{
+	}
+	else if (this->interactableType == RARE_CHEST)
+	{
 	}
 }
 
