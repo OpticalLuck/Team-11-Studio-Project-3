@@ -304,13 +304,13 @@ bool CPlayGameState::ImGuiRender()
 			float vPlayerPosX = cPlayer->GetTransformX();
 			float vCameraposX = cCamera->GetPosX();
 			float finalPosX = vPlayerPosX - vCameraposX;
-			finalPosX = finalPosX / cSettings->NUM_TILES_XAXIS * cSettings->iWindowWidth;
-			finalPosX += 0.5 * cSettings->iWindowWidth - 25;
+			finalPosX = finalPosX / cSettings->NUM_TILES_XAXIS * cSettings->iWindowWidth * Camera2D::GetInstance()->getZoom();
+			finalPosX += (0.5 * cSettings->iWindowWidth - 25 / Camera2D::GetInstance()->getZoom());
 
 			float vPlayerPosY = cPlayer->GetTransformY();
 			float vCameraposY = cCamera->GetPosY();
 			float finalPosY = vPlayerPosY - vCameraposY;
-			finalPosY = finalPosY / cSettings->NUM_TILES_YAXIS * cSettings->iWindowHeight;
+			finalPosY = finalPosY / cSettings->NUM_TILES_YAXIS * cSettings->iWindowHeight * Camera2D::GetInstance()->getZoom();
 			finalPosY += 0.5 * cSettings->iWindowHeight;
 			finalPosY = cSettings->iWindowHeight - finalPosY;
 
@@ -341,13 +341,13 @@ bool CPlayGameState::ImGuiRender()
 				float vEnemyPosX = enemy[i]->GetTransformX();
 				float vCameraposX = cCamera->GetPosX();
 				float finalPosX = vEnemyPosX - vCameraposX;
-				finalPosX = finalPosX / cSettings->NUM_TILES_XAXIS * cSettings->iWindowWidth;
-				finalPosX += 0.5 * cSettings->iWindowWidth - 20;
+				finalPosX = finalPosX / cSettings->NUM_TILES_XAXIS * cSettings->iWindowWidth * Camera2D::GetInstance()->getZoom();
+				finalPosX += (0.5 * cSettings->iWindowWidth - 25 / Camera2D::GetInstance()->getZoom());
 
 				float vEnemyPosY = enemy[i]->GetTransformY();
 				float vCameraposY = cCamera->GetPosY();
 				float finalPosY = vEnemyPosY - vCameraposY;
-				finalPosY = finalPosY / cSettings->NUM_TILES_YAXIS * cSettings->iWindowHeight;
+				finalPosY = finalPosY / cSettings->NUM_TILES_YAXIS * cSettings->iWindowHeight * Camera2D::GetInstance()->getZoom();
 				finalPosY += 0.5 * cSettings->iWindowHeight;
 				finalPosY = cSettings->iWindowHeight - finalPosY - 60;
 
@@ -377,13 +377,13 @@ bool CPlayGameState::ImGuiRender()
 				float vClonePosX = clone[i]->GetTransformX();
 				float vCameraposX = cCamera->GetPosX();
 				float finalPosX = vClonePosX - vCameraposX;
-				finalPosX = finalPosX / cSettings->NUM_TILES_XAXIS * cSettings->iWindowWidth;
-				finalPosX += 0.5 * cSettings->iWindowWidth - 20;
+				finalPosX = finalPosX / cSettings->NUM_TILES_XAXIS * cSettings->iWindowWidth * Camera2D::GetInstance()->getZoom();
+				finalPosX += (0.5 * cSettings->iWindowWidth - 25 / Camera2D::GetInstance()->getZoom());
 
 				float vClonePosY = clone[i]->GetTransformY();
 				float vCameraposY = cCamera->GetPosY();
 				float finalPosY = vClonePosY - vCameraposY;
-				finalPosY = finalPosY / cSettings->NUM_TILES_YAXIS * cSettings->iWindowHeight;
+				finalPosY = finalPosY / cSettings->NUM_TILES_YAXIS * cSettings->iWindowHeight * Camera2D::GetInstance()->getZoom();
 				finalPosY += 0.5 * cSettings->iWindowHeight;
 				finalPosY = cSettings->iWindowHeight - finalPosY - 60;
 
