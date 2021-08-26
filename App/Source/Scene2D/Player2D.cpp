@@ -285,6 +285,7 @@ bool CPlayer2D::Init(glm::i32vec2 spawnpoint, int iCloneIndex)
 	collider2D->Init(vTransform, glm::vec2(0.2f, 0.5f));
 	cPhysics2D->Init(&vTransform);
 
+	//const void* address = 
 	std::stringstream ss;
 	ss << "Clone" << iCloneIndex;
 

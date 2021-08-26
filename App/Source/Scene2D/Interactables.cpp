@@ -153,7 +153,7 @@ void Interactables::Update(const double dElapsedTime)
 		{
 			float distance = glm::length(e->vTransform - this->vTransform);
 
-			if (e->m_KeyboardInputs.size() >= e->iTempFrameCounter)
+			if (e->m_KeyboardInputs.size() >= (unsigned)e->iTempFrameCounter)
 				continue;
 
 			if (distance < 1 && e->m_KeyboardInputs[e->iTempFrameCounter - 1][KEYBOARD_INPUTS::E].bKeyPressed)

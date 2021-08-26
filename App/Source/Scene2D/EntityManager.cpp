@@ -328,12 +328,14 @@ void CEntityManager::Update(const double dElapsedTime)
 		{
 			delete m_cloneList[i];
 			m_cloneList[i] = nullptr;
-			m_cloneList.erase(std::remove(std::begin(m_cloneList), std::end(m_cloneList), nullptr), std::end(m_cloneList));
+			/*m_cloneList.erase(std::remove(std::begin(m_cloneList), std::end(m_cloneList), nullptr), std::end(m_cloneList));*/
 			continue;
 		}
 
 		m_cloneList[i]->Update(dElapsedTime);
 	}
+
+	m_cloneList.erase(std::remove(m_cloneList.begin(), m_cloneList.end(), nullptr), m_cloneList.end()); //Remove any nullptrs in the array
 
 	// Call the cPlayer2D's update method before Map2D as we want to capture the inputs before map2D update
 	cPlayer2D->Update(dElapsedTime);

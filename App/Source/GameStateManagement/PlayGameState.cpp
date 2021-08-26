@@ -40,6 +40,8 @@ CPlayGameState::CPlayGameState(void)
 	, cCamera(NULL)
 	, cSoundController(NULL)
 	, displayHP(0.f)
+	, cFPSCounter(NULL)
+	, cMap2D(NULL)
 {
 
 }
@@ -313,7 +315,7 @@ bool CPlayGameState::ImGuiRender()
 			float vCameraposY = cCamera->GetPosY();
 			float finalPosY = vPlayerPosY - vCameraposY;
 			finalPosY = finalPosY / cSettings->NUM_TILES_YAXIS * cSettings->iWindowHeight * Camera2D::GetInstance()->getZoom();
-			finalPosY += 0.5 * cSettings->iWindowHeight;
+			finalPosY += 0.5f * (float)cSettings->iWindowHeight;
 			finalPosY = cSettings->iWindowHeight - finalPosY;
 
 			if (finalPosX > 0 && finalPosX < cSettings->iWindowWidth &&
@@ -351,13 +353,13 @@ bool CPlayGameState::ImGuiRender()
 				float vCameraposX = cCamera->GetPosX();
 				float finalPosX = vEnemyPosX - vCameraposX;
 				finalPosX = finalPosX / cSettings->NUM_TILES_XAXIS * cSettings->iWindowWidth * Camera2D::GetInstance()->getZoom();
-				finalPosX += (0.5 * cSettings->iWindowWidth - 25 / Camera2D::GetInstance()->getZoom());
+				finalPosX += (0.5f * (float)cSettings->iWindowWidth - 25 / Camera2D::GetInstance()->getZoom());
 
 				float vEnemyPosY = enemy[i]->GetTransformY();
 				float vCameraposY = cCamera->GetPosY();
 				float finalPosY = vEnemyPosY - vCameraposY;
 				finalPosY = finalPosY / cSettings->NUM_TILES_YAXIS * cSettings->iWindowHeight * Camera2D::GetInstance()->getZoom();
-				finalPosY += 0.5 * cSettings->iWindowHeight;
+				finalPosY += 0.5f * (float)cSettings->iWindowHeight;
 				finalPosY = cSettings->iWindowHeight - finalPosY - 60;
 
 				if (finalPosX > 0 && finalPosX < cSettings->iWindowWidth &&
@@ -391,13 +393,13 @@ bool CPlayGameState::ImGuiRender()
 				float vCameraposX = cCamera->GetPosX();
 				float finalPosX = vClonePosX - vCameraposX;
 				finalPosX = finalPosX / cSettings->NUM_TILES_XAXIS * cSettings->iWindowWidth * Camera2D::GetInstance()->getZoom();
-				finalPosX += (0.5 * cSettings->iWindowWidth - 25 / Camera2D::GetInstance()->getZoom());
+				finalPosX += (0.5f * (float)cSettings->iWindowWidth - 25 / Camera2D::GetInstance()->getZoom());
 
 				float vClonePosY = clone[i]->GetTransformY();
 				float vCameraposY = cCamera->GetPosY();
 				float finalPosY = vClonePosY - vCameraposY;
 				finalPosY = finalPosY / cSettings->NUM_TILES_YAXIS * cSettings->iWindowHeight * Camera2D::GetInstance()->getZoom();
-				finalPosY += 0.5 * cSettings->iWindowHeight;
+				finalPosY += 0.5f * (float)cSettings->iWindowHeight;
 				finalPosY = cSettings->iWindowHeight - finalPosY - 60;
 
 				if (finalPosX > 0 && finalPosX < cSettings->iWindowWidth &&
