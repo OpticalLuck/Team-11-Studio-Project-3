@@ -166,7 +166,7 @@ bool CTextureManager::Init(void)
         return false;
     }
 
-    if (LoadTexture("Image/Chests/Common_Chest_Opened.png", INTERACTABLE_RARE_CHEST_OPENED) == false)
+    if (LoadTexture("Image/Chests/Common_Chest_Opened.png", INTERACTABLE_COMMON_CHEST_OPENED) == false)
     {
         std::cout << "Failed to load Rare Chest Open tile texture" << std::endl;
         return false;
@@ -178,7 +178,7 @@ bool CTextureManager::Init(void)
         return false;
     }
 
-    if (LoadTexture("Image/Chests/Rare_Chest_Opened.png", INTERACTABLE_COMMON_CHEST_OPENED) == false)
+    if (LoadTexture("Image/Chests/Rare_Chest_Opened.png", INTERACTABLE_RARE_CHEST_OPENED) == false)
     {
         std::cout << "Failed to load Common Chest Open tile texture" << std::endl;
         return false;

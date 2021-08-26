@@ -11,6 +11,7 @@
 #include "GLFW/glfw3.h"
 #include "Object2D.h"
 #include "Map2D.h"
+#include "System/Debug.h"
 
 CInventory::CInventory(std::string sName, CPlayer2D* target)
 	: fCooldown(0.f)
@@ -25,17 +26,21 @@ CInventory::~CInventory()
 {
 }
 
-void CInventory::AddItem(int iIndex, int iID, int iCount)
+void CInventory::AddItem(std::string itemName, int iCount)
 {
 	// If the item exist in the inventory
-	if (m_Items.find(iIndex) != m_Items.end())
+	for (int i = 0; i < m_Items.size(); ++i)
 	{
-		CItem& currentItem = m_Items.at(iIndex);
-		currentItem.iCount += iCount;
-		currentItem.iCount = Math::Clamp(currentItem.iCount, currentItem.iMinCount , currentItem.iMaxCount);
+		if (m_Items[i].GetName() == itemName)
+		{
+			CItem& currentItem = m_Items[i];
+			currentItem.iCount += iCount;
+			currentItem.iCount = Math::Clamp(currentItem.iCount, currentItem.iMinCount, currentItem.iMaxCount);
+			return;
+		}
 	}
-	else 
-		std::cout << "Item is not in inventory\n";
+
+	DEBUG_MSG("Item is not in the inventory");
 
 }
 

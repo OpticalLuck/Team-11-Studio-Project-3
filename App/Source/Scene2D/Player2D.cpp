@@ -739,6 +739,11 @@ float CPlayer2D::GetTransformY(void)
 	return vTransform.y;
 }
 
+CInventory* CPlayer2D::GetInventory(void)
+{
+	return cInventory;
+}
+
 void CPlayer2D::SetKeyInputs(std::vector<std::array<KeyInput, KEYBOARD_INPUTS::KEY_TOTAL>> inputs)
 {
 	m_KeyboardInputs = inputs;

@@ -149,6 +149,8 @@ public:
 	//returns transform y
 	float GetTransformY(void);
 
+	CInventory* GetInventory(void);
+
 protected:
 	bool bIsClone;
 	

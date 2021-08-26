@@ -11,7 +11,7 @@ public:
 	CInventory(std::string sName, CPlayer2D* target);
 	~CInventory();
 
-	void AddItem(int iIndex, int iID, int iCount = 1);
+	void AddItem(std::string itemName, int iCount = 1);
 
 	void Update(double dElapsedTime, 
 				int iTempFrameCounter,
