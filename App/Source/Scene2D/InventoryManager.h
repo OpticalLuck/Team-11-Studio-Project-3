@@ -10,7 +10,7 @@ public:
 	CInventoryManager();
 	~CInventoryManager();
 
-	void Add(std::string sName);
+	void Add(std::string sName, CPlayer2D* target);
 
 	void Use(std::string sName);
 

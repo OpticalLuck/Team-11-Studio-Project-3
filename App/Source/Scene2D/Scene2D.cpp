@@ -290,6 +290,7 @@ void CScene2D::Render(void)
 	cEntityManager->RenderEnemy();
 	cEntityManager->RenderClone();
 	cEntityManager->RenderPlayer();
+	cEntityManager->RenderObstacles();
 }
 
 /**

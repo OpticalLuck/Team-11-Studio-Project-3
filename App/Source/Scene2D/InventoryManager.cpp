@@ -11,11 +11,11 @@ CInventoryManager::~CInventoryManager()
 	m_Inventory.clear();
 }
 
-void CInventoryManager::Add(std::string sName)
+void CInventoryManager::Add(std::string sName, CPlayer2D* target)
 {
 	if (m_Inventory.find(sName) == m_Inventory.end()) //if the inventory doesn't exist 
 	{
-		CInventory newInventory = CInventory(sName);
+		CInventory newInventory = CInventory(sName, target);
 		newInventory.Init();
 		std::pair<std::string, CInventory> pairInventory = std::pair<std::string, CInventory>(sName, newInventory);
 		m_Inventory.insert(pairInventory);

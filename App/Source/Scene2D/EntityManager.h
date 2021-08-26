@@ -4,6 +4,7 @@
 #include "Player2D.h"
 #include "Enemy2D.h"
 #include "Interactables.h"
+#include "Obstacle2D.h"
 
 #include <vector>
 #include <iostream>
@@ -34,6 +35,7 @@ public:
 	void RenderPlayer(void);
 	void RenderBullets(void);
 	void RenderInteractables(void);
+	void RenderObstacles(void);
 
 	void Update(const double dElapsedTime);
 	CPlayer2D* Clone(void);
@@ -47,12 +49,13 @@ public:
 	void PushEnemy(CEnemy2D*);
 	void PushBullet(Projectiles*);
 	void PushInteractables(Interactables*);
+	void PushObstacles(Obstacle2D*);
 
 	std::vector<CPlayer2D*> GetAllPlayers(void);
 	std::vector<CEnemy2D*> GetAllEnemies(void);
 	std::vector<CEntity2D*> GetAllLivingEntities(void);
-
 	std::vector<Interactables*> GetAllInteractables(void);
+	std::vector<Obstacle2D*> GetallObstacles(void);
 
 	void Clear(void);
 
@@ -77,6 +80,7 @@ protected:
 	std::vector<CEnemy2D*> m_enemyList;
 	std::vector<Projectiles*> m_BulletList;
 	std::vector<CPlayer2D*> m_cloneList;
+	std::vector<Obstacle2D*> m_ObstacleList;
 
 	int currRound; //Current round in game. First is 0 and last is 4 (Will be storing enemies prev attacks etc using this)
 

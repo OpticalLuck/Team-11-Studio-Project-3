@@ -8,10 +8,10 @@
 class CInventory
 {
 public:
-	CInventory(std::string sName);
+	CInventory(std::string sName, CPlayer2D* target);
 	~CInventory();
 
-	void AddItem(int iIndex, int iID, int iCount = 1);
+	void AddItem(std::string itemName, int iCount = 1);
 
 	void Update(double dElapsedTime, 
 				int iTempFrameCounter,
@@ -35,5 +35,5 @@ public:
 	std::string sName;
 private:
 	std::map<int, CItem>m_Items;
-
+	CPlayer2D* linkedPlayer;
 };

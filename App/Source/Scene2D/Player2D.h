@@ -82,6 +82,13 @@ public:
 		A_TOTAL,
 	};
 
+	enum class FACING_DIR
+	{
+		LEFT = 0,
+		RIGHT = 1,
+		NUM_DIRECTIONS
+	};
+	FACING_DIR facing;
 
 	// Constructor
 	CPlayer2D(void);
@@ -142,24 +149,15 @@ public:
 	//returns transform y
 	float GetTransformY(void);
 
+	CInventory* GetInventory(void);
+
 protected:
 	bool bIsClone;
 	
 	//Timer for actions that need cooldown
 	std::pair<bool, double> timerArr[A_TOTAL];
 
-
-	enum class DIRECTION
-	{
-		LEFT = 0,
-		RIGHT = 1,
-		UP = 2,
-		DOWN = 3,
-		NUM_DIRECTIONS
-	};
-
 	CInputHandler* cInputHandler;
-
 
 	glm::vec2 vOldTransform;
 
@@ -187,7 +185,6 @@ protected:
 	CSoundController* cSoundController;
 
 	// Facing direction for rendering and ease of animation
-	DIRECTION facing;
 	STATE state;
 
 	// Load a texture
