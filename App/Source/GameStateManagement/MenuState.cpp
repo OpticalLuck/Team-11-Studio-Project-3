@@ -176,13 +176,7 @@ bool CMenuState::UpdateMenu(ImGuiWindowFlags window_flags)
 	//For keyboard controls
 	if (CKeyboardController::GetInstance()->IsKeyReleased(GLFW_KEY_SPACE))
 	{
-		// Reset the CKeyboardController
-		CKeyboardController::GetInstance()->Reset();
-
-		// Load the menu state
-		cout << "Loading PlayGameState" << endl;
-		CGameStateManager::GetInstance()->SetActiveGameState("PlayGameState");
-		return true;
+		menuState = STATE_SELECT_LEVEL;
 	}
 	if (CKeyboardController::GetInstance()->IsKeyReleased(GLFW_KEY_E))
 	{
