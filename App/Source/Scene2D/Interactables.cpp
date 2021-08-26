@@ -101,6 +101,25 @@ void Interactables::Update(const double dElapsedTime)
 
 		Activate(bCollided);
 	}
+	else if (this->interactableType == LEVER)
+	{
+		CEntityManager* em = CEntityManager::GetInstance();
+
+		for (auto& e : em->GetAllPlayers())
+		{
+			/*Collision data = e->GetCollider()->CollideWith(this->collider2D);
+			if (std::get<0>(data))
+			{
+				bCollided = true;
+			}*/
+
+			float distance = glm::length(e->vTransform - this->vTransform);
+			if (distance < 1 && e->m_KeyboardInputs[e->iTempFrameCounter][KEYBOARD_INPUTS::E].bKeyPressed)
+			{
+				Activate(!bInteraction);
+			}
+		}
+	}
 }
 
 void Interactables::PreRender(void)
