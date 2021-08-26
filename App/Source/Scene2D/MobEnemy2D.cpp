@@ -17,8 +17,6 @@
 
 #include "RayCast2D.h"
 
-bool CMobEnemy2D::recording = false;
-
 CMobEnemy2D::CMobEnemy2D(void) {
 	animatedSprites = nullptr;
 	mSpd = 0;
@@ -187,6 +185,11 @@ void CMobEnemy2D::RandomiseStateTimer(FSM state) {
 	}
 }
 
+void CMobEnemy2D::ReplayRecording(void) {
+	currFrame = 0;
+	LoadCurrData(currFrame);
+}
+
 void CMobEnemy2D::SaveCurrData(void) {
 	data dStore;
 	dStore.currDir = dir;
@@ -264,7 +267,15 @@ void CMobEnemy2D::Update(const double dElapsedTime) {
 	UpdateHealthLives();
 
 	animatedSprites->Update(dElapsedTime);
+
 	currFrame++;
+}
+
+void CMobEnemy2D::ResetRecording(void) {
+	savedData.clear(); //Reset savedData
+
+	currFrame = 0;
+	SaveCurrData();
 }
 
 std::pair<int, bool> CMobEnemy2D::GetNearestDataKey(void) {

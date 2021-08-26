@@ -8,6 +8,9 @@ using namespace std;
 #include "System\filesystem.h"
 #include "Math/MyMath.h"
 
+//Enemy shit
+#include "MobEnemy2D.h"
+
 /**
  @brief Constructor This constructor has protected access modifier as this class will be a Singleton
  */
@@ -103,12 +106,9 @@ bool CScene2D::Init(std::string levelPath)
 	cameraHandler = Camera2D::GetInstance();
 	cameraHandler->Reset();
 	cameraHandler->UpdateTarget(cPlayer2D->vTransform);
-
-	// Create and initialise the CEnemy2D
-	enemyVector.clear();
 	
 	//300
-	LoadEnemy<CEnemy2D>();
+	//LoadEnemy<CEnemy2D>();
 
 	// Setup the shaders
 	CShaderManager::GetInstance()->Add("textShader", "Shader//text.vs", "Shader//text.fs");
@@ -182,11 +182,22 @@ bool CScene2D::Update(const double dElapsedTime)
 	if (cKeyboardController->IsKeyPressed(GLFW_KEY_ENTER))
 	{
 		++m_FrameStorage.iCounter;
+		std::vector<CEnemy2D*> enemyArr = cEntityManager->GetAllEnemies();
 		switch (m_FrameStorage.iCounter)
 		{
 		case 1:
 			m_FrameStorage.iStoredFrame = m_FrameStorage.iCurrentFrame;
 			m_FrameStorage.spawnPos = cPlayer2D->vTransform;
+
+			//Recording enemy stuff
+			CEnemy2D::SetRecording(true);
+			for (unsigned i = 0; i < enemyArr.size(); i++) {
+				CMobEnemy2D* mobEnemy = dynamic_cast<CMobEnemy2D*>(enemyArr[i]);
+
+				if (mobEnemy)
+					mobEnemy->ResetRecording();
+			}
+
 			break;
 		case 2:
 			CPlayer2D* clone = CEntityManager::GetInstance()->Clone();
@@ -197,6 +208,16 @@ bool CScene2D::Update(const double dElapsedTime)
 			cPlayer2D->vTransform = m_FrameStorage.spawnPos;
 
 			m_FrameStorage.iCounter = 0;
+
+			//Recording enemy stuff
+			CEnemy2D::SetRecording(false);
+
+			for (unsigned i = 0; i < enemyArr.size(); i++) {
+				CMobEnemy2D* mobEnemy = dynamic_cast<CMobEnemy2D*>(enemyArr[i]);
+
+				if (mobEnemy)
+					mobEnemy->ReplayRecording();
+			}
 			break;
 		}
 	}
@@ -212,16 +233,10 @@ bool CScene2D::Update(const double dElapsedTime)
 		if (cMap2D->GetCurrentLevel() + 1 < 3)
 		{
 			cMap2D->SetCurrentLevel(cMap2D->GetCurrentLevel() + 1);
-			int initialsize = enemyVector.size();
-			for (int i = 0; i < initialsize; i++)
-			{
-				delete enemyVector[0];
-				enemyVector.erase(enemyVector.begin());
-			}
 			cPlayer2D->Reset();
 
 			//300
-			LoadEnemy<CEnemy2D>();
+			//LoadEnemy<CEnemy2D>();
 		}
 		//Last Level
 		else

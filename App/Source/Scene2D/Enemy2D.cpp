@@ -39,6 +39,9 @@ using namespace std;
 /**
  @brief Constructor This constructor has protected access modifier as this class will be a Singleton
  */
+
+bool CEnemy2D::recording = false;
+
 CEnemy2D::CEnemy2D(void)
 	: bIsActive(false)
 	, cMap2D(NULL)
@@ -169,6 +172,10 @@ bool CEnemy2D::Init(void)
 	pHealth = 1;
 
 	return true;
+}
+
+void CEnemy2D::SetRecording(bool val) {
+	recording = val;
 }
 
 CObject2D* CEnemy2D::GetObjectInTile(int uiCol, int uiRow) {

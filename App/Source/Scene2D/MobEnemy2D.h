@@ -57,6 +57,12 @@ class CMobEnemy2D : public CEnemy2D
 
 		void SetID(int id);
 
+		//Recording stuff
+		void ResetRecording(void); //Resets the recording
+
+		//Replay
+		void ReplayRecording(void);
+
 	protected:
 		glm::vec2 oldVTransform;
 		glm::vec2 posToChase;
@@ -109,8 +115,6 @@ class CMobEnemy2D : public CEnemy2D
 
 		int id;
 
-		//Recording purposes
-		static bool recording;
 		//int nearestFrame;
 		std::pair<int, bool> nearestFrame;
 };

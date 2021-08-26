@@ -75,6 +75,8 @@ public:
 	//Get CObject in tile
 	CObject2D* GetObjectInTile(int uiCol, int uiRow);
 
+	static void SetRecording(bool);
+
 protected:
 	enum class DIRECTION
 	{
@@ -148,5 +150,8 @@ protected:
 
 	//Randomise direction
 	DIRECTION RandomiseDir(void);
+
+	//Recording
+	static bool recording;
 };
 
