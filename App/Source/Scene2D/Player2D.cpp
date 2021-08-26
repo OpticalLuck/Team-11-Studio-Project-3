@@ -706,22 +706,27 @@ void CPlayer2D::Attacked(int hp, CPhysics2D* bounceObj) {
 	//Collision response between the objects
 	if (bounceObj) {
 		glm::vec2 ogVel = cPhysics2D->GetVelocity();
+		glm::vec2 objVel = bounceObj->GetVelocity();
 
-		if (vTransform.x > bounceObj->GetPosition().x)
+		if (vTransform.x > bounceObj->GetPosition().x) {
 			cPhysics2D->SetVelocity(glm::vec2(-fMovementSpeed, ogVel.y));
-		else if (vTransform.x < bounceObj->GetPosition().x)
+			bounceObj->SetVelocity(glm::vec2(fMovementSpeed, objVel.y));
+		}
+		else if (vTransform.x < bounceObj->GetPosition().x) {
 			cPhysics2D->SetVelocity(glm::vec2(fMovementSpeed, ogVel.y));
+			bounceObj->SetVelocity(glm::vec2(-fMovementSpeed, objVel.y));
+		}
 
 		cPhysics2D->CollisionResponse(bounceObj,1.5f,1.5f);
 		cPhysics2D->SetBoolKnockBacked(true);
 		bounceObj->SetBoolKnockBacked(true);
 
-		float maxSpd = 5;
+		float maxSpd = maxKnockBack;
 		if (glm::length(cPhysics2D->GetVelocity()) > maxSpd)
 			cPhysics2D->SetVelocity(glm::normalize(cPhysics2D->GetVelocity()) * maxSpd);
 
 		if (glm::length(bounceObj->GetVelocity()) > maxSpd)
-			cPhysics2D->SetVelocity(glm::normalize(cPhysics2D->GetVelocity()) * maxSpd);
+			bounceObj->SetVelocity(glm::normalize(bounceObj->GetVelocity()) * maxSpd);
 	}
 }
 

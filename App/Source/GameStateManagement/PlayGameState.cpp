@@ -33,8 +33,8 @@ CPlayGameState::CPlayGameState(void)
 	, cKeyboardController(NULL)
 	, m_fProgressBar(0.0f)
 	, fInterval(0.f)
-	, iMinutes(0.f)
-	, iSeconds(0.f)
+	, iMinutes(0)
+	, iSeconds(0)
 	, transformX(0.f)
 	, transformY(0.f)
 	, cCamera(NULL)
@@ -81,7 +81,7 @@ bool CPlayGameState::Init(void)
 	
 	cEntityManager = CEntityManager::GetInstance();
 	cPlayer = cEntityManager->GetPlayer();
-	displayHP = cPlayer->GetHealth();
+	displayHP = (float)cPlayer->GetHealth();
 	cGameStateManager = CGameStateManager::GetInstance();
 
 	// Create and initialise the Map 2D
@@ -281,7 +281,7 @@ bool CPlayGameState::ImGuiRender()
 				title.str("");
 				title << "Inventory" << i;
 				ImGui::Begin(title.str().c_str(), NULL, inventoryWindowFlags);
-				ImGui::SetWindowPos(ImVec2(cSettings->iWindowWidth * 0.01f, cSettings->iWindowHeight * (0.065f * i + 0.05)));
+				ImGui::SetWindowPos(ImVec2(cSettings->iWindowWidth * 0.01f, cSettings->iWindowHeight * (0.065f * (float)i + 0.05f)));
 				ImGui::SetWindowSize(ImVec2(200.0f * relativeScale_x, 25.0f * relativeScale_y));
 				ImGui::Image((void*)(intptr_t)cTextureManager->MapOfTextureIDs.at(cPlayerInventory->GetItem(i).get_ID()),
 					ImVec2(25 * relativeScale_x, 15 * relativeScale_y),
@@ -307,7 +307,7 @@ bool CPlayGameState::ImGuiRender()
 			float vCameraposX = cCamera->GetPosX();
 			float finalPosX = vPlayerPosX - vCameraposX;
 			finalPosX = finalPosX / cSettings->NUM_TILES_XAXIS * cSettings->iWindowWidth * Camera2D::GetInstance()->getZoom();
-			finalPosX += (0.5 * cSettings->iWindowWidth - 25 / Camera2D::GetInstance()->getZoom());
+			finalPosX += (0.5f * (float)cSettings->iWindowWidth - 25.f / Camera2D::GetInstance()->getZoom());
 
 			float vPlayerPosY = cPlayer->GetTransformY();
 			float vCameraposY = cCamera->GetPosY();

@@ -21,6 +21,8 @@ LivingEntity2D::LivingEntity2D(void) {
 	//Color initialisation (Normal by default)
 	currentColor = glm::vec4(1, 1, 1, 1);
 	blinkColor = glm::vec4(100, 100, 100, 1);
+
+	maxKnockBack = 5.f;
 }
 
 LivingEntity2D::~LivingEntity2D(void) {
