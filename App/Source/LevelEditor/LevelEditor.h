@@ -68,9 +68,9 @@ public:
     void LoadExistingLevels(void);                                                                           
     bool LevelExists(std::string levelName);                                                                 
     std::vector<std::vector<sCell>> GetCurrentLevel(void);
-    void SetCurrentLevel(std::vector<std::vector<sCell>> levelArr);
     std::vector<Level> GetLevels(void);      
     Level GetCurrentLevelData(void);
+    void SetCurrentLevel(std::vector<std::vector<sCell>> levelArr);
     bool SaveMap(void);
 
     // Resize Map

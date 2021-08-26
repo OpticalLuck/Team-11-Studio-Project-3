@@ -53,8 +53,13 @@ class Camera2D;
 class CPlayer2D : public CEntity2D, public LivingEntity2D
 {
 public:
+	std::vector<std::array<KeyInput, KEYBOARD_INPUTS::KEY_TOTAL>> m_KeyboardInputs;
+	std::vector<std::array<MouseInput, MOUSE_INPUTS::MOUSE_TOTAL>> m_MouseInputs;
+
 	int iTempFrameCounter; // move to game manager/scene2D/PlayGameState later
 	int iFrameCounterEnd = 0;
+
+	bool bJustTeleported;
 	enum class STATE
 	{
 		S_IDLE = 0,
@@ -151,9 +156,6 @@ protected:
 	std::pair<bool, double> timerArr[A_TOTAL];
 
 	CInputHandler* cInputHandler;
-	std::vector<std::array<KeyInput, KEYBOARD_INPUTS::KEY_TOTAL>> m_KeyboardInputs;
-	std::vector<std::array<MouseInput, MOUSE_INPUTS::MOUSE_TOTAL>> m_MouseInputs;
-
 
 	glm::vec2 vOldTransform;
 

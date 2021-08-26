@@ -101,6 +101,60 @@ void Interactables::Update(const double dElapsedTime)
 
 		Activate(bCollided);
 	}
+	else if (this->interactableType == LEVER)
+	{
+		CEntityManager* em = CEntityManager::GetInstance();
+
+		for (auto& e : em->GetAllPlayers())
+		{
+			/*Collision data = e->GetCollider()->CollideWith(this->collider2D);
+			if (std::get<0>(data))
+			{
+				bCollided = true;
+			}*/
+
+			float distance = glm::length(e->vTransform - this->vTransform);
+			if (distance < 1 && e->m_KeyboardInputs[e->iTempFrameCounter - 1][KEYBOARD_INPUTS::E].bKeyPressed)
+			{
+				Activate(!bInteraction);
+			}
+		}
+	}
+	else if (this->interactableType == PORTAL)
+	{
+		CEntityManager* em = CEntityManager::GetInstance();
+
+		for (auto& e : em->GetAllPlayers())
+		{
+			// e->bJustTeleported = false;
+			/*Collision data = e->GetCollider()->CollideWith(this->collider2D);
+			if (std::get<0>(data))
+			{
+				bCollided = true;
+			}*/
+
+			float distance = glm::length(e->vTransform - this->vTransform);
+			if (distance < 0.3)
+			{
+				for (auto* i : em->GetAllInteractables())
+				{
+					if (i != this && i->iInteractableID == this->iInteractableID)
+					{
+						if (!this->bJustTeleported)
+						{
+							e->vTransform = i->vTransform;
+							i->bJustTeleported = true;
+							this->bJustTeleported = true;
+						}
+					}
+				}
+			}
+			else
+			{
+				this->bJustTeleported = false;
+			}
+		}
+	}
 }
 
 void Interactables::PreRender(void)
