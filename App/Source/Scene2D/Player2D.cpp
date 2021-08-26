@@ -105,6 +105,8 @@ CPlayer2D::~CPlayer2D(void)
 	// We won't delete this since it was created elsewhere
 	cMap2D = NULL;
 
+	CInventoryManager::GetInstance()->DeleteInventory(this->cInventory->sName);
+
 	// optional: de-allocate all resources once they've outlived their purpose:
 	glDeleteVertexArrays(1, &VAO);
 }
@@ -193,6 +195,9 @@ bool CPlayer2D::Init(void)
 	collider2D->Init(vTransform, glm::vec2(0.2f, 0.5f), Collider2D::ColliderType::COLLIDER_QUAD);
 	// collider2D->SetOffset(glm::vec2(0.f, -0.5f));
 	cPhysics2D->Init(&vTransform);
+
+	iTempFrameCounter = 0;
+	iFrameCounterEnd = 0;
 
 	CInventoryManager::GetInstance()->Add("Player", this);
 	cInventory = CInventoryManager::GetInstance()->Get("Player");
@@ -340,6 +345,8 @@ bool CPlayer2D::Reset()
  */
 void CPlayer2D::Update(const double dElapsedTime)
 {
+	DEBUG_MSG(iTempFrameCounter);
+
 	// Only update the inputs if the instance is not a clone
 	// Clone will have a fixed input that is created on initialisation
 	if (!bIsClone)

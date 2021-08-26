@@ -45,6 +45,14 @@ CInventory* CInventoryManager::Get(std::string sName)
 	}
 }
 
+void CInventoryManager::DeleteInventory(std::string sName)
+{
+	if (m_Inventory.find(sName) != m_Inventory.end()) //if the inventory exist 
+	{
+		m_Inventory.erase(sName);
+	}
+}
+
 void CInventoryManager::NavigateIndex(std::string direction)
 {
 	if (direction == "DOWN")

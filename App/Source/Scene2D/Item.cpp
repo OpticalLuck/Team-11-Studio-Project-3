@@ -60,7 +60,7 @@ void CItem::Use(CPlayer2D* user)
 			break;
 		case OBJECT_TYPE::PROJECTILES_SHURIKEN:
 		{
-			glm::vec2 distance = Camera2D::GetInstance()->GetCursorPosInWorldSpace() - user->vTransform;
+			glm::vec2 distance = user->m_MouseInputs[user->iTempFrameCounter][MOUSE_INPUTS::LMB].vMousePos - user->vTransform;
 
 			CObject2D* shurikenobj = ObjectFactory::CreateObject(OBJECT_TYPE::PROJECTILES_SHURIKEN);
 			shurikenobj->Init();

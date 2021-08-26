@@ -110,6 +110,15 @@ void Interactables::Update(const double dElapsedTime)
 			}
 		}
 
+		for (auto& e : em->GetallObstacles())
+		{
+			float distance = glm::length(e->vTransform - this->vTransform);
+			if (distance < 0.4)
+			{
+				bCollided = true;
+			}
+		}
+
 		Activate(bCollided);
 	}
 	else if (this->interactableType == PORTAL)
