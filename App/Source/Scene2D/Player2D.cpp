@@ -342,8 +342,6 @@ bool CPlayer2D::Reset()
  */
 void CPlayer2D::Update(const double dElapsedTime)
 {
-	DEBUG_MSG(iTempFrameCounter);
-
 	// Only update the inputs if the instance is not a clone
 	// Clone will have a fixed input that is created on initialisation
 	if (!bIsClone)
@@ -706,7 +704,7 @@ void CPlayer2D::Attacked(int hp, CPhysics2D* bounceObj) {
 	//Collision response between the objects
 	if (bounceObj) {
 		glm::vec2 ogVel = cPhysics2D->GetVelocity();
-
+	
 		if (vTransform.x > bounceObj->GetPosition().x)
 			cPhysics2D->SetVelocity(glm::vec2(-fMovementSpeed, ogVel.y));
 		else if (vTransform.x < bounceObj->GetPosition().x)
@@ -721,7 +719,7 @@ void CPlayer2D::Attacked(int hp, CPhysics2D* bounceObj) {
 			cPhysics2D->SetVelocity(glm::normalize(cPhysics2D->GetVelocity()) * maxSpd);
 
 		if (glm::length(bounceObj->GetVelocity()) > maxSpd)
-			cPhysics2D->SetVelocity(glm::normalize(cPhysics2D->GetVelocity()) * maxSpd);
+			bounceObj->SetVelocity(glm::normalize(bounceObj->GetVelocity()) * maxSpd);
 	}
 }
 
