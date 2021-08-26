@@ -215,7 +215,7 @@ int CEntityManager::GetCurrRound(void)
 
 void CEntityManager::RenderEnemy(void)
 {
-	for (unsigned i = 0; i < m_enemyList.size(); i++)
+	for (unsigned i = 0; i < m_enemyList[cMap2D->GetCurrentLevel()].size(); i++)
 	{
 		m_enemyList[cMap2D->GetCurrentLevel()][i]->PreRender();
 		m_enemyList[cMap2D->GetCurrentLevel()][i]->Render();
@@ -335,7 +335,7 @@ void CEntityManager::Update(const double dElapsedTime)
 	m_enemyList[cMap2D->GetCurrentLevel()].erase(std::remove(m_enemyList[cMap2D->GetCurrentLevel()].begin(), m_enemyList[cMap2D->GetCurrentLevel()].end(), nullptr), m_enemyList[cMap2D->GetCurrentLevel()].end()); //Remove any nullptrs in the array
 
 	//Call enemy bullets
-	for (unsigned i = 0; i < m_BulletList.size(); i++) {
+	for (unsigned i = 0; i < m_BulletList[cMap2D->GetCurrentLevel()].size(); i++) {
 		m_BulletList[cMap2D->GetCurrentLevel()][i]->Update(dElapsedTime);
 
 		if (dynamic_cast<Projectiles*>(m_BulletList[cMap2D->GetCurrentLevel()][i]))
@@ -394,10 +394,10 @@ void CEntityManager::Clear(void)
 	for (unsigned i = 0; i < m_enemyList.size(); ++i) {
 		for (unsigned j = 0; j < m_enemyList[i].size(); ++j)
 		{
-			delete m_enemyList[j][i];
-			m_enemyList[j][i] = nullptr;
+			delete m_enemyList[i][j];
+			m_enemyList[i][j] = nullptr;
 		}
-		m_enemyList[cMap2D->GetCurrentLevel()].clear();
+		m_enemyList[i].clear();
 	}
 	m_enemyList.clear();
 
@@ -410,29 +410,30 @@ void CEntityManager::Clear(void)
 	for (unsigned i = 0; i < m_BulletList.size(); i++) {
 		for (unsigned j = 0; j < m_BulletList[i].size(); ++j)
 		{
-			delete m_BulletList[j][i];
-			m_BulletList[j][i] = nullptr;
+			delete m_BulletList[i][j];
+			m_BulletList[i][j] = nullptr;
 		}
+		m_BulletList[i].clear();
 	}
 	m_BulletList.clear();
 
 	for (unsigned i = 0; i < m_interactableList.size(); i++) {
 		for (unsigned j = 0; j < m_interactableList[i].size(); ++j)
 		{
-			delete m_interactableList[j][i];
-			m_interactableList[j][i] = nullptr;
+			delete m_interactableList[i][j];
+			m_interactableList[i][j] = nullptr;
 		}
-		m_interactableList[cMap2D->GetCurrentLevel()].clear();
+		m_interactableList[i].clear();
 	}
 	m_interactableList.clear();
 
 	for (unsigned i = 0; i < m_ObstacleList.size(); i++) {
 		for (unsigned j = 0; j < m_ObstacleList[i].size(); ++j)
 		{
-			delete m_ObstacleList[j][i];
-			m_ObstacleList[j][i] = nullptr;
+			delete m_ObstacleList[i][j];
+			m_ObstacleList[i][j] = nullptr;
 		}
-		m_ObstacleList[cMap2D->GetCurrentLevel()].clear();
+		m_ObstacleList[i].clear();
 	}
 	m_ObstacleList.clear();
 }
