@@ -30,6 +30,7 @@
     <ClCompile Include="Source\Scene2D\Boss2D.cpp" />
     <ClCompile Include="Source\Scene2D\Boulder2D.cpp" />
     <ClCompile Include="Source\Scene2D\Bullet2D.cpp" />
+    <ClCompile Include="Source\Scene2D\Drops.cpp" />
     <ClCompile Include="Source\Scene2D\Enemy2D.cpp" />
     <ClCompile Include="Source\Scene2D\EntityManager.cpp" />
     <ClCompile Include="Source\Scene2D\GameManager.cpp" />
@@ -67,6 +68,7 @@
     <ClInclude Include="Source\Scene2D\Boss2D.h" />
     <ClInclude Include="Source\Scene2D\Boulder2D.h" />
     <ClInclude Include="Source\Scene2D\Bullet2D.h" />
+    <ClInclude Include="Source\Scene2D\Drops.h" />
     <ClInclude Include="Source\Scene2D\Enemy2D.h" />
     <ClInclude Include="Source\Scene2D\EntityManager.h" />
     <ClInclude Include="Source\Scene2D\GameManager.h" />

@@ -12,11 +12,12 @@
 #include "Object2D.h"
 #include "Map2D.h"
 
-CInventory::CInventory(std::string sName)
+CInventory::CInventory(std::string sName, CPlayer2D* target)
 	: fCooldown(0.f)
 	, iCurrentIndex(0)
 {
 	this->sName = sName;
+	linkedPlayer = target;
 }
 
 
@@ -76,9 +77,9 @@ void CInventory::Init()
 {
 	//m_Items.insert(pair<int, CItem>(0,CItem(2)));
 
-	SetItem(0, "Shuriken", PROJECTILES_SHURIKEN, 0, 100, 50);
-	SetItem(1, "Potion", CONSUMABLES_POTION, 0, 100, 2);
-	SetItem(2, "Hook", EQUIPMENTS_HOOK, 0, 100);
+	SetItem(0, "Shuriken", PROJECTILES_SHURIKEN, 0, 100, 10);
+	SetItem(1, "Kunai", BULLETS_KUNAI, 0, 100, 10);
+	SetItem(2, "Potion", CONSUMABLES_POTION, 0, 100, 2);
 }
 
 void CInventory::SetItem(int iIndex, std::string sName, int iID, int iMinVal, int iMaxVal, int iSetVal)
@@ -120,7 +121,7 @@ void CInventory::UseItem(void)
 {
 	if (m_Items.find(iCurrentIndex) != m_Items.end()) //if item is existed
 	{
-		m_Items.at(iCurrentIndex).Use();
+		m_Items.at(iCurrentIndex).Use(linkedPlayer);
 	}
 	else
 		cout << "Item does not exist\n";

@@ -24,12 +24,6 @@
     <Filter Include="Factory">
       <UniqueIdentifier>{db4c60e0-034a-4a8a-a80c-1225539467af}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Entity2D\Object2D">
-      <UniqueIdentifier>{a7550fef-c1ec-41c0-a138-7099839b0113}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Items">
-      <UniqueIdentifier>{3b664dd3-f778-43dd-9188-98d0618c77bf}</UniqueIdentifier>
-    </Filter>
     <Filter Include="TextureManager">
       <UniqueIdentifier>{afe0f215-16c2-4a8d-8016-49e8d6a661a0}</UniqueIdentifier>
     </Filter>
@@ -47,6 +41,15 @@
     </Filter>
     <Filter Include="Entity2D\LivingEntity2D\Enemy2D">
       <UniqueIdentifier>{12b6e96b-a1d8-4859-87bd-b2727a81f938}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entity2D\Projectiles">
+      <UniqueIdentifier>{a7550fef-c1ec-41c0-a138-7099839b0113}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entity2D\Drops">
+      <UniqueIdentifier>{8ad2ca7e-2713-4991-91f1-e7729e6781f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Inventory">
+      <UniqueIdentifier>{3b664dd3-f778-43dd-9188-98d0618c77bf}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -89,23 +92,20 @@
     <ClCompile Include="Source\Factory\ObjectFactory.cpp">
       <Filter>Factory</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Scene2D\Object2D.cpp">
-      <Filter>Entity2D\Object2D</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Scene2D\Boulder2D.cpp">
-      <Filter>Entity2D\Object2D</Filter>
+      <Filter>Entity2D\Projectiles</Filter>
     </ClCompile>
     <ClCompile Include="Source\Scene2D\EntityManager.cpp">
       <Filter>Manager2D</Filter>
     </ClCompile>
     <ClCompile Include="Source\Scene2D\Projectiles.cpp">
-      <Filter>Entity2D\Object2D</Filter>
+      <Filter>Entity2D\Projectiles</Filter>
     </ClCompile>
     <ClCompile Include="Source\Scene2D\Item.cpp">
-      <Filter>Items</Filter>
+      <Filter>Inventory</Filter>
     </ClCompile>
     <ClCompile Include="Source\Scene2D\InventoryManager.cpp">
-      <Filter>Items</Filter>
+      <Filter>Inventory</Filter>
     </ClCompile>
     <ClCompile Include="Source\Scene2D\EntityManager.cpp">
       <Filter>Manager2D</Filter>
@@ -129,7 +129,7 @@
       <Filter>Entity2D\LivingEntity2D\Enemy2D</Filter>
     </ClCompile>
     <ClCompile Include="Source\Scene2D\Inventory.cpp">
-      <Filter>Items</Filter>
+      <Filter>Inventory</Filter>
     </ClCompile>
     <ClCompile Include="Source\InputHandler\CInputHandler.cpp">
       <Filter>InputHandler</Filter>
@@ -162,7 +162,7 @@
       <Filter>Factory</Filter>
     </ClCompile>
     <ClCompile Include="Source\Scene2D\Bullet2D.cpp">
-      <Filter>Entity2D\Object2D</Filter>
+      <Filter>Entity2D\Projectiles</Filter>
     </ClCompile>
     <ClCompile Include="Source\Scene2D\Boss2D.cpp">
       <Filter>Entity2D\Enemy2D</Filter>
@@ -182,9 +182,6 @@
     <ClCompile Include="Source\Scene2D\Enemy2D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Scene2D\EnemyBullet2D.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Scene2D\Enemy2D.cpp">
       <Filter>Entity2D\LivingEntity2D\Enemy2D</Filter>
     </ClCompile>
@@ -193,6 +190,12 @@
     </ClCompile>
     <ClCompile Include="Source\Scene2D\RayCast2D.cpp">
       <Filter>Scene2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene2D\Object2D.cpp">
+      <Filter>Entity2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene2D\Drops.cpp">
+      <Filter>Entity2D\Drops</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -235,26 +238,23 @@
     <ClInclude Include="Source\Factory\ObjectFactory.h">
       <Filter>Factory</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Scene2D\Object2D.h">
-      <Filter>Entity2D\Object2D</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Scene2D\Boulder2D.h">
-      <Filter>Entity2D\Object2D</Filter>
+      <Filter>Entity2D\Projectiles</Filter>
     </ClInclude>
     <ClInclude Include="Source\Scene2D\EntityManager.h">
       <Filter>Manager2D</Filter>
     </ClInclude>
     <ClInclude Include="Source\Scene2D\Projectiles.h">
-      <Filter>Entity2D\Object2D</Filter>
+      <Filter>Entity2D\Projectiles</Filter>
     </ClInclude>
     <ClInclude Include="Source\Scene2D\Item.h">
-      <Filter>Items</Filter>
+      <Filter>Inventory</Filter>
     </ClInclude>
     <ClInclude Include="Source\Scene2D\InventoryManager.h">
-      <Filter>Items</Filter>
+      <Filter>Inventory</Filter>
     </ClInclude>
     <ClInclude Include="Source\Scene2D\Inventory.h">
-      <Filter>Items</Filter>
+      <Filter>Inventory</Filter>
     </ClInclude>
     <ClInclude Include="Source\InputHandler\CInputHandler.h">
       <Filter>InputHandler</Filter>
@@ -305,7 +305,7 @@
       <Filter>Factory</Filter>
     </ClInclude>
     <ClInclude Include="Source\Scene2D\Bullet2D.h">
-      <Filter>Entity2D\Object2D</Filter>
+      <Filter>Entity2D\Projectiles</Filter>
     </ClInclude>
     <ClInclude Include="Source\Scene2D\Boss2D.h">
       <Filter>Entity2D\Enemy2D</Filter>
@@ -325,9 +325,6 @@
     <ClInclude Include="Source\Scene2D\Enemy2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Scene2D\EnemyBullet2D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Scene2D\Enemy2D.h">
       <Filter>Entity2D\LivingEntity2D\Enemy2D</Filter>
     </ClInclude>
@@ -336,6 +333,12 @@
     </ClInclude>
     <ClInclude Include="Source\Scene2D\RayCast2D.h">
       <Filter>Scene2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene2D\Object2D.h">
+      <Filter>Entity2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene2D\Drops.h">
+      <Filter>Entity2D\Drops</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -151,7 +151,7 @@ bool CPlayer2D::Init(void)
 	}
 	
 	state = STATE::S_IDLE;
-	facing = DIRECTION::RIGHT;
+	facing = FACING_DIR::RIGHT;
 	//CS: Create the animated sprite and setup the animation 
 	animatedSprites = CMeshBuilder::GenerateSpriteAnimation(10, 6, cSettings->TILE_WIDTH, cSettings->TILE_HEIGHT);
 	animatedSprites->AddAnimation("run", 0, 6);
@@ -193,7 +193,7 @@ bool CPlayer2D::Init(void)
 	// collider2D->SetOffset(glm::vec2(0.f, -0.5f));
 	cPhysics2D->Init(&vTransform);
 
-	CInventoryManager::GetInstance()->Add("Player");
+	CInventoryManager::GetInstance()->Add("Player", this);
 	cInventory = CInventoryManager::GetInstance()->Get("Player");
 
 	return true;
@@ -232,7 +232,7 @@ bool CPlayer2D::Init(glm::i32vec2 spawnpoint, int iCloneIndex)
 	}
 
 	state = STATE::S_IDLE;
-	facing = DIRECTION::RIGHT;
+	facing = FACING_DIR::RIGHT;
 	//CS: Create the animated sprite and setup the animation 
 	animatedSprites = CMeshBuilder::GenerateSpriteAnimation(10, 6, cSettings->TILE_WIDTH, cSettings->TILE_HEIGHT);
 	animatedSprites->AddAnimation("run", 0, 6);
@@ -285,7 +285,7 @@ bool CPlayer2D::Init(glm::i32vec2 spawnpoint, int iCloneIndex)
 	std::stringstream ss;
 	ss << "Clone" << iCloneIndex;
 
-	CInventoryManager::GetInstance()->Add(ss.str().c_str());
+	CInventoryManager::GetInstance()->Add(ss.str().c_str(), this);
 	cInventory = CInventoryManager::GetInstance()->Get(ss.str().c_str());
 
 	return true;
@@ -527,7 +527,7 @@ void CPlayer2D::Render(void)
 	transform = glm::translate(transform, glm::vec3(actualPos.x, actualPos.y, 0.f));
 	transform = glm::scale(transform, glm::vec3(Camera2D::GetInstance()->getZoom()));
 
-	if (facing == DIRECTION::LEFT)
+	if (facing == FACING_DIR::LEFT)
 		transform = glm::rotate(transform, glm::radians(180.f), glm::vec3(0.f, 1.f, 0.f));
 	// Update the shaders with the latest transform
 	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
@@ -630,7 +630,7 @@ void CPlayer2D::InputUpdate(double dt)
 			velocity.x = Math::Min(velocity.x + fMovementSpeed, fMovementSpeed);
 
 		state = STATE::S_MOVE;
-		facing = DIRECTION::RIGHT;
+		facing = FACING_DIR::RIGHT;
 		//DEBUG_MSG(this << ": Frame:" << iTempFrameCounter << " Move Right");
 	}
 	else if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::A].bKeyDown)
@@ -638,7 +638,7 @@ void CPlayer2D::InputUpdate(double dt)
 		if (velocity.x > -fMovementSpeed && !cPhysics2D->GetboolKnockedBacked())
 			velocity.x = Math::Max(velocity.x - fMovementSpeed, -fMovementSpeed);
 		state = STATE::S_MOVE;
-		facing = DIRECTION::LEFT;
+		facing = FACING_DIR::LEFT;
 		//DEBUG_MSG(this << ": Frame:" << iTempFrameCounter << " Move Left");
 	}
 
@@ -691,47 +691,9 @@ void CPlayer2D::InputUpdate(double dt)
 	if (m_MouseInputs[iTempFrameCounter][MOUSE_INPUTS::LMB].bButtonPressed)
 	{
 		cSoundController->PlaySoundByID(SOUND_ID::SOUND_SWING);
-		CInventoryManager::GetInstance()->Use(cInventory->sName);
-		CItem& shuriken = CInventoryManager::GetInstance()->Get(cInventory->sName)->GetItem(0);
-		if (shuriken.iCount > 0)
-		{
-			shuriken.Use();
-			
-			glm::vec2 distance = Camera2D::GetInstance()->GetCursorPosInWorldSpace() - vTransform;
-
-			CObject2D* shurikenobj = ObjectFactory::CreateObject(OBJECT_TYPE::PROJECTILES_SHURIKEN);
-			shurikenobj->Init();
-			shurikenobj->vTransform = vTransform;
-
-
-			glm::vec2 force = glm::clamp(distance * 200.f, glm::vec2(-2000.f, -2000.f), glm::vec2(2000.f, 2000.f));
-			shurikenobj->GetPhysics()->SetForce(force);
-
-			CEntityManager::GetInstance()->PushBullet(static_cast<Projectiles*>(shurikenobj));
-		}
+		cInventory->UseItem();
 	}
 
-	if (m_MouseInputs[iTempFrameCounter][MOUSE_INPUTS::RMB].bButtonPressed)
-	{
-		CInventoryManager::GetInstance()->Use(cInventory->sName);
-		CItem& shuriken = CInventoryManager::GetInstance()->Get(cInventory->sName)->GetItem(0);
-		if (shuriken.iCount > 0)
-		{
-			shuriken.Use();
-			
-			CObject2D*kunaiobj = ObjectFactory::CreateObject(OBJECT_TYPE::BULLETS_KUNAI);
-			float angle = 0;
-			if (facing == DIRECTION::LEFT)
-				angle = 180;
-			else
-				angle = 0;
-
-			dynamic_cast<Bullet2D*>(kunaiobj)->Init(true, angle, 10);
-			kunaiobj->vTransform = vTransform;
-
-			CEntityManager::GetInstance()->PushBullet(static_cast<Bullet2D*>(kunaiobj));
-		}
-	}
 	cInventory->Update(dt, iTempFrameCounter ,m_KeyboardInputs, m_MouseInputs);
 }
 void CPlayer2D::SetClone(bool bIsClone)
