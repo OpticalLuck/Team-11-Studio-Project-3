@@ -278,8 +278,17 @@ bool CPlayGameState::ImGuiRender()
 				title.str("");
 				title << "Inventory" << i;
 				ImGui::Begin(title.str().c_str(), NULL, inventoryWindowFlags);
-				ImGui::SetWindowPos(ImVec2(cSettings->iWindowWidth * 0.01f, cSettings->iWindowHeight * (0.065f * i + 0.05)));
-				ImGui::SetWindowSize(ImVec2(200.0f * relativeScale_x, 25.0f * relativeScale_y));
+				if (i == 0) //shuriken
+				{
+					ImGui::SameLine();
+					ImGui::SetWindowPos(ImVec2(cSettings->iWindowWidth * 0.52f , cSettings->iWindowHeight * 0.94f));
+				}
+				else if (i == 1) //potion
+				{
+					ImGui::SameLine();
+					ImGui::SetWindowPos(ImVec2(cSettings->iWindowWidth * 0.77f, cSettings->iWindowHeight * 0.94f));
+				}
+				ImGui::SetWindowSize(ImVec2(200.0f * relativeScale_x, 2500.0f * relativeScale_y));
 				ImGui::Image((void*)(intptr_t)cTextureManager->MapOfTextureIDs.at(cPlayerInventory->GetItem(i).get_ID()),
 					ImVec2(25 * relativeScale_x, 15 * relativeScale_y),
 					ImVec2(0, 1), ImVec2(1, 0));
@@ -300,33 +309,30 @@ bool CPlayGameState::ImGuiRender()
 		}
 		//render player health
 		{	
-			float vPlayerPosX = cPlayer->GetTransformX();
-			float vCameraposX = cCamera->GetPosX();
-			float finalPosX = vPlayerPosX - vCameraposX;
-			finalPosX = finalPosX / cSettings->NUM_TILES_XAXIS * cSettings->iWindowWidth;
-			finalPosX += 0.5 * cSettings->iWindowWidth - 25;
+			//float vPlayerPosX = cPlayer->GetTransformX();
+			//float vCameraposX = cCamera->GetPosX();
+			//float finalPosX = vPlayerPosX - vCameraposX;
+			//finalPosX = finalPosX / cSettings->NUM_TILES_XAXIS * cSettings->iWindowWidth;
+			//finalPosX += 0.5 * cSettings->iWindowWidth - 25;
 
-			float vPlayerPosY = cPlayer->GetTransformY();
-			float vCameraposY = cCamera->GetPosY();
-			float finalPosY = vPlayerPosY - vCameraposY;
-			finalPosY = finalPosY / cSettings->NUM_TILES_YAXIS * cSettings->iWindowHeight;
-			finalPosY += 0.5 * cSettings->iWindowHeight;
-			finalPosY = cSettings->iWindowHeight - finalPosY;
+			//float vPlayerPosY = cPlayer->GetTransformY();
+			//float vCameraposY = cCamera->GetPosY();
+			//float finalPosY = vPlayerPosY - vCameraposY;
+			//finalPosY = finalPosY / cSettings->NUM_TILES_YAXIS * cSettings->iWindowHeight;
+			//finalPosY += 0.5 * cSettings->iWindowHeight;
+			//finalPosY = cSettings->iWindowHeight - finalPosY;
 
 			displayHP = Math::Lerp(displayHP, cPlayer->GetHealth(), 0.2f);
 			ImGui::Begin("Health", NULL, health_window);
-			ImGui::SetWindowPos(ImVec2(finalPosX, finalPosY));
+			ImGui::SetWindowPos(ImVec2(cSettings->iWindowWidth * 0.0001, cSettings->iWindowHeight * 0.95));
 			ImGui::SetWindowSize(ImVec2(200.0f * relativeScale_x, 25.0f * relativeScale_y));
 			ImGui::SameLine();
-
-			/*ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.6f, 0.196f, 0.8f, 1.0f));
-			ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.f, 1.f, 0.f, 1.0f));*/
 
 			//i think this looks better 
 			ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.8f, 0.0f, 0.0f, 1.0f));
 			ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.4f, 0.4f, 0.4f, 1.0f));
 
-			ImGui::ProgressBar(displayHP / (float)cPlayer->GetMaxHealth(), ImVec2(50.0f, 20.0f));
+			ImGui::ProgressBar(displayHP / (float)cPlayer->GetMaxHealth(), ImVec2(cSettings->iWindowWidth * 0.5f, cSettings->iWindowHeight * 0.03f));
 			ImGui::PopStyleColor();
 			ImGui::PopStyleColor();
 			ImGui::End();
