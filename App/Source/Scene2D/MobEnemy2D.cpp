@@ -903,6 +903,7 @@ void CMobEnemy2D::CollisionUpdate(void) {
 		Collision data = (collider2D->CollideWith(playerCollider));
 
 		if (std::get<0>(data)) {
+			Collision datatemp = (collider2D->CollideWith(playerCollider));
 			arrPlayer[i]->Attacked(1,cPhysics2D);
 
 			return;
