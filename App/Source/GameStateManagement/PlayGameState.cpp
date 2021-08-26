@@ -39,6 +39,7 @@ CPlayGameState::CPlayGameState(void)
 	, transformY(0.f)
 	, cCamera(NULL)
 	, cSoundController(NULL)
+	, displayHP(0.f)
 {
 
 }
@@ -80,7 +81,7 @@ bool CPlayGameState::Init(void)
 	
 	cEntityManager = CEntityManager::GetInstance();
 	cPlayer = cEntityManager->GetPlayer();
-
+	displayHP = cPlayer->GetHealth();
 	cGameStateManager = CGameStateManager::GetInstance();
 
 	// Create and initialise the Map 2D
@@ -312,14 +313,20 @@ bool CPlayGameState::ImGuiRender()
 			finalPosY += 0.5 * cSettings->iWindowHeight;
 			finalPosY = cSettings->iWindowHeight - finalPosY;
 
-
+			displayHP = Math::Lerp(displayHP, cPlayer->GetHealth(), 0.2f);
 			ImGui::Begin("Health", NULL, health_window);
 			ImGui::SetWindowPos(ImVec2(finalPosX, finalPosY));
 			ImGui::SetWindowSize(ImVec2(200.0f * relativeScale_x, 25.0f * relativeScale_y));
 			ImGui::SameLine();
-			ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.6f, 0.196f, 0.8f, 1.0f));
-			ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.f, 1.f, 0.f, 1.0f));
-			ImGui::ProgressBar(cPlayer->GetHealth() / (float)cPlayer->GetMaxHealth(), ImVec2(50.0f, 20.0f));
+
+			/*ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.6f, 0.196f, 0.8f, 1.0f));
+			ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.f, 1.f, 0.f, 1.0f));*/
+
+			//i think this looks better 
+			ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.8f, 0.0f, 0.0f, 1.0f));
+			ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.4f, 0.4f, 0.4f, 1.0f));
+
+			ImGui::ProgressBar(displayHP / (float)cPlayer->GetMaxHealth(), ImVec2(50.0f, 20.0f));
 			ImGui::PopStyleColor();
 			ImGui::PopStyleColor();
 			ImGui::End();

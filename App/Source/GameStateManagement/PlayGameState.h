@@ -72,6 +72,7 @@ protected:
 	CSoundController* cSoundController;
 
 	CPlayer2D* cPlayer;
+	float displayHP;
 	CEntityManager* cEntityManager;
 	CMap2D* cMap2D;
 
