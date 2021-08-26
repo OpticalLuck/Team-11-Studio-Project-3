@@ -125,3 +125,8 @@ void CInventory::UseItem(void)
 	else
 		cout << "Item does not exist\n";
 }
+
+void CInventory::SetPlayer(CPlayer2D* player)
+{
+	linkedPlayer = player;
+}

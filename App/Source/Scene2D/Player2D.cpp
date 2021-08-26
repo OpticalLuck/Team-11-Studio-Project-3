@@ -105,6 +105,8 @@ CPlayer2D::~CPlayer2D(void)
 	// We won't delete this since it was created elsewhere
 	cMap2D = NULL;
 
+	CInventoryManager::GetInstance()->DeleteInventory(this->cInventory->sName);
+
 	// optional: de-allocate all resources once they've outlived their purpose:
 	glDeleteVertexArrays(1, &VAO);
 }
