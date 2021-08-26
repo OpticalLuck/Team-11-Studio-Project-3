@@ -167,7 +167,9 @@ void CPlayGameState::Render(void)
  */
 void CPlayGameState::Destroy(void)
 {
-	cout << "CPlayGameState::Destroy()\n" << endl;
+	DEBUG_MSG("CPlayGameState::Destroy()\n");
+
+	cSoundController->StopSoundByID(BGM_HENESYS);
 
 	// Destroy the cScene2D instance
 	if (cScene2D)

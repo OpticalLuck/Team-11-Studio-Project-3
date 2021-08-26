@@ -69,21 +69,23 @@ bool CSoundController::Init(void)
  @param ID A const int variable which will be the ID of the iSoundSource in the map
  @param bPreload A const bool variable which indicates if this iSoundSource will be pre-loaded into memory now.
  @param bIsLooped A const bool variable which indicates if this iSoundSource will have loop playback.
+ @param bIsOverlappable A const bool variable which indicates if this iSoundSource will be played over itself
  @param eSoundType A SOUNDTYPE enum variable which states the type of sound
  @param vec3dfSoundPos A vec3df variable which contains the 3D position of the sound
  @return A bool value. True if the sound was loaded, else false.
  */
-bool CSoundController::LoadSound(	string filename,
-									const int ID,
-									const bool bPreload,
-									const bool bIsLooped,
-									CSoundInfo::SOUNDTYPE eSoundType,
-									vec3df vec3dfSoundPos)
+bool CSoundController::LoadSound(string filename,
+	const int ID,
+	const bool bPreload,
+	const bool bIsLooped,
+	const bool bIsOverlappable,
+	CSoundInfo::SOUNDTYPE eSoundType,
+	vec3df vec3dfSoundPos)
 {
 	// Load the sound from the file
 	ISoundSource* pSoundSource = cSoundEngine->addSoundSourceFromFile(filename.c_str(),
-																	E_STREAM_MODE::ESM_NO_STREAMING, 
-																	bPreload);
+		E_STREAM_MODE::ESM_NO_STREAMING,
+		bPreload);
 
 
 	// Trivial Rejection : Invalid pointer provided
@@ -102,9 +104,9 @@ bool CSoundController::LoadSound(	string filename,
 	// Add the entity now
 	CSoundInfo* cSoundInfo = new CSoundInfo();
 	if (eSoundType == CSoundInfo::SOUNDTYPE::_2D)
-		cSoundInfo->Init(ID, pSoundSource, bIsLooped);
+		cSoundInfo->Init(ID, pSoundSource, bIsLooped, bIsOverlappable);
 	else
-		cSoundInfo->Init(ID, pSoundSource, bIsLooped, eSoundType, vec3dfSoundPos);
+		cSoundInfo->Init(ID, pSoundSource, bIsLooped, bIsOverlappable, eSoundType, vec3dfSoundPos);
 
 	// Set to soundMap
 	soundMap[ID] = cSoundInfo;
@@ -124,7 +126,7 @@ void CSoundController::PlaySoundByID(const int ID)
 		cout << "Sound #" << ID << " is not playable." << endl;
 		return;
 	}
-	else if (cSoundEngine->isCurrentlyPlaying(pSoundInfo->GetSound()))
+	else if (cSoundEngine->isCurrentlyPlaying(pSoundInfo->GetSound()) && !pSoundInfo->GetOverlapStatus())
 	{
 		cout << "Sound #" << ID << " is currently being played." << endl;
 		return;
@@ -291,6 +293,22 @@ void CSoundController::UpdatePlayBackVolume(float volume)
 void CSoundController::StopPlayBack()
 {
 	cSoundEngine->stopAllSounds();
+}
+
+void CSoundController::StopSoundByID(const int ID)
+{
+	CSoundInfo* pSoundInfo = GetSound(ID);
+	if (!pSoundInfo)
+	{
+		cout << "Sound #" << ID << " is not stopable." << endl;
+		return;
+	}
+	else if (cSoundEngine->isCurrentlyPlaying(pSoundInfo->GetSound()))
+	{
+		cSoundEngine->stopAllSoundsOfSoundSource(pSoundInfo->GetSound());
+		return;
+	}
+
 }
 
 bool CSoundController::isCurrentlyPlaying(std::string name)

@@ -731,6 +731,12 @@ bool CLevelEditorState::ImGuiRender()
 					ImGui::EndTabItem();
 				}	
 
+				if (ImGui::BeginTabItem("Obstacles"))
+				{
+					RenderImGuiEditorButtons(OBJECT_TYPE::OBSTACLES_START, OBJECT_TYPE::OBSTACLES_TOTAL);
+					ImGui::EndTabItem();
+				}
+
 				if (ImGui::BeginTabItem("Interactables"))
 				{
 					RenderImGuiEditorButtons(OBJECT_TYPE::INTERACTABLE_START, OBJECT_TYPE::INTERACTABLE_TOTAL);
