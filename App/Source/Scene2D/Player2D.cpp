@@ -50,6 +50,7 @@ CPlayer2D::CPlayer2D(void)
 	, bIsClone(false)
 	, cInventory(NULL)
 	, jumpCount(0)
+	, bJustTeleported(false)
 
 {
 	transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first

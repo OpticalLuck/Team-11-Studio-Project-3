@@ -9,6 +9,7 @@
 	{
 		LEVER = OBJECT_TYPE::INTERACTABLE_SWITCH1_OFF,
 		PRESSURE_PLATE = OBJECT_TYPE::INTERACTABLE_PRESSURE_PLATE_OFF,
+		PORTAL = OBJECT_TYPE::INTERACTABLE_PORTAL,
 
 		DOOR = OBJECT_TYPE::INTERACTABLE_DOOR_CLOSED,
 	};
@@ -16,6 +17,8 @@
 class Interactables : public CObject2D
 {
 public:
+
+	bool bJustTeleported = false;
 
 	INTERACTABLE_TYPE interactableType;
 

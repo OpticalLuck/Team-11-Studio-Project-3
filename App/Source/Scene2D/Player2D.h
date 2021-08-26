@@ -58,6 +58,8 @@ public:
 
 	int iTempFrameCounter; // move to game manager/scene2D/PlayGameState later
 	int iFrameCounterEnd = 0;
+
+	bool bJustTeleported;
 	enum class STATE
 	{
 		S_IDLE = 0,

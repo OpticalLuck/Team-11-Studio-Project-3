@@ -22,7 +22,7 @@ CTextureManager::~CTextureManager()
 
 bool CTextureManager::Init(void)
 {
-
+        
     if (LoadTexture("Image/Cyborg/Cyborg_Preview.png", PLAYER_TILE) == false)
     {
         std::cout << "Failed to load player tile texture" << std::endl;
