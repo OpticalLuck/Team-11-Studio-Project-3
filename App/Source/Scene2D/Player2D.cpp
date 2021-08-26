@@ -196,9 +196,6 @@ bool CPlayer2D::Init(void)
 	// collider2D->SetOffset(glm::vec2(0.f, -0.5f));
 	cPhysics2D->Init(&vTransform);
 
-	iTempFrameCounter = 0;
-	iFrameCounterEnd = 0;
-
 	CInventoryManager::GetInstance()->Add("Player", this);
 	cInventory = CInventoryManager::GetInstance()->Get("Player");
 
@@ -475,7 +472,7 @@ void CPlayer2D::Update(const double dElapsedTime)
 	//CS: Update the animated sprite
 	animatedSprites->Update(dElapsedTime);
 
-	if (!bIsClone || iTempFrameCounter < m_KeyboardInputs.size() - 1)
+	// if (!bIsClone || iTempFrameCounter < m_KeyboardInputs.size() - 1)
 		iTempFrameCounter++;
 }
 

@@ -302,7 +302,7 @@ bool CPlayGameState::ImGuiRender()
 			}
 		}
 		//render player health
-		{	
+		{
 			float vPlayerPosX = cPlayer->GetTransformX();
 			float vCameraposX = cCamera->GetPosX();
 			float finalPosX = vPlayerPosX - vCameraposX;
@@ -316,23 +316,30 @@ bool CPlayGameState::ImGuiRender()
 			finalPosY += 0.5 * cSettings->iWindowHeight;
 			finalPosY = cSettings->iWindowHeight - finalPosY;
 
-			displayHP = Math::Lerp(displayHP, cPlayer->GetHealth(), 0.2f);
-			ImGui::Begin("Health", NULL, health_window);
-			ImGui::SetWindowPos(ImVec2(finalPosX, finalPosY));
-			ImGui::SetWindowSize(ImVec2(200.0f * relativeScale_x, 25.0f * relativeScale_y));
-			ImGui::SameLine();
+			if (finalPosX > 0 && finalPosX < cSettings->iWindowWidth &&
+				finalPosY > 0 && finalPosY < cSettings->iWindowHeight)
+			{
 
-			/*ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.6f, 0.196f, 0.8f, 1.0f));
-			ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.f, 1.f, 0.f, 1.0f));*/
 
-			//i think this looks better 
-			ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.8f, 0.0f, 0.0f, 1.0f));
-			ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.4f, 0.4f, 0.4f, 1.0f));
 
-			ImGui::ProgressBar(displayHP / (float)cPlayer->GetMaxHealth(), ImVec2(50.0f, 20.0f));
-			ImGui::PopStyleColor();
-			ImGui::PopStyleColor();
-			ImGui::End();
+				displayHP = Math::Lerp(displayHP, cPlayer->GetHealth(), 0.2f);
+				ImGui::Begin("Health", NULL, health_window);
+				ImGui::SetWindowPos(ImVec2(finalPosX, finalPosY));
+				ImGui::SetWindowSize(ImVec2(200.0f * relativeScale_x, 25.0f * relativeScale_y));
+				ImGui::SameLine();
+
+				/*ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.6f, 0.196f, 0.8f, 1.0f));
+				ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.f, 1.f, 0.f, 1.0f));*/
+
+				//i think this looks better 
+				ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.8f, 0.0f, 0.0f, 1.0f));
+				ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.4f, 0.4f, 0.4f, 1.0f));
+
+				ImGui::ProgressBar(displayHP / (float)cPlayer->GetMaxHealth(), ImVec2(50.0f, 20.0f));
+				ImGui::PopStyleColor();
+				ImGui::PopStyleColor();
+				ImGui::End();
+			}
 		}
 		//render enemy UI
 		{
@@ -353,19 +360,23 @@ bool CPlayGameState::ImGuiRender()
 				finalPosY += 0.5 * cSettings->iWindowHeight;
 				finalPosY = cSettings->iWindowHeight - finalPosY - 60;
 
-				std::stringstream enemyHealth;
-				enemyHealth.str("");
-				enemyHealth << "Enemy Health" << i;
-				ImGui::Begin(enemyHealth.str().c_str(), NULL, enemyHealth_window);
-				ImGui::SetWindowPos(ImVec2(finalPosX, finalPosY));
-				ImGui::SetWindowSize(ImVec2(200.0f * relativeScale_x, 25.0f * relativeScale_y));
-				ImGui::SameLine();
-				ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.0f, 0.0f, 1.0f, 1.0f));
-				ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
-				ImGui::ProgressBar((float)enemy[i]->GetHealth() / (float)enemy[i]->GetMaxHealth(), ImVec2(50.0f, 20.0f));
-				ImGui::PopStyleColor();
-				ImGui::PopStyleColor();
-				ImGui::End();
+				if (finalPosX > 0 && finalPosX < cSettings->iWindowWidth &&
+					finalPosY > 0 && finalPosY < cSettings->iWindowHeight)
+				{
+					std::stringstream enemyHealth;
+					enemyHealth.str("");
+					enemyHealth << "Enemy Health" << i;
+					ImGui::Begin(enemyHealth.str().c_str(), NULL, enemyHealth_window);
+					ImGui::SetWindowPos(ImVec2(finalPosX, finalPosY));
+					ImGui::SetWindowSize(ImVec2(200.0f * relativeScale_x, 25.0f * relativeScale_y));
+					ImGui::SameLine();
+					ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.0f, 0.0f, 1.0f, 1.0f));
+					ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
+					ImGui::ProgressBar((float)enemy[i]->GetHealth() / (float)enemy[i]->GetMaxHealth(), ImVec2(50.0f, 20.0f));
+					ImGui::PopStyleColor();
+					ImGui::PopStyleColor();
+					ImGui::End();
+				}
 			}
 		}
 		//render clone health
@@ -389,19 +400,23 @@ bool CPlayGameState::ImGuiRender()
 				finalPosY += 0.5 * cSettings->iWindowHeight;
 				finalPosY = cSettings->iWindowHeight - finalPosY - 60;
 
-				std::stringstream enemyHealth;
-				enemyHealth.str("");
-				enemyHealth << "Clone Health" << i;
-				ImGui::Begin(enemyHealth.str().c_str(), NULL, cloneHealth_window);
-				ImGui::SetWindowPos(ImVec2(finalPosX, finalPosY));
-				ImGui::SetWindowSize(ImVec2(200.0f * relativeScale_x, 25.0f * relativeScale_y));
-				ImGui::SameLine();
-				ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.0f, 0.0f, 1.0f, 1.0f));
-				ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
-				ImGui::ProgressBar((float)clone[i]->GetHealth() / (float)clone[i]->GetMaxHealth(), ImVec2(50.0f, 20.0f));
-				ImGui::PopStyleColor();
-				ImGui::PopStyleColor();
-				ImGui::End();
+				if (finalPosX > 0 && finalPosX < cSettings->iWindowWidth &&
+					finalPosY > 0 && finalPosY < cSettings->iWindowHeight)
+				{
+					std::stringstream enemyHealth;
+					enemyHealth.str("");
+					enemyHealth << "Clone Health" << i;
+					ImGui::Begin(enemyHealth.str().c_str(), NULL, cloneHealth_window);
+					ImGui::SetWindowPos(ImVec2(finalPosX, finalPosY));
+					ImGui::SetWindowSize(ImVec2(200.0f * relativeScale_x, 25.0f * relativeScale_y));
+					ImGui::SameLine();
+					ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.0f, 0.0f, 1.0f, 1.0f));
+					ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
+					ImGui::ProgressBar((float)clone[i]->GetHealth() / (float)clone[i]->GetMaxHealth(), ImVec2(50.0f, 20.0f));
+					ImGui::PopStyleColor();
+					ImGui::PopStyleColor();
+					ImGui::End();
+				}
 			}
 		} 
 		ImGui::End();
