@@ -199,7 +199,7 @@ void CMobEnemy2D::SaveCurrData(void) {
 }
 
 void CMobEnemy2D::Attacked(int hp, CPhysics2D* bounceObj) {
-	if (pShield > 0) //Return if shield is enabled/ player does not get damaged
+	if (pShield > 0)
 		return;
 
 	pHealth = Math::Max(0, pHealth - 1);
@@ -220,11 +220,14 @@ void CMobEnemy2D::Attacked(int hp, CPhysics2D* bounceObj) {
 		cPhysics2D->SetBoolKnockBacked(true);
 		bounceObj->SetBoolKnockBacked(true);
 
-		DEBUG_MSG("ENEMYHIT!");
+		//DEBUG_MSG("ENEMYHIT!");
 
-		/*float maxSpd = 2.f;
-		if (cPhysics2D->GetVelocity().length() > maxSpd)
-			cPhysics2D->SetVelocity(glm::normalize(cPhysics2D->GetVelocity()) * maxSpd);*/
+		float maxSpd = 2.f;
+		if (glm::length(cPhysics2D->GetVelocity()) > maxSpd)
+			cPhysics2D->SetVelocity(glm::normalize(cPhysics2D->GetVelocity()) * maxSpd);
+
+		if (glm::length(bounceObj->GetVelocity()) > maxSpd)
+			cPhysics2D->SetVelocity(glm::normalize(cPhysics2D->GetVelocity()) * maxSpd);
 	}
 }
 
@@ -490,8 +493,24 @@ void CMobEnemy2D::UpdateSmart(float dElapsedTime) {
 			if (!rayCast && currTarget)
 				currTarget = nullptr;
 
-			if (currTarget == nullptr)
+			if (currTarget == nullptr && intervalTimer > 0) {
 				intervalTimer = Math::Max(0, intervalTimer - 1);
+				if (prevPlayer2D)
+					posToChase = prevPlayer2D->vTransform;
+			}
+
+			if (intervalTimer == 0) {
+				if (glm::length(posToChase - vTransform) < 1.f)
+					stateTimer = 0;
+				else
+					stateTimer = Math::Max(0, stateTimer - 1);
+			}
+
+
+
+			if (intervalTimer == 0 && stateTimer == 0) {
+				//Change to go back
+			}
 
 			break;
 	}
