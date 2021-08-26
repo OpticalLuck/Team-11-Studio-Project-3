@@ -72,6 +72,8 @@ CEnemy2D::CEnemy2D(void)
 	pMaxBlinkInterval = int(0.175f * (float)cSettings->FPS);
 
 	currFrame = 0;
+
+	Init();
 }
 
 /**

@@ -96,6 +96,7 @@ bool CMap2D::Init(const unsigned int uiNumLevels,
 	arrBackground.clear();
 	arrAllowanceScale.clear();
 	arrBgObject.clear();
+	CEntityManager::GetInstance()->EntityManagerInit(uiNumLevels);
 	for (unsigned i = 0; i < uiNumLevels; i++) {
 		arrLevelLimit.push_back(glm::i32vec2());
 		arrObject.push_back(std::vector<CObject2D*>());
@@ -546,11 +547,25 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 				currObj->SetObjectID(currObjID);
 
 				if ((currTexture > OBJECT_TYPE::TILE_START && currTexture < OBJECT_TYPE::TILE_TOTAL) ||
-					(currTexture > ENEMIES_START && currTexture < ENEMIES_TOTAL) ||
 					(currTexture == PLAYER_TILE))
 				{
 					arrObject[uiCurLevel].push_back(currObj);
 					arrGrid[uiCurLevel][uiRow][uiCol] = currObj;
+				}
+				else if (currTexture > ENEMIES_START && currTexture < ENEMIES_TOTAL)
+				{
+					if (currTexture == ENEMY_5)
+					{
+						if (CEntityManager::GetInstance()->GetBoss() == nullptr)
+						{
+							DEBUG_MSG("There can only be one boss in the level");
+							continue;
+						}
+					}
+
+					arrObject[uiCurLevel].push_back(currObj);
+					arrGrid[uiCurLevel][uiRow][uiCol] = currObj;
+					CEntityManager::GetInstance()->PushEnemy((CEnemy2D*)currObj, uiCurLevel);
 				}
 				else if (currTexture > INTERACTABLE_START && currTexture < INTERACTABLE_TOTAL)
 				{
@@ -558,17 +573,16 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 					{
 						((Interactables*)(currObj))->SetInteractableID(currObjID);
 					}
-					CEntityManager::GetInstance()->PushInteractables((Interactables*)currObj);
+					CEntityManager::GetInstance()->PushInteractables((Interactables*)currObj, uiCurLevel);
 					arrGrid[uiCurLevel][uiRow][uiCol] = currObj;
 				}
 				else if (currTexture > OBSTACLES_START && currTexture < OBSTACLES_TOTAL)
 				{
-
-					CEntityManager::GetInstance()->PushObstacles((Obstacle2D*)currObj);
+					CEntityManager::GetInstance()->PushObstacles((Obstacle2D*)currObj, uiCurLevel);
 				}
 				else
 				{
-						delete currObj;
+					delete currObj;
 				}
 
 			}

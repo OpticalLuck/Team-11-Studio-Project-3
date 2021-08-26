@@ -69,7 +69,7 @@ void CItem::Use(CPlayer2D* user)
 			glm::vec2 force = glm::clamp(distance * 200.f, glm::vec2(-2000.f, -2000.f), glm::vec2(2000.f, 2000.f));
 			shurikenobj->GetPhysics()->SetForce(force);
 
-			CEntityManager::GetInstance()->PushBullet(static_cast<Projectiles*>(shurikenobj));
+			CEntityManager::GetInstance()->PushBullet(static_cast<Projectiles*>(shurikenobj), CMap2D::GetInstance()->GetCurrentLevel());
 
 			cout << "You are using Item shuriken\n";
 			cout << "iCount is " << iCount << '\n';
@@ -88,7 +88,7 @@ void CItem::Use(CPlayer2D* user)
 			dynamic_cast<Bullet2D*>(kunaiobj)->Init(true, angle, 10);
 			kunaiobj->vTransform = user->vTransform;
 
-			CEntityManager::GetInstance()->PushBullet(static_cast<Bullet2D*>(kunaiobj));
+			CEntityManager::GetInstance()->PushBullet(static_cast<Bullet2D*>(kunaiobj), CMap2D::GetInstance()->GetCurrentLevel());
 			cout << "You are using Item kunai\n";
 			cout << "iCount is " << iCount << '\n';
 			break;

@@ -96,7 +96,7 @@ bool CScene2D::Init(std::string levelPath)
 	CShaderManager::GetInstance()->Use("2DColorShader");
 	CShaderManager::GetInstance()->activeShader->setInt("texture1", 0);
 	cEntityManager = CEntityManager::GetInstance();
-	cEntityManager->EntityManagerInit();
+	cEntityManager->InitPlayer();
 
 	cPlayer2D = cEntityManager->GetPlayer();
 
