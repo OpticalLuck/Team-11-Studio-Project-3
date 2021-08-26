@@ -38,4 +38,6 @@ public:
 private:
 	std::map<int, CItem>m_Items;
 	CPlayer2D* linkedPlayer;
+
+	static CItem itemDef;
 };

@@ -13,6 +13,8 @@ CInventoryManager::~CInventoryManager()
 
 void CInventoryManager::Add(std::string sName, CPlayer2D* target)
 {
+	DEBUG_MSG(sName);
+
 	if (m_Inventory.find(sName) == m_Inventory.end()) //if the inventory doesn't exist 
 	{
 		CInventory newInventory = CInventory(sName, target);

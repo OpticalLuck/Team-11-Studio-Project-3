@@ -190,7 +190,7 @@ bool CScene2D::Update(const double dElapsedTime)
 			m_FrameStorage.spawnPos = cPlayer2D->vTransform;
 
 			//Recording enemy stuff
-			CEnemy2D::SetRecording(true);
+			CEntity2D::SetRecording(true);
 			for (unsigned i = 0; i < enemyArr.size(); i++) {
 				CMobEnemy2D* mobEnemy = dynamic_cast<CMobEnemy2D*>(enemyArr[i]);
 
@@ -210,7 +210,7 @@ bool CScene2D::Update(const double dElapsedTime)
 			m_FrameStorage.iCounter = 0;
 
 			//Recording enemy stuff
-			CEnemy2D::SetRecording(false);
+			CEntity2D::SetRecording(false);
 
 			for (unsigned i = 0; i < enemyArr.size(); i++) {
 				CMobEnemy2D* mobEnemy = dynamic_cast<CMobEnemy2D*>(enemyArr[i]);

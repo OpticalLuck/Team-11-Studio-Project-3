@@ -13,6 +13,8 @@
 #include "Map2D.h"
 #include "System/Debug.h"
 
+CItem CInventory::itemDef = CItem();
+
 CInventory::CInventory(std::string sName, CPlayer2D* target)
 	: fCooldown(0.f)
 	, iCurrentIndex(0)
@@ -29,7 +31,7 @@ CInventory::~CInventory()
 void CInventory::AddItem(std::string itemName, int iCount)
 {
 	// If the item exist in the inventory
-	for (int i = 0; i < m_Items.size(); ++i)
+	for (unsigned i = 0; i < m_Items.size(); ++i)
 	{
 		if (m_Items[i].GetName() == itemName)
 		{
@@ -109,6 +111,8 @@ CItem& CInventory::GetItem(int iIndex)
 	}
 	else
 		cout << "Item does not exist\n";
+
+	return itemDef;
 }
 
 int CInventory::GetNumofUniqueItems()
