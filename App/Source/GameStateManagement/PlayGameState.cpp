@@ -177,6 +177,7 @@ void CPlayGameState::Destroy(void)
 	}
 	if (cInputHandler)
 	{
+		cInputHandler->Reset();
 		cInputHandler->Destroy();
 		cInputHandler = NULL;
 	}
