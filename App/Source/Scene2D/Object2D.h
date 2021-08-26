@@ -102,6 +102,7 @@ class CObject2D : public CEntity2D
 		void SetCurrentIndex(glm::i32vec2 currentIndex);
 
 		void SetObjectID(int objectID);
+		int GetObjectID(void);
 
 		std::vector<pair<CObject2D*, float>>CheckMapCollision(int range = 2);
 

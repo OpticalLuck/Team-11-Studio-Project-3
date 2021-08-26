@@ -42,6 +42,10 @@ void CObject2D::Update(const double dElapsedTime)
 		collider2D->position = vTransform;
 }
 
+int CObject2D::GetObjectID(void) {
+	return ObjectID;
+}
+
 glm::i32vec2 CObject2D::GetCurrentIndex() const
 {
 	return currentIndex;
