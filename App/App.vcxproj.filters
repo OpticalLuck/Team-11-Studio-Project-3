@@ -98,9 +98,6 @@
     <ClCompile Include="Source\Scene2D\Projectiles.cpp">
       <Filter>Entity2D\Projectiles</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Scene2D\Item.cpp">
-      <Filter>Inventory</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Scene2D\InventoryManager.cpp">
       <Filter>Inventory</Filter>
     </ClCompile>
@@ -124,9 +121,6 @@
     </ClCompile>
     <ClCompile Include="Source\Scene2D\MobEnemy2D.cpp">
       <Filter>Entity2D\LivingEntity2D\Enemy2D</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Scene2D\Inventory.cpp">
-      <Filter>Inventory</Filter>
     </ClCompile>
     <ClCompile Include="Source\InputHandler\CInputHandler.cpp">
       <Filter>InputHandler</Filter>
@@ -182,9 +176,6 @@
     <ClCompile Include="Source\Scene2D\Enemy2D.cpp">
       <Filter>Entity2D\LivingEntity2D\Enemy2D</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Scene2D\EnemyBullet2D.cpp">
-      <Filter>Entity2D\Object2D</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Scene2D\RayCast2D.cpp">
       <Filter>Scene2D</Filter>
     </ClCompile>
@@ -193,6 +184,12 @@
     </ClCompile>
     <ClCompile Include="Source\Scene2D\Obstacle2D.cpp">
       <Filter>Entity2D\Obstacles</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene2D\Item.cpp">
+      <Filter>Inventory</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene2D\Inventory.cpp">
+      <Filter>Inventory</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -241,13 +238,7 @@
     <ClInclude Include="Source\Scene2D\Projectiles.h">
       <Filter>Entity2D\Projectiles</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Scene2D\Item.h">
-      <Filter>Inventory</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Scene2D\InventoryManager.h">
-      <Filter>Inventory</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Scene2D\Inventory.h">
       <Filter>Inventory</Filter>
     </ClInclude>
     <ClInclude Include="Source\InputHandler\CInputHandler.h">
@@ -322,9 +313,6 @@
     <ClInclude Include="Source\Scene2D\Enemy2D.h">
       <Filter>Entity2D\LivingEntity2D\Enemy2D</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Scene2D\EnemyBullet2D.h">
-      <Filter>Entity2D\Object2D</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Scene2D\RayCast2D.h">
       <Filter>Scene2D</Filter>
     </ClInclude>
@@ -333,6 +321,12 @@
     </ClInclude>
     <ClInclude Include="Source\Scene2D\Obstacle2D.h">
       <Filter>Entity2D\Obstacles</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene2D\Item.h">
+      <Filter>Inventory</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene2D\Inventory.h">
+      <Filter>Inventory</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
