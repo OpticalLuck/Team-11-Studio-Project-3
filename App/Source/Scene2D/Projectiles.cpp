@@ -9,10 +9,13 @@
 #include "../TextureManager/TextureManager.h"
 #include "Primitives/Camera2D.h"
 
+#include "MobEnemy2D.h"
+
 Projectiles::Projectiles(int iTextureID)
 	: animatedSprites(NULL)
 	, currentColor(glm::vec4())
 	, bDestroyed(false)
+	, iBounces(0)
 {
 	projectileType = PROJECTILE_TYPE::PROJ_SHURIKEN;
 	this->iTextureID = iTextureID;
@@ -61,6 +64,16 @@ void Projectiles::Update(double dElapsedTime)
 
 	//Collision between objects in map space
 	ResolveMapCollision(CheckMapCollision());
+
+	if (bCollided)
+	{
+		iBounces++;
+	}
+
+	if (iBounces > 3)
+	{
+		bDestroyed = true;
+	}
 }
 
 
@@ -133,3 +146,30 @@ bool Projectiles::bOutsideBoundary(void)
 
 	return (xCheck || yCheck);
 }
+
+void Projectiles::ResolveEnemyCollision()
+{
+	std::vector<CEnemy2D*> enemyArr = cEntityManager->GetAllEnemies();
+
+	//collider2D->CollideWith(obj->GetCollider())
+	for (unsigned i = 0; i < enemyArr.size(); i++) {
+		Collision data = collider2D->CollideWith(enemyArr[i]->GetCollider());
+
+		if (std::get<0>(data)) { //If collided with 
+			//Enemy collision code activate!
+			CMobEnemy2D* mobEnemy = dynamic_cast<CMobEnemy2D*>(enemyArr[i]);
+
+			if (mobEnemy)
+			{
+				mobEnemy->Attacked(1, cPhysics2D);
+			}
+			else
+			{
+				enemyArr[i]->Attacked();
+			}
+
+			bDestroyed = true;
+		}
+	}
+}
+

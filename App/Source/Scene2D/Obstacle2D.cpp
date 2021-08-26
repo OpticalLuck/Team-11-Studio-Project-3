@@ -29,7 +29,7 @@ bool Obstacle2D::Init()
 
 	cPhysics2D->Init(&vTransform);
 	cPhysics2D->SetMass(10);
-
+	cPhysics2D->SetGravity(0);
 	collider2D->Init(vTransform, glm::vec2(0.5f), Collider2D::ColliderType::COLLIDER_CIRCLE);
 	return true;
 }
