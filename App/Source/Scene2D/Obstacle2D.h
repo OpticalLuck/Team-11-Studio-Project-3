@@ -15,6 +15,7 @@ public:
 
 	void ResolveMapCollision(std::vector<pair<CObject2D*, float>> aabbvector) override;
 	void ResolvePlayerCollision() override;
+	void ResolveEnemyCollision() override;
 
 protected:
 };

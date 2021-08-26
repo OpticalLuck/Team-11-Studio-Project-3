@@ -220,7 +220,6 @@ void CMobEnemy2D::Attacked(int hp, CPhysics2D* bounceObj) {
 		cPhysics2D->SetBoolKnockBacked(true);
 		bounceObj->SetBoolKnockBacked(true);
 
-		//DEBUG_MSG("ENEMYHIT!");
 
 		float maxSpd = 5.f;
 		if (glm::length(cPhysics2D->GetVelocity()) > maxSpd)

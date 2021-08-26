@@ -6,6 +6,7 @@
 #include "Primitives/Camera2D.h"
 #include "Primitives/MeshBuilder.h"
 #include "EntityManager.h"
+#include "MobEnemy2D.h"
 
 Obstacle2D::Obstacle2D(int iTextureID)
 {
@@ -34,6 +35,34 @@ bool Obstacle2D::Init()
 	return true;
 }
 
+void Obstacle2D::ResolveEnemyCollision(void) {
+	//Enemy collision
+	std::vector<CEnemy2D*> arrEnemy = CEntityManager::GetInstance()->GetAllEnemies();
+
+	for (unsigned i = 0; i < arrEnemy.size(); i++) {
+		CMobEnemy2D* cEnemy = dynamic_cast<CMobEnemy2D*>(arrEnemy[i]);
+		if (!cEnemy)
+			continue;
+
+		Collider2D* enemyCollider = arrEnemy[i]->GetCollider();
+		Collision data = (enemyCollider->CollideWith(collider2D));
+		if (std::get<0>(data) ) {
+			//Player collision code below
+			enemyCollider->ResolveAABBCircle(collider2D, data, Collider2D::ColliderType::COLLIDER_QUAD);
+
+			glm::vec2 newVel = cEnemy->GetPhysics()->GetVelocity();
+			newVel.x = 0;
+			cEnemy->GetPhysics()->SetVelocity(newVel);
+
+			cEnemy->vTransform = cEnemy->GetCollider()->position;
+			vTransform = collider2D->position;
+
+			if (std::get<1>(data) == Direction::UP)
+				cEnemy->GetPhysics()->SetboolGrounded(true);
+		}
+	}
+}
+
 void Obstacle2D::Update(const double dElapsedTime)
 {
 	cPhysics2D->Update(dElapsedTime);
@@ -43,6 +72,7 @@ void Obstacle2D::Update(const double dElapsedTime)
 	CMap2D* cMap2D = CMap2D::GetInstance();
 
 	ResolvePlayerCollision();
+	ResolveEnemyCollision();
 	ResolveMapCollision(CheckMapCollision());
 }
 
