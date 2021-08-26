@@ -27,7 +27,7 @@ using namespace std;
 #include "Math/MyMath.h"
 
 //Interactables
-#include "Boulder2D.h"
+#include "Obstacle2D.h"
 
 //Items
 #include "Projectiles.h"
@@ -424,20 +424,6 @@ void CPlayer2D::Update(const double dElapsedTime)
 
 			vTransform = collider2D->position;
 			obj->vTransform = obj->GetCollider()->position;
-
-			if (obj->type == ENTITY_TYPE::TILE)
-			{
-				if (dynamic_cast<Boulder2D*>(obj))
-				{
-					glm::vec2 direction = glm::normalize(obj->vTransform - vTransform);
-					(obj)->GetPhysics()->SetForce(glm::vec2(120.f, 0) * direction);
-					cPhysics2D->SetVelocity(glm::vec2(0.f));
-				}
-			}
-
-
-			if (std::get<1>(data) == Direction::LEFT || std::get<1>(data) == Direction::RIGHT)
-				cPhysics2D->SetVelocity(glm::vec2(0, cPhysics2D->GetVelocity().y));
 		}
 	}
 

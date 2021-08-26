@@ -531,6 +531,7 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 
 			//Curr texture
 			if (currTexture > 0) {
+				
 				CObject2D* currObj = objFactory.CreateObject(currTexture);
 
 				currObj->SetCurrentIndex(glm::i32vec2(uiCol, uiRow));
@@ -541,20 +542,34 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 				currIndex.y = (float)doc.GetRowCount() - (float)uiRow - 1.f;
 				currObj->vTransform = currIndex;
 
-
 				currObj->Init();
 				currObj->SetObjectID(currObjID);
 
-				if (currObjID != 0)
+				if ((currTexture > OBJECT_TYPE::TILE_START && currTexture < OBJECT_TYPE::TILE_TOTAL) ||
+					(currTexture > ENEMIES_START && currTexture < ENEMIES_TOTAL) ||
+					(currTexture == PLAYER_TILE))
 				{
-					((Interactables*)(currObj))->SetInteractableID(currObjID);
+					arrObject[uiCurLevel].push_back(currObj);
+					arrGrid[uiCurLevel][uiRow][uiCol] = currObj;
+				}
+				else if (currTexture > INTERACTABLE_START && currTexture < INTERACTABLE_TOTAL)
+				{
+					if (currObjID != 0)
+					{
+						((Interactables*)(currObj))->SetInteractableID(currObjID);
+					}
 					CEntityManager::GetInstance()->PushInteractables((Interactables*)currObj);
 				}
-				else {
-					arrObject[uiCurLevel].push_back(currObj);
+				else if (currTexture > OBSTACLES_START && currTexture < OBSTACLES_TOTAL)
+				{
+
+					CEntityManager::GetInstance()->PushObstacles((Obstacle2D*)currObj);
 				}
-					//Add in new CObj pointer if available
-					arrGrid[uiCurLevel][uiRow][uiCol] = currObj;
+				else
+				{
+						delete currObj;
+				}
+
 			}
 
 			//Background texture

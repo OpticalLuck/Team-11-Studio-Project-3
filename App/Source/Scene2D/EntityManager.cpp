@@ -169,6 +169,11 @@ std::vector<Interactables*> CEntityManager::GetAllInteractables(void)
 	return m_interactableList;
 }
 
+std::vector<Obstacle2D*> CEntityManager::GetallObstacles(void)
+{
+	return std::vector<Obstacle2D*>(m_ObstacleList);
+}
+
 void CEntityManager::PushEnemy(CEnemy2D* enemy) {
 	if (enemy)
 		m_enemyList.push_back(enemy);
@@ -299,6 +304,18 @@ void CEntityManager::RenderInteractables(void)
 	}
 }
 
+void CEntityManager::RenderObstacles(void)
+{
+	for (Obstacle2D* i : m_ObstacleList)
+	{
+		i->PreRender();
+		i->Render();
+		i->PostRender();
+
+		i->RenderCollider();
+	}
+}
+
 void CEntityManager::RenderClone(void)
 {
 	for (unsigned i = 0; i < m_cloneList.size(); ++i)
@@ -383,7 +400,11 @@ void CEntityManager::Update(const double dElapsedTime)
 	//Remove any nullptrs in bullet array
 	m_BulletList.erase(std::remove(m_BulletList.begin(), m_BulletList.end(), nullptr), m_BulletList.end());
 
-	
+	for (Obstacle2D* i : m_ObstacleList)
+	{
+		i->Update(dElapsedTime);
+	}
+
 	//Keyboard inputs
 	if (cKeyboardController->IsKeyPressed(GLFW_KEY_C))
 	{
@@ -398,4 +419,9 @@ void CEntityManager::PushBullet(Projectiles* bullet) {
 void CEntityManager::PushInteractables(Interactables* interactable)
 {
 	m_interactableList.push_back(interactable);
+}
+
+void CEntityManager::PushObstacles(Obstacle2D* obstacles)
+{
+	m_ObstacleList.push_back(obstacles);
 }

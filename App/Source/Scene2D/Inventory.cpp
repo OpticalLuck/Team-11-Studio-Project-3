@@ -66,12 +66,6 @@ void CInventory::Update(double dElapsedTime, int iTempFrameCounter, std::vector<
 		fCooldown = .5f;
 	}
 
-	if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::ENTER].bKeyPressed && fCooldown <= 0)
-	{
-		cInventoryManager->UseItem();
-		fCooldown = .5f;
-	}
-
 	//if (cKeyboardController->IsKeyPressed(GLFW_KEY_G))
 	//{
 	//	//cInventoryM->AddItem("Shuriken", ITEM_SHURIKEN);

@@ -13,7 +13,7 @@
 
 //Interactables
 #include "Interactables.h"
-#include "Boulder2D.h"
+#include "Obstacle2D.h"
 
 #include "RayCast2D.h"
 

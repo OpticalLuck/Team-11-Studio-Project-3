@@ -217,7 +217,6 @@ Collision Collider2D::CollideWith(Collider2D* object)
 		{
 			return CheckAABBCircleCollision(this, object);
 		}
-
 	}
 	
 	return std::make_tuple(false, Direction::UP, glm::vec2(0.0f, 0.0f));
@@ -225,8 +224,6 @@ Collision Collider2D::CollideWith(Collider2D* object)
 
 void Collider2D::ResolveAABB(Collider2D* object, Collision data)
 {
-	glm::vec2 direction = object->position - position;
-
 	Direction dir = std::get<1>(data);
 	glm::vec2 correction = std::get<2>(data);
 
