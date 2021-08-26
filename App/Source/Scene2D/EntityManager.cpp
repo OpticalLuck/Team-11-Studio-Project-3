@@ -380,10 +380,10 @@ void CEntityManager::Update(const double dElapsedTime)
 	}
 
 	//Keyboard inputs
-	if (cKeyboardController->IsKeyPressed(GLFW_KEY_C))
+	/*if (cKeyboardController->IsKeyPressed(GLFW_KEY_C))
 	{
 		Clone();
-	}
+	}*/
 }
 
 void CEntityManager::PushBullet(Projectiles* bullet) {
