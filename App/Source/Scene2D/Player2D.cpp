@@ -52,7 +52,6 @@ CPlayer2D::CPlayer2D(void)
 	, bJustTeleported(false)
 	, bIsRecording(false)
 	, iCloneIndex(0)
-
 {
 	transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
 
