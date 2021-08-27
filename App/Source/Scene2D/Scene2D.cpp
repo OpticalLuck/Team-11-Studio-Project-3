@@ -234,6 +234,7 @@ bool CScene2D::Update(const double dElapsedTime)
 			StartParadoxiumAbility();
 			break;
 		case 2:
+
 			StopParadoxiumAbility();
 			break;
 		}

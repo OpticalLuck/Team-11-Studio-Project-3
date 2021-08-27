@@ -51,6 +51,7 @@ protected:
 	ImGuiWindowFlags health_window;
 	ImGuiWindowFlags enemyHealth_window;
 	ImGuiWindowFlags option_window;
+	ImGuiWindowFlags UI_window;
 	ImGuiWindowFlags cloneHealth_window;
 
 	ButtonData resumeButtonData;
@@ -60,11 +61,17 @@ protected:
 	ButtonData backButtonData;
 	ButtonData applyButtonData;
 
+	ButtonData background;
+
+
+
 	float m_fProgressBar;
 
 	float fInterval;
 	int iMinutes;
 	int iSeconds;
+	int iInterval2;
+	int iTimer2;
 
 	float transformX;
 	float transformY;

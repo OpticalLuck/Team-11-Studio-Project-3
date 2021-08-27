@@ -56,6 +56,10 @@ void CItem::Use(CPlayer2D* user)
 		{
 		case OBJECT_TYPE::CONSUMABLES_POTION:
 			cout << "You are using potion\n";
+			if (user->GetHealth() == 5)
+				break;
+			user->UpdateHealth(1);
+			cout << "Player health is " << user->GetHealth() << "\n";
 			cout << "iCount is " << iCount << '\n';
 			break;
 		case OBJECT_TYPE::PROJECTILES_SHURIKEN:

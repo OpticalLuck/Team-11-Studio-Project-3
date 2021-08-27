@@ -60,6 +60,12 @@ struct FrameStorage
 	glm::vec2 spawnPos = { 0 , 0 };
 };
 
+struct CheckpointState
+{
+	CInventory* m_CheckpointInventoryState = nullptr;
+	float m_CheckpointHP = 3;
+	glm::vec2 m_CheckpointPosition = { 0 , 0 };
+};
 
 class CPlayer2D : public CEntity2D, public LivingEntity2D
 {
@@ -67,6 +73,7 @@ public:
 	std::vector<std::array<KeyInput, KEYBOARD_INPUTS::KEY_TOTAL>> m_KeyboardInputs;
 	std::vector<std::array<MouseInput, MOUSE_INPUTS::MOUSE_TOTAL>> m_MouseInputs;
 
+	CheckpointState m_CheckpointState;
 	FrameStorage m_FrameStorage;
 
 	bool bJustTeleported;
@@ -150,6 +157,9 @@ public:
 	//Get Max health
 	int GetMaxHealth(void);
 
+	int UpdateHealth(int iAmount);
+
+
 	//Function to call if player gets hit
 	void Attacked(int hp = 1, CPhysics2D* bounceObj = nullptr);
 
@@ -168,8 +178,8 @@ public:
 protected:
 	bool bIsClone;
 	int iCloneIndex;
-
 	bool bIsRecording;
+
 	//Timer for actions that need cooldown
 	std::pair<bool, double> timerArr[A_TOTAL];
 

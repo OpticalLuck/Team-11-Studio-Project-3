@@ -52,7 +52,6 @@ CPlayer2D::CPlayer2D(void)
 	, bJustTeleported(false)
 	, bIsRecording(false)
 	, iCloneIndex(0)
-
 {
 	transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
 
@@ -184,6 +183,7 @@ bool CPlayer2D::Init(void)
 	pBlinkInterval = 0;
 	jumpCount = 0;
 
+
 	//fMovementSpeed = 1.f;
 	fMovementSpeed = 4.f;
 	fJumpSpeed = 5.f;
@@ -304,6 +304,13 @@ int CPlayer2D::GetHealth(void) {
 int CPlayer2D::GetMaxHealth(void)
 {
 	return pMaxHealth;
+}
+
+int CPlayer2D::UpdateHealth(int iAmount)
+{
+	pHealth = pHealth + iAmount;
+	return pHealth;
+
 }
 
 glm::i32vec2 CPlayer2D::GetCheckpoint(void) {

@@ -28,7 +28,6 @@
     <ClCompile Include="Source\main.cpp" />
     <ClCompile Include="Source\Scene2D\BackgroundEntity.cpp" />
     <ClCompile Include="Source\Scene2D\Boss2D.cpp" />
-    <ClCompile Include="Source\Scene2D\Obstacle2D.cpp" />
     <ClCompile Include="Source\Scene2D\Bullet2D.cpp" />
     <ClCompile Include="Source\Scene2D\Enemy2D.cpp" />
     <ClCompile Include="Source\Scene2D\EntityManager.cpp" />
@@ -41,6 +40,7 @@
     <ClCompile Include="Source\Scene2D\Map2D.cpp" />
     <ClCompile Include="Source\Scene2D\MobEnemy2D.cpp" />
     <ClCompile Include="Source\Scene2D\Object2D.cpp" />
+    <ClCompile Include="Source\Scene2D\Obstacle2D.cpp" />
     <ClCompile Include="Source\Scene2D\Player2D.cpp" />
     <ClCompile Include="Source\Scene2D\Projectiles.cpp" />
     <ClCompile Include="Source\Scene2D\RayCast2D.cpp" />
@@ -65,7 +65,6 @@
     <ClInclude Include="Source\LevelEditor\LevelEditor.h" />
     <ClInclude Include="Source\Scene2D\BackgroundEntity.h" />
     <ClInclude Include="Source\Scene2D\Boss2D.h" />
-    <ClInclude Include="Source\Scene2D\Obstacle2D.h" />
     <ClInclude Include="Source\Scene2D\Bullet2D.h" />
     <ClInclude Include="Source\Scene2D\Enemy2D.h" />
     <ClInclude Include="Source\Scene2D\EntityManager.h" />
@@ -78,6 +77,7 @@
     <ClInclude Include="Source\Scene2D\Map2D.h" />
     <ClInclude Include="Source\Scene2D\MobEnemy2D.h" />
     <ClInclude Include="Source\Scene2D\Object2D.h" />
+    <ClInclude Include="Source\Scene2D\Obstacle2D.h" />
     <ClInclude Include="Source\Scene2D\Player2D.h" />
     <ClInclude Include="Source\Scene2D\Projectiles.h" />
     <ClInclude Include="Source\Scene2D\RayCast2D.h" />
