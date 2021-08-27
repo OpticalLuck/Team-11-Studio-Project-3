@@ -26,6 +26,7 @@ CScene2D::CScene2D(void)
 	, cameraHandler(NULL)
 	, cInventoryM(NULL)
 	, transform(glm::mat4(1))
+	, dParadoxiumTimer(10.f)
 {
 }
 
@@ -65,6 +66,52 @@ CScene2D::~CScene2D(void)
 		cameraHandler->Destroy();
 		cameraHandler = NULL;
 	}
+}
+
+void CScene2D::StartParadoxiumAbility()
+{
+	std::vector<CEnemy2D*> enemyArr = cEntityManager->GetAllEnemies();
+
+	cPlayer2D->SetRecording(true);
+	cPlayer2D->m_FrameStorage.iStoredFrame = cPlayer2D->m_FrameStorage.iCurrentFrame;
+	cPlayer2D->m_FrameStorage.spawnPos = cPlayer2D->vTransform;
+	//Recording enemy stuff
+	CEntity2D::SetRecording(true);
+	for (unsigned i = 0; i < enemyArr.size(); i++) {
+		enemyArr[i]->ResetRecording();
+	}
+
+	//Saving of other movable entities
+	cEntityManager->SavePrevious();
+}
+
+void CScene2D::StopParadoxiumAbility()
+{
+	std::vector<CEnemy2D*> enemyArr = cEntityManager->GetAllEnemies();
+
+	cPlayer2D->SetRecording(false);
+	CPlayer2D* clone = CEntityManager::GetInstance()->Clone();
+	//Loading of clone
+	clone->vTransform = cPlayer2D->m_FrameStorage.spawnPos;
+	clone->m_FrameStorage.iCurrentFrame = cPlayer2D->m_FrameStorage.iStoredFrame;
+	clone->m_FrameStorage.iEndFrame = cPlayer2D->m_FrameStorage.iCurrentFrame;
+	cPlayer2D->m_FrameStorage.iStoredFrame = 0;
+	cPlayer2D->vTransform = cPlayer2D->m_FrameStorage.spawnPos;
+	clone->SetHealth(cEntityManager->GetPlayer()->GetHealth());
+
+	cPlayer2D->m_FrameStorage.iCounter = 0;
+
+	//Recording enemy stuff
+	CEntity2D::SetRecording(false);
+
+	for (unsigned i = 0; i < enemyArr.size(); i++) {
+		enemyArr[i]->ReplayRecording();
+	}
+
+	//Loading prev values of movable entities
+	cEntityManager->LoadPrevious();
+
+	dParadoxiumTimer = 10.f;
 }
 
 /**
@@ -181,48 +228,24 @@ bool CScene2D::Update(const double dElapsedTime)
 	if (cKeyboardController->IsKeyPressed(GLFW_KEY_C) && cEntityManager->GetNoOfAvailableCloneID() > 0)
 	{
 		++cPlayer2D->m_FrameStorage.iCounter;
-		std::vector<CEnemy2D*> enemyArr = cEntityManager->GetAllEnemies();
 		switch (cPlayer2D->m_FrameStorage.iCounter)
 		{
 		case 1:
-			cPlayer2D->SetRecording(true);
-			cPlayer2D->m_FrameStorage.iStoredFrame = cPlayer2D->m_FrameStorage.iCurrentFrame;
-			cPlayer2D->m_FrameStorage.spawnPos = cPlayer2D->vTransform;
-			//Recording enemy stuff
-			CEntity2D::SetRecording(true);
-			for (unsigned i = 0; i < enemyArr.size(); i++) {
-				enemyArr[i]->ResetRecording();
-			}
-
-			//Saving of other movable entities
-			cEntityManager->SavePrevious();
-
+			StartParadoxiumAbility();
 			break;
 		case 2:
-			cPlayer2D->SetRecording(false);
-			CPlayer2D* clone = CEntityManager::GetInstance()->Clone();
-			//Loading of clone
-			clone->vTransform = cPlayer2D->m_FrameStorage.spawnPos;
-			clone->m_FrameStorage.iCurrentFrame = cPlayer2D->m_FrameStorage.iStoredFrame;
-			clone->m_FrameStorage.iEndFrame = cPlayer2D->m_FrameStorage.iCurrentFrame;
-			cPlayer2D->m_FrameStorage.iStoredFrame = 0;
-			cPlayer2D->vTransform = cPlayer2D->m_FrameStorage.spawnPos;
-			clone->SetHealth(cEntityManager->GetPlayer()->GetHealth());
-
-			cPlayer2D->m_FrameStorage.iCounter = 0;
-
-			//Recording enemy stuff
-			CEntity2D::SetRecording(false);
-
-			for (unsigned i = 0; i < enemyArr.size(); i++) {
-				enemyArr[i]->ReplayRecording();
-			}
-
-			//Loading prev values of movable entities
-			cEntityManager->LoadPrevious();
-
+			StopParadoxiumAbility();
 			break;
 		}
+	}
+
+	if (cPlayer2D->m_FrameStorage.iCounter == 1)
+	{
+		if (dParadoxiumTimer <= 0.f)
+		{
+			StopParadoxiumAbility();
+		}
+		dParadoxiumTimer -= dElapsedTime;
 	}
 
 	if (cKeyboardController->IsKeyPressed(GLFW_KEY_RIGHT))

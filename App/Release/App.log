@@ -1,1 +1,13 @@
-﻿  App.vcxproj -> D:\GitHub\Team-11-Studio-Project-3\Release\App.exe
+﻿  Application.cpp
+  MenuState.cpp
+  PlayGameState.cpp
+C:\Users\joash\OneDrive\Desktop\School\GDT\Y2\SP3\Team-11-Studio-Project-3\App\Source\GameStateManagement\PlayGameState.cpp(325,57): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\joash\OneDrive\Desktop\School\GDT\Y2\SP3\Team-11-Studio-Project-3\App\Source\GameStateManagement\PlayGameState.cpp(327,53): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\joash\OneDrive\Desktop\School\GDT\Y2\SP3\Team-11-Studio-Project-3\App\Source\GameStateManagement\PlayGameState.cpp(327,37): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+  Scene2D.cpp
+  Generating code
+  12 of 6353 functions ( 0.2%) were compiled, the rest were copied from previous compilation.
+    2 functions were new in current compilation
+    50 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  App.vcxproj -> C:\Users\joash\OneDrive\Desktop\School\GDT\Y2\SP3\Team-11-Studio-Project-3\Release\App.exe
