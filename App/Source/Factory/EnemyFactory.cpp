@@ -7,8 +7,6 @@
 //Mesh builder
 #include "Primitives/MeshBuilder.h"
 
-#include "../Scene2D/Map2D.h"
-
 EnemyFactory::EnemyFactory(void) {
 	cSettings = CSettings::GetInstance();
 }
@@ -16,9 +14,6 @@ EnemyFactory::EnemyFactory(void) {
 CEnemy2D* EnemyFactory::CreateEnemy(int type) {
 	switch (type) {
 		case 300: {
-			// Get the handler to the CMap2D instance
-			CMap2D* cMap2D = CMap2D::GetInstance();
-
 			CMobEnemy2D* clampedEnemy = new CMobEnemy2D;
 			clampedEnemy->SetID(300);
 			clampedEnemy->SetShader("2DColorShader");
@@ -163,5 +158,4 @@ CEnemy2D* EnemyFactory::CreateEnemy(int type) {
 		default:
 			return nullptr;
 	}
-	return nullptr;
 }

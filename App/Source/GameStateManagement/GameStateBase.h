@@ -28,5 +28,5 @@ public:
 struct ButtonData
 {
 	std::string fileName;
-	unsigned textureID = 0;
+	unsigned textureID;
 };

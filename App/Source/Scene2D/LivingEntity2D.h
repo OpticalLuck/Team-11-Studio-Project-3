@@ -27,8 +27,6 @@ class LivingEntity2D
 		int pBlinkInterval; //Interval of the flashing color
 		int pMaxBlinkInterval; //Max interval
 
-		float maxKnockBack; //Maximum distance for knockback
-
 		void UpdateHealthLives(void);
 
 		// Current color

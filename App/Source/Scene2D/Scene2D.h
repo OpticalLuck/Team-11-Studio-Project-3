@@ -38,12 +38,22 @@
 
 #include "EntityManager.h"
 
+struct FrameStorage
+{
+	unsigned int iCounter = 0;
+	unsigned int iCurrentFrame = 0;
+	unsigned int iStoredFrame = 0;
+	unsigned int iEndFrame = 0;
+
+	glm::vec2 spawnPos = { 0 , 0 };
+};
+
 class CScene2D : public CSingletonTemplate<CScene2D>
 {
 	friend CSingletonTemplate<CScene2D>;
 public:
 	// Init
-	bool Init(std::string levelPath);
+	bool Init(void);
 
 	// Update
 	bool Update(const double dElapsedTime);
@@ -61,12 +71,17 @@ public:
 
 	float fCooldown = 0.f;
 
+	FrameStorage m_FrameStorage;
+
 protected:
 	// The handler containing the instance of the 2D Map
 	CMap2D* cMap2D;
 	// The handler containing the instance of CPlayer2Ds
 	CPlayer2D* cPlayer2D;
 	std::vector<CPlayer2D*> clones;
+
+	// A vector containing the instance of CEnemy2Ds
+	vector<CEntity2D*> enemyVector;
 
 	// Keyboard Controller singleton instance
 	CKeyboardController* cKeyboardController;
@@ -94,28 +109,28 @@ protected:
 	// Destructor
 	virtual ~CScene2D(void);
 	
-	//template <typename T>
-	//void LoadEnemy();
+	template <typename T>
+	void LoadEnemy();
 };
 
-//template<typename T>
-//inline void CScene2D::LoadEnemy()
-//{
-//	while (true)
-//	{
-//		CEnemy2D* cEnemy2D = new T();
-//		// Pass shader to cEnemy2D
-//		cEnemy2D->SetShader("2DColorShader");
-//		// Initialise the instance
-//		if (cEnemy2D->Init() == true)
-//		{
-//			enemyVector.push_back(cEnemy2D);
-//		}
-//		else
-//		{
-//			// Break out of this loop if the enemy has all been loaded
-//			break;
-//		}
-//	}
-//}
+template<typename T>
+inline void CScene2D::LoadEnemy()
+{
+	while (true)
+	{
+		CEnemy2D* cEnemy2D = new T();
+		// Pass shader to cEnemy2D
+		cEnemy2D->SetShader("2DColorShader");
+		// Initialise the instance
+		if (cEnemy2D->Init() == true)
+		{
+			enemyVector.push_back(cEnemy2D);
+		}
+		else
+		{
+			// Break out of this loop if the enemy has all been loaded
+			break;
+		}
+	}
+}
 

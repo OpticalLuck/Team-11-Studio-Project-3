@@ -33,11 +33,7 @@ public:
 
 	virtual bool ImGuiRender();
 
-	void SetLevel(std::string levelPath);
-
 protected:
-	std::string levelPath;
-
 	// The handler to the CScene2D instance
 	CScene2D* cScene2D;
 	CInputHandler* cInputHandler;

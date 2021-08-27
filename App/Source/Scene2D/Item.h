@@ -3,7 +3,6 @@
 #include <iostream>
 #include <string>
 
-class CPlayer2D;
 
 class CItem
 {
@@ -16,7 +15,7 @@ public:
 	int set_ID(int _ID);;
 	std::string GetName();
 	void set_Name(std::string _name);
-	void Use(CPlayer2D* user);
+	void Use(void);
 
 	int iCount; 
 	int iMinCount;
@@ -24,4 +23,6 @@ public:
 private:
 	unsigned int iID;
 	std::string sName;
+
+
 };

@@ -7,7 +7,6 @@
 CObject2D::CObject2D(int iTextureID) 
 	: width(1.f)
 	, height(1.f)
-	, bCollided(false)
 {
 	this->iTextureID = iTextureID;
 
@@ -41,10 +40,6 @@ void CObject2D::Update(const double dElapsedTime)
 {
 	if (collider2D->position != vTransform)
 		collider2D->position = vTransform;
-}
-
-int CObject2D::GetObjectID(void) {
-	return ObjectID;
 }
 
 glm::i32vec2 CObject2D::GetCurrentIndex() const
@@ -107,14 +102,9 @@ void CObject2D::ResolveEnemyCollision()
 			CMobEnemy2D* mobEnemy = dynamic_cast<CMobEnemy2D*>(enemyArr[i]);
 
 			if (mobEnemy)
-			{
 				mobEnemy->Attacked(1, cPhysics2D);
-			}
 			else
-			{
 				enemyArr[i]->Attacked();
-			}
-
 		}
 	}
 }
@@ -140,15 +130,12 @@ void CObject2D::ResolvePlayerCollision()
 void CObject2D::ResolveMapCollision(std::vector<pair<CObject2D*, float>> aabbvector)
 {
 	bool destroyed = false;
-	bCollided = false;
 	for (auto aabbTuple : aabbvector)
 	{
 		CObject2D* obj = aabbTuple.first;
 		Collision data = (collider2D->CollideWith(obj->GetCollider()));
 		if (std::get<0>(data))
 		{
-			bCollided = true;
-
 			if (obj->GetCollider()->colliderType == Collider2D::ColliderType::COLLIDER_QUAD)
 			{
 				collider2D->ResolveAABB(obj->GetCollider(), data);
@@ -173,6 +160,5 @@ void CObject2D::ResolveMapCollision(std::vector<pair<CObject2D*, float>> aabbvec
 		}
 	}
 }
-
 
 

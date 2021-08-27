@@ -21,10 +21,36 @@ CEntityManager::CEntityManager()
 
 CEntityManager::~CEntityManager()
 {
-	Clear();
+	if (cPlayer2D) {
+		delete cPlayer2D;
+		cPlayer2D = nullptr;
+	}
+
+	if (cBoss2D) {
+		delete cBoss2D;
+		cBoss2D = nullptr;
+	}
+
+	for (unsigned i = 0; i < m_enemyList.size(); i++) {
+		delete m_enemyList[i];
+		m_enemyList[i] = nullptr;
+	}
+	m_enemyList.clear();
+
+	for (unsigned i = 0; i < m_cloneList.size(); i++) {
+		delete m_cloneList[i];
+		m_cloneList[i] = nullptr;
+	}
+	m_cloneList.clear();
+
+	for (unsigned i = 0; i < m_BulletList.size(); i++) {
+		delete m_BulletList[i];
+		m_BulletList[i] = nullptr;
+	}
+	m_BulletList.clear();
 }
 
-bool CEntityManager::EntityManagerInit(const unsigned int totalLevels)
+bool CEntityManager::EntityManagerInit(void)
 {
 	// Create and initialise the Map 2D
 	cMap2D = CMap2D::GetInstance();
@@ -34,21 +60,66 @@ bool CEntityManager::EntityManagerInit(const unsigned int totalLevels)
 	cKeyboardController = CKeyboardController::GetInstance();
 	cInputHandler = CInputHandler::GetInstance();
 
-	for (unsigned int i = 0; i < totalLevels; ++i)
+	unsigned int uiRow = -1;
+	unsigned int uiCol = -1;
+
+	//player init
+	if (cMap2D->FindValue(1, uiRow, uiCol) == true)
 	{
-		m_enemyList.push_back(std::vector<CEnemy2D*>());
-		m_interactableList.push_back(std::vector<Interactables*>());
-		m_BulletList.push_back(std::vector<Projectiles*>());
-		m_ObstacleList.push_back(std::vector<Obstacle2D*>());
-		cBoss2D.push_back(nullptr);
+		cPlayer2D = new CPlayer2D;
+		// Pass shader to cPlayer2D
+		cPlayer2D->SetShader("2DColorShader");
+		// m_playerList.push_back(cPlayer2D);
+		// Initialise the instance
+		if (cPlayer2D->Init() == false)
+		{
+			cout << "Failed to load CPlayer2D" << endl;
+			return false;
+		}
 	}
 
-	//for (Interactables* i : m_interactableList)
-	//{
-	//	i->Init();
-	//}
+	//enemy init
+	while (cMap2D->FindValue(300, uiRow, uiCol)) {
+		m_enemyList.push_back(enemyFactory.CreateEnemy(300));
+	}
 
-	// clone init
+	while (cMap2D->FindValue(301, uiRow, uiCol)) {
+		m_enemyList.push_back(enemyFactory.CreateEnemy(301));
+	}
+
+	while (cMap2D->FindValue(302, uiRow, uiCol)) {
+		m_enemyList.push_back(enemyFactory.CreateEnemy(302));
+	}
+
+	while (cMap2D->FindValue(303, uiRow, uiCol)) {
+		m_enemyList.push_back(enemyFactory.CreateEnemy(303));
+	}
+
+	while (cMap2D->FindValue(304, uiRow, uiCol)) {
+		m_enemyList.push_back(enemyFactory.CreateEnemy(304));
+	}
+
+	//Boss initialisation
+	if (cMap2D->FindValue(305, uiRow, uiCol)) {
+		cBoss2D = dynamic_cast<CBoss2D*>(enemyFactory.CreateEnemy(305));
+
+		if (cMap2D->FindValue(305, uiRow, uiCol)) {
+			DEBUG_MSG("ERROR: TOO MANY BOSS IN LEVEL. THERE SHOULD ONLY BE ONE BOSS");
+			return false;
+		}
+		if (cBoss2D->Init() == false)
+		{
+			cout << "Failed to load CBoss2D" << endl;
+			return false;
+		}
+	}
+
+	for (Interactables* i : m_interactableList)
+	{
+		i->Init();
+	}
+
+	//clone init
 	//cCloneTemplate = new CPlayer2D();
 	//if (cCloneTemplate->Init(cPlayer2D->GetCheckpoint(),m_cloneList.size()) == false)
 	//{
@@ -63,15 +134,15 @@ bool CEntityManager::EntityManagerInit(const unsigned int totalLevels)
 	//{
 	//	cCloneTemplate->vTransform = glm::vec2(uiCol, uiRow);
 	//}
-	//currRound = 0;
+	currRound = 0;
 
 	return true;
 }
 
 std::vector<CEnemy2D*> CEntityManager::GetAllEnemies(void) {
 	std::vector<CEnemy2D*> arr;
-	arr.push_back(cBoss2D[cMap2D->GetCurrentLevel()]);
-	arr.insert(arr.end(), m_enemyList[cMap2D->GetCurrentLevel()].begin(), m_enemyList[cMap2D->GetCurrentLevel()].end());
+	arr.push_back(cBoss2D);
+	arr.insert(arr.end(), m_enemyList.begin(), m_enemyList.end());
 
 	arr.erase(std::remove(arr.begin(), arr.end(), nullptr), arr.end());
 
@@ -95,17 +166,12 @@ std::vector<CEntity2D*> CEntityManager::GetAllLivingEntities(void) {
 
 std::vector<Interactables*> CEntityManager::GetAllInteractables(void)
 {
-	return m_interactableList[cMap2D->GetCurrentLevel()];
+	return m_interactableList;
 }
 
-std::vector<Obstacle2D*> CEntityManager::GetallObstacles(void)
-{
-	return std::vector<Obstacle2D*>(m_ObstacleList[cMap2D->GetCurrentLevel()]);
-}
-
-void CEntityManager::PushEnemy(CEnemy2D* enemy, const unsigned int currLevel) {
+void CEntityManager::PushEnemy(CEnemy2D* enemy) {
 	if (enemy)
-		m_enemyList[currLevel].push_back(enemy);
+		m_enemyList.push_back(enemy);
 	else
 		DEBUG_MSG("ENEMY NOT ADDED AS IT IS A NULLPTR.");
 }
@@ -117,7 +183,7 @@ CPlayer2D* CEntityManager::Clone(void)
 
 	if (!clone->Init(cPlayer2D->GetCheckpoint(), m_cloneList.size()))
 	{
-		DEBUG_MSG("Failed to clone Player");
+		std::cout << "Failed to clone Player\n";
 		return nullptr;
 	}
 	clone->SetClone(true);
@@ -162,28 +228,6 @@ void CEntityManager::RemoveEntity(string type, int amount)
 		return;
 }
 
-bool CEntityManager::InitPlayer()
-{
-	unsigned int uiRow = -1;
-	unsigned int uiCol = -1;
-
-	if (cMap2D->FindValue(1, uiRow, uiCol) == true)
-	{
-		cPlayer2D = new CPlayer2D;
-		// Pass shader to cPlayer2D
-		cPlayer2D->SetShader("2DColorShader");
-		// m_playerList.push_back(cPlayer2D);
-		// Initialise the instance
-		if (cPlayer2D->Init() == false)
-		{
-			cout << "Failed to load CPlayer2D" << endl;
-			return false;
-		}
-	}
-
-	return true;
-}
-
 CPlayer2D* CEntityManager::GetPlayer()
 {
 	return cPlayer2D;
@@ -191,7 +235,7 @@ CPlayer2D* CEntityManager::GetPlayer()
 
 CBoss2D* CEntityManager::GetBoss()
 {
-	return cBoss2D[cMap2D->GetCurrentLevel()];
+	return cBoss2D;
 }
 
 std::vector<CPlayer2D*> CEntityManager::GetAllPlayers(void) 
@@ -215,49 +259,37 @@ int CEntityManager::GetCurrRound(void)
 
 void CEntityManager::RenderEnemy(void)
 {
-	for (unsigned i = 0; i < m_enemyList[cMap2D->GetCurrentLevel()].size(); i++)
+	for (unsigned i = 0; i < m_enemyList.size(); i++)
 	{
-		m_enemyList[cMap2D->GetCurrentLevel()][i]->PreRender();
-		m_enemyList[cMap2D->GetCurrentLevel()][i]->Render();
-		m_enemyList[cMap2D->GetCurrentLevel()][i]->PostRender();
+		m_enemyList[i]->PreRender();
+		m_enemyList[i]->Render();
+		m_enemyList[i]->PostRender();
 
-		m_enemyList[cMap2D->GetCurrentLevel()][i]->RenderCollider();
+		m_enemyList[i]->RenderCollider();
 	}
 
-	if (cBoss2D[cMap2D->GetCurrentLevel()]) {
-		cBoss2D[cMap2D->GetCurrentLevel()]->PreRender();
-		cBoss2D[cMap2D->GetCurrentLevel()]->Render();
-		cBoss2D[cMap2D->GetCurrentLevel()]->PostRender();
+	if (cBoss2D) {
+		cBoss2D->PreRender();
+		cBoss2D->Render();
+		cBoss2D->PostRender();
 		
-		cBoss2D[cMap2D->GetCurrentLevel()]->RenderCollider();
+		cBoss2D->RenderCollider();
 	}
 }
 
 void CEntityManager::RenderBullets(void) {
-	for (unsigned i = 0; i < m_BulletList[cMap2D->GetCurrentLevel()].size(); i++) {
-		m_BulletList[cMap2D->GetCurrentLevel()][i]->PreRender();
-		m_BulletList[cMap2D->GetCurrentLevel()][i]->Render();
-		m_BulletList[cMap2D->GetCurrentLevel()][i]->PostRender();
+	for (unsigned i = 0; i < m_BulletList.size(); i++) {
+		m_BulletList[i]->PreRender();
+		m_BulletList[i]->Render();
+		m_BulletList[i]->PostRender();
 		
-		m_BulletList[cMap2D->GetCurrentLevel()][i]->RenderCollider();
+		m_BulletList[i]->RenderCollider();
 	}
 }
 
 void CEntityManager::RenderInteractables(void)
 {
-	for (Interactables* i : m_interactableList[cMap2D->GetCurrentLevel()])
-	{
-		i->PreRender();
-		i->Render();
-		i->PostRender();
-
-		i->RenderCollider();
-	}
-}
-
-void CEntityManager::RenderObstacles(void)
-{
-	for (Obstacle2D* i : m_ObstacleList[cMap2D->GetCurrentLevel()])
+	for (Interactables* i : m_interactableList)
 	{
 		i->PreRender();
 		i->Render();
@@ -294,150 +326,76 @@ void CEntityManager::RenderPlayer(void)
 void CEntityManager::Update(const double dElapsedTime)
 {
 	
-	for (Interactables* i : m_interactableList[cMap2D->GetCurrentLevel()])
+	for (Interactables* i : m_interactableList)
 	{
 		i->Update(dElapsedTime);
 	}
 
 	for (unsigned i = 0; i < m_cloneList.size(); ++i)
 	{
-		if (m_cloneList[i]->m_FrameStorage.iCurrentFrame - m_cloneList[i]->m_FrameStorage.iEndFrame > 180)
+		if (m_cloneList[i]->iTempFrameCounter - m_cloneList[i]->iFrameCounterEnd > 180)
 		{
-			DEBUG_MSG(m_cloneList[i]->m_FrameStorage.iCurrentFrame << " " << m_cloneList[i]->m_FrameStorage.iEndFrame);
 			delete m_cloneList[i];
 			m_cloneList[i] = nullptr;
-			/*m_cloneList.erase(std::remove(std::begin(m_cloneList), std::end(m_cloneList), nullptr), std::end(m_cloneList));*/
+			m_cloneList.erase(std::remove(std::begin(m_cloneList), std::end(m_cloneList), nullptr), std::end(m_cloneList));
 			continue;
 		}
 
 		m_cloneList[i]->Update(dElapsedTime);
 	}
 
-	m_cloneList.erase(std::remove(m_cloneList.begin(), m_cloneList.end(), nullptr), m_cloneList.end()); //Remove any nullptrs in the array
-
 	// Call the cPlayer2D's update method before Map2D as we want to capture the inputs before map2D update
 	cPlayer2D->Update(dElapsedTime);
 
-	if (cBoss2D[cMap2D->GetCurrentLevel()])
-		cBoss2D[cMap2D->GetCurrentLevel()]->Update(dElapsedTime);
+	if (cBoss2D)
+		cBoss2D->Update(dElapsedTime);
 
 
 	// Call all the cEnemy2D's update method before Map2D 
 	// as we want to capture the updates before map2D update
-	for (CEnemy2D* e : m_enemyList[cMap2D->GetCurrentLevel()]) 
-	{
-		e->Update(dElapsedTime);
+	for (unsigned i = 0; i < m_enemyList.size(); i++) {
+		m_enemyList[i]->Update(dElapsedTime);
 
 		//Delete conditions
-		if (e->GetHealth() <= 0) {
-			delete e;
-			e = nullptr;
+		if (m_enemyList[i]->GetHealth() <= 0) {
+			delete m_enemyList[i];
+			m_enemyList[i] = nullptr;
 		}
 	}
 
-	m_enemyList[cMap2D->GetCurrentLevel()].erase(std::remove(m_enemyList[cMap2D->GetCurrentLevel()].begin(), m_enemyList[cMap2D->GetCurrentLevel()].end(), nullptr), m_enemyList[cMap2D->GetCurrentLevel()].end()); //Remove any nullptrs in the array
+	m_enemyList.erase(std::remove(m_enemyList.begin(), m_enemyList.end(), nullptr), m_enemyList.end()); //Remove any nullptrs in the array
 
 	//Call enemy bullets
-	for (unsigned i = 0; i < m_BulletList[cMap2D->GetCurrentLevel()].size(); i++) {
-		m_BulletList[cMap2D->GetCurrentLevel()][i]->Update(dElapsedTime);
+	for (unsigned i = 0; i < m_BulletList.size(); i++) {
+		m_BulletList[i]->Update(dElapsedTime);
 
-		if (dynamic_cast<Projectiles*>(m_BulletList[cMap2D->GetCurrentLevel()][i]))
+		if (dynamic_cast<Projectiles*>(m_BulletList[i]))
 		{
-			if (dynamic_cast<Projectiles*>(m_BulletList[cMap2D->GetCurrentLevel()][i])->bDestroyed || dynamic_cast<Projectiles*>(m_BulletList[cMap2D->GetCurrentLevel()][i])->bOutsideBoundary())
+			if (dynamic_cast<Projectiles*>(m_BulletList[i])->bDestroyed || dynamic_cast<Projectiles*>(m_BulletList[i])->bOutsideBoundary())
 			{
-				DEBUG_MSG("bullet deleted");
-				delete m_BulletList[cMap2D->GetCurrentLevel()][i];
-				m_BulletList[cMap2D->GetCurrentLevel()][i] = nullptr;
+				cout << "bullet deleted" << endl;
+				delete m_BulletList[i];
+				m_BulletList[i] = nullptr;
 			}
 		}
 	}
 
 	//Remove any nullptrs in bullet array
-	m_BulletList[cMap2D->GetCurrentLevel()].erase(std::remove(m_BulletList[cMap2D->GetCurrentLevel()].begin(), m_BulletList[cMap2D->GetCurrentLevel()].end(), nullptr), m_BulletList[cMap2D->GetCurrentLevel()].end());
+	m_BulletList.erase(std::remove(m_BulletList.begin(), m_BulletList.end(), nullptr), m_BulletList.end());
 
-	for (Obstacle2D* i : m_ObstacleList[cMap2D->GetCurrentLevel()])
-	{
-		i->Update(dElapsedTime);
-	}
-
+	
 	//Keyboard inputs
-	/*if (cKeyboardController->IsKeyPressed(GLFW_KEY_C))
+	if (cKeyboardController->IsKeyPressed(GLFW_KEY_C))
 	{
 		Clone();
-	}*/
+	}
 }
 
-void CEntityManager::PushBullet(Projectiles* bullet, const unsigned int currLevel) {
-	m_BulletList[currLevel].push_back(bullet);
+void CEntityManager::PushBullet(Projectiles* bullet) {
+	m_BulletList.push_back(bullet);
 }
 
-void CEntityManager::PushInteractables(Interactables* interactable, const unsigned int currLevel)
+void CEntityManager::PushInteractables(Interactables* interactable)
 {
-	m_interactableList[currLevel].push_back(interactable);
+	m_interactableList.push_back(interactable);
 }
-
-void CEntityManager::PushObstacles(Obstacle2D* obstacle, const unsigned int currLevel)
-{
-	m_ObstacleList[currLevel].push_back(obstacle);
-}
-
-void CEntityManager::Clear(void)
-{
-	if (cPlayer2D) {
-		delete cPlayer2D;
-		cPlayer2D = nullptr;
-	}
-
-	for (unsigned i = 0; i < cBoss2D.size(); ++i) {
-		delete cBoss2D[i];
-		cBoss2D[i] = nullptr;
-	}
-	cBoss2D.clear();
-
-	for (unsigned i = 0; i < m_enemyList.size(); ++i) {
-		for (unsigned j = 0; j < m_enemyList[i].size(); ++j)
-		{
-			delete m_enemyList[i][j];
-			m_enemyList[i][j] = nullptr;
-		}
-		m_enemyList[i].clear();
-	}
-	m_enemyList.clear();
-
-	for (unsigned i = 0; i < m_cloneList.size(); i++) {
-		delete m_cloneList[i];
-		m_cloneList[i] = nullptr;
-	}
-	m_cloneList.clear();
-
-	for (unsigned i = 0; i < m_BulletList.size(); i++) {
-		for (unsigned j = 0; j < m_BulletList[i].size(); ++j)
-		{
-			delete m_BulletList[i][j];
-			m_BulletList[i][j] = nullptr;
-		}
-		m_BulletList[i].clear();
-	}
-	m_BulletList.clear();
-
-	for (unsigned i = 0; i < m_interactableList.size(); i++) {
-		for (unsigned j = 0; j < m_interactableList[i].size(); ++j)
-		{
-			delete m_interactableList[i][j];
-			m_interactableList[i][j] = nullptr;
-		}
-		m_interactableList[i].clear();
-	}
-	m_interactableList.clear();
-
-	for (unsigned i = 0; i < m_ObstacleList.size(); i++) {
-		for (unsigned j = 0; j < m_ObstacleList[i].size(); ++j)
-		{
-			delete m_ObstacleList[i][j];
-			m_ObstacleList[i][j] = nullptr;
-		}
-		m_ObstacleList[i].clear();
-	}
-	m_ObstacleList.clear();
-}
-

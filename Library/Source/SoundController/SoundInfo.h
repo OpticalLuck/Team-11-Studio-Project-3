@@ -5,7 +5,7 @@
  */
 #pragma once
 
- // Include IrrKlang
+// Include IrrKlang
 #include <includes/irrKlang.h>
 using namespace irrklang;
 #pragma comment(lib, "irrKlang.lib") // link with irrKlang.dll
@@ -27,21 +27,17 @@ public:
 	virtual ~CSoundInfo(void);
 
 	// Initialise this class instance
-	bool Init(const int ID,
-		ISoundSource* pSoundSource,
-		const bool bIsLooped = false,
-		const bool bIsOverlappable = false,
-		SOUNDTYPE eSoundType = _2D,
-		vec3df vec3dfSoundPos = vec3df(0.0f, 0.0f, 0.0f));
+	bool Init(	const int ID, 
+				ISoundSource* pSoundSource, 
+				const bool bIsLooped = false, 
+				SOUNDTYPE eSoundType = _2D,
+				vec3df vec3dfSoundPos = vec3df(0.0f, 0.0f, 0.0f));
 
 	// Get an sound from this map
 	ISoundSource* GetSound(void) const;
 
 	// Get loop status
 	bool GetLoopStatus(void) const;
-
-	// Get overlap status
-	bool GetOverlapStatus(void) const;
 
 	// Get sound type
 	SOUNDTYPE GetSoundType(void) const;
@@ -67,9 +63,6 @@ protected:
 
 	// Indicate if this sound will be looped during playback
 	bool bIsLooped;
-
-	// Indicate if this sound will be overlappable during playback
-	bool bIsOverlappable;
 
 	// Sound type
 	SOUNDTYPE eSoundType;

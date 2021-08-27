@@ -13,7 +13,6 @@ CSettings::CSettings(void)
 	, logl_root(NULL)
 	, m_ImGuiWindow(NULL)
 	, screenSize(SCREENSIZE::SSIZE_800x600)
-	, bShowCollider(false)
 	, MASTER_VOLUME(100.f)
 	, BGM_VOLUME(100.f)
 	, SFX_VOLUME(100.f)
@@ -376,7 +375,7 @@ void CSettings::UpdateWindowSize()
 		glm::vec2 screensize = CSettings::GetInstance()->GetScreenSize();
 		glm::vec2 windowposition = glm::vec2(screensize.x / 2 -iWindowWidth / 2, screensize.y / 2 - iWindowHeight / 2);
 		// Set OpenGL window position
-		glfwSetWindowPos(pWindow, (int)windowposition.x, (int)windowposition.y);
+		glfwSetWindowPos(pWindow, windowposition.x, windowposition.y);
 
 	}
 }

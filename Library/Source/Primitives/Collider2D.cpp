@@ -217,6 +217,7 @@ Collision Collider2D::CollideWith(Collider2D* object)
 		{
 			return CheckAABBCircleCollision(this, object);
 		}
+
 	}
 	
 	return std::make_tuple(false, Direction::UP, glm::vec2(0.0f, 0.0f));
@@ -224,6 +225,8 @@ Collision Collider2D::CollideWith(Collider2D* object)
 
 void Collider2D::ResolveAABB(Collider2D* object, Collision data)
 {
+	glm::vec2 direction = object->position - position;
+
 	Direction dir = std::get<1>(data);
 	glm::vec2 correction = std::get<2>(data);
 
@@ -292,56 +295,39 @@ void Collider2D::ResolveAABBCircle(Collider2D* object, Collision data, ColliderT
 		}
 		else if (target == ColliderType::COLLIDER_QUAD)
 		{
-			//if (dir == Direction::LEFT || dir == Direction::RIGHT) // horizontal collision
-			//{
-			//	// relocate
-			//	float penetration = ball->vec2Dimensions.x - std::abs(diff_vector.x);
+			if (dir == Direction::LEFT || dir == Direction::RIGHT) // horizontal collision
+			{
+				// relocate
+				float penetration = ball->vec2Dimensions.x - std::abs(diff_vector.x);
 
-			//	if (dir == Direction::LEFT)
-			//		quad->position.x -= penetration; // move ball to right
-			//	else
-			//		quad->position.x += penetration; // move ball to left;
-			//}
-			//else // vertical collision
-			//{
-			//	// relocate
-			//	float penetration = ball->vec2Dimensions.x - std::abs(diff_vector.y);
+				if (dir == Direction::LEFT)
+					quad->position.x -= penetration; // move ball to right
+				else
+					quad->position.x += penetration; // move ball to left;
+			}
+			else // vertical collision
+			{
+				// relocate
+				float penetration = ball->vec2Dimensions.x - std::abs(diff_vector.y);
 
-			//	if (dir == Direction::UP)
-			//		quad->position.y += penetration; // move ball bback up
-			//	else
-			//		quad->position.y -= penetration; // move ball back down
+				if (dir == Direction::UP)
+					quad->position.y += penetration; // move ball bback up
+				else
+					quad->position.y -= penetration; // move ball back down
 
-			//}
-			glm::vec2 quadTopLeftPos = quad->position - glm::vec2(quad->vec2Dimensions.x, quad->vec2Dimensions.y );
-			glm::vec2 vNearestPoint;
-			vNearestPoint.x = std::max(float(quadTopLeftPos.x), std::min(ball->position.x, float(quadTopLeftPos.x + quad->vec2Dimensions.x * 2.f)));
-			vNearestPoint.y = std::max(float(quadTopLeftPos.y), std::min(ball->position.y, float(quadTopLeftPos.y + quad->vec2Dimensions.y * 2.f)));
-
-			glm::vec2 vRayToNearest = vNearestPoint - ball->position;
-			float fOverlap = ball->vec2Dimensions.x - glm::length(vRayToNearest);
-			if (std::isnan(fOverlap)) fOverlap = 0;
-			cout << fOverlap << endl;
-			if(fOverlap > 0)
-				quad->position += glm::normalize(vRayToNearest) * fOverlap;
+			}
 		}
 	}
 }
 
 void Collider2D::PreRender(void)
 {
-	if (!cSettings->bShowCollider)
-		return;
-
 	// Use the shader defined for this class
 	CShaderManager::GetInstance()->Use(sLineShaderName);
 }
 
 void Collider2D::Render(void)
 {
-	if (!cSettings->bShowCollider)
-		return;
-
 	if (!bIsDisplayed)
 		return;
 
@@ -379,8 +365,6 @@ void Collider2D::Render(void)
 
 void Collider2D::PostRender(void)
 {
-	if (!cSettings->bShowCollider)
-		return;
 }
 
 bool Collider2D::GetbEnabled() const

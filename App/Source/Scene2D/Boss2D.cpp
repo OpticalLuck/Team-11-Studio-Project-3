@@ -407,7 +407,7 @@ void CBoss2D::UpdateAttack(float dElapsedTime) {
 		case ATK::A_MACHINEGUN:
 		case ATK::A_ATTACK: {
 			Bullet2D* bullet = ObjectFactory::CreateBullet(bulletAng, vTransform);
-			cEntityManager->PushBullet(bullet, cMap2D->GetCurrentLevel());
+			cEntityManager->PushBullet(bullet);
 
 			break;
 		}
@@ -415,7 +415,7 @@ void CBoss2D::UpdateAttack(float dElapsedTime) {
 		case ATK::A_CIRCLE: {
 			for (int i = 0; i < 4; i++) {
 				Bullet2D* bullet = ObjectFactory::CreateBullet(bulletAng + (i * 90), vTransform);
-				cEntityManager->PushBullet(bullet, cMap2D->GetCurrentLevel());
+				cEntityManager->PushBullet(bullet);
 			}
 
 			break;
@@ -424,7 +424,7 @@ void CBoss2D::UpdateAttack(float dElapsedTime) {
 		case ATK::A_TWIN: {
 			for (int i = 0; i < 2; i++) {
 				Bullet2D* bullet = ObjectFactory::CreateBullet(bulletAng + (i * 180), vTransform);
-				cEntityManager->PushBullet(bullet, cMap2D->GetCurrentLevel());
+				cEntityManager->PushBullet(bullet);
 			}
 
 			break;

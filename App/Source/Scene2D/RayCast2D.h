@@ -27,8 +27,6 @@ class RayCast2D
 		void Init(CEntity2D* currentTarget , std::vector<CEntity2D*> entityArr = std::vector<CEntity2D*>());
 
 		bool RayCheck(void); //True if raycast is successful and there's no object in the way
-		bool RayCheck(float angCheck);
-		bool RayCheck(float dist, float angCheck);
 
 		void PreRender(void);
 		void Render(void);

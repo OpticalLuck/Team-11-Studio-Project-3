@@ -4,7 +4,6 @@
 #include "Player2D.h"
 #include "Enemy2D.h"
 #include "Interactables.h"
-#include "Obstacle2D.h"
 
 #include <vector>
 #include <iostream>
@@ -27,7 +26,7 @@ class CEntityManager : public CSingletonTemplate<CEntityManager>
 	friend class CSingletonTemplate<CEntityManager>;
 public:
 	//Inits
-	bool EntityManagerInit(const unsigned int totalLevels);
+	bool EntityManagerInit(void);
 
 	//Renders
 	void RenderEnemy(void);
@@ -35,30 +34,25 @@ public:
 	void RenderPlayer(void);
 	void RenderBullets(void);
 	void RenderInteractables(void);
-	void RenderObstacles(void);
 
 	void Update(const double dElapsedTime);
 	CPlayer2D* Clone(void);
 	bool CheckCollision(CEntity2D* type1, CEntity2D* type2);
 	void RemoveEntity(string type, int amount);
 
-	bool InitPlayer();
 	CPlayer2D* GetPlayer();
 	CBoss2D* GetBoss();
 	int GetCurrRound(void);
 
-	void PushEnemy(CEnemy2D*, const unsigned int currLevel);
-	void PushBullet(Projectiles*, const unsigned int currLevel);
-	void PushInteractables(Interactables*, const unsigned int currLevel);
-	void PushObstacles(Obstacle2D*, const unsigned int currLevel);
+	void PushEnemy(CEnemy2D*);
+	void PushBullet(Projectiles*);
+	void PushInteractables(Interactables*);
 
 	std::vector<CPlayer2D*> GetAllPlayers(void);
 	std::vector<CEnemy2D*> GetAllEnemies(void);
 	std::vector<CEntity2D*> GetAllLivingEntities(void);
-	std::vector<Interactables*> GetAllInteractables(void);
-	std::vector<Obstacle2D*> GetallObstacles(void);
 
-	void Clear(void);
+	std::vector<Interactables*> GetAllInteractables(void);
 
 protected:
 	CEntityManager();
@@ -69,7 +63,7 @@ protected:
 
 	CPlayer2D* cPlayer2D;
 
-	std::vector<CBoss2D*> cBoss2D;
+	CBoss2D* cBoss2D;
 	CEnemy2D* cEnemy2D;
 
 	CMap2D* cMap2D;
@@ -77,14 +71,13 @@ protected:
 	CInventoryManager* CInventoryManager;
 
 	//list of vectors
-	std::vector<std::vector<Interactables*>> m_interactableList;
-	std::vector<std::vector<CEnemy2D*>> m_enemyList;
-	std::vector<std::vector<Projectiles*>> m_BulletList;
+	std::vector<Interactables*> m_interactableList;
+	std::vector<CEnemy2D*> m_enemyList;
+	std::vector<Projectiles*> m_BulletList;
 	std::vector<CPlayer2D*> m_cloneList;
-	std::vector<std::vector<Obstacle2D*>> m_ObstacleList;
 
 	int currRound; //Current round in game. First is 0 and last is 4 (Will be storing enemies prev attacks etc using this)
 
 	//Factories
-	// EnemyFactory enemyFactory;
+	EnemyFactory enemyFactory;
 };

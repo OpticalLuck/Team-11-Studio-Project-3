@@ -80,10 +80,10 @@ void Interactables::Update(const double dElapsedTime)
 {
 	bool bCollided = false;
 
-	CEntityManager* em = CEntityManager::GetInstance();
-
-	if (this->interactableType < PRESSURE_PLATE)
+	if (this->interactableType == PRESSURE_PLATE)
 	{
+		CEntityManager* em = CEntityManager::GetInstance();
+
 		for (auto& e : em->GetAllPlayers())
 		{
 			/*Collision data = e->GetCollider()->CollideWith(this->collider2D);
@@ -93,29 +93,6 @@ void Interactables::Update(const double dElapsedTime)
 			}*/
 
 			float distance = glm::length(e->vTransform - this->vTransform);
-			if (!e->IsClone() || e->m_FrameStorage.iCurrentFrame <= e->m_FrameStorage.iEndFrame)
-			{
-				if (distance < 1 && e->m_KeyboardInputs[e->m_FrameStorage.iCurrentFrame - 1][KEYBOARD_INPUTS::E].bKeyPressed)
-				{
-					Activate();
-				}
-			}
-		}
-	}
-	else if (this->interactableType == PRESSURE_PLATE)
-	{
-		for (auto& e : em->GetAllPlayers())
-		{
-			float distance = glm::length(e->vTransform - this->vTransform);
-			if (distance < 0.4)
-			{
-				bCollided = true;
-			}
-		}
-
-		for (auto& e : em->GetallObstacles())
-		{
-			float distance = glm::length(e->vTransform - this->vTransform);
 			if (distance < 0.4)
 			{
 				bCollided = true;
@@ -124,10 +101,38 @@ void Interactables::Update(const double dElapsedTime)
 
 		Activate(bCollided);
 	}
-	else if (this->interactableType == PORTAL)
+	else if (this->interactableType == LEVER)
 	{
+		CEntityManager* em = CEntityManager::GetInstance();
+
 		for (auto& e : em->GetAllPlayers())
 		{
+			/*Collision data = e->GetCollider()->CollideWith(this->collider2D);
+			if (std::get<0>(data))
+			{
+				bCollided = true;
+			}*/
+
+			float distance = glm::length(e->vTransform - this->vTransform);
+			if (distance < 1 && e->m_KeyboardInputs[e->iTempFrameCounter - 1][KEYBOARD_INPUTS::E].bKeyPressed)
+			{
+				Activate(!bInteraction);
+			}
+		}
+	}
+	else if (this->interactableType == PORTAL)
+	{
+		CEntityManager* em = CEntityManager::GetInstance();
+
+		for (auto& e : em->GetAllPlayers())
+		{
+			// e->bJustTeleported = false;
+			/*Collision data = e->GetCollider()->CollideWith(this->collider2D);
+			if (std::get<0>(data))
+			{
+				bCollided = true;
+			}*/
+
 			float distance = glm::length(e->vTransform - this->vTransform);
 			if (distance < 0.3)
 			{
@@ -147,21 +152,6 @@ void Interactables::Update(const double dElapsedTime)
 			else
 			{
 				this->bJustTeleported = false;
-			}
-		}
-	}
-	else if (this->interactableType == COMMON_CHEST || this->interactableType == RARE_CHEST)
-	{
-		for (auto& e : em->GetAllPlayers())
-		{
-			float distance = glm::length(e->vTransform - this->vTransform);
-
-			if (e->m_FrameStorage.iCurrentFrame > e->m_KeyboardInputs.size())
-				continue;
-
-			if (distance < 1 && e->m_KeyboardInputs[e->m_FrameStorage.iCurrentFrame - 1][KEYBOARD_INPUTS::E].bKeyPressed)
-			{
-				Activate(true, e);
 			}
 		}
 	}
@@ -279,7 +269,7 @@ bool Interactables::LoadTexture(const char* filename, GLuint& iTextureID)
 	return true;
 }
 
-bool Interactables::Activate(bool interaction, CPlayer2D* player)
+bool Interactables::Activate(bool interaction)
 {
 	switch (interactableType) {
 	case LEVER:
@@ -287,16 +277,6 @@ bool Interactables::Activate(bool interaction, CPlayer2D* player)
 		break;
 	case PRESSURE_PLATE:
 		ActivatePressurePlate(interaction);
-		break;
-	case COMMON_CHEST:
-		OpenChest(player, "Shuriken", 5);
-		OpenChest(player, "Kunai", 5);
-		this->bInteraction = interaction;
-		break;
-	case RARE_CHEST:
-		OpenChest(player, "Shuriken", 10);
-		OpenChest(player, "Kunai", 10);
-		this->bInteraction = interaction;
 		break;
 	default:
 		this->bInteraction = interaction;
@@ -324,8 +304,8 @@ bool Interactables::Activate(bool interaction, CPlayer2D* player)
 			{
 				if (this->iInteractableID == e->iInteractableID)
 				{
-					e->Activate(this->bInteraction);
-					e->collider2D->SetbEnabled(!this->bInteraction);
+					e->Activate(interaction);
+					e->collider2D->SetbEnabled(!interaction);
 					return true;
 				}
 			}
@@ -333,15 +313,6 @@ bool Interactables::Activate(bool interaction, CPlayer2D* player)
 	}
 
 	return true;
-}
-
-bool Interactables::OpenChest(CPlayer2D* player, std::string itemName, int itemCount)
-{
-	CInventory* inv = player->GetInventory();
-	if (!this->bInteraction)
-		inv->AddItem(itemName, itemCount);
-
-	return false;
 }
 
 bool Interactables::ActivateSwitch()

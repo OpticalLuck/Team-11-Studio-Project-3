@@ -27,7 +27,7 @@ using namespace std;
 #include "Math/MyMath.h"
 
 //Interactables
-#include "Obstacle2D.h"
+#include "Boulder2D.h"
 
 //Items
 #include "Projectiles.h"
@@ -45,6 +45,7 @@ CPlayer2D::CPlayer2D(void)
 	, cMouseController(NULL)
 	, cSoundController(NULL)
 	, cInputHandler(NULL)
+	, iTempFrameCounter(0)
 	//, bDamaged(false)
 	, bIsClone(false)
 	, cInventory(NULL)
@@ -104,8 +105,6 @@ CPlayer2D::~CPlayer2D(void)
 	// We won't delete this since it was created elsewhere
 	cMap2D = NULL;
 
-	CInventoryManager::GetInstance()->DeleteInventory(this->cInventory->sName);
-
 	// optional: de-allocate all resources once they've outlived their purpose:
 	glDeleteVertexArrays(1, &VAO);
 }
@@ -153,7 +152,7 @@ bool CPlayer2D::Init(void)
 	}
 	
 	state = STATE::S_IDLE;
-	facing = FACING_DIR::RIGHT;
+	facing = DIRECTION::RIGHT;
 	//CS: Create the animated sprite and setup the animation 
 	animatedSprites = CMeshBuilder::GenerateSpriteAnimation(10, 6, cSettings->TILE_WIDTH, cSettings->TILE_HEIGHT);
 	animatedSprites->AddAnimation("run", 0, 6);
@@ -195,7 +194,7 @@ bool CPlayer2D::Init(void)
 	// collider2D->SetOffset(glm::vec2(0.f, -0.5f));
 	cPhysics2D->Init(&vTransform);
 
-	CInventoryManager::GetInstance()->Add("Player", this);
+	CInventoryManager::GetInstance()->Add("Player");
 	cInventory = CInventoryManager::GetInstance()->Get("Player");
 
 	return true;
@@ -234,7 +233,7 @@ bool CPlayer2D::Init(glm::i32vec2 spawnpoint, int iCloneIndex)
 	}
 
 	state = STATE::S_IDLE;
-	facing = FACING_DIR::RIGHT;
+	facing = DIRECTION::RIGHT;
 	//CS: Create the animated sprite and setup the animation 
 	animatedSprites = CMeshBuilder::GenerateSpriteAnimation(10, 6, cSettings->TILE_WIDTH, cSettings->TILE_HEIGHT);
 	animatedSprites->AddAnimation("run", 0, 6);
@@ -268,7 +267,7 @@ bool CPlayer2D::Init(glm::i32vec2 spawnpoint, int iCloneIndex)
 
 	jumpCount = 0;
 
-	fMovementSpeed = 4.f;
+	fMovementSpeed = 3.f;
 	fJumpSpeed = 5.f;
 
 	// Get the handler to the CSoundController
@@ -284,11 +283,10 @@ bool CPlayer2D::Init(glm::i32vec2 spawnpoint, int iCloneIndex)
 	collider2D->Init(vTransform, glm::vec2(0.2f, 0.5f));
 	cPhysics2D->Init(&vTransform);
 
-	//const void* address = 
 	std::stringstream ss;
 	ss << "Clone" << iCloneIndex;
 
-	CInventoryManager::GetInstance()->Add(ss.str().c_str(), this);
+	CInventoryManager::GetInstance()->Add(ss.str().c_str());
 	cInventory = CInventoryManager::GetInstance()->Get(ss.str().c_str());
 
 	return true;
@@ -411,20 +409,35 @@ void CPlayer2D::Update(const double dElapsedTime)
 			if (obj->GetCollider()->colliderType == Collider2D::ColliderType::COLLIDER_QUAD)
 			{
 				collider2D->ResolveAABB(obj->GetCollider(), data);
+
+				if (std::get<1>(data) == Direction::UP)
+					cPhysics2D->SetboolGrounded(true);
 			}
 			else if (obj->GetCollider()->colliderType == Collider2D::ColliderType::COLLIDER_CIRCLE)
 			{
 				if (glm::dot(cPhysics2D->GetVelocity(), obj->vTransform - vTransform) > 0)
 					collider2D->ResolveAABBCircle(obj->GetCollider(), data, Collider2D::ColliderType::COLLIDER_QUAD);
+
+				if (std::get<1>(data) == Direction::UP)
+					cPhysics2D->SetboolGrounded(true);
 			}
 
-			if (std::get<1>(data) == Direction::UP)
-				cPhysics2D->SetboolGrounded(true);
-			
-			if (std::get<1>(data) == Direction::LEFT || std::get<1>(data) == Direction::RIGHT)
-				cPhysics2D->SetVelocity(glm::vec2(0, cPhysics2D->GetVelocity().y));
 			vTransform = collider2D->position;
 			obj->vTransform = obj->GetCollider()->position;
+
+			if (obj->type == ENTITY_TYPE::TILE)
+			{
+				if (dynamic_cast<Boulder2D*>(obj))
+				{
+					glm::vec2 direction = glm::normalize(obj->vTransform - vTransform);
+					(obj)->GetPhysics()->SetForce(glm::vec2(120.f, 0) * direction);
+					cPhysics2D->SetVelocity(glm::vec2(0.f));
+				}
+			}
+
+
+			if (std::get<1>(data) == Direction::LEFT || std::get<1>(data) == Direction::RIGHT)
+				cPhysics2D->SetVelocity(glm::vec2(0, cPhysics2D->GetVelocity().y));
 		}
 	}
 
@@ -470,7 +483,8 @@ void CPlayer2D::Update(const double dElapsedTime)
 	//CS: Update the animated sprite
 	animatedSprites->Update(dElapsedTime);
 
-	m_FrameStorage.iCurrentFrame++;
+	if (!bIsClone || iTempFrameCounter < m_KeyboardInputs.size() - 1)
+		iTempFrameCounter++;
 }
 
 /**
@@ -514,7 +528,7 @@ void CPlayer2D::Render(void)
 	transform = glm::translate(transform, glm::vec3(actualPos.x, actualPos.y, 0.f));
 	transform = glm::scale(transform, glm::vec3(Camera2D::GetInstance()->getZoom()));
 
-	if (facing == FACING_DIR::LEFT)
+	if (facing == DIRECTION::LEFT)
 		transform = glm::rotate(transform, glm::radians(180.f), glm::vec3(0.f, 1.f, 0.f));
 	// Update the shaders with the latest transform
 	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
@@ -592,50 +606,50 @@ void CPlayer2D::InputUpdate(double dt)
 {
 	state = STATE::S_IDLE;
 	
-	if ((unsigned)m_FrameStorage.iCurrentFrame >= m_KeyboardInputs.size())
+	if ((unsigned)iTempFrameCounter >= m_KeyboardInputs.size())
 		return;
 
 	glm::vec2 velocity = cPhysics2D->GetVelocity();
 	glm::vec2 force = glm::vec2(0.f);
 
-	if (m_KeyboardInputs[m_FrameStorage.iCurrentFrame][KEYBOARD_INPUTS::W].bKeyDown)
+	if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::W].bKeyDown)
 	{
 		velocity.y = fMovementSpeed;
 		cPhysics2D->SetboolGrounded(false);
 		//DEBUG_MSG(this << ": Frame:" << iTempFrameCounter << " Move Up");
 	}
-	else if (m_KeyboardInputs[m_FrameStorage.iCurrentFrame][KEYBOARD_INPUTS::S].bKeyDown)
+	else if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::S].bKeyDown)
 	{
 		//velocity.y = -fMovementSpeed;
 		//DEBUG_MSG(this << ": Frame:" << iTempFrameCounter << " Move Down");
 	}
 
-	if (m_KeyboardInputs[m_FrameStorage.iCurrentFrame][KEYBOARD_INPUTS::D].bKeyDown)
+	if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::D].bKeyDown)
 	{
 		//velocity.x = fMovementSpeed;
 		if (velocity.x < fMovementSpeed && !cPhysics2D->GetboolKnockedBacked())
 			velocity.x = Math::Min(velocity.x + fMovementSpeed, fMovementSpeed);
 
 		state = STATE::S_MOVE;
-		facing = FACING_DIR::RIGHT;
+		facing = DIRECTION::RIGHT;
 		//DEBUG_MSG(this << ": Frame:" << iTempFrameCounter << " Move Right");
 	}
-	else if (m_KeyboardInputs[m_FrameStorage.iCurrentFrame][KEYBOARD_INPUTS::A].bKeyDown)
+	else if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::A].bKeyDown)
 	{
 		if (velocity.x > -fMovementSpeed && !cPhysics2D->GetboolKnockedBacked())
 			velocity.x = Math::Max(velocity.x - fMovementSpeed, -fMovementSpeed);
 		state = STATE::S_MOVE;
-		facing = FACING_DIR::LEFT;
+		facing = DIRECTION::LEFT;
 		//DEBUG_MSG(this << ": Frame:" << iTempFrameCounter << " Move Left");
 	}
 
-	if (m_KeyboardInputs[m_FrameStorage.iCurrentFrame][KEYBOARD_INPUTS::SPACE].bKeyDown)
+	if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::SPACE].bKeyDown)
 	{
 		if (jumpCount < 2 &&
-			m_KeyboardInputs[m_FrameStorage.iCurrentFrame][KEYBOARD_INPUTS::SPACE].bKeyPressed)
+			m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::SPACE].bKeyPressed)
 		{
 			cPhysics2D->SetboolGrounded(false);
-			velocity.y = 6.5f * (jumpCount + (1 - jumpCount * 0.6f));
+			velocity.y = 5.f * (jumpCount + (1 - jumpCount * 0.6f));
 			jumpCount++;
 			timerArr[A_JUMP].second = 0.1;
 		}
@@ -675,7 +689,7 @@ void CPlayer2D::InputUpdate(double dt)
 	if (glm::length(force) > 0.f)
 		cPhysics2D->SetForce(force);
 
-	if (m_MouseInputs[m_FrameStorage.iCurrentFrame][MOUSE_INPUTS::LMB].bButtonPressed)
+	if (m_MouseInputs[iTempFrameCounter][MOUSE_INPUTS::LMB].bButtonPressed)
 	{
 		cSoundController->PlaySoundByID(SOUND_ID::SOUND_SWING);
 		CInventoryManager::GetInstance()->Use(cInventory->sName);
@@ -757,27 +771,15 @@ void CPlayer2D::Attacked(int hp, CPhysics2D* bounceObj) {
 	//Collision response between the objects
 	if (bounceObj) {
 		glm::vec2 ogVel = cPhysics2D->GetVelocity();
-		glm::vec2 objVel = bounceObj->GetVelocity();
 
-		if (vTransform.x > bounceObj->GetPosition().x) {
+		if (vTransform.x > bounceObj->GetPosition().x)
 			cPhysics2D->SetVelocity(glm::vec2(-fMovementSpeed, ogVel.y));
-			bounceObj->SetVelocity(glm::vec2(fMovementSpeed, objVel.y));
-		}
-		else if (vTransform.x < bounceObj->GetPosition().x) {
+		else if (vTransform.x < bounceObj->GetPosition().x)
 			cPhysics2D->SetVelocity(glm::vec2(fMovementSpeed, ogVel.y));
-			bounceObj->SetVelocity(glm::vec2(-fMovementSpeed, objVel.y));
-		}
 
 		cPhysics2D->CollisionResponse(bounceObj,1.5f,1.5f);
 		cPhysics2D->SetBoolKnockBacked(true);
 		bounceObj->SetBoolKnockBacked(true);
-
-		float maxSpd = maxKnockBack;
-		if (glm::length(cPhysics2D->GetVelocity()) > maxSpd)
-			cPhysics2D->SetVelocity(glm::normalize(cPhysics2D->GetVelocity()) * maxSpd);
-
-		if (glm::length(bounceObj->GetVelocity()) > maxSpd)
-			bounceObj->SetVelocity(glm::normalize(bounceObj->GetVelocity()) * maxSpd);
 	}
 }
 
@@ -789,11 +791,6 @@ float CPlayer2D::GetTransformX(void)
 float CPlayer2D::GetTransformY(void)
 {
 	return vTransform.y;
-}
-
-CInventory* CPlayer2D::GetInventory(void)
-{
-	return cInventory;
 }
 
 void CPlayer2D::SetKeyInputs(std::vector<std::array<KeyInput, KEYBOARD_INPUTS::KEY_TOTAL>> inputs)

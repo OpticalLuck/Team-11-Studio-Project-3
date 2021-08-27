@@ -45,8 +45,6 @@ class CSettings;
 //Include texture manager
 #include "../TextureManager/TextureManager.h"
 
-#include "../Factory/EnemyFactory.h"
-
 // Include files for AStar
 #include <queue>
 #include <functional>
@@ -150,8 +148,6 @@ protected:
 
 	//Camera handler
 	Camera2D* camera;
-
-	EnemyFactory enemyFactory;
 
 	// Constructor
 	CMap2D(void);

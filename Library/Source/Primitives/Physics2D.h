@@ -14,7 +14,7 @@ class CPhysics2D
 private:
 	glm::vec2 CalculateAcceleration();
 public:	
-	enum class STATUS
+	enum STATUS
 	{
 		IDLE = 0,
 		JUMP,

@@ -90,8 +90,6 @@ public:
 
 	CPhysics2D* GetPhysics();
 
-	static void SetRecording(bool);
-
 protected:
 	// Name of Shader Program instance
 	std::string sShaderName;
@@ -118,7 +116,4 @@ protected:
 	CSettings* cSettings;
 	//CMap2D* cMap2D;
 	Camera2D* camera2D;
-
-	//Recording
-	static bool recording;
 };

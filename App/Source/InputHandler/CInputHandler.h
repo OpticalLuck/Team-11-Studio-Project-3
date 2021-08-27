@@ -61,14 +61,12 @@ class CInputHandler : public CSingletonTemplate<CInputHandler>
 public:
 
 	void Init(void);
-	void Reset(void);
 	void Update(double dElapsedTime);
 
 	KeyInput GetKeyInput(int iCurrentFrame, KEYBOARD_INPUTS eInput);
 	MouseInput GetMouseInput(int iCurrentFrame, MOUSE_INPUTS eInput);
 	std::vector<std::array<KeyInput, KEY_TOTAL>> GetAllKeyboardInputs(void);
 	std::vector<std::array<MouseInput, MOUSE_TOTAL>> GetAllMouseInputs(void);
-
 
 protected:
 
