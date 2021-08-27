@@ -22,7 +22,7 @@ LivingEntity2D::LivingEntity2D(void) {
 	currentColor = glm::vec4(1, 1, 1, 1);
 	blinkColor = glm::vec4(100, 100, 100, 1);
 
-	maxKnockBack = 15.f;
+	maxKnockBack = 7.5f;
 }
 
 LivingEntity2D::~LivingEntity2D(void) {

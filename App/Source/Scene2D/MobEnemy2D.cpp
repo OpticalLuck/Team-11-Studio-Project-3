@@ -465,6 +465,22 @@ void CMobEnemy2D::UpdateSmart(float dElapsedTime) {
 			currTarget = nullptr;
 	}
 
+	if (enemySee && sCurrentFSM != FSM::ATTACK) { //Direction checking
+		float ang = rayCast2D->GetAngle();
+
+		if (dir == DIRECTION::RIGHT) {
+			if (ang > 80 && ang < 280)
+				enemySee = false;
+		}
+		else {
+			if (ang < 100 || ang > 260)
+				enemySee = false;
+		}
+
+		if (!enemySee)
+			currTarget = nullptr;
+	}
+
 	switch (sCurrentFSM) {
 		case FSM::IDLE:
 			intervalTimer = Math::Max(0, intervalTimer - 1);
@@ -513,7 +529,7 @@ void CMobEnemy2D::UpdateSmart(float dElapsedTime) {
 
 			if (rayCast) { //DIRECTION CHECKING
 				float ang = rayCast2D->GetAngle();
-				if (dir == DIRECTION::LEFT) {
+				if (dir == DIRECTION::RIGHT) {
 					if (ang > 80 && ang < 280)
 						rayCast = false;
 				}
@@ -559,7 +575,7 @@ void CMobEnemy2D::UpdateSmart(float dElapsedTime) {
 
 			if (stateTimer == 0) {
 				//Code to go back to passive
-				EnableGoBack();
+				RandomisePassive();
 			}
 
 			break;
