@@ -13,6 +13,7 @@
 
 Interactables::Interactables(int iTextureID)
 	: bInteraction(false)
+	, bCloneInteract(false)
 	, quad(NULL)
 	, iInteractableID(0)
 {
@@ -86,18 +87,12 @@ void Interactables::Update(const double dElapsedTime)
 	{
 		for (auto& e : em->GetAllPlayers())
 		{
-			/*Collision data = e->GetCollider()->CollideWith(this->collider2D);
-			if (std::get<0>(data))
-			{
-				bCollided = true;
-			}*/
-
 			float distance = glm::length(e->vTransform - this->vTransform);
 			if (!e->IsClone() || e->m_FrameStorage.iCurrentFrame <= e->m_FrameStorage.iEndFrame)
 			{
 				if (distance < 1 && e->m_KeyboardInputs[e->m_FrameStorage.iCurrentFrame - 1][KEYBOARD_INPUTS::E].bKeyPressed)
 				{
-					Activate();
+					Activate(false, e);
 				}
 			}
 		}
@@ -304,7 +299,7 @@ bool Interactables::Activate(bool interaction, CPlayer2D* player)
 {
 	switch (interactableType) {
 	case LEVER:
-		ActivateSwitch();
+		ActivateSwitch(player);
 		break;
 	case PRESSURE_PLATE:
 		ActivatePressurePlate(interaction);
@@ -326,14 +321,24 @@ bool Interactables::Activate(bool interaction, CPlayer2D* player)
 
 	// Change Texture
 	// On and Off Textures are an index apart in the texture manager
-	switch (bInteraction) {
+	/*switch (bInteraction) {
 	case true:
 		this->iTextureID = this->interactableType + 1;
 		break;
 	case false:
 		this->iTextureID = this->interactableType;
 		break;
+	}*/
+
+	if (bInteraction || bCloneInteract)
+	{
+		this->iTextureID = this->interactableType + 1;
 	}
+	else
+	{
+		this->iTextureID = this->interactableType;
+	}
+
 
 	// Loop through the interactables to activate the corresponding Interactable IDs
 	if (this->interactableType < DOOR)
@@ -365,9 +370,13 @@ bool Interactables::OpenChest(CPlayer2D* player, std::string itemName, int itemC
 	return false;
 }
 
-bool Interactables::ActivateSwitch()
+bool Interactables::ActivateSwitch(CPlayer2D* player)
 {
-	this->bInteraction = !this->bInteraction;
+	if (player->GetRecording())
+		this->bCloneInteract = !this->bCloneInteract;
+	else
+		this->bInteraction = !this->bInteraction;
+	
 	return false;
 }
 

@@ -186,9 +186,9 @@ bool CScene2D::Update(const double dElapsedTime)
 		switch (cPlayer2D->m_FrameStorage.iCounter)
 		{
 		case 1:
+			cPlayer2D->SetRecording(true);
 			cPlayer2D->m_FrameStorage.iStoredFrame = cPlayer2D->m_FrameStorage.iCurrentFrame;
 			cPlayer2D->m_FrameStorage.spawnPos = cPlayer2D->vTransform;
-
 			//Recording enemy stuff
 			CEntity2D::SetRecording(true);
 			for (unsigned i = 0; i < enemyArr.size(); i++) {
@@ -200,6 +200,7 @@ bool CScene2D::Update(const double dElapsedTime)
 
 			break;
 		case 2:
+			cPlayer2D->SetRecording(false);
 			CPlayer2D* clone = CEntityManager::GetInstance()->Clone();
 			clone->vTransform = cPlayer2D->m_FrameStorage.spawnPos;
 			clone->m_FrameStorage.iCurrentFrame = cPlayer2D->m_FrameStorage.iStoredFrame;

@@ -50,6 +50,7 @@ CPlayer2D::CPlayer2D(void)
 	, cInventory(NULL)
 	, jumpCount(0)
 	, bJustTeleported(false)
+	, bIsRecording(false)
 
 {
 	transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
@@ -740,6 +741,16 @@ float CPlayer2D::GetTransformY(void)
 CInventory* CPlayer2D::GetInventory(void)
 {
 	return cInventory;
+}
+
+bool CPlayer2D::GetRecording()
+{
+	return bIsRecording;
+}
+
+void CPlayer2D::SetRecording(bool bIsRecording)
+{
+	this->bIsRecording = bIsRecording;
 }
 
 void CPlayer2D::SetKeyInputs(std::vector<std::array<KeyInput, KEYBOARD_INPUTS::KEY_TOTAL>> inputs)
