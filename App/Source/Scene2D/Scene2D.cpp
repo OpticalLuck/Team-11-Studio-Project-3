@@ -37,7 +37,7 @@ CScene2D::~CScene2D(void)
 {
 	if (cSoundController)
 	{
-		cSoundController->StopSoundByID(BGM_HENESYS);
+		cSoundController->StopSoundByID(BGM_LEVEL1);
 		// We won't delete this since it was created elsewhere
 		cSoundController = NULL;
 	}
@@ -170,7 +170,7 @@ bool CScene2D::Init(std::string levelPath)
 
 	// Load the sounds into CSoundController
 	cSoundController = CSoundController::GetInstance();
-	cSoundController->PlaySoundByID(SOUND_ID::BGM_HENESYS);
+	//cSoundController->PlaySoundByID(SOUND_ID::BGM_LEVEL1);
 	//CSettings::SongPlaylist();
 
 	CInputHandler = CInputHandler::GetInstance();
@@ -298,7 +298,7 @@ bool CScene2D::Update(const double dElapsedTime)
 	{
 		if (cSoundController->isCurrentlyPlaying(cSoundController->GetNamebyID(SOUND_ID::SOUND_TROUBLE)))
 			cSoundController->StopPlayBack();
-		cSoundController->PlaySoundByID(SOUND_ID::BGM_HENESYS);
+		cSoundController->PlaySoundByID(SOUND_ID::BGM_LEVEL1);
 	}
 	return true;
 }

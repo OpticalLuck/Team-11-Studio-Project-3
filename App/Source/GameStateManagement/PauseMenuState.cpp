@@ -56,16 +56,16 @@ bool PauseMenuState::Init(void)
 
 	// Load the images for buttons
 	CImageLoader* il = CImageLoader::GetInstance();
-	resumeButtonData.fileName = "Image\\GUI\\ResumeButton.png";
+	resumeButtonData.fileName = "Image\\Buttons\\play.png";
 	resumeButtonData.textureID = il->LoadTextureGetID(resumeButtonData.fileName.c_str(), false);
-	exitButtonData.fileName = "Image\\GUI\\ExitButton.png";
+	exitButtonData.fileName = "Image\\Buttons\\quit.png";
 	exitButtonData.textureID = il->LoadTextureGetID(exitButtonData.fileName.c_str(), false);
 
-	optionButtonData.fileName = "Image\\GUI\\OptionButton.png";
+	optionButtonData.fileName = "Image\\Buttons\\option.png";
 	optionButtonData.textureID = il->LoadTextureGetID(optionButtonData.fileName.c_str(), false);
-	backButtonData.fileName = "Image\\GUI\\BackButton.png";
+	backButtonData.fileName = "Image\\Buttons\\back.png";
 	backButtonData.textureID = il->LoadTextureGetID(backButtonData.fileName.c_str(), false);
-	applyButtonData.fileName = "Image\\GUI\\ApplyButton.png";
+	applyButtonData.fileName = "Image\\Buttons\\apply.png";
 	applyButtonData.textureID = il->LoadTextureGetID(applyButtonData.fileName.c_str(), false);
 
 	cSoundController = CSoundController::GetInstance();
