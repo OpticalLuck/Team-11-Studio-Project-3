@@ -56,6 +56,7 @@ public:
 	std::vector<CEntity2D*> GetAllLivingEntities(void);
 	std::vector<Interactables*> GetAllInteractables(void);
 	std::vector<Obstacle2D*> GetallObstacles(void);
+	std::vector<CEntity2D*> GetAllSolidEntities(void);
 
 	void Clear(void);
 

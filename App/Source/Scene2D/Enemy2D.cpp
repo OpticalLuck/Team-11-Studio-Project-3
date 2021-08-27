@@ -72,6 +72,8 @@ CEnemy2D::CEnemy2D(void)
 	pMaxBlinkInterval = int(0.175f * (float)cSettings->FPS);
 
 	currFrame = 0;
+
+	beforeTarget = nullptr;
 }
 
 /**
@@ -132,8 +134,6 @@ bool CEnemy2D::Init(void)
 
 	//CS: Create the Quad Mesh using the mesh builder
 	quadMesh = CMeshBuilder::GenerateQuad(glm::vec4(1, 1, 1, 1), cSettings->TILE_WIDTH, cSettings->TILE_HEIGHT);
-
-	roundIndex = 0;
 
 	// Load the enemy2D texture
 	if (LoadTexture("Image/Scene2D_EnemyTile.tga", iTextureID) == false)
@@ -232,6 +232,14 @@ CPlayer2D* CEnemy2D::GetNearestTarget(float dist) {
 		nearest = nullptr;
 
 	return nearest;
+}
+
+void CEnemy2D::ResetRecording(void) {
+	//Do nothing for now
+}
+
+void CEnemy2D::ReplayRecording(void) {
+	//Do nothing for now
 }
 
 CEnemy2D::DIRECTION CEnemy2D::RandomiseDir(void) {

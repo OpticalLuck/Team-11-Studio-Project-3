@@ -138,6 +138,18 @@ std::vector<CEntity2D*> CEntityManager::GetAllLivingEntities(void) {
 	return totalArr;
 }
 
+std::vector<CEntity2D*> CEntityManager::GetAllSolidEntities(void) {
+	std::vector<CEntity2D*> totalArr = GetAllLivingEntities();
+
+	std::vector<Obstacle2D*> obstArr = GetallObstacles();
+	std::vector<CEntity2D*> convertedObstArr(obstArr.begin(), obstArr.end());
+
+	totalArr.reserve(totalArr.size() + convertedObstArr.size());
+	totalArr.insert(totalArr.end(), convertedObstArr.begin(), convertedObstArr.end());
+
+	return totalArr;
+}
+
 std::vector<Interactables*> CEntityManager::GetAllInteractables(void)
 {
 	return m_interactableList;

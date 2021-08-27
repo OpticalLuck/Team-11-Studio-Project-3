@@ -64,7 +64,6 @@ CScene2D::~CScene2D(void)
 		cameraHandler->Destroy();
 		cameraHandler = NULL;
 	}
-
 }
 
 /**
@@ -192,10 +191,7 @@ bool CScene2D::Update(const double dElapsedTime)
 			//Recording enemy stuff
 			CEntity2D::SetRecording(true);
 			for (unsigned i = 0; i < enemyArr.size(); i++) {
-				CMobEnemy2D* mobEnemy = dynamic_cast<CMobEnemy2D*>(enemyArr[i]);
-
-				if (mobEnemy)
-					mobEnemy->ResetRecording();
+				enemyArr[i]->ResetRecording();
 			}
 
 			break;
@@ -204,6 +200,7 @@ bool CScene2D::Update(const double dElapsedTime)
 			clone->vTransform = m_FrameStorage.spawnPos;
 			clone->iTempFrameCounter = m_FrameStorage.iStoredFrame;
 			clone->iFrameCounterEnd = m_FrameStorage.iCurrentFrame;
+			clone->SetHealth(cEntityManager->GetPlayer()->GetHealth());
 			m_FrameStorage.iStoredFrame = 0;
 			cPlayer2D->vTransform = m_FrameStorage.spawnPos;
 
@@ -213,10 +210,7 @@ bool CScene2D::Update(const double dElapsedTime)
 			CEntity2D::SetRecording(false);
 
 			for (unsigned i = 0; i < enemyArr.size(); i++) {
-				CMobEnemy2D* mobEnemy = dynamic_cast<CMobEnemy2D*>(enemyArr[i]);
-
-				if (mobEnemy)
-					mobEnemy->ReplayRecording();
+				enemyArr[i]->ReplayRecording();
 			}
 			break;
 		}

@@ -61,6 +61,9 @@ int LivingEntity2D::GetHealth(void) {
 	return pHealth;
 }
 
+void LivingEntity2D::SetHealth(int hp) {
+	pHealth = Math::Clamp(hp, 0, pMaxHealth);
+}
 
 int LivingEntity2D::GetMaxHealth(void)
 {

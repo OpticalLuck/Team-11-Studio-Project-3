@@ -80,8 +80,8 @@ bool CMobEnemy2D::Init(void) {
 	posToChase = vTransform;
 	spawnPoint = vTransform;
 
-	roundIndex = 0;
-	pHealth = 5;
+	pMaxHealth = 3;
+	pHealth = 3;
 
 	currTarget = nullptr;
 
@@ -95,7 +95,6 @@ bool CMobEnemy2D::Init(void) {
 	for (int i = 0; i < 5; i++) {
 		roundDir[i] = RandomiseDir();
 	}
-	dir = roundDir[roundIndex];
 
 	//CS: Init the color to white
 	currentColor = glm::vec4(1.0, 1.0, 1.0, 1.0);
