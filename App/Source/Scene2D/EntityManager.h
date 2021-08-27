@@ -8,6 +8,7 @@
 
 #include <vector>
 #include <iostream>
+#include <queue>
 #include "Map2D.h"
 //Include keyboard controller
 #include "Inputs/KeyboardController.h"
@@ -39,6 +40,7 @@ public:
 
 	void Update(const double dElapsedTime);
 	CPlayer2D* Clone(void);
+	int GetNoOfAvailableCloneID();
 	bool CheckCollision(CEntity2D* type1, CEntity2D* type2);
 	void RemoveEntity(string type, int amount);
 
@@ -74,6 +76,7 @@ protected:
 	CKeyboardController* cKeyboardController;
 
 	CPlayer2D* cPlayer2D;
+	std::queue<int> qclone_ID;
 
 	std::vector<CBoss2D*> cBoss2D;
 	CEnemy2D* cEnemy2D;

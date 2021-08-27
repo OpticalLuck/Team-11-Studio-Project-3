@@ -51,6 +51,7 @@ CPlayer2D::CPlayer2D(void)
 	, jumpCount(0)
 	, bJustTeleported(false)
 	, bIsRecording(false)
+	, iCloneIndex(0)
 
 {
 	transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
@@ -204,6 +205,7 @@ bool CPlayer2D::Init(void)
 
 bool CPlayer2D::Init(glm::i32vec2 spawnpoint, int iCloneIndex)
 {
+	this->iCloneIndex = iCloneIndex;
 	// Store the keyboard controller singleton instance here
 	cKeyboardController = CKeyboardController::GetInstance();
 	// Reset all keys since we are starting a new game
@@ -692,6 +694,11 @@ void CPlayer2D::SetClone(bool bIsClone)
 bool CPlayer2D::IsClone()
 {
 	return bIsClone;
+}
+
+int CPlayer2D::GetCloneID() const
+{
+	return iCloneIndex;
 }
 
 void CPlayer2D::Attacked(int hp, CPhysics2D* bounceObj) {

@@ -90,10 +90,12 @@ void Interactables::Update(const double dElapsedTime)
 			float distance = glm::length(e->vTransform - this->vTransform);
 			if (!e->IsClone() || e->m_FrameStorage.iCurrentFrame <= e->m_FrameStorage.iEndFrame)
 			{
+			
 				if (distance < 1 && e->m_KeyboardInputs[e->m_FrameStorage.iCurrentFrame - 1][KEYBOARD_INPUTS::E].bKeyPressed)
 				{
 					Activate(false, e);
 				}
+				
 			}
 		}
 	}
@@ -180,6 +182,24 @@ void Interactables::Update(const double dElapsedTime)
 				Activate(true, e);
 			}
 		}
+	}
+
+	if (!em->GetPlayer()->GetRecording())
+	{
+		if (bInteraction != bCloneInteract)
+		{
+			bCloneInteract = bInteraction;
+		}
+	}
+	
+	// 1,1 || 1,0 || 0,1 
+	if ((bInteraction && bCloneInteract) || (!bInteraction && bCloneInteract))
+	{
+		this->iTextureID = this->interactableType + 1;
+	}
+	else
+	{
+		this->iTextureID = this->interactableType;
 	}
 }
 
@@ -329,17 +349,7 @@ bool Interactables::Activate(bool interaction, CPlayer2D* player)
 		this->iTextureID = this->interactableType;
 		break;
 	}*/
-
-	if (bInteraction || bCloneInteract)
-	{
-		this->iTextureID = this->interactableType + 1;
-	}
-	else
-	{
-		this->iTextureID = this->interactableType;
-	}
-
-
+	
 	// Loop through the interactables to activate the corresponding Interactable IDs
 	if (this->interactableType < DOOR)
 	{
