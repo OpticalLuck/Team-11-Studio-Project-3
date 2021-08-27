@@ -294,6 +294,12 @@ bool CScene2D::Update(const double dElapsedTime)
 			cSoundController->PlaySoundByID(SOUND_ID::SOUND_TROUBLE);
 		}
 	}
+	else
+	{
+		if (cSoundController->isCurrentlyPlaying(cSoundController->GetNamebyID(SOUND_ID::SOUND_TROUBLE)))
+			cSoundController->StopPlayBack();
+		cSoundController->PlaySoundByID(SOUND_ID::BGM_HENESYS);
+	}
 	return true;
 }
 

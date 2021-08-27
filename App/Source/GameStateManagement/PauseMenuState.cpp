@@ -33,7 +33,6 @@
 
 // Include CKeyboardController
 #include "Inputs/KeyboardController.h"
-#include "SoundController/SoundController.h"
 #include <iostream>
 
 using namespace std;
@@ -42,6 +41,7 @@ PauseMenuState::PauseMenuState(void)
 	: background(NULL)
 	, menuState(STATE_MAIN)
 	, pendingChange(false)
+	, cSoundController(NULL)
 {
 }
 
@@ -68,6 +68,7 @@ bool PauseMenuState::Init(void)
 	applyButtonData.fileName = "Image\\GUI\\ApplyButton.png";
 	applyButtonData.textureID = il->LoadTextureGetID(applyButtonData.fileName.c_str(), false);
 
+	cSoundController = CSoundController::GetInstance();
 
 	return true;
 
@@ -127,6 +128,7 @@ bool PauseMenuState::UpdateMenu(ImGuiWindowFlags window_flags)
 		if (ImGui::ImageButton((ImTextureID)resumeButtonData.textureID,
 			ImVec2(buttonWidth, buttonHeight), ImVec2(0.0, 0.0), ImVec2(1.0, 1.0)))
 		{
+			cSoundController->PlaySoundByID(SOUND_ID::SOUND_ONCLICK);
 			// Reset the CKeyboardController
 			CKeyboardController::GetInstance()->Reset();
 
@@ -137,13 +139,14 @@ bool PauseMenuState::UpdateMenu(ImGuiWindowFlags window_flags)
 		if (ImGui::ImageButton((ImTextureID)optionButtonData.textureID,
 			ImVec2(buttonWidth, buttonHeight), ImVec2(0.0, 0.0), ImVec2(1.0, 1.0)))
 		{
+			cSoundController->PlaySoundByID(SOUND_ID::SOUND_ONCLICK);
 			menuState = STATE_OPTION;
 		}
 		//end button
 		if (ImGui::ImageButton((ImTextureID)exitButtonData.textureID,
 			ImVec2(buttonWidth, buttonHeight), ImVec2(0.0, 0.0), ImVec2(1.0, 1.0)))
 		{
-
+			cSoundController->PlaySoundByID(SOUND_ID::SOUND_ONCLICK);
 			// Reset the CKeyboardController
 			CKeyboardController::GetInstance()->Reset();
 
@@ -192,6 +195,7 @@ void PauseMenuState::UpdateOption(ImGuiWindowFlags window_flags)
 
 	if (ImGui::Checkbox("Enable BackGround Music", &CSettings::GetInstance()->bBGM_Sound))
 	{
+		cSoundController->PlaySoundByID(SOUND_ID::SOUND_ONCLICK);
 		bgmChange = true;
 	}
 
@@ -231,6 +235,7 @@ void PauseMenuState::UpdateOption(ImGuiWindowFlags window_flags)
 	bool sfxChange = false;
 	if (ImGui::Checkbox("Enable Sound Effect", &CSettings::GetInstance()->bSFX_Sound))
 	{
+		cSoundController->PlaySoundByID(SOUND_ID::SOUND_ONCLICK);
 		sfxChange = true;
 	}
 
@@ -280,8 +285,10 @@ void PauseMenuState::UpdateOption(ImGuiWindowFlags window_flags)
 	if (ImGui::ImageButton((ImTextureID)applyButtonData.textureID,
 		ImVec2(buttonWidth, buttonHeight), ImVec2(0.0, 0.0), ImVec2(1.0, 1.0)))
 	{
+		cSoundController->PlaySoundByID(SOUND_ID::SOUND_ONCLICK);
 		if (pendingChange)
 		{
+			cSoundController->PlaySoundByID(SOUND_ID::SOUND_ONCLICK);
 			pendingChange = false;
 			CSettings::GetInstance()->screenSize = static_cast<CSettings::SCREENSIZE>(screenRes);
 			CSettings::GetInstance()->UpdateWindowSize();
@@ -296,6 +303,7 @@ void PauseMenuState::UpdateOption(ImGuiWindowFlags window_flags)
 	if (ImGui::ImageButton((ImTextureID)backButtonData.textureID,
 		ImVec2(buttonWidth, buttonHeight), ImVec2(0.0, 0.0), ImVec2(1.0, 1.0)))
 	{
+		cSoundController->PlaySoundByID(SOUND_ID::SOUND_ONCLICK);
 		menuState = STATE_MAIN;
 	}
 	ImGui::End();

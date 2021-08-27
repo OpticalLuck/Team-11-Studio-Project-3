@@ -147,10 +147,10 @@ bool CPlayGameState::Update(const double dElapsedTime)
 		CGameStateManager::GetInstance()->SetActiveGameState("GameOverState");
 		return true;
 	}
-	if (cPlayer->GetHealth() < 3)
-	{
-		cSoundController->PlaySoundByID(SOUND_ID::SOUND_TROUBLE);
-	}
+	//if (cPlayer->GetHealth() < 3)
+	//{
+	//	cSoundController->PlaySoundByID(SOUND_ID::SOUND_TROUBLE);
+	//}
 	
 
 	return true;
@@ -161,7 +161,6 @@ bool CPlayGameState::Update(const double dElapsedTime)
  */
 void CPlayGameState::Render(void)
 {
-
 	// Call the cScene2D's Pre-Render method
 	cScene2D->PreRender();
 

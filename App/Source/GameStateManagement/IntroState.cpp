@@ -72,15 +72,20 @@ bool CIntroState::Init(void)
 	background->SetShader("2DShader");
 	background->Init();
 
+	//Sound effects
 	CSoundController::GetInstance()->LoadSound(FileSystem::getPath("Sounds\\Sound_Bell.ogg"), SOUND_ID::SOUND_BELL, true);
 	CSoundController::GetInstance()->LoadSound(FileSystem::getPath("Sounds\\Sound_Explosion.ogg"), SOUND_ID::SOUND_EXPLOSION, true);
 	CSoundController::GetInstance()->LoadSound(FileSystem::getPath("Sounds\\Sound_Jump.ogg"), SOUND_ID::SOUND_JUMP, true);
-	CSoundController::GetInstance()->LoadSound(FileSystem::getPath("Sounds\\Henesys_BGM.ogg"), SOUND_ID::BGM_HENESYS, true, true);
 	CSoundController::GetInstance()->LoadSound(FileSystem::getPath("Sounds\\Hit.ogg"), SOUND_ID::SOUND_HIT, true);
 	CSoundController::GetInstance()->LoadSound(FileSystem::getPath("Sounds\\Swing.ogg"), SOUND_ID::SOUND_SWING, true);
 	CSoundController::GetInstance()->LoadSound(FileSystem::getPath("Sounds\\Switch.ogg"), SOUND_ID::SOUND_SWITCH, true);
 	CSoundController::GetInstance()->LoadSound(FileSystem::getPath("Sounds\\GameComplete.ogg"), SOUND_ID::SOUND_GAME_COMPLETE, true);
 	CSoundController::GetInstance()->LoadSound(FileSystem::getPath("Sounds\\Dead.ogg"), SOUND_ID::SOUND_DEATH, true);
+	CSoundController::GetInstance()->LoadSound(FileSystem::getPath("Sounds\\Click.ogg"), SOUND_ID::SOUND_ONCLICK, true);
+	CSoundController::GetInstance()->LoadSound(FileSystem::getPath("Sounds\\Teleporter.ogg"), SOUND_ID::SOUND_TELEPORTER, true);
+
+	//BGM
+	CSoundController::GetInstance()->LoadSound(FileSystem::getPath("Sounds\\Henesys_BGM.ogg"), SOUND_ID::BGM_HENESYS, true, true);
 	CSoundController::GetInstance()->LoadSound(FileSystem::getPath("Sounds\\Trouble.ogg"), SOUND_ID::SOUND_TROUBLE, true);
 
 	CSettings::GetInstance()->UpdateSoundSettings();

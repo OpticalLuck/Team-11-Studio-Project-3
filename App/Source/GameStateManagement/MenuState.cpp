@@ -33,7 +33,6 @@
 
 // Include CKeyboardController
 #include "Inputs/KeyboardController.h"
-#include "SoundController/SoundController.h"
 #include "../LevelEditor/LevelEditor.h"
 #include "../GameStateManagement/PlayGameState.h"
 
@@ -47,6 +46,7 @@ CMenuState::CMenuState(void)
 	: background(NULL)
 	, menuState(STATE_MAIN)
 	, pendingChange(false)
+	,cSoundController(NULL)
 {
 
 }
@@ -87,6 +87,8 @@ bool CMenuState::Init(void)
 	backButtonData.textureID = il->LoadTextureGetID(backButtonData.fileName.c_str(), false);
 	applyButtonData.fileName = "Image\\GUI\\ApplyButton.png";
 	applyButtonData.textureID = il->LoadTextureGetID(applyButtonData.fileName.c_str(), false);
+	
+	cSoundController = CSoundController::GetInstance();
 
 	return true;
 }
@@ -149,12 +151,14 @@ bool CMenuState::UpdateMenu(ImGuiWindowFlags window_flags)
 	if (ImGui::ImageButton((ImTextureID)startButtonData.textureID,
 		ImVec2(buttonWidth, buttonHeight), ImVec2(0.0, 0.0), ImVec2(1.0, 1.0)))
 	{
+		cSoundController->PlaySoundByID(SOUND_ID::SOUND_ONCLICK);
 		menuState = STATE_SELECT_LEVEL;
 	}
 
 	if (ImGui::ImageButton((ImTextureID)optionButtonData.textureID,
 		ImVec2(buttonWidth, buttonHeight), ImVec2(0.0, 0.0), ImVec2(1.0, 1.0)))
 	{
+		cSoundController->PlaySoundByID(SOUND_ID::SOUND_ONCLICK);
 		menuState = STATE_OPTION;
 	}
 
@@ -162,6 +166,7 @@ bool CMenuState::UpdateMenu(ImGuiWindowFlags window_flags)
 	if (ImGui::ImageButton((ImTextureID)exitButtonData.textureID,
 		ImVec2(buttonWidth, buttonHeight), ImVec2(0.0, 0.0), ImVec2(1.0, 1.0)))
 	{
+		cSoundController->PlaySoundByID(SOUND_ID::SOUND_ONCLICK);
 		// Reset the CKeyboardController
 		CKeyboardController::GetInstance()->Reset();
 
@@ -236,6 +241,7 @@ void CMenuState::UpdateOption(ImGuiWindowFlags window_flags)
 
 	if (ImGui::Checkbox("Enable BackGround Music", &CSettings::GetInstance()->bBGM_Sound))
 	{
+		cSoundController->PlaySoundByID(SOUND_ID::SOUND_ONCLICK);
 		bgmChange = true;
 	}
 
@@ -275,6 +281,7 @@ void CMenuState::UpdateOption(ImGuiWindowFlags window_flags)
 	bool sfxChange = false;
 	if (ImGui::Checkbox("Enable Sound Effect", &CSettings::GetInstance()->bSFX_Sound))
 	{
+		cSoundController->PlaySoundByID(SOUND_ID::SOUND_ONCLICK);
 		sfxChange = true;
 	}
 
@@ -305,6 +312,7 @@ void CMenuState::UpdateOption(ImGuiWindowFlags window_flags)
 
 	if (sfxChange)
 	{
+		cSoundController->PlaySoundByID(SOUND_ID::SOUND_ONCLICK);
 		if (CSettings::GetInstance()->bSFX_Sound == true)
 			CSettings::GetInstance()->SFX_VOLUME = sfxVolume;
 
@@ -326,6 +334,7 @@ void CMenuState::UpdateOption(ImGuiWindowFlags window_flags)
 	if (ImGui::ImageButton((ImTextureID)applyButtonData.textureID,
 		ImVec2(buttonWidth, buttonHeight), ImVec2(0.0, 0.0), ImVec2(1.0, 1.0)))
 	{
+		cSoundController->PlaySoundByID(SOUND_ID::SOUND_ONCLICK);
 		if (pendingChange)
 		{
 			pendingChange = false;
@@ -342,6 +351,7 @@ void CMenuState::UpdateOption(ImGuiWindowFlags window_flags)
 	if (ImGui::ImageButton((ImTextureID)backButtonData.textureID,
 		ImVec2(buttonWidth, buttonHeight), ImVec2(0.0, 0.0), ImVec2(1.0, 1.0)))
 	{
+		cSoundController->PlaySoundByID(SOUND_ID::SOUND_ONCLICK);
 		menuState = STATE_MAIN;
 	}
 	ImGui::End();
