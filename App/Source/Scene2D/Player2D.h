@@ -132,6 +132,8 @@ public:
 
 	bool IsClone();
 
+	int GetCloneID() const;
+
 	void SetKeyInputs(std::vector<std::array<KeyInput, KEYBOARD_INPUTS::KEY_TOTAL>> inputs);
 	void SetMouseInputs(std::vector<std::array<MouseInput, MOUSE_INPUTS::MOUSE_TOTAL>> inputs);
 
@@ -168,6 +170,7 @@ public:
 	void SetRecording(bool bIsRecording);
 protected:
 	bool bIsClone;
+	int iCloneIndex;
 	bool bIsRecording;
 	//Timer for actions that need cooldown
 	std::pair<bool, double> timerArr[A_TOTAL];

@@ -178,7 +178,7 @@ bool CScene2D::Update(const double dElapsedTime)
 	}
 
 	// Paradoxium ability
-	if (cKeyboardController->IsKeyPressed(GLFW_KEY_ENTER))
+	if (cKeyboardController->IsKeyPressed(GLFW_KEY_C) && cEntityManager->GetNoOfAvailableCloneID() > 0)
 	{
 		++cPlayer2D->m_FrameStorage.iCounter;
 		std::vector<CEnemy2D*> enemyArr = cEntityManager->GetAllEnemies();
@@ -218,12 +218,14 @@ bool CScene2D::Update(const double dElapsedTime)
 				enemyArr[i]->ReplayRecording();
 			}
 
+
 			//Loading prev values of movable entities
 			cEntityManager->LoadPrevious();
 
 			break;
 		}
 	}
+
 	//Camera work
 	cameraHandler->UpdateTarget(cPlayer2D->vTransform);
 	cameraHandler->Update((float)dElapsedTime);

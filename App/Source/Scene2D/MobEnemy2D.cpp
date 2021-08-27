@@ -451,14 +451,18 @@ void CMobEnemy2D::UpdateSmart(float dElapsedTime) {
 	if (sCurrentFSM != FSM::ATTACK && !currTarget) {
 		for (unsigned i = 0; i < playerArr.size(); i++) {
 			rayCast2D->SetTarget(playerArr[i]);
-			if (glm::length(vTransform - playerArr[i]->vTransform) < dist) {
-				enemySee = rayCast2D->RayCheck(80);
-				if (enemySee) {
-					currTarget = playerArr[i];
-					break;
-				}
+			enemySee = rayCast2D->RayCheck(dist, 80);
+			if (enemySee) {
+				currTarget = playerArr[i];
+				break;
 			}
 		}
+	}
+	else if (sCurrentFSM != FSM::ATTACK && currTarget) {
+		rayCast2D->SetTarget(currTarget);
+		enemySee = rayCast2D->RayCheck(dist, 80.f);
+		if (!enemySee)
+			currTarget = nullptr;
 	}
 
 	switch (sCurrentFSM) {

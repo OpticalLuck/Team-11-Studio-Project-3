@@ -43,6 +43,10 @@ bool CEntityManager::EntityManagerInit(const unsigned int totalLevels)
 		cBoss2D.push_back(nullptr);
 	}
 
+	//Set up queue for clone ID
+	for (int i = 0; i < 10; i++)
+		qclone_ID.push(i);
+
 	return true;
 }
 
@@ -156,20 +160,35 @@ void CEntityManager::PushEnemy(CEnemy2D* enemy, const unsigned int currLevel) {
 
 CPlayer2D* CEntityManager::Clone(void)
 {
-	CPlayer2D* clone = new CPlayer2D();
-	clone->SetShader("2DColorShader");
-
-	if (!clone->Init(cPlayer2D->GetCheckpoint(), m_cloneList.size()))
+	if (qclone_ID.size() > 0)
 	{
-		DEBUG_MSG("Failed to clone Player");
+		DEBUG_MSG("SIZE: " << qclone_ID.size());
+		CPlayer2D* clone = new CPlayer2D();
+		clone->SetShader("2DColorShader");
+
+		int id = qclone_ID.front();
+		qclone_ID.pop();
+		if (!clone->Init(cPlayer2D->GetCheckpoint(), id))
+		{
+			DEBUG_MSG("Failed to clone Player");
+			return nullptr;
+		}
+		clone->SetClone(true);
+		clone->SetKeyInputs(cInputHandler->GetAllKeyboardInputs());
+		clone->SetMouseInputs(cInputHandler->GetAllMouseInputs());
+		m_cloneList.push_back(clone);
+		return clone;
+	}
+	else
+	{
+		DEBUG_MSG("Ran out of Clone IDs");
 		return nullptr;
 	}
-	clone->SetClone(true);
-	clone->SetKeyInputs(cInputHandler->GetAllKeyboardInputs());
-	clone->SetMouseInputs(cInputHandler->GetAllMouseInputs());
-	m_cloneList.push_back(clone);
+}
 
-	return clone;
+int CEntityManager::GetNoOfAvailableCloneID()
+{
+	return qclone_ID.size();
 }
 
 
@@ -352,7 +371,7 @@ void CEntityManager::Update(const double dElapsedTime)
 		if (m_cloneList[i]->m_FrameStorage.iCurrentFrame - m_cloneList[i]->m_FrameStorage.iEndFrame > 180)
 		{
 			// DEBUG_MSG(m_cloneList[i]->m_FrameStorage.iCurrentFrame << " " << m_cloneList[i]->m_FrameStorage.iEndFrame);
-			
+			qclone_ID.push(m_cloneList[i]->GetCloneID());
 			delete m_cloneList[i];
 			m_cloneList[i] = nullptr;
 			/*m_cloneList.erase(std::remove(std::begin(m_cloneList), std::end(m_cloneList), nullptr), std::end(m_cloneList));*/
