@@ -62,7 +62,7 @@ bool CMobEnemy2D::Init(void) {
 
 	cEntityManager = CEntityManager::GetInstance();
 
-	distCheck = cSettings->NUM_TILES_XAXIS / 2;
+	distCheck = (float)cSettings->NUM_TILES_XAXIS / 2.f;
 
 	// Find the indices for the player in arrMapInfo, and assign it to cPlayer2D
 	unsigned int uiRow = -1;
@@ -258,9 +258,9 @@ void CMobEnemy2D::Update(const double dElapsedTime) {
 	oldVTransform = vTransform;
 
 	if (!patrol)
-		UpdateDumb(dElapsedTime);
+		UpdateDumb((float)dElapsedTime);
 	else
-		UpdateSmart(dElapsedTime);
+		UpdateSmart((float)dElapsedTime);
 
 	//Health lives update
 	UpdateHealthLives();
@@ -661,7 +661,7 @@ void CMobEnemy2D::ChaseEnemyY(void) {
 		CObject2D* obj = GetObjectInTile((unsigned int)tileCheck.x, (unsigned int)tileCheck.y);
 
 		if (!obj) {
-			for (unsigned i = 0; i < tileCap - 1; i++) {
+			for (int i = 0; i < tileCap - 1; i++) {
 				tileCheck.y--;
 				//obj = cMap2D->GetCObject((unsigned int)tileCheck.x, (unsigned int)tileCheck.y);
 				obj = GetObjectInTile((unsigned int)tileCheck.x, (unsigned int)tileCheck.y);
@@ -680,7 +680,7 @@ void CMobEnemy2D::ChaseEnemyY(void) {
 			obj = GetObjectInTile((unsigned int)tileCheck.x, (unsigned int)tileCheck.y);
 
 			if (obj && obj->GetCollider()->GetbEnabled()) {
-				for (unsigned i = 0; i <= tileCap; i++) {
+				for (int i = 0; i <= tileCap; i++) {
 					tileCheck.y++;
 					obj = GetObjectInTile((unsigned int)tileCheck.x, (unsigned int)tileCheck.y);
 
@@ -702,7 +702,7 @@ void CMobEnemy2D::ChaseEnemyY(void) {
 		CObject2D* obj = GetObjectInTile((unsigned int)tileCheck.x, (unsigned int)tileCheck.y);
 
 		if (!obj) {
-			for (unsigned i = 0; i < tileCap; i++) {
+			for (int i = 0; i < tileCap; i++) {
 				tileCheck.y--;
 				obj = GetObjectInTile((unsigned int)tileCheck.x, (unsigned int)tileCheck.y);
 
@@ -717,7 +717,7 @@ void CMobEnemy2D::ChaseEnemyY(void) {
 			obj = GetObjectInTile((unsigned int)tileCheck.x, (unsigned int)tileCheck.y);
 
 			if (obj && obj->GetCollider()->GetbEnabled()) {
-				for (unsigned i = 0; i < tileCap; i++) {
+				for (int i = 0; i < tileCap; i++) {
 					tileCheck.y++;
 					obj = GetObjectInTile((unsigned int)tileCheck.x, (unsigned int)tileCheck.y);
 

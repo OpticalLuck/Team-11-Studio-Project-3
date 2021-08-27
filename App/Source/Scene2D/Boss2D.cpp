@@ -412,7 +412,7 @@ void CBoss2D::ShuffleNextAttack(void) {
 			arrATK.push_back(RandomiseAttack());
 		}
 	}
-	else if (arrPauseDuration.size() > fsmIndex + 1) {
+	else if (arrPauseDuration.size() > unsigned(fsmIndex + 1)) {
 		fsmIndex++;
 	}
 	else {
