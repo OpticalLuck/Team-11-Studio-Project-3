@@ -472,7 +472,7 @@ void CPlayer2D::Update(const double dElapsedTime)
 	animatedSprites->Update(dElapsedTime);
 
 	// if (!bIsClone || iTempFrameCounter < m_KeyboardInputs.size() - 1)
-		iTempFrameCounter++;
+	iTempFrameCounter++;
 }
 
 /**
