@@ -116,6 +116,11 @@ void CEntityManager::SavePrevious(void) {
 		//*bullet = *m_BulletList[cMap2D->GetCurrentLevel()][i];
 		m_PrevBulletList.push_back(bullet);
 	}
+
+	//For obstacles
+	m_SavedObstaclePosList.clear();
+	for (unsigned i = 0; i < m_ObstacleList[cMap2D->GetCurrentLevel()].size(); ++i)
+		m_SavedObstaclePosList.push_back(m_ObstacleList[cMap2D->GetCurrentLevel()][i]->vTransform);
 }
 
 void CEntityManager::LoadPrevious(void) {
@@ -135,6 +140,11 @@ void CEntityManager::LoadPrevious(void) {
 		m_PrevBulletList[i] = nullptr;
 	}
 	m_PrevBulletList.clear();
+
+	//For obstacles
+	for (unsigned i = 0; i < m_SavedObstaclePosList.size(); i++) {
+		m_ObstacleList[cMap2D->GetCurrentLevel()][i]->vTransform = m_SavedObstaclePosList[i];
+	}
 }
 
 std::vector<Interactables*> CEntityManager::GetAllInteractables(void)
