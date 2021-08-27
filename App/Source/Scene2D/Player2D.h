@@ -161,9 +161,11 @@ public:
 
 	CInventory* GetInventory(void);
 
+	bool GetRecording();
+	void SetRecording(bool bIsRecording);
 protected:
 	bool bIsClone;
-	
+	bool bIsRecording;
 	//Timer for actions that need cooldown
 	std::pair<bool, double> timerArr[A_TOTAL];
 
