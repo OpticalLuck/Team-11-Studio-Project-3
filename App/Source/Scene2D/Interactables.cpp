@@ -168,6 +168,21 @@ void Interactables::Update(const double dElapsedTime)
 			}
 		}
 	}
+	else if (this->interactableType == CHECKPOINT)
+	{
+		if (!this->bInteraction)
+		{
+			float distance = glm::length(em->GetPlayer()->vTransform - this->vTransform);
+			if (distance < 0.3)
+			{
+				bInteraction = true;
+				em->GetPlayer()->m_CheckpointState.m_CheckpointHP = em->GetPlayer()->GetHealth();
+				em->GetPlayer()->m_CheckpointState.m_CheckpointInventoryState = new CInventory(*em->GetPlayer()->GetInventory());
+				em->GetPlayer()->m_CheckpointState.m_CheckpointPosition = em->GetPlayer()->vTransform;
+			}
+		}
+
+	}
 	else if (this->interactableType == COMMON_CHEST || this->interactableType == RARE_CHEST)
 	{
 		for (auto& e : em->GetAllPlayers())

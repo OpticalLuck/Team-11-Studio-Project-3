@@ -52,7 +52,6 @@ CPlayer2D::CPlayer2D(void)
 	, bJustTeleported(false)
 	, bIsRecording(false)
 	, iCloneIndex(0)
-
 {
 	transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
 
@@ -721,13 +720,14 @@ void CPlayer2D::Attacked(int hp, CPhysics2D* bounceObj) {
 		glm::vec2 ogVel = cPhysics2D->GetVelocity();
 		glm::vec2 objVel = bounceObj->GetVelocity();
 
+		float spd = maxKnockBack;
 		if (vTransform.x > bounceObj->GetPosition().x) {
-			cPhysics2D->SetVelocity(glm::vec2(-fMovementSpeed, ogVel.y));
-			bounceObj->SetVelocity(glm::vec2(fMovementSpeed, objVel.y));
+			cPhysics2D->SetVelocity(glm::vec2(-spd, ogVel.y));
+			bounceObj->SetVelocity(glm::vec2(spd, objVel.y));
 		}
 		else if (vTransform.x < bounceObj->GetPosition().x) {
-			cPhysics2D->SetVelocity(glm::vec2(fMovementSpeed, ogVel.y));
-			bounceObj->SetVelocity(glm::vec2(-fMovementSpeed, objVel.y));
+			cPhysics2D->SetVelocity(glm::vec2(spd, ogVel.y));
+			bounceObj->SetVelocity(glm::vec2(-spd, objVel.y));
 		}
 
 		cPhysics2D->CollisionResponse(bounceObj,1.5f,1.5f);

@@ -163,25 +163,37 @@ bool CTextureManager::Init(void)
 
     if (LoadTexture("Image/Chests/Common_Chest_Closed.png", INTERACTABLE_COMMON_CHEST_CLOSED) == false)
     {
-        std::cout << "Failed to load Common Chest Closed tile texture" << std::endl;
+        DEBUG_MSG("Failed to load Common Chest Closed tile texture");
         return false;
     }
 
     if (LoadTexture("Image/Chests/Common_Chest_Opened.png", INTERACTABLE_COMMON_CHEST_OPENED) == false)
     {
-        std::cout << "Failed to load Rare Chest Open tile texture" << std::endl;
+        DEBUG_MSG("Failed to load Rare Chest Open tile texture");
         return false;
     }
 
     if (LoadTexture("Image/Chests/Rare_Chest_Closed.png", INTERACTABLE_RARE_CHEST_CLOSED) == false)
     {
-        std::cout << "Failed to load Rare Chest Closed tile texture" << std::endl;
+        DEBUG_MSG("Failed to load Rare Chest Closed tile texture");
         return false;
     }
 
     if (LoadTexture("Image/Chests/Rare_Chest_Opened.png", INTERACTABLE_RARE_CHEST_OPENED) == false)
     {
-        std::cout << "Failed to load Common Chest Open tile texture" << std::endl;
+        DEBUG_MSG("Failed to load Common Chest Open tile texture");
+        return false;
+    }
+
+    if (LoadTexture("Image/Checkpoint/checkpoint_inactive.png", INTERACTABLE_CHECKPOINT_INACTIVE) == false)
+    {
+        DEBUG_MSG("Failed to load Checkpoint Inactive tile texture");
+        return false;
+    }
+
+    if (LoadTexture("Image/Checkpoint/checkpoint_active.png", INTERACTABLE_CHECKPOINT_ACTIVE) == false)
+    {
+        DEBUG_MSG("Failed to load Checkpoint Active tile texture");
         return false;
     }
 

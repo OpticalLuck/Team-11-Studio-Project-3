@@ -78,9 +78,10 @@ bool RayCast2D::RayCheck(float angCheck) {
 	float ang = GetAngle();
 
 	if (rayCast) {
-		bool check = (ang < 180 - angCheck || ang > 180 + angCheck) && (ang > angCheck && ang < 360 - angCheck);
+		//bool check = (ang < 180 - angCheck || ang > 180 + angCheck) && (ang > angCheck && ang < 360 - angCheck);
+		bool check = (ang <= angCheck || ang >= 360 - angCheck) || (ang >= 180 - angCheck && ang <= 180 + angCheck);
 
-		if (check)
+		if (!check)
 			rayCast = false;
 	}
 
@@ -88,16 +89,18 @@ bool RayCast2D::RayCheck(float angCheck) {
 }
 
 bool RayCast2D::RayCheck(float dist, float angCheck) {
+	bool cast = false;
+
+	if (angCheck > 0)
+		cast = RayCheck(angCheck);
+	else
+		cast = RayCheck();
+
 	float currDist = glm::length(currentPoint - originPoint);
-	if (currDist <= dist) { //If within dist, do raychecking
-		if (angCheck > 0)
-			return RayCheck(angCheck);
-		else
-			return RayCheck();
-	}
-	else { //If not then screw it la bodoh
+	if (currDist <= dist)
+		return cast;
+	else
 		return false;
-	}
 }
 
 bool RayCast2D::RayCheck(void) {
