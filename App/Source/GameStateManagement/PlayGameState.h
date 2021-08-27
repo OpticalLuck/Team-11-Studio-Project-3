@@ -70,6 +70,8 @@ protected:
 	float fInterval;
 	int iMinutes;
 	int iSeconds;
+	int iInterval2;
+	int iTimer2;
 
 	float transformX;
 	float transformY;

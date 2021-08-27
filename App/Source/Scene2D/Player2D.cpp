@@ -184,6 +184,7 @@ bool CPlayer2D::Init(void)
 	pBlinkInterval = 0;
 	jumpCount = 0;
 
+
 	//fMovementSpeed = 1.f;
 	fMovementSpeed = 4.f;
 	fJumpSpeed = 5.f;

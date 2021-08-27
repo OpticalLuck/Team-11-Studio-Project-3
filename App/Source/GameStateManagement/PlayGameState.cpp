@@ -42,6 +42,8 @@ CPlayGameState::CPlayGameState(void)
 	, displayHP(0.f)
 	, cFPSCounter(NULL)
 	, cMap2D(NULL)
+	, iTimer2(0)
+	, iInterval2(0)
 {
 
 }
@@ -94,6 +96,9 @@ bool CPlayGameState::Init(void)
 	CImageLoader* il = CImageLoader::GetInstance();
 	background.fileName = "Image\\Backgrounds\\UI.png";
 	background.textureID = il->LoadTextureGetID(background.fileName.c_str(), false);
+
+	iTimer2 = 0;
+	iInterval2 = 300;
 
 	//optionButtonData.fileName = "Image\\GUI\\OptionButton.png";
 	//optionButtonData.textureID = il->LoadTextureGetID(optionButtonData.fileName.c_str(), false);
@@ -345,19 +350,24 @@ bool CPlayGameState::ImGuiRender()
 		{
 			if (cPlayer->GetHealth() < 3)
 			{
-				if (iSeconds % 2 == 1)
+				iInterval2 -= 1;
+				iTimer2 = iInterval2 / 2;
+				if ((iTimer2 / 4) % 2 != 0)
 				{
 					displayHP = Math::Lerp(displayHP, cPlayer->GetHealth(), 0.2f);
 					ImGui::Begin("Health", NULL, health_window);
-					ImGui::SetWindowPos(ImVec2(cSettings->iWindowWidth * 0.05, cSettings->iWindowHeight * 0.95));
+					ImGui::SetWindowPos(ImVec2(cSettings->iWindowWidth * 0.02, cSettings->iWindowHeight * 0.9));
 					ImGui::SetWindowSize(ImVec2(200.0f * relativeScale_x, 25.0f * relativeScale_y));
 					ImGui::SameLine();
 
 					//i think this looks better 
 					ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.8f, 0.0f, 0.0f, 1.0f));
 					ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.4f, 0.4f, 0.4f, 1.0f));
-
-					ImGui::ProgressBar(displayHP / (float)cPlayer->GetMaxHealth(), ImVec2(cSettings->iWindowWidth * 0.4f, cSettings->iWindowHeight * 0.53f));
+					ImGui::SetWindowFontScale(1.3f * relativeScale_y);
+					ImGui::Text("HP: ");
+					ImGui::SameLine();
+					ImGui::SetWindowFontScale(.9f * relativeScale_y);
+					ImGui::ProgressBar(displayHP / (float)cPlayer->GetMaxHealth(), ImVec2(cSettings->iWindowWidth * 0.4f, cSettings->iWindowHeight * 0.03f));
 					ImGui::PopStyleColor();
 					ImGui::PopStyleColor();
 					ImGui::End();
@@ -365,16 +375,21 @@ bool CPlayGameState::ImGuiRender()
 			}
 			else
 			{
+				iInterval2 = 300;
+				iTimer2 = 0;
 				displayHP = Math::Lerp(displayHP, cPlayer->GetHealth(), 0.2f);
 				ImGui::Begin("Health", NULL, health_window);
-				ImGui::SetWindowPos(ImVec2(cSettings->iWindowWidth * 0.05, cSettings->iWindowHeight * 0.9));
+				ImGui::SetWindowPos(ImVec2(cSettings->iWindowWidth * 0.02, cSettings->iWindowHeight * 0.9));
 				ImGui::SetWindowSize(ImVec2(200.0f * relativeScale_x, 25.0f * relativeScale_y));
 				ImGui::SameLine();
 
 				//i think this looks better 
 				ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.8f, 0.0f, 0.0f, 1.0f));
 				ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.4f, 0.4f, 0.4f, 1.0f));
-
+				ImGui::SetWindowFontScale(1.3f * relativeScale_y);
+				ImGui::Text("HP: ");
+				ImGui::SameLine();
+				ImGui::SetWindowFontScale(.9f * relativeScale_y);
 				ImGui::ProgressBar(displayHP / (float)cPlayer->GetMaxHealth(), ImVec2(cSettings->iWindowWidth * 0.4f, cSettings->iWindowHeight * 0.03f));
 				ImGui::PopStyleColor();
 				ImGui::PopStyleColor();

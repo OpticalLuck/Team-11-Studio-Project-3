@@ -172,6 +172,7 @@ protected:
 	bool bIsClone;
 	int iCloneIndex;
 	bool bIsRecording;
+
 	//Timer for actions that need cooldown
 	std::pair<bool, double> timerArr[A_TOTAL];
 
