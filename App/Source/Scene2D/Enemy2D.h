@@ -19,6 +19,7 @@
 // Include the Map2D as we will use it to check the player's movements and actions
 class CMap2D;
 class CEntityManager;
+class CObject2D;
 
 // Include Settings
 #include "GameControl\Settings.h"
@@ -71,6 +72,8 @@ public:
 	//If get attacked
 	void Attacked(int hp = 1);
 
+	//Get CObject in tile
+	CObject2D* GetObjectInTile(int uiCol, int uiRow);
 
 protected:
 	enum class DIRECTION

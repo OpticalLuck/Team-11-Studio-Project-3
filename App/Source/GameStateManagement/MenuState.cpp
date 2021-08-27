@@ -34,6 +34,8 @@
 // Include CKeyboardController
 #include "Inputs/KeyboardController.h"
 #include "SoundController/SoundController.h"
+#include "../LevelEditor/LevelEditor.h"
+#include "../GameStateManagement/PlayGameState.h"
 
 #include <iostream>
 using namespace std;
@@ -147,12 +149,7 @@ bool CMenuState::UpdateMenu(ImGuiWindowFlags window_flags)
 	if (ImGui::ImageButton((ImTextureID)startButtonData.textureID,
 		ImVec2(buttonWidth, buttonHeight), ImVec2(0.0, 0.0), ImVec2(1.0, 1.0)))
 	{
-		// Reset the CKeyboardController
-		CKeyboardController::GetInstance()->Reset();
-
-		// Load the menu state
-		cout << "Loading PlayGameState" << endl;
-		CGameStateManager::GetInstance()->SetActiveGameState("PlayGameState");
+		menuState = STATE_SELECT_LEVEL;
 	}
 
 	if (ImGui::ImageButton((ImTextureID)optionButtonData.textureID,
@@ -179,13 +176,7 @@ bool CMenuState::UpdateMenu(ImGuiWindowFlags window_flags)
 	//For keyboard controls
 	if (CKeyboardController::GetInstance()->IsKeyReleased(GLFW_KEY_SPACE))
 	{
-		// Reset the CKeyboardController
-		CKeyboardController::GetInstance()->Reset();
-
-		// Load the menu state
-		cout << "Loading PlayGameState" << endl;
-		CGameStateManager::GetInstance()->SetActiveGameState("PlayGameState");
-		return true;
+		menuState = STATE_SELECT_LEVEL;
 	}
 	if (CKeyboardController::GetInstance()->IsKeyReleased(GLFW_KEY_E))
 	{
@@ -310,6 +301,8 @@ void CMenuState::UpdateOption(ImGuiWindowFlags window_flags)
 		}
 	}
 
+	ImGui::Checkbox("Show Colliders", &CSettings::GetInstance()->bShowCollider);
+
 	if (sfxChange)
 	{
 		if (CSettings::GetInstance()->bSFX_Sound == true)
@@ -371,6 +364,46 @@ void CMenuState::UpdateOption(ImGuiWindowFlags window_flags)
 	}
 }
 
+bool CMenuState::UpdateLevelSelect(ImGuiWindowFlags window_flags)
+{
+	//Added rounding for nicer effect
+	ImGuiStyle& style = ImGui::GetStyle();
+	style.FrameRounding = 100.0f;
+
+	ImGui::Begin("Level Editor", NULL, window_flags);
+	ImGui::SetWindowPos(ImVec2(CSettings::GetInstance()->iWindowWidth * 0.25f, CSettings::GetInstance()->iWindowHeight * 0.25f));
+	ImGui::SetWindowSize(ImVec2(CSettings::GetInstance()->iWindowWidth * 0.5f, CSettings::GetInstance()->iWindowHeight * 0.5f));
+
+	if (ImGui::BeginChild("Levels"))
+	{
+		CLevelEditor* cLevelEditor = CLevelEditor::GetInstance();
+		for (unsigned i = 0; i < cLevelEditor->GetLevels().size(); ++i)
+		{
+			if (ImGui::Button(cLevelEditor->GetLevels()[i].LevelName.c_str()))
+			{
+				// cLevelEditor->LoadLevel(cLevelEditor->GetLevels()[i].LevelPath.c_str());
+				// Reset the CKeyboardController
+				CKeyboardController::GetInstance()->Reset();
+
+				// Load the menu state
+				cout << "Loading Game" << endl;
+				CGameStateManager::GetInstance()->SetActiveGameState("PlayGameState");
+				((CPlayGameState*)(CGameStateManager::GetInstance()->GetState("PlayGameState")))->SetLevel(cLevelEditor->GetLevels()[i].LevelPath.c_str());
+			}
+		}
+
+		ImGui::EndChild();
+	}
+	ImGui::End();
+
+	if (CKeyboardController::GetInstance()->IsKeyReleased(GLFW_KEY_ESCAPE))
+	{
+		menuState = STATE_MAIN;
+	}
+
+	return true;
+}
+
 bool CMenuState::ImGuiRender()
 {
 
@@ -394,6 +427,15 @@ bool CMenuState::ImGuiRender()
 		break;
 	case STATE_OPTION:
 		UpdateOption(window_flags);
+		break;
+	case STATE_SELECT_LEVEL:
+		window_flags =
+			ImGuiWindowFlags_NoScrollbar |
+			ImGuiWindowFlags_NoMove |
+			ImGuiWindowFlags_NoResize |
+			ImGuiWindowFlags_NoCollapse;
+
+		UpdateLevelSelect(window_flags);
 		break;
 	}
 

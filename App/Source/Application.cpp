@@ -44,6 +44,8 @@ using namespace std;
 #include "GameStateManagement/EditorSettingsState.h"
 #include "GameStateManagement/LevelEditorState.h"
 
+#include "LevelEditor/LevelEditor.h"
+
 /**
  @brief Define an error callback
  @param error The error code
@@ -184,7 +186,7 @@ bool Application::Init(void)
 	glm::vec2 screensize = CSettings::GetInstance()->GetScreenSize();
 	glm::vec2 windowposition = glm::vec2(screensize.x / 2 - cSettings->iWindowWidth / 2, screensize.y / 2 - cSettings->iWindowHeight / 2);
 	// Set OpenGL window position
-	glfwSetWindowPos(cSettings->pWindow, windowposition.x, windowposition.y);
+	glfwSetWindowPos(cSettings->pWindow, (int)windowposition.x, (int)windowposition.y);
 	//This function makes the context of the specified window current on the calling thread. 
 	glfwMakeContextCurrent(cSettings->pWindow);
 
@@ -245,7 +247,8 @@ bool Application::Init(void)
 	CShaderManager::GetInstance()->Add("Shader", "Shader//Shader.vs", "Shader//Shader.fs");
 
 	// Initialise the TextureManager Instance
-	CTextureManager::GetInstance()->Init();
+	if (!CTextureManager::GetInstance()->Init())
+		return false;
 
 	// Initialise the CFPSCounter instance
 	cFPSCounter = CFPSCounter::GetInstance();
@@ -262,9 +265,13 @@ bool Application::Init(void)
 
 	// Set the active scene
 	CGameStateManager::GetInstance()->SetActiveGameState("IntroState");
+	
+	CLevelEditor* cLevelEditor = CLevelEditor::GetInstance();
+	cLevelEditor = CLevelEditor::GetInstance();
+	cLevelEditor->SetShader("2DShader");
+	cLevelEditor->Init();
 
-
-	cSettings->ImGuiProperties.IsDockingEnabled = false;
+	// cSettings->ImGuiProperties.IsDockingEnabled = false;
 	// cSettings->ImGuiProperties.IsViewportEnabled = true;
 	m_ImGuiWindow->Create(cSettings->ImGuiProperties);
 

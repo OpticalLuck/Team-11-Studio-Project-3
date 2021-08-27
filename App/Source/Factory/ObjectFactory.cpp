@@ -1,12 +1,15 @@
 #include "ObjectFactory.h"
 
-#include "../Scene2D/Boulder2D.h"
+#include "../Scene2D/Obstacle2D.h"
 
 #include "../Scene2D/Bullet2D.h"
 
 #include "../App/Source/TextureManager/TextureManager.h"
 
 #include "System/Debug.h"
+
+#include "../Scene2D/Boss2D.h"
+#include "../Scene2D/MobEnemy2D.h"
 
 CObject2D* ObjectFactory::CreateObject(int iTextureID)
 {
@@ -35,7 +38,7 @@ CObject2D* ObjectFactory::CreateObject(int iTextureID)
 	else if (iTextureID > OBSTACLES_START && iTextureID < OBSTACLES_TOTAL)
 	{
 		if(iTextureID == OBSTACLE_BOULDER)
-			newObj = new Boulder2D(iTextureID);
+			newObj = new Obstacle2D(iTextureID);
 		else
 			newObj = new CObject2D(iTextureID);
 	}

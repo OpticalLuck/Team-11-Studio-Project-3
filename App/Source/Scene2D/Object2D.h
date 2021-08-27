@@ -56,9 +56,15 @@ enum OBJECT_TYPE
 	INTERACTABLE_PORTAL_GATE_OFF	= 33,
 	INTERACTABLE_SPIKES				= 34,
 	INTERACTABLE_ALTAR				= 35,
-	INTERACTABLE_DOOR_CLOSED        = 36,
-	INTERACTABLE_DOOR_OPEN			= 37,
-	INTERACTABLE_TOTAL				= 39,
+	INTERACTABLE_COMMON_CHEST_CLOSED= 36,
+	INTERACTABLE_COMMON_CHEST_OPENED= 37,
+	INTERACTABLE_RARE_CHEST_CLOSED	= 38,
+	INTERACTABLE_RARE_CHEST_OPENED	= 39,
+
+	INTERACTABLE_DOOR_CLOSED        = 50,
+	INTERACTABLE_DOOR_OPEN			= 51,
+
+	INTERACTABLE_TOTAL				,
 
 	// STATIC TILES 100 - 149
 	TILE_START						= 100,
@@ -102,6 +108,7 @@ class CObject2D : public CEntity2D
 		void SetCurrentIndex(glm::i32vec2 currentIndex);
 
 		void SetObjectID(int objectID);
+		int GetObjectID(void);
 
 		std::vector<pair<CObject2D*, float>>CheckMapCollision(int range = 2);
 
@@ -117,6 +124,8 @@ class CObject2D : public CEntity2D
 
 		//Object ID
 		int ObjectID;
+
+		bool bCollided;
 
 		//Handlers
 		CEntityManager* cEntityManager;

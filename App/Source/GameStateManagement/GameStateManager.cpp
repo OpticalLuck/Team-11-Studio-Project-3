@@ -201,6 +201,11 @@ bool CGameStateManager::CheckGameStateExist(const std::string& _name)
 	return GameStateMap.count(_name) != 0;
 }
 
+CGameStateBase* CGameStateManager::GetState(const std::string& _name)
+{
+	return GameStateMap.at(_name);
+}
+
 bool CGameStateManager::SetPauseGameState(const std::string& _name)
 {
 	// Toggle to nullptr if pauseGameState already is in use
