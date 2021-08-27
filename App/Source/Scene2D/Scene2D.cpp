@@ -288,15 +288,15 @@ bool CScene2D::Update(const double dElapsedTime)
 	}
 	if (cPlayer2D->GetHealth() < 3) // change bgm if the health is dying 
 	{
-		if (!cSoundController->isCurrentlyPlaying(cSoundController->GetNamebyID(SOUND_ID::SOUND_TROUBLE)))
+		if (!cSoundController->isCurrentlyPlaying(cSoundController->GetNamebyID(SOUND_ID::BGM_TROUBLE)))
 		{
 			cSoundController->StopPlayBack();
-			cSoundController->PlaySoundByID(SOUND_ID::SOUND_TROUBLE);
+			cSoundController->PlaySoundByID(SOUND_ID::BGM_TROUBLE);
 		}
 	}
 	else
 	{
-		if (cSoundController->isCurrentlyPlaying(cSoundController->GetNamebyID(SOUND_ID::SOUND_TROUBLE)))
+		if (cSoundController->isCurrentlyPlaying(cSoundController->GetNamebyID(SOUND_ID::BGM_TROUBLE)))
 			cSoundController->StopPlayBack();
 		cSoundController->PlaySoundByID(SOUND_ID::BGM_LEVEL1);
 	}

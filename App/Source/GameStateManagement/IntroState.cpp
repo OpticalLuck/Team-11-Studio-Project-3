@@ -87,7 +87,7 @@ bool CIntroState::Init(void)
 	//BGM
 	CSoundController::GetInstance()->LoadSound(FileSystem::getPath("Sounds\\Henesys_BGM.ogg"), SOUND_ID::BGM_HENESYS, true, true);
 	CSoundController::GetInstance()->LoadSound(FileSystem::getPath("Sounds\\Level1_BGM.ogg"), SOUND_ID::BGM_LEVEL1, true, true);
-	CSoundController::GetInstance()->LoadSound(FileSystem::getPath("Sounds\\Trouble.ogg"), SOUND_ID::SOUND_TROUBLE, true);
+	CSoundController::GetInstance()->LoadSound(FileSystem::getPath("Sounds\\Trouble.ogg"), SOUND_ID::BGM_TROUBLE, true);
 
 	CSettings::GetInstance()->UpdateSoundSettings();
 	return true;

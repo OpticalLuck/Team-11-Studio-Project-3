@@ -33,14 +33,14 @@ enum SOUND_ID
 	SOUND_SWITCH		= 6,
 	SOUND_GAME_COMPLETE = 7,
 	SOUND_DEATH			= 8,
-	SOUND_TROUBLE       = 9,
-	SOUND_ONCLICK       = 10,
-	SOUND_TELEPORTER    = 11,
-	SOUND_POTION        = 12,
+	SOUND_ONCLICK       = 9,
+	SOUND_TELEPORTER    = 10,
+	SOUND_POTION        = 11,
 	SOUND_TOTAL			   ,
 
 	BGM_START			= 50,
 	BGM_HENESYS				,
+	BGM_TROUBLE             ,
 	BGM_LEVEL1              ,
 	BGM_TOTAL			
 
