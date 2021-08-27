@@ -204,7 +204,7 @@ void PauseMenuState::UpdateOption(ImGuiWindowFlags window_flags)
 		bgmVolume = 0.f;
 	}
 
-	if (ImGui::SliderFloat("BGM Volume", &bgmVolume, 0.f, 100.f, "%.2f"))
+	if(ImGui::SliderFloat("BGM Volume", &bgmVolume, 0.f, 100.f, "%.2f"))
 	{
 		bgmChange = true;
 		if (bgmVolume > 0.f)

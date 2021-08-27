@@ -16,6 +16,8 @@
 #include "Projectiles.h"
 //Bullet2D
 #include "Bullet2D.h"
+//Raycasting
+#include "RayCast2D.h"
 
 CBoss2D::CBoss2D(void) {
 	bIsActive = false;
@@ -27,10 +29,7 @@ CBoss2D::CBoss2D(void) {
 	quadMesh = nullptr;
 	camera = nullptr;
 
-	arrATK = nullptr;
-	arrAtkDuration = arrPauseDuration = nullptr;
-
-	fsmIndex = roundIndex = 0;
+	fsmIndex = 0;
 	bulletTimer = currAtkDuration = currPauseDuration = 0;
 
 	maxBulletTimer[0] = 0;
@@ -48,25 +47,12 @@ CBoss2D::CBoss2D(void) {
 	maxPauseDuration = 5.f;
 
 	id = 305;
+
+	//rayCast2D
+	rayCast2D = new RayCast2D;
 }
 
 CBoss2D::~CBoss2D(void) {
-	//Delete fsm array
-	if (arrATK) {
-		delete[] arrATK;
-		arrATK = nullptr;
-	}
-
-	if (arrAtkDuration) {
-		delete[] arrAtkDuration;
-		arrAtkDuration = nullptr;
-	}
-
-	if (arrPauseDuration) {
-		delete[] arrPauseDuration;
-		arrPauseDuration = nullptr;
-	}
-
 	for (unsigned i = 0; i < arrPlayer.size(); i++)
 		arrPlayer[i] = nullptr;
 
@@ -79,6 +65,11 @@ CBoss2D::~CBoss2D(void) {
 	cSettings = nullptr;
 	currTarget = nullptr;
 	cEntityManager = nullptr;
+
+	if (rayCast2D) {
+		delete rayCast2D;
+		rayCast2D = nullptr;
+	}
 
 	if (quadMesh) {
 		delete quadMesh;
@@ -133,6 +124,7 @@ bool CBoss2D::Init(void) {
 	// If this class is initialised properly, then set the bIsActive to true
 	bIsActive = true;
 
+	rayCast2D->Init(this);
 
 	if (!cPhysics2D)
 		cPhysics2D = new CPhysics2D;
@@ -151,6 +143,8 @@ bool CBoss2D::Init(void) {
 
 	//Initialisation of variables
 	bulletAng = 0;
+	beforeBulletAng = bulletAng;
+
 	maxBulletTimer[(int)ATK::A_ATTACK] = int(2.f * float(cSettings->FPS));
 	maxBulletTimer[(int)ATK::A_CIRCLE] = int(0.15f * float(cSettings->FPS));
 	maxBulletTimer[(int)ATK::A_TWIN] = int(0.3f * float(cSettings->FPS));
@@ -162,29 +156,79 @@ bool CBoss2D::Init(void) {
 	currTarget = nullptr;
 
 	isSeen = false;
+	beforeIsSeen = isSeen;
 
 	//Array of vectors
 	fsmIndex = 0;
-	roundIndex = 0;
 
-	if (!arrATK) {
-		arrATK = new std::vector<ATK>[5];
-		arrATK[roundIndex].push_back((ATK)RandomiseAttack());
-	}
+	arrATK.push_back((ATK)RandomiseAttack());
 
-	if (!arrAtkDuration) {
-		arrAtkDuration = new std::vector<int>[5];
-		arrAtkDuration[roundIndex].push_back(RandomiseTimer(true));
-		currAtkDuration = arrAtkDuration[roundIndex][0];
-	}
+	arrAtkDuration.push_back(RandomiseTimer(true));
+	currAtkDuration = arrAtkDuration[0];
+	beforeAtkDuration = currAtkDuration;
 
-	if (!arrPauseDuration) {
-		arrPauseDuration = new std::vector<int>[5];
-		arrPauseDuration[roundIndex].push_back(RandomiseTimer(false));
-		currPauseDuration = arrPauseDuration[roundIndex][0];
-	}
+	arrPauseDuration.push_back(RandomiseTimer(false));
+	currPauseDuration = arrPauseDuration[0];
+	beforePauseDuration = currPauseDuration;
+
+	savedAtkTimer = savedPauseTimer = 0;
 
 	return true;
+}
+
+void CBoss2D::ResetRecording(void) {
+	beforeBulletAng = bulletAng;
+	beforeIsSeen = isSeen;
+
+	beforeTarget = currTarget;
+
+	//Resetting of values
+	int currAtkTimer = arrAtkDuration[fsmIndex];
+	int currPauseTimer = arrPauseDuration[fsmIndex];
+	ATK currAtk = arrATK[fsmIndex];
+
+	beforeAtkDuration = currAtkDuration;
+	beforePauseDuration = currPauseDuration;
+
+	arrAtkDuration.clear();
+	arrPauseDuration.clear();
+	arrATK.clear();
+
+	arrAtkDuration.push_back(currAtkTimer);
+	arrPauseDuration.push_back(currPauseTimer);
+	arrATK.push_back(currAtk);
+
+	savedAtkTimer = currAtkTimer;
+	savedPauseTimer = currPauseTimer;
+
+	fsmIndex = 0;
+}
+
+void CBoss2D::ReplayRecording(void) {
+	bulletAng = beforeBulletAng;
+
+	//Check if currtarget exists
+	std::vector<CPlayer2D*> playerArr = cEntityManager->GetAllPlayers();
+
+	if (beforeTarget != nullptr) {
+		currTarget = playerArr.back();
+	}
+	else {
+		currTarget = nullptr;
+	}
+
+	isSeen = beforeIsSeen;
+
+	ResetCurrTimers();
+
+	currAtkDuration = beforeAtkDuration;
+	currPauseDuration = beforePauseDuration;
+
+	//Loading of values
+	fsmIndex = 0;
+
+	arrAtkDuration[fsmIndex] = savedAtkTimer;
+	arrPauseDuration[fsmIndex] = savedPauseTimer;
 }
 
 void CBoss2D::SetMaxAtkDuration(float val) {
@@ -287,73 +331,117 @@ void CBoss2D::Update(const double dElapsedTime) {
 	if (!bIsActive)
 		return; //Return if boss is not active
 
+	//Initialisation of raycast
+	rayCast2D->SetEntityArr(cEntityManager->GetAllSolidEntities());
+
+	arrPlayer = cEntityManager->GetAllPlayers();
+
 	bulletTimer = Math::Max(bulletTimer - 1, 0);
 
 	if (currTarget) {
 		UpdateAttack((float)dElapsedTime);
-		if (arrAtkDuration[roundIndex][fsmIndex] == 0)
+		if (arrAtkDuration[fsmIndex] == 0)
 			ShuffleNextAttack();
+
+		rayCast2D->SetTarget(currTarget);
+		bool currSee = rayCast2D->RayCheck();
 
 		if (!WithinProjectedCamera(currTarget)) {
 			ResetCurrTimers();
 			DEBUG_MSG("BOSS: Going pack to passive...");
 			currTarget = nullptr;
 		}
+
+		if (!currSee && currTarget) { //Obtain new target if curr target cannot be seen
+			CPlayer2D* newPlayer = GetProbableTarget(cEntityManager->GetAllPlayers(), (float)cMap2D->GetLevelLimit().x);
+			if (newPlayer)
+				currTarget = newPlayer;
+		}
 	}
 	else {
 		//Check if player is near and enable boss fight
 		isSeen = false;
-		currTarget = GetNearestTarget((float)cMap2D->GetLevelLimit().x);
+		//currTarget = GetNearestTarget((float)cMap2D->GetLevelLimit().x);
+		currTarget = GetProbableTarget(cEntityManager->GetAllPlayers(), (float)cMap2D->GetLevelLimit().x);
 
-		if (currTarget)
-			bulletAng = GetAngle(currTarget->vTransform); 
+		if (currTarget) {
+			bulletAng = GetAngle(currTarget->vTransform);
+		}
 	}
 
 	//Health lives update
 	UpdateHealthLives();
 }
 
+CPlayer2D* CBoss2D::GetProbableTarget(std::vector<CPlayer2D*> arr, float dist) {
+	for (unsigned i = 0; i < arr.size(); i++) {
+		CPlayer2D* player = arr[i];
+
+		rayCast2D->SetTarget(player);
+		bool casted = rayCast2D->RayCheck(dist,0.f);
+
+		if (casted)
+			return player;
+	}
+
+	return nullptr;
+}
+
 void CBoss2D::ResetCurrTimers(void) {
-	arrPauseDuration[roundIndex][fsmIndex] = currPauseDuration;
-	arrAtkDuration[roundIndex][fsmIndex] = currAtkDuration;
+	arrPauseDuration[fsmIndex] = currPauseDuration;
+	arrAtkDuration[fsmIndex] = currAtkDuration;
 }
 
 void CBoss2D::ShuffleNextAttack(void) {
 	ResetCurrTimers();
 	DEBUG_MSG("BOSS: Shuffling to next attack...");
 
-	fsmIndex++;
-	if (arrPauseDuration[roundIndex].size() == fsmIndex) { //Pushback next values
-		arrPauseDuration[roundIndex].push_back(RandomiseTimer(false));
+
+
+	if (recording) {
+		fsmIndex++;
+		if (arrPauseDuration.size() == fsmIndex) { //Pushback next values
+			arrPauseDuration.push_back(RandomiseTimer(false));
+		}
+
+		if (arrAtkDuration.size() == fsmIndex) {
+			arrAtkDuration.push_back(RandomiseTimer(true));
+		}
+
+		if (arrATK.size() == fsmIndex) {
+			arrATK.push_back(RandomiseAttack());
+		}
+	}
+	else if (arrPauseDuration.size() > unsigned(fsmIndex + 1)) {
+		fsmIndex++;
+	}
+	else {
+		arrPauseDuration[fsmIndex] = RandomiseTimer(false);
+		arrAtkDuration[fsmIndex] = RandomiseTimer(true);
+
+		arrATK[fsmIndex] = RandomiseAttack();
 	}
 
-	if (arrAtkDuration[roundIndex].size() == fsmIndex) {
-		arrAtkDuration[roundIndex].push_back(RandomiseTimer(true));
-	}
-
-	if (arrATK[roundIndex].size() == fsmIndex) {
-		arrATK[roundIndex].push_back(RandomiseAttack());
-	}
-
-	currAtkDuration = arrAtkDuration[roundIndex][fsmIndex];
-	currPauseDuration = arrPauseDuration[roundIndex][fsmIndex];
+	currAtkDuration = arrAtkDuration[fsmIndex];
+	currPauseDuration = arrPauseDuration[fsmIndex];
 }
 
 void CBoss2D::UpdateAttack(float dElapsedTime) {
 	//Remove pause time if its 
-	if (isSeen == false && arrPauseDuration[roundIndex][fsmIndex] != 0) {
+	if (isSeen == false && arrPauseDuration[fsmIndex] != 0) {
 		DEBUG_MSG("BOSS: Attacking!");
 
 		isSeen = true;
+		arrPauseDuration[fsmIndex] = 0;
 	}
 
-	if (arrPauseDuration[roundIndex][fsmIndex] > 0) {
-		arrPauseDuration[roundIndex][fsmIndex]--;
+	if (arrPauseDuration[fsmIndex] > 0) {
+		arrPauseDuration[fsmIndex]--;
 
-		if (arrATK[roundIndex][fsmIndex] == ATK::A_ATTACK)
+		if (arrATK[fsmIndex] == ATK::A_ATTACK)
 			bulletAng = GetAngle(currTarget->vTransform);
 
-		if (arrATK[roundIndex][fsmIndex] == ATK::A_MACHINEGUN) {
+		if (arrATK[fsmIndex] == ATK::A_MACHINEGUN) {
 			float targetEnemyAng = GetAngle(currTarget->vTransform);
 			float angSpd = 180.f * dElapsedTime;
 
@@ -367,10 +455,10 @@ void CBoss2D::UpdateAttack(float dElapsedTime) {
 	}
 
 	//Attack phrase
-	arrAtkDuration[roundIndex][fsmIndex] = Math::Max(arrAtkDuration[roundIndex][fsmIndex] - 1, 0); //Reduce timer
+	arrAtkDuration[fsmIndex] = Math::Max(arrAtkDuration[fsmIndex] - 1, 0); //Reduce timer
 
 	//Rotate direction that bullet will move towards
-	switch (arrATK[roundIndex][fsmIndex]) {
+	switch (arrATK[fsmIndex]) {
 		case ATK::A_MACHINEGUN:
 		case ATK::A_ATTACK: {
 				float targetEnemyAng = GetAngle(currTarget->vTransform);
@@ -400,14 +488,14 @@ void CBoss2D::UpdateAttack(float dElapsedTime) {
 	if (bulletTimer > 0)
 		return; //Do not fire bullet if timer is not triggered
 
-	bulletTimer = maxBulletTimer[(int)arrATK[roundIndex][fsmIndex]];
+	bulletTimer = maxBulletTimer[(int)arrATK[fsmIndex]];
 
 	//Spawn bullet
-	switch (arrATK[roundIndex][fsmIndex]) {
+	switch (arrATK[fsmIndex]) {
 		case ATK::A_MACHINEGUN:
 		case ATK::A_ATTACK: {
 			Bullet2D* bullet = ObjectFactory::CreateBullet(bulletAng, vTransform);
-			cEntityManager->PushBullet(bullet);
+			cEntityManager->PushBullet(bullet, cMap2D->GetCurrentLevel());
 
 			break;
 		}
@@ -415,7 +503,7 @@ void CBoss2D::UpdateAttack(float dElapsedTime) {
 		case ATK::A_CIRCLE: {
 			for (int i = 0; i < 4; i++) {
 				Bullet2D* bullet = ObjectFactory::CreateBullet(bulletAng + (i * 90), vTransform);
-				cEntityManager->PushBullet(bullet);
+				cEntityManager->PushBullet(bullet, cMap2D->GetCurrentLevel());
 			}
 
 			break;
@@ -424,7 +512,7 @@ void CBoss2D::UpdateAttack(float dElapsedTime) {
 		case ATK::A_TWIN: {
 			for (int i = 0; i < 2; i++) {
 				Bullet2D* bullet = ObjectFactory::CreateBullet(bulletAng + (i * 180), vTransform);
-				cEntityManager->PushBullet(bullet);
+				cEntityManager->PushBullet(bullet, cMap2D->GetCurrentLevel());
 			}
 
 			break;
@@ -505,4 +593,6 @@ void CBoss2D::PostRender(void) {
 
 	// Disable blending
 	glDisable(GL_BLEND);
+
+	rayCast2D->RenderRayCast();
 }

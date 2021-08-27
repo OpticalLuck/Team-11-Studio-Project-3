@@ -21,6 +21,8 @@ LivingEntity2D::LivingEntity2D(void) {
 	//Color initialisation (Normal by default)
 	currentColor = glm::vec4(1, 1, 1, 1);
 	blinkColor = glm::vec4(100, 100, 100, 1);
+
+	maxKnockBack = 15.f;
 }
 
 LivingEntity2D::~LivingEntity2D(void) {
@@ -59,6 +61,9 @@ int LivingEntity2D::GetHealth(void) {
 	return pHealth;
 }
 
+void LivingEntity2D::SetHealth(int hp) {
+	pHealth = Math::Clamp(hp, 0, pMaxHealth);
+}
 
 int LivingEntity2D::GetMaxHealth(void)
 {

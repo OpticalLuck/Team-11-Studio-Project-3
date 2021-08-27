@@ -128,7 +128,7 @@ void CLevelEditor::Render()
             // Update the shaders with the latest transform
             glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
 
-            if (m_CurrentLevel[uiRow][uiCol].iTileID != 0 && m_CurrentLevel[uiRow][uiCol].iTileID != 305)
+            if (m_CurrentLevel[uiRow][uiCol].iTileID != 0)
             {
                 glBindTexture(GL_TEXTURE_2D, cTextureManager->MapOfTextureIDs.at(m_CurrentLevel[uiRow][uiCol].iTileID));
 

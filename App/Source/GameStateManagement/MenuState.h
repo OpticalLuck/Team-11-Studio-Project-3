@@ -47,6 +47,7 @@ protected:
 	{
 		STATE_MAIN = 0,
 		STATE_OPTION,
+		STATE_SELECT_LEVEL,
 		STATE_TOTAL
 	};
 
@@ -64,4 +65,5 @@ protected:
 
 	bool UpdateMenu(ImGuiWindowFlags window_flags);
 	void UpdateOption(ImGuiWindowFlags window_flags);
+	bool UpdateLevelSelect(ImGuiWindowFlags window_flags);
 };

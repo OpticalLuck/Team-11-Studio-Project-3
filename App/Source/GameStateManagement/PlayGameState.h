@@ -33,7 +33,11 @@ public:
 
 	virtual bool ImGuiRender();
 
+	void SetLevel(std::string levelPath);
+
 protected:
+	std::string levelPath;
+
 	// The handler to the CScene2D instance
 	CScene2D* cScene2D;
 	CInputHandler* cInputHandler;
@@ -47,10 +51,19 @@ protected:
 	ImGuiWindowFlags health_window;
 	ImGuiWindowFlags enemyHealth_window;
 	ImGuiWindowFlags option_window;
-	ImGuiWindowFlags cloneHealth_window;
 	ImGuiWindowFlags UI_window;
+	ImGuiWindowFlags cloneHealth_window;
+
+	ButtonData resumeButtonData;
+	ButtonData restartButtonData;
+	ButtonData exitButtonData;
+	ButtonData optionButtonData;
+	ButtonData backButtonData;
+	ButtonData applyButtonData;
 
 	ButtonData background;
+
+
 
 	float m_fProgressBar;
 

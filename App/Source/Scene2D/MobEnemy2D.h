@@ -18,6 +18,8 @@ class CMobEnemy2D : public CEnemy2D
 
 			int currTimer;
 			int currInterval; //Patrolling
+
+			CPlayer2D* currPlayer;
 		};
 
 		std::map<int, data> savedData;
@@ -45,7 +47,7 @@ class CMobEnemy2D : public CEnemy2D
 		virtual void Attacked(int hp = 1, CPhysics2D* bounceObj = nullptr);
 
 		void SaveCurrData(void);
-		int GetNearestDataKey(void);
+		std::pair<int, bool> GetNearestDataKey(void);
 
 		std::vector<std::pair<int, CMobEnemy2D::data>> SortSavedData(void);
 		static bool DataCheck(std::pair<int, data>& a, std::pair<int, data>& b);
@@ -55,8 +57,16 @@ class CMobEnemy2D : public CEnemy2D
 
 		void SetID(int id);
 
+		//Recording stuff
+		void ResetRecording(void) override;  //Resets the recording
+
+		//Replay
+		void ReplayRecording(void) override;
+
 	protected:
 		glm::vec2 oldVTransform;
+		glm::vec2 posToChase;
+		glm::vec2 spawnPoint;
 		float mSpd;
 
 		CSpriteAnimation* animatedSprites;
@@ -64,8 +74,13 @@ class CMobEnemy2D : public CEnemy2D
 		bool patrol;
 		bool clampSides; //check if enemy can jump off cliff and stuff
 		bool inView;
+		float distCheck;
 
 		void UpdateMovement(const float dElapsedTime);
+		void ChaseEnemyX(void); //Chasing the enemy, in terms of x axis
+		void ChaseEnemyY(void); //Chasing the enemy, in terms of y axis
+		void UpdateAttack(const float dElapsedTime);
+
 		void CollisionUpdate(void);
 		void ClampPos(void);
 
@@ -80,8 +95,17 @@ class CMobEnemy2D : public CEnemy2D
 		void OnIntervalTriggered(FSM);
 		void OnStateTimerTriggered(FSM);
 
+		void EnableAttack(void); //To enable attack state, USE THIS FUNCTION AND DONT CHANGE MANUALLY AS INSIDE GOT SAVE AND LOAD
+		void EnableGoBack(void); //Going back state, when enemy lost player
+		void RandomisePassive(void); //Randomise passive state
+
+		std::vector<CPlayer2D*> ResetEntValues(void); //Resetting entity values during runtime ( CALL THIS DURING RUNTIME/ UPDATE ONLY)
+
 		//Raycasting client
 		RayCast2D* rayCast2D;
+
+		//Previoslyy seen player
+		CPlayer2D* prevPlayer2D;
 
 		//Smart ai
 		int stateTimer;
@@ -91,6 +115,7 @@ class CMobEnemy2D : public CEnemy2D
 
 		int id;
 
-		bool recording;
+		//int nearestFrame;
+		std::pair<int, bool> nearestFrame;
 };
 

@@ -26,6 +26,7 @@ public:
 	bool RemoveGameState(const std::string& _name);
 	bool SetActiveGameState(const std::string& _name);
 	bool CheckGameStateExist(const std::string& _name);
+	CGameStateBase* GetState(const std::string& _name);
 
 	bool SetPauseGameState(const std::string& _name);
 	void OffPauseGameState();

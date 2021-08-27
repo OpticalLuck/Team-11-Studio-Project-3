@@ -5,6 +5,7 @@
  */
 #include "Enemy2D.h"
 
+#include "System/Debug.h"
 #include <iostream>
 using namespace std;
 
@@ -23,6 +24,10 @@ using namespace std;
 
 // Include ImageLoader
 #include "System\ImageLoader.h"
+
+//Objects
+#include "Object2D.h"
+#include "Obstacle2D.h"
 
 // Include the Map2D as we will use it to check the player's movements and actions
 #include "Map2D.h"
@@ -67,6 +72,8 @@ CEnemy2D::CEnemy2D(void)
 	pMaxBlinkInterval = int(0.175f * (float)cSettings->FPS);
 
 	currFrame = 0;
+
+	beforeTarget = nullptr;
 }
 
 /**
@@ -128,12 +135,10 @@ bool CEnemy2D::Init(void)
 	//CS: Create the Quad Mesh using the mesh builder
 	quadMesh = CMeshBuilder::GenerateQuad(glm::vec4(1, 1, 1, 1), cSettings->TILE_WIDTH, cSettings->TILE_HEIGHT);
 
-	roundIndex = 0;
-
 	// Load the enemy2D texture
 	if (LoadTexture("Image/Scene2D_EnemyTile.tga", iTextureID) == false)
 	{
-		std::cout << "Failed to load enemy2D tile texture" << std::endl;
+		DEBUG_MSG("Failed to load enemy2D tile texture");
 		return false;
 	}
 
@@ -164,6 +169,25 @@ bool CEnemy2D::Init(void)
 	pHealth = 1;
 
 	return true;
+}
+
+CObject2D* CEnemy2D::GetObjectInTile(int uiCol, int uiRow) {
+	CObject2D* obj = cMap2D->GetCObject(uiCol, uiRow);
+
+	if (obj)
+		return obj;
+
+	std::vector<Obstacle2D*> obstArr = cEntityManager->GetallObstacles();
+	for (unsigned i = 0; i < obstArr.size(); i++) {
+		Obstacle2D* obs = obstArr[i];
+
+		glm::i32vec2 obsPos = glm::i32vec2(round(obs->vTransform.x), round(obs->vTransform.y));
+		if (uiCol == obsPos.x && uiRow == obsPos.y)
+			return obs;
+	}
+
+	//Else return nullptr if unsuccessful
+	return nullptr;
 }
 
 CEnemy2D::FSM CEnemy2D::RandomiseFSM(void) {
@@ -208,6 +232,14 @@ CPlayer2D* CEnemy2D::GetNearestTarget(float dist) {
 		nearest = nullptr;
 
 	return nearest;
+}
+
+void CEnemy2D::ResetRecording(void) {
+	//Do nothing for now
+}
+
+void CEnemy2D::ReplayRecording(void) {
+	//Do nothing for now
 }
 
 CEnemy2D::DIRECTION CEnemy2D::RandomiseDir(void) {

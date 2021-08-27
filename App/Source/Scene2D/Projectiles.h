@@ -26,11 +26,14 @@ public:
 
 	bool bOutsideBoundary(void);
 
+	void ResolveEnemyCollision() override;
+
 	bool bDestroyed;
 protected:
 	CSpriteAnimation* animatedSprites;
 
 	// Current color
+	int iBounces;
 	glm::vec4 currentColor;
 };
 

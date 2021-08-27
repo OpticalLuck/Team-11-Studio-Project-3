@@ -11,12 +11,16 @@
 #include "GLFW/glfw3.h"
 #include "Object2D.h"
 #include "Map2D.h"
+#include "System/Debug.h"
 
-CInventory::CInventory(std::string sName)
+CItem CInventory::itemDef = CItem();
+
+CInventory::CInventory(std::string sName, CPlayer2D* target)
 	: fCooldown(0.f)
 	, iCurrentIndex(0)
 {
 	this->sName = sName;
+	linkedPlayer = target;
 }
 
 
@@ -24,17 +28,21 @@ CInventory::~CInventory()
 {
 }
 
-void CInventory::AddItem(int iIndex, int iID, int iCount)
+void CInventory::AddItem(std::string itemName, int iCount)
 {
 	// If the item exist in the inventory
-	if (m_Items.find(iIndex) != m_Items.end())
+	for (unsigned i = 0; i < m_Items.size(); ++i)
 	{
-		CItem& currentItem = m_Items.at(iIndex);
-		currentItem.iCount += iCount;
-		currentItem.iCount = Math::Clamp(currentItem.iCount, currentItem.iMinCount , currentItem.iMaxCount);
+		if (m_Items[i].GetName() == itemName)
+		{
+			CItem& currentItem = m_Items[i];
+			currentItem.iCount += iCount;
+			currentItem.iCount = Math::Clamp(currentItem.iCount, currentItem.iMinCount, currentItem.iMaxCount);
+			return;
+		}
 	}
-	else 
-		std::cout << "Item is not in inventory\n";
+
+	DEBUG_MSG("Item is not in the inventory");
 
 }
 
@@ -60,12 +68,6 @@ void CInventory::Update(double dElapsedTime, int iTempFrameCounter, std::vector<
 		fCooldown = .5f;
 	}
 
-	if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::ENTER].bKeyPressed && fCooldown <= 0)
-	{
-		cInventoryManager->UseItem();
-		fCooldown = .5f;
-	}
-
 	//if (cKeyboardController->IsKeyPressed(GLFW_KEY_G))
 	//{
 	//	//cInventoryM->AddItem("Shuriken", ITEM_SHURIKEN);
@@ -76,8 +78,9 @@ void CInventory::Init()
 {
 	//m_Items.insert(pair<int, CItem>(0,CItem(2)));
 
-	SetItem(0, "Shuriken", PROJECTILES_SHURIKEN, 0, 100, 50);
-	SetItem(1, "Potion", CONSUMABLES_POTION, 0, 100, 2);
+	SetItem(0, "Shuriken", PROJECTILES_SHURIKEN, 0, 100, 10);
+	SetItem(1, "Kunai", BULLETS_KUNAI, 0, 100, 10);
+	SetItem(2, "Potion", CONSUMABLES_POTION, 0, 100, 2);
 }
 
 void CInventory::SetItem(int iIndex, std::string sName, int iID, int iMinVal, int iMaxVal, int iSetVal)
@@ -108,6 +111,8 @@ CItem& CInventory::GetItem(int iIndex)
 	}
 	else
 		cout << "Item does not exist\n";
+
+	return itemDef;
 }
 
 int CInventory::GetNumofUniqueItems()
@@ -119,8 +124,13 @@ void CInventory::UseItem(void)
 {
 	if (m_Items.find(iCurrentIndex) != m_Items.end()) //if item is existed
 	{
-		m_Items.at(iCurrentIndex).Use();
+		m_Items.at(iCurrentIndex).Use(linkedPlayer);
 	}
 	else
 		cout << "Item does not exist\n";
+}
+
+void CInventory::SetPlayer(CPlayer2D* player)
+{
+	linkedPlayer = player;
 }

@@ -8,6 +8,9 @@ using namespace std;
 #include "System\filesystem.h"
 #include "Math/MyMath.h"
 
+//Enemy shit
+#include "MobEnemy2D.h"
+
 /**
  @brief Constructor This constructor has protected access modifier as this class will be a Singleton
  */
@@ -33,6 +36,7 @@ CScene2D::~CScene2D(void)
 {
 	if (cSoundController)
 	{
+		cSoundController->StopSoundByID(BGM_HENESYS);
 		// We won't delete this since it was created elsewhere
 		cSoundController = NULL;
 	}
@@ -49,18 +53,7 @@ CScene2D::~CScene2D(void)
 	CInputHandler = NULL;
 
 	// Destroy the enemies
-	for (unsigned i = 0; i < enemyVector.size(); i++)
-	{
-		delete enemyVector[i];
-		enemyVector[i] = NULL;
-	}
-	enemyVector.clear();
-
-	if (cPlayer2D)
-	{
-		delete cPlayer2D;
-		cPlayer2D = NULL;
-	}
+	cEntityManager->Clear();
 
 	if (cMap2D)
 	{
@@ -72,13 +65,12 @@ CScene2D::~CScene2D(void)
 		cameraHandler->Destroy();
 		cameraHandler = NULL;
 	}
-
 }
 
 /**
 @brief Init Initialise this instance
 */ 
-bool CScene2D::Init(void)
+bool CScene2D::Init(std::string levelPath)
 {
 	Math::InitRNG();
 	// Include Shader Manager
@@ -96,7 +88,7 @@ bool CScene2D::Init(void)
 		return false;
 	}
 	// Load the map into an array
-	if (cMap2D->LoadMap("Maps/DM2213_Map_Level_01.csv") == false)
+	if (cMap2D->LoadMap(levelPath, 0) == false)
 	{
 		// The loading of a map has failed. Return false
 		return false;
@@ -107,19 +99,16 @@ bool CScene2D::Init(void)
 	CShaderManager::GetInstance()->Use("2DColorShader");
 	CShaderManager::GetInstance()->activeShader->setInt("texture1", 0);
 	cEntityManager = CEntityManager::GetInstance();
-	cEntityManager->EntityManagerInit();
+	cEntityManager->InitPlayer();
 
 	cPlayer2D = cEntityManager->GetPlayer();
 
 	cameraHandler = Camera2D::GetInstance();
 	cameraHandler->Reset();
 	cameraHandler->UpdateTarget(cPlayer2D->vTransform);
-
-	// Create and initialise the CEnemy2D
-	enemyVector.clear();
 	
 	//300
-	LoadEnemy<CEnemy2D>();
+	//LoadEnemy<CEnemy2D>();
 
 	// Setup the shaders
 	CShaderManager::GetInstance()->Add("textShader", "Shader//text.vs", "Shader//text.fs");
@@ -150,7 +139,6 @@ bool CScene2D::Init(void)
 */
 bool CScene2D::Update(const double dElapsedTime)
 {
-	++m_FrameStorage.iCurrentFrame;
 
 	cEntityManager->Update(dElapsedTime);
 
@@ -192,26 +180,50 @@ bool CScene2D::Update(const double dElapsedTime)
 	// Paradoxium ability
 	if (cKeyboardController->IsKeyPressed(GLFW_KEY_ENTER))
 	{
-		++m_FrameStorage.iCounter;
-		switch (m_FrameStorage.iCounter)
+		++cPlayer2D->m_FrameStorage.iCounter;
+		std::vector<CEnemy2D*> enemyArr = cEntityManager->GetAllEnemies();
+		switch (cPlayer2D->m_FrameStorage.iCounter)
 		{
 		case 1:
-			m_FrameStorage.iStoredFrame = m_FrameStorage.iCurrentFrame;
-			m_FrameStorage.spawnPos = cPlayer2D->vTransform;
+			cPlayer2D->SetRecording(true);
+			cPlayer2D->m_FrameStorage.iStoredFrame = cPlayer2D->m_FrameStorage.iCurrentFrame;
+			cPlayer2D->m_FrameStorage.spawnPos = cPlayer2D->vTransform;
+			//Recording enemy stuff
+			CEntity2D::SetRecording(true);
+			for (unsigned i = 0; i < enemyArr.size(); i++) {
+				enemyArr[i]->ResetRecording();
+			}
+
+			//Saving of other movable entities
+			cEntityManager->SavePrevious();
+
 			break;
 		case 2:
+			cPlayer2D->SetRecording(false);
 			CPlayer2D* clone = CEntityManager::GetInstance()->Clone();
-			clone->vTransform = m_FrameStorage.spawnPos;
-			clone->iTempFrameCounter = m_FrameStorage.iStoredFrame;
-			clone->iFrameCounterEnd = m_FrameStorage.iCurrentFrame;
-			m_FrameStorage.iStoredFrame = 0;
-			cPlayer2D->vTransform = m_FrameStorage.spawnPos;
+			//Loading of clone
+			clone->vTransform = cPlayer2D->m_FrameStorage.spawnPos;
+			clone->m_FrameStorage.iCurrentFrame = cPlayer2D->m_FrameStorage.iStoredFrame;
+			clone->m_FrameStorage.iEndFrame = cPlayer2D->m_FrameStorage.iCurrentFrame;
+			cPlayer2D->m_FrameStorage.iStoredFrame = 0;
+			cPlayer2D->vTransform = cPlayer2D->m_FrameStorage.spawnPos;
+			clone->SetHealth(cEntityManager->GetPlayer()->GetHealth());
 
-			m_FrameStorage.iCounter = 0;
+			cPlayer2D->m_FrameStorage.iCounter = 0;
+
+			//Recording enemy stuff
+			CEntity2D::SetRecording(false);
+
+			for (unsigned i = 0; i < enemyArr.size(); i++) {
+				enemyArr[i]->ReplayRecording();
+			}
+
+			//Loading prev values of movable entities
+			cEntityManager->LoadPrevious();
+
 			break;
 		}
 	}
-
 	//Camera work
 	cameraHandler->UpdateTarget(cPlayer2D->vTransform);
 	cameraHandler->Update((float)dElapsedTime);
@@ -223,16 +235,10 @@ bool CScene2D::Update(const double dElapsedTime)
 		if (cMap2D->GetCurrentLevel() + 1 < 3)
 		{
 			cMap2D->SetCurrentLevel(cMap2D->GetCurrentLevel() + 1);
-			int initialsize = enemyVector.size();
-			for (int i = 0; i < initialsize; i++)
-			{
-				delete enemyVector[0];
-				enemyVector.erase(enemyVector.begin());
-			}
 			cPlayer2D->Reset();
 
 			//300
-			LoadEnemy<CEnemy2D>();
+			//LoadEnemy<CEnemy2D>();
 		}
 		//Last Level
 		else
@@ -301,6 +307,7 @@ void CScene2D::Render(void)
 	cEntityManager->RenderEnemy();
 	cEntityManager->RenderClone();
 	cEntityManager->RenderPlayer();
+	cEntityManager->RenderObstacles();
 }
 
 /**

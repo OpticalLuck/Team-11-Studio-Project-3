@@ -99,3 +99,8 @@ CInputHandler::~CInputHandler()
 	cMouseController = NULL;
 	camera2D = NULL;
 }
+
+void CInputHandler::Reset() {
+	m_KeyboardInputs.clear();
+	m_MouseInputs.clear();
+}

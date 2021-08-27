@@ -71,7 +71,6 @@ bool CEditorSettingsState::Init(void)
 	CShaderManager::GetInstance()->activeShader->setInt("texture1", 0);
 
 	cLevelEditor = CLevelEditor::GetInstance();
-	cLevelEditor->SetShader("2DShader");
 	cLevelEditor->Init();
 
 	//Create Background Entity

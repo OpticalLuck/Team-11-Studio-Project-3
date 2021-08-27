@@ -13,6 +13,7 @@
 
 Interactables::Interactables(int iTextureID)
 	: bInteraction(false)
+	, bCloneInteract(false)
 	, quad(NULL)
 	, iInteractableID(0)
 {
@@ -80,18 +81,35 @@ void Interactables::Update(const double dElapsedTime)
 {
 	bool bCollided = false;
 
-	if (this->interactableType == PRESSURE_PLATE)
-	{
-		CEntityManager* em = CEntityManager::GetInstance();
+	CEntityManager* em = CEntityManager::GetInstance();
 
+	if (this->interactableType < PRESSURE_PLATE)
+	{
 		for (auto& e : em->GetAllPlayers())
 		{
-			/*Collision data = e->GetCollider()->CollideWith(this->collider2D);
-			if (std::get<0>(data))
+			float distance = glm::length(e->vTransform - this->vTransform);
+			if (!e->IsClone() || e->m_FrameStorage.iCurrentFrame <= e->m_FrameStorage.iEndFrame)
+			{
+				if (distance < 1 && e->m_KeyboardInputs[e->m_FrameStorage.iCurrentFrame - 1][KEYBOARD_INPUTS::E].bKeyPressed)
+				{
+					Activate(false, e);
+				}
+			}
+		}
+	}
+	else if (this->interactableType == PRESSURE_PLATE)
+	{
+		for (auto& e : em->GetAllPlayers())
+		{
+			float distance = glm::length(e->vTransform - this->vTransform);
+			if (distance < 0.4)
 			{
 				bCollided = true;
-			}*/
+			}
+		}
 
+		for (auto& e : em->GetallObstacles())
+		{
 			float distance = glm::length(e->vTransform - this->vTransform);
 			if (distance < 0.4)
 			{
@@ -101,38 +119,10 @@ void Interactables::Update(const double dElapsedTime)
 
 		Activate(bCollided);
 	}
-	else if (this->interactableType == LEVER)
-	{
-		CEntityManager* em = CEntityManager::GetInstance();
-
-		for (auto& e : em->GetAllPlayers())
-		{
-			/*Collision data = e->GetCollider()->CollideWith(this->collider2D);
-			if (std::get<0>(data))
-			{
-				bCollided = true;
-			}*/
-
-			float distance = glm::length(e->vTransform - this->vTransform);
-			if (distance < 1 && e->m_KeyboardInputs[e->iTempFrameCounter - 1][KEYBOARD_INPUTS::E].bKeyPressed)
-			{
-				Activate(!bInteraction);
-			}
-		}
-	}
 	else if (this->interactableType == PORTAL)
 	{
-		CEntityManager* em = CEntityManager::GetInstance();
-
 		for (auto& e : em->GetAllPlayers())
 		{
-			// e->bJustTeleported = false;
-			/*Collision data = e->GetCollider()->CollideWith(this->collider2D);
-			if (std::get<0>(data))
-			{
-				bCollided = true;
-			}*/
-
 			float distance = glm::length(e->vTransform - this->vTransform);
 			if (distance < 0.3)
 			{
@@ -152,6 +142,42 @@ void Interactables::Update(const double dElapsedTime)
 			else
 			{
 				this->bJustTeleported = false;
+			}
+		}
+	}
+	else if (this->interactableType == GATE)
+	{
+		float distance = glm::length(em->GetPlayer()->vTransform - this->vTransform);
+		if (distance < 0.3)
+		{
+			CMap2D::GetInstance()->SetCurrentLevel(CMap2D::GetInstance()->GetCurrentLevel() + 1);
+			if (CMap2D::GetInstance()->LoadMap("Maps/test.csv", 1) == false)
+			{
+				DEBUG_MSG("Map Loading failed");
+				return;
+			}
+
+			unsigned int iRow = -1;
+			unsigned int iCol = -1;
+			if (CMap2D::GetInstance()->FindValue(1, iRow, iCol))
+			{
+				em->GetPlayer()->vTransform = glm::vec2(iCol, iRow);
+				CMap2D::GetInstance()->SetMapInfo(iRow, iCol, 0);
+			}
+		}
+	}
+	else if (this->interactableType == COMMON_CHEST || this->interactableType == RARE_CHEST)
+	{
+		for (auto& e : em->GetAllPlayers())
+		{
+			float distance = glm::length(e->vTransform - this->vTransform);
+
+			if (e->m_FrameStorage.iCurrentFrame > e->m_KeyboardInputs.size())
+				continue;
+
+			if (distance < 1 && e->m_KeyboardInputs[e->m_FrameStorage.iCurrentFrame - 1][KEYBOARD_INPUTS::E].bKeyPressed)
+			{
+				Activate(true, e);
 			}
 		}
 	}
@@ -269,14 +295,24 @@ bool Interactables::LoadTexture(const char* filename, GLuint& iTextureID)
 	return true;
 }
 
-bool Interactables::Activate(bool interaction)
+bool Interactables::Activate(bool interaction, CPlayer2D* player)
 {
 	switch (interactableType) {
 	case LEVER:
-		ActivateSwitch();
+		ActivateSwitch(player);
 		break;
 	case PRESSURE_PLATE:
 		ActivatePressurePlate(interaction);
+		break;
+	case COMMON_CHEST:
+		OpenChest(player, "Shuriken", 5);
+		OpenChest(player, "Kunai", 5);
+		this->bInteraction = interaction;
+		break;
+	case RARE_CHEST:
+		OpenChest(player, "Shuriken", 10);
+		OpenChest(player, "Kunai", 10);
+		this->bInteraction = interaction;
 		break;
 	default:
 		this->bInteraction = interaction;
@@ -285,14 +321,24 @@ bool Interactables::Activate(bool interaction)
 
 	// Change Texture
 	// On and Off Textures are an index apart in the texture manager
-	switch (bInteraction) {
+	/*switch (bInteraction) {
 	case true:
 		this->iTextureID = this->interactableType + 1;
 		break;
 	case false:
 		this->iTextureID = this->interactableType;
 		break;
+	}*/
+
+	if (bInteraction || bCloneInteract)
+	{
+		this->iTextureID = this->interactableType + 1;
 	}
+	else
+	{
+		this->iTextureID = this->interactableType;
+	}
+
 
 	// Loop through the interactables to activate the corresponding Interactable IDs
 	if (this->interactableType < DOOR)
@@ -304,8 +350,8 @@ bool Interactables::Activate(bool interaction)
 			{
 				if (this->iInteractableID == e->iInteractableID)
 				{
-					e->Activate(interaction);
-					e->collider2D->SetbEnabled(!interaction);
+					e->Activate(this->bInteraction);
+					e->collider2D->SetbEnabled(!this->bInteraction);
 					return true;
 				}
 			}
@@ -315,9 +361,22 @@ bool Interactables::Activate(bool interaction)
 	return true;
 }
 
-bool Interactables::ActivateSwitch()
+bool Interactables::OpenChest(CPlayer2D* player, std::string itemName, int itemCount)
 {
-	this->bInteraction = !this->bInteraction;
+	CInventory* inv = player->GetInventory();
+	if (!this->bInteraction)
+		inv->AddItem(itemName, itemCount);
+
+	return false;
+}
+
+bool Interactables::ActivateSwitch(CPlayer2D* player)
+{
+	if (player->GetRecording())
+		this->bCloneInteract = !this->bCloneInteract;
+	else
+		this->bInteraction = !this->bInteraction;
+	
 	return false;
 }
 

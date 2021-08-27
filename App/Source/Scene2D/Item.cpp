@@ -1,5 +1,11 @@
 #include "Item.h"
 #include "Object2D.h"
+#include "../Factory/ObjectFactory.h"
+
+#include "../Scene2D/Player2D.h"
+#include "../Scene2D/Bullet2D.h"
+#include "../Scene2D/Projectiles.h"
+#include "../Scene2D/EntityManager.h"
 
 CItem::CItem(int ID)
 	: iID(ID)
@@ -41,7 +47,7 @@ void CItem::set_Name(std::string _name)
 	sName = _name;
 }
 
-void CItem::Use(void)
+void CItem::Use(CPlayer2D* user)
 {
 	if (iCount > iMinCount)
 	{
@@ -50,16 +56,47 @@ void CItem::Use(void)
 		{
 		case OBJECT_TYPE::CONSUMABLES_POTION:
 			cout << "You are using potion\n";
-			cout << "iCount is " << iCount << '\n';
-			break;
-		case OBJECT_TYPE::EQUIPMENTS_HOOK:
-			cout << "You are using Item hook\n";
+			if (user->GetHealth() == 5)
+				break;
+			user->UpdateHealth(1);
+			cout << "Player health is " << user->GetHealth() << "\n";
 			cout << "iCount is " << iCount << '\n';
 			break;
 		case OBJECT_TYPE::PROJECTILES_SHURIKEN:
+		{
+			glm::vec2 distance = user->m_MouseInputs[user->m_FrameStorage.iCurrentFrame][MOUSE_INPUTS::LMB].vMousePos - user->vTransform;
+
+			CObject2D* shurikenobj = ObjectFactory::CreateObject(OBJECT_TYPE::PROJECTILES_SHURIKEN);
+			shurikenobj->Init();
+			shurikenobj->vTransform = user->vTransform;
+
+			glm::vec2 force = glm::clamp(distance * 200.f, glm::vec2(-2000.f, -2000.f), glm::vec2(2000.f, 2000.f));
+			shurikenobj->GetPhysics()->SetForce(force);
+
+			CEntityManager::GetInstance()->PushBullet(static_cast<Projectiles*>(shurikenobj), CMap2D::GetInstance()->GetCurrentLevel());
+
 			cout << "You are using Item shuriken\n";
 			cout << "iCount is " << iCount << '\n';
 			break;
+		}
+		case OBJECT_TYPE::BULLETS_KUNAI:
+		{
+			CObject2D* kunaiobj = ObjectFactory::CreateObject(OBJECT_TYPE::BULLETS_KUNAI);
+
+			float angle = 0;
+			if (user->facing == CPlayer2D::FACING_DIR::LEFT)
+				angle = 180;
+			else
+				angle = 0;
+
+			dynamic_cast<Bullet2D*>(kunaiobj)->Init(true, angle, 10);
+			kunaiobj->vTransform = user->vTransform;
+
+			CEntityManager::GetInstance()->PushBullet(static_cast<Bullet2D*>(kunaiobj), CMap2D::GetInstance()->GetCurrentLevel());
+			cout << "You are using Item kunai\n";
+			cout << "iCount is " << iCount << '\n';
+			break;
+		}
 		}
 	}
 }

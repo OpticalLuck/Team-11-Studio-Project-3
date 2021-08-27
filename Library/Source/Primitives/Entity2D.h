@@ -79,7 +79,6 @@ public:
 	Collider2D* GetCollider();
 
 	void SetTextureID(int iTextureID);
-
 	int GetTextureID() const;
 
 	// The i32vec2 which stores the indices of an Entity2D in the Map2D
@@ -89,6 +88,8 @@ public:
 	float fRotate;
 
 	CPhysics2D* GetPhysics();
+
+	static void SetRecording(bool);
 
 protected:
 	// Name of Shader Program instance
@@ -116,4 +117,7 @@ protected:
 	CSettings* cSettings;
 	//CMap2D* cMap2D;
 	Camera2D* camera2D;
+
+	//Recording
+	static bool recording;
 };

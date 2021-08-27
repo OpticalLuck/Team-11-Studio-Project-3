@@ -96,6 +96,7 @@ bool CMap2D::Init(const unsigned int uiNumLevels,
 	arrBackground.clear();
 	arrAllowanceScale.clear();
 	arrBgObject.clear();
+	CEntityManager::GetInstance()->EntityManagerInit(uiNumLevels);
 	for (unsigned i = 0; i < uiNumLevels; i++) {
 		arrLevelLimit.push_back(glm::i32vec2());
 		arrObject.push_back(std::vector<CObject2D*>());
@@ -328,7 +329,7 @@ bool CMap2D::InsertMapInfo(unsigned int uiRow, unsigned int uiCol, const int iTe
 	}
 	else
 	{
-		cout << "Something is in Current TileGrid" << endl;
+		DEBUG_MSG("Something is in Current TileGrid");
 		return false;
 	}
 	return true;
@@ -418,7 +419,7 @@ void CMap2D::UpdateGridInfo(const unsigned int uiRow, const unsigned uiCol, CObj
 	}
 	else
 	{
-		cout << "SOMETHING IN GRID SPACE" << endl;
+		DEBUG_MSG("SOMETHING IN GRID SPACE");
 	}
 }
 
@@ -506,13 +507,13 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 				arrBackground[uiCurLevel] = bgEntity; //Else put background into array
 
 			//Cout for debugging purposes
-			std::cout << "Background settings for level " << uiCurLevel + 1 << ": \n";
-			std::cout << "Scale: " << scaleFloat[0] << ", " << scaleFloat[1] << std::endl;
-			std::cout << "Allowance Scale: " << allowanceScaleFloat[0] << ", " << allowanceScaleFloat[1] << std::endl;
+			DEBUG_MSG("Background settings for level " << uiCurLevel + 1);
+			DEBUG_MSG("Scale: " << scaleFloat[0] << ", " << scaleFloat[1]);
+			DEBUG_MSG("Allowance Scale: " << allowanceScaleFloat[0] << ", " << allowanceScaleFloat[1]);
 			if (arrBackground[uiCurLevel])
-				std::cout << "Background loaded!\n";
+				DEBUG_MSG("Background loaded!");
 			else
-				std::cout << "Background is disabled\n";
+				DEBUG_MSG("Background is disabled");
 		}
 
 		arrGrid[uiCurLevel].push_back(std::vector<CObject2D*>());
@@ -531,6 +532,7 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 
 			//Curr texture
 			if (currTexture > 0) {
+
 				CObject2D* currObj = objFactory.CreateObject(currTexture);
 
 				currObj->SetCurrentIndex(glm::i32vec2(uiCol, uiRow));
@@ -541,20 +543,52 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 				currIndex.y = (float)doc.GetRowCount() - (float)uiRow - 1.f;
 				currObj->vTransform = currIndex;
 
-
 				currObj->Init();
 				currObj->SetObjectID(currObjID);
 
-				if (currObjID != 0)
+				if ((currTexture > OBJECT_TYPE::TILE_START && currTexture < OBJECT_TYPE::TILE_TOTAL) ||
+					(currTexture == PLAYER_TILE))
 				{
-					((Interactables*)(currObj))->SetInteractableID(currObjID);
-					CEntityManager::GetInstance()->PushInteractables((Interactables*)currObj);
-				}
-				else {
 					arrObject[uiCurLevel].push_back(currObj);
-				}
-					//Add in new CObj pointer if available
 					arrGrid[uiCurLevel][uiRow][uiCol] = currObj;
+				}
+				else if (currTexture > ENEMIES_START && currTexture < ENEMIES_TOTAL)
+				{
+					if (currTexture == BOSS)
+					{
+						if (CEntityManager::GetInstance()->GetBoss() != nullptr)
+						{
+							DEBUG_MSG("There can only be one boss in the level");
+							continue;
+						}
+					}
+
+					arrObject[uiCurLevel].push_back(currObj);
+					arrGrid[uiCurLevel][uiRow][uiCol] = currObj;
+					// DEBUG_MSG(&arrObject);
+
+					CEnemy2D* enemy = enemyFactory.CreateEnemy(currTexture);
+					// enemy->vTransform = currObj->vTransform;
+					CEntityManager::GetInstance()->PushEnemy(enemy, uiCurLevel);
+				}
+				else if (currTexture > INTERACTABLE_START && currTexture < INTERACTABLE_TOTAL)
+				{
+					if (currObjID != 0)
+					{
+						((Interactables*)(currObj))->SetInteractableID(currObjID);
+					}
+					CEntityManager::GetInstance()->PushInteractables((Interactables*)currObj, uiCurLevel);
+					arrGrid[uiCurLevel][uiRow][uiCol] = currObj;
+				}
+				else if (currTexture > OBSTACLES_START && currTexture < OBSTACLES_TOTAL)
+				{
+					CEntityManager::GetInstance()->PushObstacles((Obstacle2D*)currObj, uiCurLevel);
+				}
+				else
+				{
+					delete currObj;
+				}
+
 			}
 
 			//Background texture
@@ -652,6 +686,8 @@ bool CMap2D::SaveMap(string filename, const unsigned int uiCurLevel)
 */
 bool CMap2D::FindValue(const int iValue, unsigned int& uirRow, unsigned int& uirCol)
 {
+	DEBUG_MSG(&arrObject);
+
 	for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++) {
 		CObject2D* obj = arrObject[uiCurLevel][i];
 		if (obj->GetTextureID() == iValue) {
