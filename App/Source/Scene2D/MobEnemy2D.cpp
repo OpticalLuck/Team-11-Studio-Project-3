@@ -809,7 +809,7 @@ void CMobEnemy2D::ClampPos(void) {
 	switch (dir) {
 		case DIRECTION::LEFT: {
 			tileCheck.x--;
-			CObject2D* obj = cMap2D->GetCObject((unsigned int)tileCheck.x, (unsigned int)tileCheck.y);
+			CObject2D* obj = cMap2D->GetCObject(Math::Clamp((float)tileCheck.x, 0.f, (float)cMap2D->GetLevelCol()), Math::Clamp((float)tileCheck.y, 0.f, (float)cMap2D->GetLevelRow()));
 
 			if (!obj) {
 				dir = DIRECTION::RIGHT;
@@ -820,7 +820,7 @@ void CMobEnemy2D::ClampPos(void) {
 
 		case DIRECTION::RIGHT: {
 			tileCheck.x++;
-			CObject2D* obj = cMap2D->GetCObject((unsigned int)tileCheck.x, (unsigned int)tileCheck.y);
+			CObject2D* obj = cMap2D->GetCObject(Math::Clamp((float)tileCheck.x, 0.f, (float)cMap2D->GetLevelCol()), Math::Clamp((float)tileCheck.y, 0.f, (float)cMap2D->GetLevelRow()));
 
 			if (!obj) {
 				dir = DIRECTION::LEFT;

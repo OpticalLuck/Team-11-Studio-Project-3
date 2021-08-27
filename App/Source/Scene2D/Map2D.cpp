@@ -96,6 +96,7 @@ bool CMap2D::Init(const unsigned int uiNumLevels,
 	arrBackground.clear();
 	arrAllowanceScale.clear();
 	arrBgObject.clear();
+	CEntityManager::GetInstance()->EntityManagerInit(uiNumLevels);
 	for (unsigned i = 0; i < uiNumLevels; i++) {
 		arrLevelLimit.push_back(glm::i32vec2());
 		arrObject.push_back(std::vector<CObject2D*>());
@@ -531,7 +532,7 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 
 			//Curr texture
 			if (currTexture > 0) {
-				
+
 				CObject2D* currObj = objFactory.CreateObject(currTexture);
 
 				currObj->SetCurrentIndex(glm::i32vec2(uiCol, uiRow));
@@ -546,11 +547,29 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 				currObj->SetObjectID(currObjID);
 
 				if ((currTexture > OBJECT_TYPE::TILE_START && currTexture < OBJECT_TYPE::TILE_TOTAL) ||
-					(currTexture > ENEMIES_START && currTexture < ENEMIES_TOTAL) ||
 					(currTexture == PLAYER_TILE))
 				{
 					arrObject[uiCurLevel].push_back(currObj);
 					arrGrid[uiCurLevel][uiRow][uiCol] = currObj;
+				}
+				else if (currTexture > ENEMIES_START && currTexture < ENEMIES_TOTAL)
+				{
+					if (currTexture == ENEMY_5)
+					{
+						if (CEntityManager::GetInstance()->GetBoss() == nullptr)
+						{
+							DEBUG_MSG("There can only be one boss in the level");
+							continue;
+						}
+					}
+
+					arrObject[uiCurLevel].push_back(currObj);
+					arrGrid[uiCurLevel][uiRow][uiCol] = currObj;
+					// DEBUG_MSG(&arrObject);
+
+					CEnemy2D* enemy = enemyFactory.CreateEnemy(currTexture);
+					// enemy->vTransform = currObj->vTransform;
+					CEntityManager::GetInstance()->PushEnemy(enemy, uiCurLevel);
 				}
 				else if (currTexture > INTERACTABLE_START && currTexture < INTERACTABLE_TOTAL)
 				{
@@ -558,17 +577,16 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 					{
 						((Interactables*)(currObj))->SetInteractableID(currObjID);
 					}
-					CEntityManager::GetInstance()->PushInteractables((Interactables*)currObj);
+					CEntityManager::GetInstance()->PushInteractables((Interactables*)currObj, uiCurLevel);
 					arrGrid[uiCurLevel][uiRow][uiCol] = currObj;
 				}
 				else if (currTexture > OBSTACLES_START && currTexture < OBSTACLES_TOTAL)
 				{
-
-					CEntityManager::GetInstance()->PushObstacles((Obstacle2D*)currObj);
+					CEntityManager::GetInstance()->PushObstacles((Obstacle2D*)currObj, uiCurLevel);
 				}
 				else
 				{
-						delete currObj;
+					delete currObj;
 				}
 
 			}
@@ -668,6 +686,8 @@ bool CMap2D::SaveMap(string filename, const unsigned int uiCurLevel)
 */
 bool CMap2D::FindValue(const int iValue, unsigned int& uirRow, unsigned int& uirCol)
 {
+	DEBUG_MSG(&arrObject);
+
 	for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++) {
 		CObject2D* obj = arrObject[uiCurLevel][i];
 		if (obj->GetTextureID() == iValue) {

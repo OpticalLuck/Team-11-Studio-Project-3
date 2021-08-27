@@ -8,6 +8,9 @@
 
 #include "System/Debug.h"
 
+#include "../Scene2D/Boss2D.h"
+#include "../Scene2D/MobEnemy2D.h"
+
 CObject2D* ObjectFactory::CreateObject(int iTextureID)
 {
     CObject2D* newObj = nullptr;

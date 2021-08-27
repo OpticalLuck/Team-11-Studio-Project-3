@@ -36,6 +36,7 @@ CScene2D::~CScene2D(void)
 {
 	if (cSoundController)
 	{
+		cSoundController->StopSoundByID(BGM_HENESYS);
 		// We won't delete this since it was created elsewhere
 		cSoundController = NULL;
 	}
@@ -98,7 +99,7 @@ bool CScene2D::Init(std::string levelPath)
 	CShaderManager::GetInstance()->Use("2DColorShader");
 	CShaderManager::GetInstance()->activeShader->setInt("texture1", 0);
 	cEntityManager = CEntityManager::GetInstance();
-	cEntityManager->EntityManagerInit();
+	cEntityManager->InitPlayer();
 
 	cPlayer2D = cEntityManager->GetPlayer();
 
@@ -138,7 +139,6 @@ bool CScene2D::Init(std::string levelPath)
 */
 bool CScene2D::Update(const double dElapsedTime)
 {
-	++m_FrameStorage.iCurrentFrame;
 
 	cEntityManager->Update(dElapsedTime);
 
@@ -180,13 +180,13 @@ bool CScene2D::Update(const double dElapsedTime)
 	// Paradoxium ability
 	if (cKeyboardController->IsKeyPressed(GLFW_KEY_ENTER))
 	{
-		++m_FrameStorage.iCounter;
+		++cPlayer2D->m_FrameStorage.iCounter;
 		std::vector<CEnemy2D*> enemyArr = cEntityManager->GetAllEnemies();
-		switch (m_FrameStorage.iCounter)
+		switch (cPlayer2D->m_FrameStorage.iCounter)
 		{
 		case 1:
-			m_FrameStorage.iStoredFrame = m_FrameStorage.iCurrentFrame;
-			m_FrameStorage.spawnPos = cPlayer2D->vTransform;
+			cPlayer2D->m_FrameStorage.iStoredFrame = cPlayer2D->m_FrameStorage.iCurrentFrame;
+			cPlayer2D->m_FrameStorage.spawnPos = cPlayer2D->vTransform;
 
 			//Recording enemy stuff
 			CEntity2D::SetRecording(true);
@@ -197,14 +197,15 @@ bool CScene2D::Update(const double dElapsedTime)
 			break;
 		case 2:
 			CPlayer2D* clone = CEntityManager::GetInstance()->Clone();
-			clone->vTransform = m_FrameStorage.spawnPos;
-			clone->iTempFrameCounter = m_FrameStorage.iStoredFrame;
-			clone->iFrameCounterEnd = m_FrameStorage.iCurrentFrame;
+			//Loading of clone
+			clone->vTransform = cPlayer2D->m_FrameStorage.spawnPos;
+			clone->m_FrameStorage.iCurrentFrame = cPlayer2D->m_FrameStorage.iStoredFrame;
+			clone->m_FrameStorage.iEndFrame = cPlayer2D->m_FrameStorage.iCurrentFrame;
+			cPlayer2D->m_FrameStorage.iStoredFrame = 0;
+			cPlayer2D->vTransform = cPlayer2D->m_FrameStorage.spawnPos;
 			clone->SetHealth(cEntityManager->GetPlayer()->GetHealth());
-			m_FrameStorage.iStoredFrame = 0;
-			cPlayer2D->vTransform = m_FrameStorage.spawnPos;
 
-			m_FrameStorage.iCounter = 0;
+			cPlayer2D->m_FrameStorage.iCounter = 0;
 
 			//Recording enemy stuff
 			CEntity2D::SetRecording(false);

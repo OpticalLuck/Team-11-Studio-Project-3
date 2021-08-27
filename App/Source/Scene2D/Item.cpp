@@ -60,7 +60,7 @@ void CItem::Use(CPlayer2D* user)
 			break;
 		case OBJECT_TYPE::PROJECTILES_SHURIKEN:
 		{
-			glm::vec2 distance = user->m_MouseInputs[user->iTempFrameCounter][MOUSE_INPUTS::LMB].vMousePos - user->vTransform;
+			glm::vec2 distance = user->m_MouseInputs[user->m_FrameStorage.iCurrentFrame][MOUSE_INPUTS::LMB].vMousePos - user->vTransform;
 
 			CObject2D* shurikenobj = ObjectFactory::CreateObject(OBJECT_TYPE::PROJECTILES_SHURIKEN);
 			shurikenobj->Init();
@@ -69,7 +69,7 @@ void CItem::Use(CPlayer2D* user)
 			glm::vec2 force = glm::clamp(distance * 200.f, glm::vec2(-2000.f, -2000.f), glm::vec2(2000.f, 2000.f));
 			shurikenobj->GetPhysics()->SetForce(force);
 
-			CEntityManager::GetInstance()->PushBullet(static_cast<Projectiles*>(shurikenobj));
+			CEntityManager::GetInstance()->PushBullet(static_cast<Projectiles*>(shurikenobj), CMap2D::GetInstance()->GetCurrentLevel());
 
 			cout << "You are using Item shuriken\n";
 			cout << "iCount is " << iCount << '\n';
@@ -88,7 +88,7 @@ void CItem::Use(CPlayer2D* user)
 			dynamic_cast<Bullet2D*>(kunaiobj)->Init(true, angle, 10);
 			kunaiobj->vTransform = user->vTransform;
 
-			CEntityManager::GetInstance()->PushBullet(static_cast<Bullet2D*>(kunaiobj));
+			CEntityManager::GetInstance()->PushBullet(static_cast<Bullet2D*>(kunaiobj), CMap2D::GetInstance()->GetCurrentLevel());
 			cout << "You are using Item kunai\n";
 			cout << "iCount is " << iCount << '\n';
 			break;
