@@ -249,19 +249,6 @@ bool CScene2D::Update(const double dElapsedTime)
 		dParadoxiumTimer -= dElapsedTime;
 	}
 
-	if (cKeyboardController->IsKeyPressed(GLFW_KEY_RIGHT))
-	{
-		cMap2D->SetCurrentLevel(cMap2D->GetCurrentLevel() + 1);
-		if (cMap2D->LoadMap("Maps/test.csv", 1) == false)
-		{
-			// The loading of a map has failed. Return false
-			return false;
-		}
-	}
-	if (cKeyboardController->IsKeyPressed(GLFW_KEY_LEFT))
-	{
-		cMap2D->SetCurrentLevel(cMap2D->GetCurrentLevel() - 1);
-	}
 
 	//Camera work
 	cameraHandler->UpdateTarget(cPlayer2D->vTransform);
