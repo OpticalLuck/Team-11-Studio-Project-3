@@ -532,7 +532,7 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 
 			//Curr texture
 			if (currTexture > 0) {
-				
+
 				CObject2D* currObj = objFactory.CreateObject(currTexture);
 
 				currObj->SetCurrentIndex(glm::i32vec2(uiCol, uiRow));
@@ -565,7 +565,11 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 
 					arrObject[uiCurLevel].push_back(currObj);
 					arrGrid[uiCurLevel][uiRow][uiCol] = currObj;
-					CEntityManager::GetInstance()->PushEnemy((CEnemy2D*)currObj, uiCurLevel);
+					// DEBUG_MSG(&arrObject);
+
+					CEnemy2D* enemy = enemyFactory.CreateEnemy(currTexture);
+					enemy->vTransform = currObj->vTransform;
+					CEntityManager::GetInstance()->PushEnemy(enemy, uiCurLevel);
 				}
 				else if (currTexture > INTERACTABLE_START && currTexture < INTERACTABLE_TOTAL)
 				{
@@ -682,6 +686,8 @@ bool CMap2D::SaveMap(string filename, const unsigned int uiCurLevel)
 */
 bool CMap2D::FindValue(const int iValue, unsigned int& uirRow, unsigned int& uirCol)
 {
+	DEBUG_MSG(&arrObject);
+
 	for (unsigned i = 0; i < arrObject[uiCurLevel].size(); i++) {
 		CObject2D* obj = arrObject[uiCurLevel][i];
 		if (obj->GetTextureID() == iValue) {

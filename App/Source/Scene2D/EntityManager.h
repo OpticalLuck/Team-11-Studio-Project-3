@@ -86,5 +86,5 @@ protected:
 	int currRound; //Current round in game. First is 0 and last is 4 (Will be storing enemies prev attacks etc using this)
 
 	//Factories
-	EnemyFactory enemyFactory;
+	// EnemyFactory enemyFactory;
 };

@@ -158,4 +158,5 @@ CEnemy2D* EnemyFactory::CreateEnemy(int type) {
 		default:
 			return nullptr;
 	}
+	return nullptr;
 }

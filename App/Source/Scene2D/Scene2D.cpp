@@ -33,6 +33,7 @@ CScene2D::~CScene2D(void)
 {
 	if (cSoundController)
 	{
+		cSoundController->StopSoundByID(BGM_HENESYS);
 		// We won't delete this since it was created elsewhere
 		cSoundController = NULL;
 	}
