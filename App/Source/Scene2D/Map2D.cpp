@@ -568,7 +568,7 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 					// DEBUG_MSG(&arrObject);
 
 					CEnemy2D* enemy = enemyFactory.CreateEnemy(currTexture);
-					enemy->vTransform = currObj->vTransform;
+					// enemy->vTransform = currObj->vTransform;
 					CEntityManager::GetInstance()->PushEnemy(enemy, uiCurLevel);
 				}
 				else if (currTexture > INTERACTABLE_START && currTexture < INTERACTABLE_TOTAL)

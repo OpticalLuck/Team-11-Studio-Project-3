@@ -73,7 +73,7 @@ CEnemy2D::CEnemy2D(void)
 
 	currFrame = 0;
 
-	Init();
+	// Init();
 }
 
 /**
