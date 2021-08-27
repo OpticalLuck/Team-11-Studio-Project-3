@@ -20,6 +20,8 @@ enum KEYBOARD_INPUTS
 	SPACE,
 	ARROW_UP,
 	ARROW_DOWN,
+	ARROW_LEFT,
+	ARROW_RIGHT,
 	ENTER,
 	E,
 	KEY_TOTAL,
@@ -75,6 +77,8 @@ protected:
 								   GLFW_KEY_SPACE,
 								   GLFW_KEY_UP,
 								   GLFW_KEY_DOWN,
+									GLFW_KEY_LEFT,
+									GLFW_KEY_RIGHT,
 								   GLFW_KEY_ENTER,
 								   GLFW_KEY_E };
 	uint32_t m_Buttons[MOUSE_TOTAL] = { CMouseController::LMB, CMouseController::RMB, CMouseController::MMB };

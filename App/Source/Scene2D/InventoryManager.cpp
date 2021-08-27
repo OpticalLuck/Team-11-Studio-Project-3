@@ -46,15 +46,15 @@ CInventory* CInventoryManager::Get(std::string sName)
 
 void CInventoryManager::NavigateIndex(std::string direction)
 {
-	if (direction == "DOWN")
+	if (direction == "RIGHT")
 	{
 		cActiveInventory->iCurrentIndex++;
 	}
-	if (direction == "UP")
+	if (direction == "LEFT")
 	{
 		cActiveInventory->iCurrentIndex--;
 	}
-	cActiveInventory->iCurrentIndex = Math::Clamp(cActiveInventory->iCurrentIndex, 0, 2);
+	cActiveInventory->iCurrentIndex = Math::Clamp(cActiveInventory->iCurrentIndex, 0, 1);
 }
 void CInventoryManager::UseItem(void)
 {

@@ -52,6 +52,7 @@ protected:
 	ImGuiWindowFlags option_window;
 
 	bool pendingChange;
+	bool bMenu;
 
 	bool UpdateMenu(ImGuiWindowFlags window_flags);
 	void UpdateOption(ImGuiWindowFlags window_flags);

@@ -694,6 +694,7 @@ void CPlayer2D::InputUpdate(double dt)
 		cSoundController->PlaySoundByID(SOUND_ID::SOUND_SWING);
 		CInventoryManager::GetInstance()->Use(cInventory->sName);
 		CItem& shuriken = CInventoryManager::GetInstance()->Get(cInventory->sName)->GetItem(0);
+		CItem& potion = CInventoryManager::GetInstance()->Get(cInventory->sName)->GetItem(1);
 		if (shuriken.iCount > 0)
 		{
 			shuriken.Use();
@@ -709,6 +710,14 @@ void CPlayer2D::InputUpdate(double dt)
 			shurikenobj->GetPhysics()->SetForce(force);
 
 			CEntityManager::GetInstance()->PushBullet(static_cast<Projectiles*>(shurikenobj));
+		}
+		if (cInventory->iCurrentIndex == 1)
+		{
+			if (potion.iCount > 0)
+			{
+				potion.Use();
+				pHealth += 1;
+			}
 		}
 	}
 
@@ -731,6 +740,13 @@ void CPlayer2D::InputUpdate(double dt)
 			kunaiobj->vTransform = vTransform;
 
 			CEntityManager::GetInstance()->PushBullet(static_cast<Bullet2D*>(kunaiobj));
+		}
+	}
+	if (cInventory->iCurrentIndex == 1)
+	{
+		if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::ENTER].bKeyDown)
+		{
+			pHealth += 1;
 		}
 	}
 	cInventory->Update(dt, iTempFrameCounter ,m_KeyboardInputs, m_MouseInputs);

@@ -144,6 +144,7 @@ bool CPlayGameState::Update(const double dElapsedTime)
 	{
 		cSoundController->PlaySoundByID(SOUND_ID::SOUND_TROUBLE);
 	}
+	std::cout << "YOUR HEALTH IS " << cPlayer->GetHealth() << "\n";
 	
 
 	return true;
@@ -251,18 +252,10 @@ bool CPlayGameState::ImGuiRender()
 		iSeconds = int(fInterval / 110.f);
 
 		// Create an invisible window which covers the entire OpenGL window
-		ImGui::Begin("Invisible window", NULL, window_flags);
-		ImGui::SetWindowPos(ImVec2(0.0f, 0.0f));
-		ImGui::SetWindowSize(ImVec2((float)cSettings->iWindowWidth, (float)cSettings->iWindowHeight));
-		ImGui::SetNextWindowPos(ImVec2(cSettings->iWindowWidth * 0.000001, cSettings->iWindowHeight * 0.825f));
-		ImGui::SetWindowFontScale(1.5f * relativeScale_y);
 		// Display the FPS
-		ImGui::TextColored(ImVec4(1, 1, 0, 1), "FPS: %d", cFPSCounter->GetFrameRate());
-		ImGui::SameLine();
-		ImGui::TextColored(ImVec4(1, 1, 1, 1), "Timer = %d : %d", iMinutes, iSeconds);
-
-		ImGui::SameLine();
-		ImGui::InvisibleButton("temp", ImVec2(50, 1));
+		//ImGui::TextColored(ImVec4(1, 1, 0, 1), "FPS: %d", cFPSCounter->GetFrameRate());
+		//ImGui::SameLine();
+		//ImGui::TextColored(ImVec4(1, 1, 1, 1), "Timer = %d : %d", iMinutes, iSeconds);s
 		
 		//UI bar
 		{
@@ -270,10 +263,10 @@ bool CPlayGameState::ImGuiRender()
 			ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
 			ImGui::PopStyleColor();
 			ImGui::Begin("UI window", NULL, UI_window);
-			ImGui::SetWindowPos(ImVec2(0, cSettings->iWindowHeight * 0.825f));
-			ImGui::SetWindowSize(ImVec2(900.0f * relativeScale_x, 200.0f * relativeScale_y));
+			ImGui::SetWindowPos(ImVec2(-10, cSettings->iWindowHeight * 0.825f));
+			ImGui::SetWindowSize(ImVec2(1200.0f * relativeScale_x, 200.0f * relativeScale_y));
 			//ImGui::ImageButton((ImTextureID)background.textureID, ImVec2(cSettings->iWindowWidth * 0.7, cSettings->iWindowHeight * 0.7), ImVec2(0.0, 0.0), ImVec2(1.0, 1.0));
-			ImGui::Image((void*)(intptr_t)background.textureID,ImVec2(800 * relativeScale_x, 100 * relativeScale_y),ImVec2(0, 1), ImVec2(1, 0));
+			ImGui::Image((void*)(intptr_t)background.textureID,ImVec2(810 * relativeScale_x, 100 * relativeScale_y),ImVec2(0, 1), ImVec2(1, 0));
 			ImGui::End();
 
 		}
@@ -336,7 +329,7 @@ bool CPlayGameState::ImGuiRender()
 		{	
 			if (cPlayer->GetHealth() < 3)
 			{
-				if (iSeconds % 1 == 0)
+				if (iSeconds % 2 == 1)
 				{
 					displayHP = Math::Lerp(displayHP, cPlayer->GetHealth(), 0.2f);
 					ImGui::Begin("Health", NULL, health_window);
@@ -442,7 +435,6 @@ bool CPlayGameState::ImGuiRender()
 				ImGui::End();
 			}
 		} 
-		ImGui::End();
 
 		return true;
 	}

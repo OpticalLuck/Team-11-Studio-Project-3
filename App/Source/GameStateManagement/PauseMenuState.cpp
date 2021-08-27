@@ -110,9 +110,9 @@ bool PauseMenuState::UpdateMenu(ImGuiWindowFlags window_flags)
 
 		// Create a window called "Hello, world!" and append into it.
 		ImGui::Begin("Option", NULL, window_flags);
-		ImGui::SetWindowPos(ImVec2(CSettings::GetInstance()->iWindowWidth / 2.0 - (buttonWidth / 2.0),
-			CSettings::GetInstance()->iWindowHeight / 3.0));				// Set the top-left of the window at (10,10)
-		ImGui::SetWindowSize(ImVec2(CSettings::GetInstance()->iWindowWidth, CSettings::GetInstance()->iWindowHeight));
+		ImGui::SetWindowPos(ImVec2(CSettings::GetInstance()->iWindowWidth / 2.0f - buttonWidth / 2.0f,
+			CSettings::GetInstance()->iWindowHeight / 3.0f));				// Set the top-left of the window at (10,10)
+		ImGui::SetWindowSize(ImVec2((float)CSettings::GetInstance()->iWindowWidth, (float)CSettings::GetInstance()->iWindowHeight));
 
 
 		//Added rounding for nicer effect
@@ -146,9 +146,9 @@ bool PauseMenuState::UpdateMenu(ImGuiWindowFlags window_flags)
 
 			// Reset the CKeyboardController
 			CKeyboardController::GetInstance()->Reset();
-			ImGui::PopStyleColor(3);
-			ImGui::End();
-			return false;
+
+			CGameStateManager::GetInstance()->OffPauseGameState();
+			CGameStateManager::GetInstance()->SetActiveGameState("MenuState");
 		}
 		ImGui::PopStyleColor(3);
 		ImGui::End();
@@ -204,7 +204,7 @@ void PauseMenuState::UpdateOption(ImGuiWindowFlags window_flags)
 		bgmVolume = 0.f;
 	}
 
-	if(ImGui::SliderFloat("BGM Volume", &bgmVolume, 0.f, 100.f, "%.2f"))
+	if (ImGui::SliderFloat("BGM Volume", &bgmVolume, 0.f, 100.f, "%.2f"))
 	{
 		bgmChange = true;
 		if (bgmVolume > 0.f)

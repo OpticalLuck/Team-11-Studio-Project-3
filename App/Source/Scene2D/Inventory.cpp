@@ -47,15 +47,15 @@ void CInventory::Update(double dElapsedTime, int iTempFrameCounter, std::vector<
 	{
 		fCooldown -= (float)dElapsedTime;
 	}
-	if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::ARROW_UP].bKeyPressed && fCooldown <= 0)
+	if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::ARROW_RIGHT].bKeyPressed && fCooldown <= 0)
 	{
-		cInventoryManager->NavigateIndex("UP");
+		cInventoryManager->NavigateIndex("RIGHT");
 		std::cout << "index is : " << iCurrentIndex << std::endl;
 		fCooldown = .5f;
 	}
-	if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::ARROW_DOWN].bKeyPressed && fCooldown <= 0)
+	if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::ARROW_LEFT].bKeyPressed && fCooldown <= 0)
 	{
-		cInventoryManager->NavigateIndex("DOWN");
+		cInventoryManager->NavigateIndex("LEFT");
 		std::cout << "index is : " << iCurrentIndex << std::endl;
 		fCooldown = .5f;
 	}
