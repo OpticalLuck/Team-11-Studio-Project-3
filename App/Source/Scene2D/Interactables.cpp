@@ -201,9 +201,6 @@ void Interactables::Update(const double dElapsedTime)
 	{
 		this->iTextureID = this->interactableType;
 	}
-	if (this->interactableType < PRESSURE_PLATE)
-		cout << bInteraction << ", " << bCloneInteract << endl;
-
 }
 
 void Interactables::PreRender(void)

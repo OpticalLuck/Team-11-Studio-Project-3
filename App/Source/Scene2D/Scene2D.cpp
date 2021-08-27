@@ -178,7 +178,7 @@ bool CScene2D::Update(const double dElapsedTime)
 	}
 
 	// Paradoxium ability
-	if (cKeyboardController->IsKeyPressed(GLFW_KEY_C))
+	if (cKeyboardController->IsKeyPressed(GLFW_KEY_C) && cEntityManager->GetNoOfAvailableCloneID() > 0)
 	{
 		++cPlayer2D->m_FrameStorage.iCounter;
 		std::vector<CEnemy2D*> enemyArr = cEntityManager->GetAllEnemies();
