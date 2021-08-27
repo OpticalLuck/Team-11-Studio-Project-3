@@ -343,5 +343,10 @@ void CScene2D::PostRender(void)
 {
 }
 
+double CScene2D::GetParadoxiumTimer()
+{
+	return dParadoxiumTimer;
+}
+
 
 

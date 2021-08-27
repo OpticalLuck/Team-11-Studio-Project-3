@@ -61,6 +61,8 @@ public:
 
 	float fCooldown = 0.f;
 
+	double GetParadoxiumTimer();
+
 protected:
 	double dParadoxiumTimer;
 

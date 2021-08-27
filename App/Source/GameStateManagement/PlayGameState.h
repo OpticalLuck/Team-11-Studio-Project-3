@@ -84,6 +84,7 @@ protected:
 
 	CPlayer2D* cPlayer;
 	float displayHP;
+	float displayTimer;
 	CEntityManager* cEntityManager;
 	CMap2D* cMap2D;
 

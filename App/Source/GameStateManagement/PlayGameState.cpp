@@ -223,6 +223,7 @@ bool CPlayGameState::ImGuiRender()
 		enemyHealth_window |= ImGuiWindowFlags_NoCollapse;
 		enemyHealth_window |= ImGuiWindowFlags_NoScrollbar;
 
+
 		cloneHealth_window = 0;
 		cloneHealth_window |= ImGuiWindowFlags_AlwaysAutoResize;
 		cloneHealth_window |= ImGuiWindowFlags_NoBackground;
@@ -231,6 +232,7 @@ bool CPlayGameState::ImGuiRender()
 		cloneHealth_window |= ImGuiWindowFlags_NoResize;
 		cloneHealth_window |= ImGuiWindowFlags_NoCollapse;
 		cloneHealth_window |= ImGuiWindowFlags_NoScrollbar;
+
 
 		UI_window = 0;
 		UI_window |= ImGuiWindowFlags_NoTitleBar;
@@ -258,25 +260,14 @@ bool CPlayGameState::ImGuiRender()
 		fInterval++;
 		iSeconds = int(fInterval / 110.f);
 
-		// Create an invisible window which covers the entire OpenGL window
-		ImGui::Begin("Invisible window", NULL, window_flags);
-		ImGui::SetWindowPos(ImVec2(0.0f, 0.0f));
-		ImGui::SetWindowSize(ImVec2((float)cSettings->iWindowWidth, (float)cSettings->iWindowHeight));
-		ImGui::SetWindowFontScale(1.5f * relativeScale_y);
-		// Display the FPS
-		ImGui::TextColored(ImVec4(1, 1, 0, 1), "FPS: %d", cFPSCounter->GetFrameRate());
-		ImGui::SameLine();
-		ImGui::TextColored(ImVec4(1, 1, 1, 1), "Timer = %d : %d", iMinutes, iSeconds);
-
-		ImGui::SameLine();
-		ImGui::InvisibleButton("temp", ImVec2(50, 1));
-
+		ImGui::SetNextWindowFocus();
 		//UI bar
 		{
 			//render a window
 			ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
 			ImGui::PopStyleColor();
 			ImGui::Begin("UI window", NULL, UI_window);
+
 			ImGui::SetWindowPos(ImVec2(-10, cSettings->iWindowHeight * 0.875f));
 			ImGui::SetWindowSize(ImVec2(1200.0f * relativeScale_x, 200.0f * relativeScale_y));
 			//ImGui::ImageButton((ImTextureID)background.textureID, ImVec2(cSettings->iWindowWidth * 0.7, cSettings->iWindowHeight * 0.7), ImVec2(0.0, 0.0), ImVec2(1.0, 1.0));
@@ -287,8 +278,6 @@ bool CPlayGameState::ImGuiRender()
 
 		//render inventory
 		{
-
-
 			ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 1.0f, 1.0f));  // Set a background color
 			ImGuiWindowFlags inventoryWindowFlags = ImGuiWindowFlags_AlwaysAutoResize |
 				ImGuiWindowFlags_NoTitleBar |
@@ -310,32 +299,21 @@ bool CPlayGameState::ImGuiRender()
 				std::stringstream title;
 				title.str("");
 				title << "Inventory" << i;
+				ImGui::SetNextWindowFocus();
 				ImGui::Begin(title.str().c_str(), NULL, inventoryWindowFlags);
-				if (i == 0) //shuriken
-				{
-					ImGui::SameLine();
-					ImGui::SetWindowPos(ImVec2(cSettings->iWindowWidth * 0.50f, cSettings->iWindowHeight * 0.9f));
-				}
-				else if (i == 1) //bullet
-				{
-					ImGui::SameLine();
-					ImGui::SetWindowPos(ImVec2(cSettings->iWindowWidth * 0.83f, cSettings->iWindowHeight * 0.9f));
-				}
-				else if (i == 2) //potion
-				{
-					ImGui::SameLine();
-					ImGui::SetWindowPos(ImVec2(cSettings->iWindowWidth * 0.68f, cSettings->iWindowHeight * 0.94f));
-				}
+				ImGui::SameLine();
+				ImGui::SetWindowPos(ImVec2(cSettings->iWindowWidth * (0.56f + i * 0.15), cSettings->iWindowHeight * 0.92f));
+				
 
-				ImGui::SetWindowSize(ImVec2(200.0f * relativeScale_x, 25.0f * relativeScale_y));
+				ImGui::SetWindowSize(ImVec2(200.0f * cSettings->GetWindowSize().x, 25.0f * cSettings->GetWindowSize().y));
 				ImGui::Image((void*)(intptr_t)cTextureManager->MapOfTextureIDs.at(cPlayerInventory->GetItem(i).get_ID()),
-					ImVec2(25 * relativeScale_x, 15 * relativeScale_y),
+					ImVec2(25 * relativeScale_x, 20 * relativeScale_y),
 					ImVec2(0, 1), ImVec2(1, 0));
 				ImGui::SameLine();
 				ImGui::SetWindowFontScale(1.f * relativeScale_y);
 				std::stringstream ss;
 				ss.str("");
-				ss << cPlayerInventory->GetItem(i).GetName() << ": %d";
+				ss << ": %d";
 				ImGui::TextColored(ImVec4(1, 1, 0, 1), ss.str().c_str(), cPlayerInventory->GetItem(i));
 				ImGui::End();
 				ImGui::PopStyleColor();
@@ -346,6 +324,7 @@ bool CPlayGameState::ImGuiRender()
 
 			}
 		}
+		ImGui::SetNextWindowFocus();
 		//render player health
 		{
 			if (cPlayer->GetHealth() < 3)
@@ -364,7 +343,7 @@ bool CPlayGameState::ImGuiRender()
 					ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.8f, 0.0f, 0.0f, 1.0f));
 					ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.4f, 0.4f, 0.4f, 1.0f));
 					ImGui::SetWindowFontScale(1.3f * relativeScale_y);
-					ImGui::Text("HP: ");
+					ImGui::Text("HP:     ");
 					ImGui::SameLine();
 					ImGui::SetWindowFontScale(.9f * relativeScale_y);
 					ImGui::ProgressBar(displayHP / (float)cPlayer->GetMaxHealth(), ImVec2(cSettings->iWindowWidth * 0.4f, cSettings->iWindowHeight * 0.03f));
@@ -387,7 +366,7 @@ bool CPlayGameState::ImGuiRender()
 				ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.8f, 0.0f, 0.0f, 1.0f));
 				ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.4f, 0.4f, 0.4f, 1.0f));
 				ImGui::SetWindowFontScale(1.3f * relativeScale_y);
-				ImGui::Text("HP: ");
+				ImGui::Text("HP:     ");
 				ImGui::SameLine();
 				ImGui::SetWindowFontScale(.9f * relativeScale_y);
 				ImGui::ProgressBar(displayHP / (float)cPlayer->GetMaxHealth(), ImVec2(cSettings->iWindowWidth * 0.4f, cSettings->iWindowHeight * 0.03f));
@@ -395,6 +374,27 @@ bool CPlayGameState::ImGuiRender()
 				ImGui::PopStyleColor();
 				ImGui::End();
 			}
+		}
+		ImGui::SetNextWindowFocus();
+		//render paradoxium timer
+		{
+			displayTimer = Math::Lerp(displayTimer, cScene2D->GetParadoxiumTimer(), 0.2f);
+			ImGui::Begin("Paradoxium Timer", NULL, health_window);
+			ImGui::SetWindowPos(ImVec2(cSettings->iWindowWidth * 0.02, cSettings->iWindowHeight * 0.94));
+			ImGui::SetWindowSize(ImVec2(200.0f * relativeScale_x, 25.0f * relativeScale_y));
+			ImGui::SameLine();
+
+			//i think this looks better 
+			ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.0f, 0.0f, 0.8f, 1.0f));
+			ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.4f, 0.4f, 0.4f, 1.0f));
+			ImGui::SetWindowFontScale(1.3f * relativeScale_y);
+			ImGui::Text("Energy: ");
+			ImGui::SameLine();
+			ImGui::SetWindowFontScale(.9f * relativeScale_y);
+			ImGui::ProgressBar(displayTimer / (double)10.0, ImVec2(cSettings->iWindowWidth * 0.4f, cSettings->iWindowHeight * 0.03f));
+			ImGui::PopStyleColor();
+			ImGui::PopStyleColor();
+			ImGui::End();
 		}
 		//render enemy UI
 		{
@@ -474,7 +474,6 @@ bool CPlayGameState::ImGuiRender()
 				}
 			}
 		} 
-		ImGui::End();
 
 		return true;
 	}
