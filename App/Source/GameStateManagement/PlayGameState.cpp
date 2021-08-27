@@ -147,10 +147,12 @@ bool CPlayGameState::Update(const double dElapsedTime)
 		CGameStateManager::GetInstance()->SetActiveGameState("GameOverState");
 		return true;
 	}
-	//if (cPlayer->GetHealth() < 3)
-	//{
-	//	cSoundController->PlaySoundByID(SOUND_ID::SOUND_TROUBLE);
-	//}
+	if (cPlayer->GetHealth() <= 0)
+	{
+		CGameStateManager::GetInstance()->SetActiveGameState("GameOverState");
+		CSoundController::GetInstance()->StopPlayBack();
+		return true;
+	}
 	
 
 	return true;

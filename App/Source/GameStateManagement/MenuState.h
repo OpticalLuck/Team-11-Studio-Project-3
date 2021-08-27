@@ -56,6 +56,7 @@ protected:
 	CBackgroundEntity* background;
 	ButtonData startButtonData;
 	ButtonData exitButtonData;
+	ButtonData editorButtonData;
 
 	ButtonData optionButtonData;
 	ButtonData backButtonData;

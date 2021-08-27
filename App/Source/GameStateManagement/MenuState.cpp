@@ -80,6 +80,8 @@ bool CMenuState::Init(void)
 	startButtonData.textureID = il->LoadTextureGetID(startButtonData.fileName.c_str(), false);
 	exitButtonData.fileName = "Image\\Buttons\\quit.png";
 	exitButtonData.textureID = il->LoadTextureGetID(exitButtonData.fileName.c_str(), false);
+	editorButtonData.fileName = "Image\\Buttons\\editor.png";
+	editorButtonData.textureID = il->LoadTextureGetID(editorButtonData.fileName.c_str(), false);
 
 	optionButtonData.fileName = "Image\\Buttons\\option.png";
 	optionButtonData.textureID = il->LoadTextureGetID(optionButtonData.fileName.c_str(), false);
@@ -137,7 +139,7 @@ bool CMenuState::UpdateMenu(ImGuiWindowFlags window_flags)
 	// Create a window called "Hello, world!" and append into it.
 	ImGui::Begin("Main Menu", NULL, window_flags);
 	ImGui::SetWindowPos(ImVec2(CSettings::GetInstance()->iWindowWidth / 2.0f - buttonWidth / 2.0f, CSettings::GetInstance()->iWindowHeight / 6.0f));				
-	ImGui::SetWindowSize(ImVec2(buttonWidth + 25, buttonHeight * 3 + 50));
+	ImGui::SetWindowSize(ImVec2(buttonWidth + 55, buttonHeight * 3 + 200));
 
 	//Added rounding for nicer effect
 	ImGuiStyle& style = ImGui::GetStyle();
@@ -147,22 +149,28 @@ bool CMenuState::UpdateMenu(ImGuiWindowFlags window_flags)
 	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.f, 0.f, 0.f, 0.f));
 	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.f, 0.f, 0.f, 0.f));
 
-	// Add codes for Start button here
+	//Start button here
 	if (ImGui::ImageButton((ImTextureID)startButtonData.textureID,
 		ImVec2(buttonWidth, buttonHeight), ImVec2(0.0, 0.0), ImVec2(1.0, 1.0)))
 	{
 		cSoundController->PlaySoundByID(SOUND_ID::SOUND_ONCLICK);
 		menuState = STATE_SELECT_LEVEL;
 	}
-
+	//Editor button here
+	if (ImGui::ImageButton((ImTextureID)editorButtonData.textureID,
+		ImVec2(buttonWidth, buttonHeight), ImVec2(0.0, 0.0), ImVec2(1.0, 1.0)))
+	{
+		cSoundController->PlaySoundByID(SOUND_ID::SOUND_ONCLICK);
+		CGameStateManager::GetInstance()->SetActiveGameState("EditorSettingsState");
+	}
+	//Option button here
 	if (ImGui::ImageButton((ImTextureID)optionButtonData.textureID,
 		ImVec2(buttonWidth, buttonHeight), ImVec2(0.0, 0.0), ImVec2(1.0, 1.0)))
 	{
 		cSoundController->PlaySoundByID(SOUND_ID::SOUND_ONCLICK);
 		menuState = STATE_OPTION;
 	}
-
-	// Add codes for Exit button here
+	//Exit button here
 	if (ImGui::ImageButton((ImTextureID)exitButtonData.textureID,
 		ImVec2(buttonWidth, buttonHeight), ImVec2(0.0, 0.0), ImVec2(1.0, 1.0)))
 	{
