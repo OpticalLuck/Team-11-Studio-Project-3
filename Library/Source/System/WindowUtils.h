@@ -25,7 +25,7 @@ namespace FileDialog
 	{
 		OPENFILENAMEA ofn;
 		CHAR szFile[260] = { 0 };
-		TCHAR strFileTitle[256] = { 0 };
+		CHAR strFileTitle[256] = { 0 };
 		ZeroMemory(&ofn, sizeof(OPENFILENAME));
 		ofn.lStructSize = sizeof(OPENFILENAME);
 		ofn.hwndOwner = glfwGetWin32Window((GLFWwindow*)CSettings::GetInstance()->pWindow);
@@ -39,31 +39,6 @@ namespace FileDialog
 		if (GetOpenFileNameA(&ofn) == TRUE)
 		{
 			return ofn.lpstrFile;
-		}
-		else
-		{
-			return std::string();
-		}
-	}
-
-	std::string OpenFileByName(const char* filter)
-	{
-		OPENFILENAMEA ofn;
-		CHAR szFile[260] = { 0 };
-		TCHAR strFileTitle[256] = { 0 };
-		ZeroMemory(&ofn, sizeof(OPENFILENAME));
-		ofn.lStructSize = sizeof(OPENFILENAME);
-		ofn.hwndOwner = glfwGetWin32Window((GLFWwindow*)CSettings::GetInstance()->pWindow);
-		ofn.lpstrFile = szFile;
-		ofn.nMaxFile = sizeof(szFile);
-		ofn.lpstrFileTitle = strFileTitle;
-		ofn.nMaxFileTitle = sizeof(strFileTitle);
-		ofn.lpstrFilter = filter;
-		ofn.nFilterIndex = 1;
-		ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
-		if (GetOpenFileNameA(&ofn) == TRUE)
-		{
-			return ofn.lpstrFileTitle;
 		}
 		else
 		{
