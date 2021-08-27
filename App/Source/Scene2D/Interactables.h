@@ -14,7 +14,7 @@
 
 		PRESSURE_PLATE = OBJECT_TYPE::INTERACTABLE_PRESSURE_PLATE_OFF,
 		PORTAL = OBJECT_TYPE::INTERACTABLE_PORTAL,
-
+		GATE = OBJECT_TYPE::INTERACTABLE_PORTAL_GATE,
 
 		DOOR = OBJECT_TYPE::INTERACTABLE_DOOR_CLOSED
 	};
@@ -49,7 +49,7 @@ public:
 
 	bool Activate(bool interaction = true, CPlayer2D * player = nullptr);
 	bool OpenChest(CPlayer2D* player, std::string itemName, int itemCount);
-	bool ActivateSwitch();
+	bool ActivateSwitch(CPlayer2D* player);
 	bool ActivatePressurePlate(bool);
 	void SetInteractableID(int);
 	bool GetInteracted();
@@ -65,7 +65,7 @@ private:
 
 	// Boolean to check if the interactable is currently being interacted with
 	bool bInteraction;
-
+	bool bCloneInteract;
 	bool LoadTexture(const char* filename, GLuint& iTextureID);
 };
 

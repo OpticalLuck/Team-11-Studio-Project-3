@@ -330,12 +330,18 @@ void Collider2D::ResolveAABBCircle(Collider2D* object, Collision data, ColliderT
 
 void Collider2D::PreRender(void)
 {
+	if (!cSettings->bShowCollider)
+		return;
+
 	// Use the shader defined for this class
 	CShaderManager::GetInstance()->Use(sLineShaderName);
 }
 
 void Collider2D::Render(void)
 {
+	if (!cSettings->bShowCollider)
+		return;
+
 	if (!bIsDisplayed)
 		return;
 
@@ -373,6 +379,8 @@ void Collider2D::Render(void)
 
 void Collider2D::PostRender(void)
 {
+	if (!cSettings->bShowCollider)
+		return;
 }
 
 bool Collider2D::GetbEnabled() const

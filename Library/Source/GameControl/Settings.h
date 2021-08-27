@@ -71,6 +71,9 @@ public:
 	const unsigned char FPS = 60; // FPS of this game
 	const unsigned int frameTime = 1000 / FPS; // time for each frame
 
+	// Render Control
+	bool bShowCollider;
+
 	// Sound Control
 	float MASTER_VOLUME;
 	float BGM_VOLUME;
