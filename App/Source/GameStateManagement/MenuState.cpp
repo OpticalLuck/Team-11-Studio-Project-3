@@ -301,6 +301,8 @@ void CMenuState::UpdateOption(ImGuiWindowFlags window_flags)
 		}
 	}
 
+	ImGui::Checkbox("Show Colliders", &CSettings::GetInstance()->bShowCollider);
+
 	if (sfxChange)
 	{
 		if (CSettings::GetInstance()->bSFX_Sound == true)
