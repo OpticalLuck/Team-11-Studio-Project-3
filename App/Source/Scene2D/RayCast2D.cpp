@@ -43,8 +43,8 @@ RayCast2D::~RayCast2D(void) {
 	glDeleteBuffers(1, &VBO);
 }
 
-void RayCast2D::Init(CEntity2D* currentTarget, std::vector<CEntity2D*> entityArr) {
-	this->client = currentTarget;
+void RayCast2D::Init(CEntity2D* client, std::vector<CEntity2D*> entityArr) {
+	this->client = client;
 	this->entityArr = entityArr;
 
 	cMap2D = CMap2D::GetInstance();
@@ -89,10 +89,15 @@ bool RayCast2D::RayCheck(float angCheck) {
 
 bool RayCast2D::RayCheck(float dist, float angCheck) {
 	float currDist = glm::length(currentPoint - originPoint);
-	if (currDist <= dist) //If within dist, do raychecking
-		return RayCheck(angCheck);
-	else //If not then screw it la bodoh
+	if (currDist <= dist) { //If within dist, do raychecking
+		if (angCheck > 0)
+			return RayCheck(angCheck);
+		else
+			return RayCheck();
+	}
+	else { //If not then screw it la bodoh
 		return false;
+	}
 }
 
 bool RayCast2D::RayCheck(void) {

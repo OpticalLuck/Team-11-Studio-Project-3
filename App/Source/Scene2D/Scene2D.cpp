@@ -65,7 +65,6 @@ CScene2D::~CScene2D(void)
 		cameraHandler->Destroy();
 		cameraHandler = NULL;
 	}
-
 }
 
 /**
@@ -192,21 +191,23 @@ bool CScene2D::Update(const double dElapsedTime)
 			//Recording enemy stuff
 			CEntity2D::SetRecording(true);
 			for (unsigned i = 0; i < enemyArr.size(); i++) {
-				CMobEnemy2D* mobEnemy = dynamic_cast<CMobEnemy2D*>(enemyArr[i]);
-
-				if (mobEnemy)
-					mobEnemy->ResetRecording();
+				enemyArr[i]->ResetRecording();
 			}
+
+			//Saving of other movable entities
+			cEntityManager->SavePrevious();
 
 			break;
 		case 2:
 			cPlayer2D->SetRecording(false);
 			CPlayer2D* clone = CEntityManager::GetInstance()->Clone();
+			//Loading of clone
 			clone->vTransform = cPlayer2D->m_FrameStorage.spawnPos;
 			clone->m_FrameStorage.iCurrentFrame = cPlayer2D->m_FrameStorage.iStoredFrame;
 			clone->m_FrameStorage.iEndFrame = cPlayer2D->m_FrameStorage.iCurrentFrame;
 			cPlayer2D->m_FrameStorage.iStoredFrame = 0;
 			cPlayer2D->vTransform = cPlayer2D->m_FrameStorage.spawnPos;
+			clone->SetHealth(cEntityManager->GetPlayer()->GetHealth());
 
 			cPlayer2D->m_FrameStorage.iCounter = 0;
 
@@ -214,11 +215,12 @@ bool CScene2D::Update(const double dElapsedTime)
 			CEntity2D::SetRecording(false);
 
 			for (unsigned i = 0; i < enemyArr.size(); i++) {
-				CMobEnemy2D* mobEnemy = dynamic_cast<CMobEnemy2D*>(enemyArr[i]);
-
-				if (mobEnemy)
-					mobEnemy->ReplayRecording();
+				enemyArr[i]->ReplayRecording();
 			}
+
+			//Loading prev values of movable entities
+			cEntityManager->LoadPrevious();
+
 			break;
 		}
 	}

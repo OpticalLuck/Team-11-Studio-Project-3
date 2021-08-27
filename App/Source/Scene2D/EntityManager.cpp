@@ -43,28 +43,6 @@ bool CEntityManager::EntityManagerInit(const unsigned int totalLevels)
 		cBoss2D.push_back(nullptr);
 	}
 
-	//for (Interactables* i : m_interactableList)
-	//{
-	//	i->Init();
-	//}
-
-	// clone init
-	//cCloneTemplate = new CPlayer2D();
-	//if (cCloneTemplate->Init(cPlayer2D->GetCheckpoint(),m_cloneList.size()) == false)
-	//{
-	//	cout << "Failed to load clone" << endl;
-	//	return false;
-	//}
-	//// initialise all default values
-	//cCloneTemplate->SetClone(true);
-	//cCloneTemplate->SetShader("2DColorShader");
-	//// find position to spawn in map
-	//if (cMap2D->FindValue(1, uiRow, uiCol) == true)
-	//{
-	//	cCloneTemplate->vTransform = glm::vec2(uiCol, uiRow);
-	//}
-	//currRound = 0;
-
 	return true;
 }
 
@@ -91,6 +69,72 @@ std::vector<CEntity2D*> CEntityManager::GetAllLivingEntities(void) {
 	totalArr.insert(totalArr.end(), convertedEnemyArr.begin(), convertedEnemyArr.end());
 
 	return totalArr;
+}
+
+std::vector<CEntity2D*> CEntityManager::GetAllSolidEntities(void) {
+	std::vector<CEntity2D*> totalArr = GetAllLivingEntities();
+
+	std::vector<Obstacle2D*> obstArr = GetallObstacles();
+	std::vector<CEntity2D*> convertedObstArr(obstArr.begin(), obstArr.end());
+
+	totalArr.reserve(totalArr.size() + convertedObstArr.size());
+	totalArr.insert(totalArr.end(), convertedObstArr.begin(), convertedObstArr.end());
+
+	return totalArr;
+}
+
+void CEntityManager::SavePrevious(void) {
+	//For bullets
+	m_PrevBulletList.clear();
+
+	for (unsigned i = 0; i < m_BulletList[cMap2D->GetCurrentLevel()].size(); i++) {
+		Projectiles* bullet = nullptr;
+
+		if (dynamic_cast<Bullet2D*>(m_BulletList[cMap2D->GetCurrentLevel()][i])) { //Initialise values here
+			bullet = new Bullet2D;
+
+			bool friendly = static_cast<Bullet2D*>(m_BulletList[cMap2D->GetCurrentLevel()][i])->GetFriendly();
+			float angle = static_cast<Bullet2D*>(m_BulletList[cMap2D->GetCurrentLevel()][i])->fRotate;
+			static_cast<Bullet2D*>(bullet)->Init(friendly, angle);
+			bullet->vTransform = m_BulletList[cMap2D->GetCurrentLevel()][i]->vTransform;
+
+			bullet->SetTextureID(m_BulletList[cMap2D->GetCurrentLevel()][i]->GetTextureID());
+		}
+		else {
+			bullet = new Projectiles;
+
+			bullet->Init();
+			bullet->SetTextureID(m_BulletList[cMap2D->GetCurrentLevel()][i]->GetTextureID());
+
+			CPhysics2D* refPhysics = m_BulletList[cMap2D->GetCurrentLevel()][i]->GetPhysics();
+			bullet->GetPhysics()->SetVelocity(refPhysics->GetVelocity());
+			bullet->GetPhysics()->SetForce(refPhysics->GetForce());
+
+			bullet->SetTextureID(m_BulletList[cMap2D->GetCurrentLevel()][i]->GetTextureID());
+		}
+
+		//*bullet = *m_BulletList[cMap2D->GetCurrentLevel()][i];
+		m_PrevBulletList.push_back(bullet);
+	}
+}
+
+void CEntityManager::LoadPrevious(void) {
+	//For bullets
+	for (unsigned i = 0; i < m_BulletList[cMap2D->GetCurrentLevel()].size(); i++) {
+		delete m_BulletList[cMap2D->GetCurrentLevel()][i];
+		m_BulletList[cMap2D->GetCurrentLevel()][i] = nullptr;
+	}
+	m_BulletList[cMap2D->GetCurrentLevel()].clear();
+	
+	for (unsigned i = 0; i < m_PrevBulletList.size(); i++) {
+		Projectiles* bullet = m_PrevBulletList[i];
+
+		m_BulletList[cMap2D->GetCurrentLevel()].push_back(bullet);
+
+		//Deletion of prevbullet
+		m_PrevBulletList[i] = nullptr;
+	}
+	m_PrevBulletList.clear();
 }
 
 std::vector<Interactables*> CEntityManager::GetAllInteractables(void)
@@ -233,6 +277,10 @@ void CEntityManager::RenderEnemy(void)
 	}
 }
 
+std::vector<Projectiles*> CEntityManager::GetAllBullets(void) {
+	return m_BulletList[cMap2D->GetCurrentLevel()];
+}
+
 void CEntityManager::RenderBullets(void) {
 	for (unsigned i = 0; i < m_BulletList[cMap2D->GetCurrentLevel()].size(); i++) {
 		m_BulletList[cMap2D->GetCurrentLevel()][i]->PreRender();
@@ -325,14 +373,14 @@ void CEntityManager::Update(const double dElapsedTime)
 
 	// Call all the cEnemy2D's update method before Map2D 
 	// as we want to capture the updates before map2D update
-	for (CEnemy2D* e : m_enemyList[cMap2D->GetCurrentLevel()]) 
+	for (int i = 0; i < m_enemyList[cMap2D->GetCurrentLevel()].size(); ++i) 
 	{
-		e->Update(dElapsedTime);
+		m_enemyList[cMap2D->GetCurrentLevel()][i]->Update(dElapsedTime);
 
 		//Delete conditions
-		if (e->GetHealth() <= 0) {
-			delete e;
-			e = nullptr;
+		if (m_enemyList[cMap2D->GetCurrentLevel()][i]->GetHealth() <= 0) {
+			delete m_enemyList[cMap2D->GetCurrentLevel()][i];
+			m_enemyList[cMap2D->GetCurrentLevel()][i] = nullptr;
 		}
 	}
 
@@ -360,12 +408,6 @@ void CEntityManager::Update(const double dElapsedTime)
 	{
 		i->Update(dElapsedTime);
 	}
-
-	//Keyboard inputs
-	/*if (cKeyboardController->IsKeyPressed(GLFW_KEY_C))
-	{
-		Clone();
-	}*/
 }
 
 void CEntityManager::PushBullet(Projectiles* bullet, const unsigned int currLevel) {

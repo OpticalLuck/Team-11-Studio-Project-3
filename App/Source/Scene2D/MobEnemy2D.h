@@ -58,10 +58,10 @@ class CMobEnemy2D : public CEnemy2D
 		void SetID(int id);
 
 		//Recording stuff
-		void ResetRecording(void); //Resets the recording
+		void ResetRecording(void) override;  //Resets the recording
 
 		//Replay
-		void ReplayRecording(void);
+		void ReplayRecording(void) override;
 
 	protected:
 		glm::vec2 oldVTransform;

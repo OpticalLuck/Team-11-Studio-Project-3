@@ -324,7 +324,7 @@ bool CPlayGameState::ImGuiRender()
 
 				displayHP = Math::Lerp(displayHP, cPlayer->GetHealth(), 0.2f);
 				ImGui::Begin("Health", NULL, health_window);
-				ImGui::SetWindowPos(ImVec2(finalPosX, finalPosY));
+				ImGui::SetWindowPos(ImVec2((int)finalPosX, (int)finalPosY));
 				ImGui::SetWindowSize(ImVec2(200.0f * relativeScale_x, 25.0f * relativeScale_y));
 				ImGui::SameLine();
 
@@ -423,6 +423,8 @@ bool CPlayGameState::ImGuiRender()
 
 		return true;
 	}
+
+	return true;
 }
 
 void CPlayGameState::SetLevel(std::string levelPath)

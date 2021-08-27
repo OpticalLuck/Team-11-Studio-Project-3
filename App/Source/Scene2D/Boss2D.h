@@ -15,6 +15,9 @@ class CEntityManager;
 //Include Player2D
 class CPlayer2D;
 
+//Raycasting
+class RayCast2D;
+
 //Factory 
 #include "../App/Source/Factory/ObjectFactory.h"
 
@@ -69,6 +72,9 @@ class CBoss2D : public CEnemy2D
 		void SetMaxPauseDuration(float val);
 		void SetMinPauseDuration(float val);
 
+		//RECORDING
+		void ResetRecording(void) override;
+		void ReplayRecording(void) override;
 
 		//returns transform x
 		float GetTransformX(void);
@@ -78,27 +84,38 @@ class CBoss2D : public CEnemy2D
 	protected:
 		int id;
 
-		std::vector<ATK>* arrATK; //Current attack during current round
+		//Raycasting
+		RayCast2D* rayCast2D;
+
+		std::vector<ATK> arrATK; //Current attack during current round
 		int fsmIndex; //Current index of where its at in the array
 
 		//AtkDuration (Based on frames)
 		int currAtkDuration;
+		int beforeAtkDuration;
 		//Min and max of atkDuration (Based on seconds)
 		float minAtkDuration;
 		float maxAtkDuration;
 
 		//pauseDuration (Based on frames)
 		int currPauseDuration;
+		int beforePauseDuration;
 		//Min and max of pauseDuration (Based on seconds)
 		float minPauseDuration;
 		float maxPauseDuration;
 
-		std::vector<int>* arrAtkDuration;
-		std::vector<int>* arrPauseDuration;
+		std::vector<int> arrAtkDuration;
+		std::vector<int> arrPauseDuration;
+
+		int savedAtkTimer;
+		int savedPauseTimer;
 
 		bool isSeen;
+		bool beforeIsSeen;
 
 		float bulletAng; //Angle of which where the bullet will come from
+		float beforeBulletAng;
+
 		int maxBulletTimer[(int)ATK::A_TOTAL]; //Timer in terms of frames
 		int bulletTimer;
 
@@ -133,5 +150,8 @@ class CBoss2D : public CEnemy2D
 
 		//Reset current values
 		void ResetCurrTimers(void);
+
+		//Get possible player target
+		CPlayer2D* GetProbableTarget(std::vector<CPlayer2D*> arr = std::vector<CPlayer2D*>(), float dist = 16.f);
 };
 
