@@ -364,7 +364,6 @@ bool Interactables::Activate(bool interaction, CPlayer2D* player)
 		this->iTextureID = this->interactableType;
 		break;
 	}*/
-	
 	// Loop through the interactables to activate the corresponding Interactable IDs
 	if (this->interactableType < DOOR)
 	{

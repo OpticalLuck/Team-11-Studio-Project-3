@@ -55,11 +55,11 @@ void CInventoryManager::DeleteInventory(std::string sName)
 
 void CInventoryManager::NavigateIndex(std::string direction)
 {
-	if (direction == "DOWN")
+	if (direction == "LEFT")
 	{
 		cActiveInventory->iCurrentIndex++;
 	}
-	if (direction == "UP")
+	if (direction == "RIGHT")
 	{
 		cActiveInventory->iCurrentIndex--;
 	}

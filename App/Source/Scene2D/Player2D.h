@@ -157,6 +157,9 @@ public:
 	//Get Max health
 	int GetMaxHealth(void);
 
+	int UpdateHealth(int iAmount);
+
+
 	//Function to call if player gets hit
 	void Attacked(int hp = 1, CPhysics2D* bounceObj = nullptr);
 
@@ -175,8 +178,8 @@ public:
 protected:
 	bool bIsClone;
 	int iCloneIndex;
-
 	bool bIsRecording;
+
 	//Timer for actions that need cooldown
 	std::pair<bool, double> timerArr[A_TOTAL];
 

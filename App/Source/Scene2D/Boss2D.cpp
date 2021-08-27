@@ -46,6 +46,12 @@ CBoss2D::CBoss2D(void) {
 	minPauseDuration = 1.5f;
 	maxPauseDuration = 5.f;
 
+	beforeAtkDuration = 0;
+	beforeBulletAng = 0;
+	beforeIsSeen = false;
+	beforePauseDuration = 0;
+	savedAtkTimer = savedPauseTimer = 0;
+
 	id = 305;
 
 	//rayCast2D
@@ -178,6 +184,8 @@ bool CBoss2D::Init(void) {
 
 void CBoss2D::ResetRecording(void) {
 	beforeBulletAng = bulletAng;
+	beforeBulletTimer = bulletTimer;
+
 	beforeIsSeen = isSeen;
 
 	beforeTarget = currTarget;
@@ -206,6 +214,7 @@ void CBoss2D::ResetRecording(void) {
 
 void CBoss2D::ReplayRecording(void) {
 	bulletAng = beforeBulletAng;
+	bulletTimer = beforeBulletTimer;
 
 	//Check if currtarget exists
 	std::vector<CPlayer2D*> playerArr = cEntityManager->GetAllPlayers();
@@ -594,5 +603,6 @@ void CBoss2D::PostRender(void) {
 	// Disable blending
 	glDisable(GL_BLEND);
 
-	rayCast2D->RenderRayCast();
+	if (cSettings->bShowCollider)
+		rayCast2D->RenderRayCast();
 }
