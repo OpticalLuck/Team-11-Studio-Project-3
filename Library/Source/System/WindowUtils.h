@@ -12,14 +12,16 @@
 
 namespace FileDialog
 {
-	TCHAR strFilter[] =
+	LPCSTR strFilter[] =
+	{
 		// _T("Bitmap Files (*. Bmp)\0 * .bmp\0")
 		// _T("JPEG Files (*. Jpeg; * jpg)\0 * .jpeg; *. Jpg\0")
-		_T("PNG Files (*. PNG)\0 * .png\0")
-		_T("TGA Files (*. TGA)\0 * .tga\0")
-		_T("All Files (*. *)\0 *. *\0");
+		"PNG Files (*. PNG)\0 * .png\0",
+		"TGA Files (*. TGA)\0 * .tga\0",
+		"All Files (*. *)\0 *. *\0",
+	};
 
-	std::string OpenFile(const char* filter = strFilter)
+	std::string OpenFile(LPCSTR* filter = strFilter)
 	{
 		OPENFILENAMEA ofn;
 		CHAR szFile[260] = { 0 };
@@ -31,7 +33,7 @@ namespace FileDialog
 		ofn.nMaxFile = sizeof(szFile);
 		ofn.lpstrFileTitle = strFileTitle;
 		ofn.nMaxFileTitle = sizeof(strFileTitle);
-		ofn.lpstrFilter = filter;
+		ofn.lpstrFilter = *filter;
 		ofn.nFilterIndex = 1;
 		ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
 		if (GetOpenFileNameA(&ofn) == TRUE)
