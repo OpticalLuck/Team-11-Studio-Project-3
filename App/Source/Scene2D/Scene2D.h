@@ -62,6 +62,8 @@ public:
 	float fCooldown = 0.f;
 
 protected:
+	double dParadoxiumTimer;
+
 	// The handler containing the instance of the 2D Map
 	CMap2D* cMap2D;
 	// The handler containing the instance of CPlayer2Ds
@@ -94,6 +96,8 @@ protected:
 	// Destructor
 	virtual ~CScene2D(void);
 	
+	void StartParadoxiumAbility();
+	void StopParadoxiumAbility();
 	//template <typename T>
 	//void LoadEnemy();
 };

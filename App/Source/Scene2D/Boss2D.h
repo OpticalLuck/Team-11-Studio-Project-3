@@ -118,6 +118,7 @@ class CBoss2D : public CEnemy2D
 
 		int maxBulletTimer[(int)ATK::A_TOTAL]; //Timer in terms of frames
 		int bulletTimer;
+		int beforeBulletTimer;
 
 		bool pauseEnabled;
 		std::vector<ATK> atkTypes; //How many attack types does it store
