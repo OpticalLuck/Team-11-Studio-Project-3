@@ -301,8 +301,9 @@ void CEntityManager::Update(const double dElapsedTime)
 
 	for (unsigned i = 0; i < m_cloneList.size(); ++i)
 	{
-		if (m_cloneList[i]->iTempFrameCounter - m_cloneList[i]->iFrameCounterEnd > 180)
+		if (m_cloneList[i]->m_FrameStorage.iCurrentFrame - m_cloneList[i]->m_FrameStorage.iEndFrame > 180)
 		{
+			DEBUG_MSG(m_cloneList[i]->m_FrameStorage.iCurrentFrame << " " << m_cloneList[i]->m_FrameStorage.iEndFrame);
 			delete m_cloneList[i];
 			m_cloneList[i] = nullptr;
 			/*m_cloneList.erase(std::remove(std::begin(m_cloneList), std::end(m_cloneList), nullptr), std::end(m_cloneList));*/

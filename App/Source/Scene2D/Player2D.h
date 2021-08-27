@@ -50,14 +50,24 @@ class Camera2D;
 
 #include "InventoryManager.h"
 
+struct FrameStorage
+{
+	int iCounter = 0;
+	int iCurrentFrame = 0;
+	int iStoredFrame = 0;
+	int iEndFrame = 0;
+
+	glm::vec2 spawnPos = { 0 , 0 };
+};
+
+
 class CPlayer2D : public CEntity2D, public LivingEntity2D
 {
 public:
 	std::vector<std::array<KeyInput, KEYBOARD_INPUTS::KEY_TOTAL>> m_KeyboardInputs;
 	std::vector<std::array<MouseInput, MOUSE_INPUTS::MOUSE_TOTAL>> m_MouseInputs;
 
-	int iTempFrameCounter; // move to game manager/scene2D/PlayGameState later
-	int iFrameCounterEnd = 0;
+	FrameStorage m_FrameStorage;
 
 	bool bJustTeleported;
 	enum class STATE

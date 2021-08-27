@@ -45,7 +45,6 @@ CPlayer2D::CPlayer2D(void)
 	, cMouseController(NULL)
 	, cSoundController(NULL)
 	, cInputHandler(NULL)
-	, iTempFrameCounter(0)
 	//, bDamaged(false)
 	, bIsClone(false)
 	, cInventory(NULL)
@@ -472,7 +471,9 @@ void CPlayer2D::Update(const double dElapsedTime)
 	animatedSprites->Update(dElapsedTime);
 
 	// if (!bIsClone || iTempFrameCounter < m_KeyboardInputs.size() - 1)
-		iTempFrameCounter++;
+
+	m_FrameStorage.iCurrentFrame++;
+
 }
 
 /**
@@ -594,25 +595,25 @@ void CPlayer2D::InputUpdate(double dt)
 {
 	state = STATE::S_IDLE;
 	
-	if ((unsigned)iTempFrameCounter >= m_KeyboardInputs.size())
+	if ((unsigned)m_FrameStorage.iCurrentFrame >= m_KeyboardInputs.size())
 		return;
 
 	glm::vec2 velocity = cPhysics2D->GetVelocity();
 	glm::vec2 force = glm::vec2(0.f);
 
-	if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::W].bKeyDown)
+	if (m_KeyboardInputs[m_FrameStorage.iCurrentFrame][KEYBOARD_INPUTS::W].bKeyDown)
 	{
 		velocity.y = fMovementSpeed;
 		cPhysics2D->SetboolGrounded(false);
 		//DEBUG_MSG(this << ": Frame:" << iTempFrameCounter << " Move Up");
 	}
-	else if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::S].bKeyDown)
+	else if (m_KeyboardInputs[m_FrameStorage.iCurrentFrame][KEYBOARD_INPUTS::S].bKeyDown)
 	{
 		//velocity.y = -fMovementSpeed;
 		//DEBUG_MSG(this << ": Frame:" << iTempFrameCounter << " Move Down");
 	}
 
-	if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::D].bKeyDown)
+	if (m_KeyboardInputs[m_FrameStorage.iCurrentFrame][KEYBOARD_INPUTS::D].bKeyDown)
 	{
 		//velocity.x = fMovementSpeed;
 		if (velocity.x < fMovementSpeed && !cPhysics2D->GetboolKnockedBacked())
@@ -622,7 +623,7 @@ void CPlayer2D::InputUpdate(double dt)
 		facing = FACING_DIR::RIGHT;
 		//DEBUG_MSG(this << ": Frame:" << iTempFrameCounter << " Move Right");
 	}
-	else if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::A].bKeyDown)
+	else if (m_KeyboardInputs[m_FrameStorage.iCurrentFrame][KEYBOARD_INPUTS::A].bKeyDown)
 	{
 		if (velocity.x > -fMovementSpeed && !cPhysics2D->GetboolKnockedBacked())
 			velocity.x = Math::Max(velocity.x - fMovementSpeed, -fMovementSpeed);
@@ -631,10 +632,10 @@ void CPlayer2D::InputUpdate(double dt)
 		//DEBUG_MSG(this << ": Frame:" << iTempFrameCounter << " Move Left");
 	}
 
-	if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::SPACE].bKeyDown)
+	if (m_KeyboardInputs[m_FrameStorage.iCurrentFrame][KEYBOARD_INPUTS::SPACE].bKeyDown)
 	{
 		if (jumpCount < 2 &&
-			m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::SPACE].bKeyPressed)
+			m_KeyboardInputs[m_FrameStorage.iCurrentFrame][KEYBOARD_INPUTS::SPACE].bKeyPressed)
 		{
 			cPhysics2D->SetboolGrounded(false);
 			velocity.y = 6.5f * (jumpCount + (1 - jumpCount * 0.6f));
@@ -677,13 +678,13 @@ void CPlayer2D::InputUpdate(double dt)
 	if (glm::length(force) > 0.f)
 		cPhysics2D->SetForce(force);
 
-	if (m_MouseInputs[iTempFrameCounter][MOUSE_INPUTS::LMB].bButtonPressed)
+	if (m_MouseInputs[m_FrameStorage.iCurrentFrame][MOUSE_INPUTS::LMB].bButtonPressed)
 	{
 		cSoundController->PlaySoundByID(SOUND_ID::SOUND_SWING);
 		cInventory->UseItem();
 	}
 
-	cInventory->Update(dt, iTempFrameCounter ,m_KeyboardInputs, m_MouseInputs);
+	cInventory->Update(dt, m_FrameStorage.iCurrentFrame, m_KeyboardInputs, m_MouseInputs);
 }
 void CPlayer2D::SetClone(bool bIsClone)
 {
