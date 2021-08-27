@@ -58,8 +58,13 @@ public:
 	std::vector<Interactables*> GetAllInteractables(void);
 	std::vector<Obstacle2D*> GetallObstacles(void);
 	std::vector<CEntity2D*> GetAllSolidEntities(void);
+	std::vector<Projectiles*> GetAllBullets(void);
 
 	void Clear(void);
+
+	//For recording purposes
+	void SavePrevious(void);
+	void LoadPrevious(void);
 
 protected:
 	CEntityManager();
@@ -83,6 +88,9 @@ protected:
 	std::vector<std::vector<Projectiles*>> m_BulletList;
 	std::vector<CPlayer2D*> m_cloneList;
 	std::vector<std::vector<Obstacle2D*>> m_ObstacleList;
+
+	//Recorded value
+	std::vector<Projectiles*> m_PrevBulletList;
 
 	int currRound; //Current round in game. First is 0 and last is 4 (Will be storing enemies prev attacks etc using this)
 

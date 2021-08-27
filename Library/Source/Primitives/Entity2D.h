@@ -79,7 +79,6 @@ public:
 	Collider2D* GetCollider();
 
 	void SetTextureID(int iTextureID);
-
 	int GetTextureID() const;
 
 	// The i32vec2 which stores the indices of an Entity2D in the Map2D

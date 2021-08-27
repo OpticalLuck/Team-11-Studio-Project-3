@@ -194,6 +194,9 @@ bool CScene2D::Update(const double dElapsedTime)
 				enemyArr[i]->ResetRecording();
 			}
 
+			//Saving of other movable entities
+			cEntityManager->SavePrevious();
+
 			break;
 		case 2:
 			CPlayer2D* clone = CEntityManager::GetInstance()->Clone();
@@ -213,6 +216,10 @@ bool CScene2D::Update(const double dElapsedTime)
 			for (unsigned i = 0; i < enemyArr.size(); i++) {
 				enemyArr[i]->ReplayRecording();
 			}
+
+			//Loading prev values of movable entities
+			cEntityManager->LoadPrevious();
+
 			break;
 		}
 	}

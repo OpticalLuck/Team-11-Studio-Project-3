@@ -25,6 +25,7 @@ public:
 	void ResolveMapCollision(std::vector<pair<CObject2D*, float>> aabbvector) override;
 
 	void SetFriendly(bool mFriendly);
+	bool GetFriendly(void);
 private:
 	bool mFriendly; //If true, it came from player, if not, enemy
 };
