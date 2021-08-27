@@ -53,6 +53,10 @@ bool Bullet2D::Init(bool bFriendly, float angle, float force)
 	return true;
 }
 
+bool Bullet2D::GetFriendly(void) {
+	return mFriendly;
+}
+
 void Bullet2D::Update(double dElapsedTime)
 {
 	cPhysics2D->Update(dElapsedTime);

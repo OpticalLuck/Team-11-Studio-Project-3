@@ -75,6 +75,10 @@ public:
 	//Get CObject in tile
 	CObject2D* GetObjectInTile(int uiCol, int uiRow);
 
+	//Recording
+	virtual void ResetRecording(void);
+	virtual void ReplayRecording(void);
+
 protected:
 	enum class DIRECTION
 	{
@@ -118,6 +122,7 @@ protected:
 
 	//Player target and arrays handling it...
 	CPlayer2D* currTarget;
+	CPlayer2D* beforeTarget;
 	std::vector<CPlayer2D*> arrPlayer;
 
 	//Get angle from enemy to position
@@ -129,9 +134,6 @@ protected:
 	// Current FSM
 	FSM sCurrentFSM;
 	int currFrame;
-
-	//Current round
-	int roundIndex;
 
 	//Initial direction for that round
 	DIRECTION roundDir[5];

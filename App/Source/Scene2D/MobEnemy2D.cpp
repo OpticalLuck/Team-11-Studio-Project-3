@@ -62,7 +62,7 @@ bool CMobEnemy2D::Init(void) {
 
 	cEntityManager = CEntityManager::GetInstance();
 
-	distCheck = cSettings->NUM_TILES_XAXIS / 2;
+	distCheck = (float)cSettings->NUM_TILES_XAXIS / 2.f;
 
 	// Find the indices for the player in arrMapInfo, and assign it to cPlayer2D
 	unsigned int uiRow = -1;
@@ -80,8 +80,8 @@ bool CMobEnemy2D::Init(void) {
 	posToChase = vTransform;
 	spawnPoint = vTransform;
 
-	roundIndex = 0;
-	pHealth = 5;
+	pMaxHealth = 3;
+	pHealth = 3;
 
 	currTarget = nullptr;
 
@@ -95,7 +95,6 @@ bool CMobEnemy2D::Init(void) {
 	for (int i = 0; i < 5; i++) {
 		roundDir[i] = RandomiseDir();
 	}
-	dir = roundDir[roundIndex];
 
 	//CS: Init the color to white
 	currentColor = glm::vec4(1.0, 1.0, 1.0, 1.0);
@@ -259,9 +258,9 @@ void CMobEnemy2D::Update(const double dElapsedTime) {
 	oldVTransform = vTransform;
 
 	if (!patrol)
-		UpdateDumb(dElapsedTime);
+		UpdateDumb((float)dElapsedTime);
 	else
-		UpdateSmart(dElapsedTime);
+		UpdateSmart((float)dElapsedTime);
 
 	//Health lives update
 	UpdateHealthLives();
@@ -452,14 +451,18 @@ void CMobEnemy2D::UpdateSmart(float dElapsedTime) {
 	if (sCurrentFSM != FSM::ATTACK && !currTarget) {
 		for (unsigned i = 0; i < playerArr.size(); i++) {
 			rayCast2D->SetTarget(playerArr[i]);
-			if (glm::length(vTransform - playerArr[i]->vTransform) < dist) {
-				enemySee = rayCast2D->RayCheck(80);
-				if (enemySee) {
-					currTarget = playerArr[i];
-					break;
-				}
+			enemySee = rayCast2D->RayCheck(dist, 80);
+			if (enemySee) {
+				currTarget = playerArr[i];
+				break;
 			}
 		}
+	}
+	else if (sCurrentFSM != FSM::ATTACK && currTarget) {
+		rayCast2D->SetTarget(currTarget);
+		enemySee = rayCast2D->RayCheck(dist, 80.f);
+		if (!enemySee)
+			currTarget = nullptr;
 	}
 
 	switch (sCurrentFSM) {
@@ -662,7 +665,7 @@ void CMobEnemy2D::ChaseEnemyY(void) {
 		CObject2D* obj = GetObjectInTile((unsigned int)tileCheck.x, (unsigned int)tileCheck.y);
 
 		if (!obj) {
-			for (unsigned i = 0; i < tileCap - 1; i++) {
+			for (int i = 0; i < tileCap - 1; i++) {
 				tileCheck.y--;
 				//obj = cMap2D->GetCObject((unsigned int)tileCheck.x, (unsigned int)tileCheck.y);
 				obj = GetObjectInTile((unsigned int)tileCheck.x, (unsigned int)tileCheck.y);
@@ -681,7 +684,7 @@ void CMobEnemy2D::ChaseEnemyY(void) {
 			obj = GetObjectInTile((unsigned int)tileCheck.x, (unsigned int)tileCheck.y);
 
 			if (obj && obj->GetCollider()->GetbEnabled()) {
-				for (unsigned i = 0; i <= tileCap; i++) {
+				for (int i = 0; i <= tileCap; i++) {
 					tileCheck.y++;
 					obj = GetObjectInTile((unsigned int)tileCheck.x, (unsigned int)tileCheck.y);
 
@@ -703,7 +706,7 @@ void CMobEnemy2D::ChaseEnemyY(void) {
 		CObject2D* obj = GetObjectInTile((unsigned int)tileCheck.x, (unsigned int)tileCheck.y);
 
 		if (!obj) {
-			for (unsigned i = 0; i < tileCap; i++) {
+			for (int i = 0; i < tileCap; i++) {
 				tileCheck.y--;
 				obj = GetObjectInTile((unsigned int)tileCheck.x, (unsigned int)tileCheck.y);
 
@@ -718,7 +721,7 @@ void CMobEnemy2D::ChaseEnemyY(void) {
 			obj = GetObjectInTile((unsigned int)tileCheck.x, (unsigned int)tileCheck.y);
 
 			if (obj && obj->GetCollider()->GetbEnabled()) {
-				for (unsigned i = 0; i < tileCap; i++) {
+				for (int i = 0; i < tileCap; i++) {
 					tileCheck.y++;
 					obj = GetObjectInTile((unsigned int)tileCheck.x, (unsigned int)tileCheck.y);
 

@@ -147,6 +147,27 @@ void Interactables::Update(const double dElapsedTime)
 			}
 		}
 	}
+	else if (this->interactableType == GATE)
+	{
+		float distance = glm::length(em->GetPlayer()->vTransform - this->vTransform);
+		if (distance < 0.3)
+		{
+			CMap2D::GetInstance()->SetCurrentLevel(CMap2D::GetInstance()->GetCurrentLevel() + 1);
+			if (CMap2D::GetInstance()->LoadMap("Maps/test.csv", 1) == false)
+			{
+				DEBUG_MSG("Map Loading failed");
+				return;
+			}
+
+			unsigned int iRow = -1;
+			unsigned int iCol = -1;
+			if (CMap2D::GetInstance()->FindValue(1, iRow, iCol))
+			{
+				em->GetPlayer()->vTransform = glm::vec2(iCol, iRow);
+				CMap2D::GetInstance()->SetMapInfo(iRow, iCol, 0);
+			}
+		}
+	}
 	else if (this->interactableType == COMMON_CHEST || this->interactableType == RARE_CHEST)
 	{
 		for (auto& e : em->GetAllPlayers())

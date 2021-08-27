@@ -554,9 +554,9 @@ bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 				}
 				else if (currTexture > ENEMIES_START && currTexture < ENEMIES_TOTAL)
 				{
-					if (currTexture == ENEMY_5)
+					if (currTexture == BOSS)
 					{
-						if (CEntityManager::GetInstance()->GetBoss() == nullptr)
+						if (CEntityManager::GetInstance()->GetBoss() != nullptr)
 						{
 							DEBUG_MSG("There can only be one boss in the level");
 							continue;

@@ -215,6 +215,11 @@ bool CTextureManager::Init(void)
         return false;
     }
 
+    if (LoadTexture("Image/Scene2D_EnemyTile.tga", BOSS) == false) {
+        DEBUG_MSG("Failed to load boss tile texture");
+        return false;
+    }
+
     if (LoadTexture("Image/Objects/Bullet.tga", BULLETS_ENEMY) == false) {
         DEBUG_MSG("Failed to load bullet texture");
         return false;
