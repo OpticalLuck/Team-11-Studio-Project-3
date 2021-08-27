@@ -285,6 +285,7 @@ bool CPlayer2D::Init(glm::i32vec2 spawnpoint, int iCloneIndex)
 	collider2D->Init(vTransform, glm::vec2(0.2f, 0.5f));
 	cPhysics2D->Init(&vTransform);
 
+	//const void* address = 
 	std::stringstream ss;
 	ss << "Clone" << iCloneIndex;
 
@@ -342,8 +343,6 @@ bool CPlayer2D::Reset()
  */
 void CPlayer2D::Update(const double dElapsedTime)
 {
-	DEBUG_MSG(iTempFrameCounter);
-
 	// Only update the inputs if the instance is not a clone
 	// Clone will have a fixed input that is created on initialisation
 	if (!bIsClone)
@@ -706,22 +705,27 @@ void CPlayer2D::Attacked(int hp, CPhysics2D* bounceObj) {
 	//Collision response between the objects
 	if (bounceObj) {
 		glm::vec2 ogVel = cPhysics2D->GetVelocity();
+		glm::vec2 objVel = bounceObj->GetVelocity();
 
-		if (vTransform.x > bounceObj->GetPosition().x)
+		if (vTransform.x > bounceObj->GetPosition().x) {
 			cPhysics2D->SetVelocity(glm::vec2(-fMovementSpeed, ogVel.y));
-		else if (vTransform.x < bounceObj->GetPosition().x)
+			bounceObj->SetVelocity(glm::vec2(fMovementSpeed, objVel.y));
+		}
+		else if (vTransform.x < bounceObj->GetPosition().x) {
 			cPhysics2D->SetVelocity(glm::vec2(fMovementSpeed, ogVel.y));
+			bounceObj->SetVelocity(glm::vec2(-fMovementSpeed, objVel.y));
+		}
 
 		cPhysics2D->CollisionResponse(bounceObj,1.5f,1.5f);
 		cPhysics2D->SetBoolKnockBacked(true);
 		bounceObj->SetBoolKnockBacked(true);
 
-		float maxSpd = 5;
+		float maxSpd = maxKnockBack;
 		if (glm::length(cPhysics2D->GetVelocity()) > maxSpd)
 			cPhysics2D->SetVelocity(glm::normalize(cPhysics2D->GetVelocity()) * maxSpd);
 
 		if (glm::length(bounceObj->GetVelocity()) > maxSpd)
-			cPhysics2D->SetVelocity(glm::normalize(cPhysics2D->GetVelocity()) * maxSpd);
+			bounceObj->SetVelocity(glm::normalize(bounceObj->GetVelocity()) * maxSpd);
 	}
 }
 

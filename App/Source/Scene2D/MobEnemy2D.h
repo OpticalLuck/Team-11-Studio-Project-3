@@ -57,9 +57,16 @@ class CMobEnemy2D : public CEnemy2D
 
 		void SetID(int id);
 
+		//Recording stuff
+		void ResetRecording(void); //Resets the recording
+
+		//Replay
+		void ReplayRecording(void);
+
 	protected:
 		glm::vec2 oldVTransform;
 		glm::vec2 posToChase;
+		glm::vec2 spawnPoint;
 		float mSpd;
 
 		CSpriteAnimation* animatedSprites;
@@ -88,7 +95,9 @@ class CMobEnemy2D : public CEnemy2D
 		void OnIntervalTriggered(FSM);
 		void OnStateTimerTriggered(FSM);
 
-		void EnableAttack(void);
+		void EnableAttack(void); //To enable attack state, USE THIS FUNCTION AND DONT CHANGE MANUALLY AS INSIDE GOT SAVE AND LOAD
+		void EnableGoBack(void); //Going back state, when enemy lost player
+		void RandomisePassive(void); //Randomise passive state
 
 		std::vector<CPlayer2D*> ResetEntValues(void); //Resetting entity values during runtime ( CALL THIS DURING RUNTIME/ UPDATE ONLY)
 
@@ -106,8 +115,6 @@ class CMobEnemy2D : public CEnemy2D
 
 		int id;
 
-		//Recording purposes
-		bool recording;
 		//int nearestFrame;
 		std::pair<int, bool> nearestFrame;
 };

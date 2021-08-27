@@ -80,9 +80,6 @@ protected:
 	CPlayer2D* cPlayer2D;
 	std::vector<CPlayer2D*> clones;
 
-	// A vector containing the instance of CEnemy2Ds
-	vector<CEntity2D*> enemyVector;
-
 	// Keyboard Controller singleton instance
 	CKeyboardController* cKeyboardController;
 
@@ -109,28 +106,28 @@ protected:
 	// Destructor
 	virtual ~CScene2D(void);
 	
-	template <typename T>
-	void LoadEnemy();
+	//template <typename T>
+	//void LoadEnemy();
 };
 
-template<typename T>
-inline void CScene2D::LoadEnemy()
-{
-	while (true)
-	{
-		CEnemy2D* cEnemy2D = new T();
-		// Pass shader to cEnemy2D
-		cEnemy2D->SetShader("2DColorShader");
-		// Initialise the instance
-		if (cEnemy2D->Init() == true)
-		{
-			enemyVector.push_back(cEnemy2D);
-		}
-		else
-		{
-			// Break out of this loop if the enemy has all been loaded
-			break;
-		}
-	}
-}
+//template<typename T>
+//inline void CScene2D::LoadEnemy()
+//{
+//	while (true)
+//	{
+//		CEnemy2D* cEnemy2D = new T();
+//		// Pass shader to cEnemy2D
+//		cEnemy2D->SetShader("2DColorShader");
+//		// Initialise the instance
+//		if (cEnemy2D->Init() == true)
+//		{
+//			enemyVector.push_back(cEnemy2D);
+//		}
+//		else
+//		{
+//			// Break out of this loop if the enemy has all been loaded
+//			break;
+//		}
+//	}
+//}
 

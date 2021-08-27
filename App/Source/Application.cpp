@@ -186,7 +186,7 @@ bool Application::Init(void)
 	glm::vec2 screensize = CSettings::GetInstance()->GetScreenSize();
 	glm::vec2 windowposition = glm::vec2(screensize.x / 2 - cSettings->iWindowWidth / 2, screensize.y / 2 - cSettings->iWindowHeight / 2);
 	// Set OpenGL window position
-	glfwSetWindowPos(cSettings->pWindow, windowposition.x, windowposition.y);
+	glfwSetWindowPos(cSettings->pWindow, (int)windowposition.x, (int)windowposition.y);
 	//This function makes the context of the specified window current on the calling thread. 
 	glfwMakeContextCurrent(cSettings->pWindow);
 

@@ -35,7 +35,6 @@ CMobEnemy2D::CMobEnemy2D(void) {
 
 	id = 300;
 
-	recording = false;
 	nearestFrame = std::pair<int, bool>();
 	distCheck = 16;
 }
@@ -79,6 +78,7 @@ bool CMobEnemy2D::Init(void) {
 	vTransform = glm::i32vec2(uiCol, uiRow);
 	oldVTransform = vTransform;
 	posToChase = vTransform;
+	spawnPoint = vTransform;
 
 	roundIndex = 0;
 	pHealth = 5;
@@ -185,6 +185,11 @@ void CMobEnemy2D::RandomiseStateTimer(FSM state) {
 	}
 }
 
+void CMobEnemy2D::ReplayRecording(void) {
+	currFrame = 0;
+	LoadCurrData(currFrame);
+}
+
 void CMobEnemy2D::SaveCurrData(void) {
 	data dStore;
 	dStore.currDir = dir;
@@ -221,12 +226,12 @@ void CMobEnemy2D::Attacked(int hp, CPhysics2D* bounceObj) {
 		bounceObj->SetBoolKnockBacked(true);
 
 
-		float maxSpd = 5.f;
+		float maxSpd = maxKnockBack;
 		if (glm::length(cPhysics2D->GetVelocity()) > maxSpd)
 			cPhysics2D->SetVelocity(glm::normalize(cPhysics2D->GetVelocity()) * maxSpd);
 
 		if (glm::length(bounceObj->GetVelocity()) > maxSpd)
-			cPhysics2D->SetVelocity(glm::normalize(cPhysics2D->GetVelocity()) * maxSpd);
+			bounceObj->SetVelocity(glm::normalize(bounceObj->GetVelocity()) * maxSpd);
 	}
 }
 
@@ -262,7 +267,15 @@ void CMobEnemy2D::Update(const double dElapsedTime) {
 	UpdateHealthLives();
 
 	animatedSprites->Update(dElapsedTime);
+
 	currFrame++;
+}
+
+void CMobEnemy2D::ResetRecording(void) {
+	savedData.clear(); //Reset savedData
+
+	currFrame = 0;
+	SaveCurrData();
 }
 
 std::pair<int, bool> CMobEnemy2D::GetNearestDataKey(void) {
@@ -408,7 +421,15 @@ std::vector<CPlayer2D*> CMobEnemy2D::ResetEntValues(void) {
 	//Getting nearest frame
 	nearestFrame = GetNearestDataKey();
 
-	rayCast2D->SetEntityArr(cEntityManager->GetAllLivingEntities());
+	std::vector<CEntity2D*> allArr = cEntityManager->GetAllLivingEntities();
+	
+	std::vector<Obstacle2D*> obstacleArr = cEntityManager->GetallObstacles();
+	std::vector<CEntity2D*> convertedObstacleArr(obstacleArr.begin(), obstacleArr.end());
+
+	allArr.reserve(allArr.size() + convertedObstacleArr.size());
+	allArr.insert(allArr.end(), convertedObstacleArr.begin(), convertedObstacleArr.end());
+
+	rayCast2D->SetEntityArr(allArr);
 	std::vector<CPlayer2D*> playerArr = cEntityManager->GetAllPlayers();
 
 	if (currTarget && !std::count(playerArr.begin(), playerArr.end(), currTarget)) {
@@ -466,7 +487,7 @@ void CMobEnemy2D::UpdateSmart(float dElapsedTime) {
 			}
 			break;
 
-		case FSM::ATTACK:
+		case FSM::ATTACK: {
 			bool rayCast = false;
 			if (currTarget) {
 				rayCast2D->SetTarget(currTarget);
@@ -484,6 +505,18 @@ void CMobEnemy2D::UpdateSmart(float dElapsedTime) {
 						posToChase = playerArr[i]->vTransform;
 						break;
 					}
+				}
+			}
+
+			if (rayCast) { //DIRECTION CHECKING
+				float ang = rayCast2D->GetAngle();
+				if (dir == DIRECTION::LEFT) {
+					if (ang > 80 && ang < 280)
+						rayCast = false;
+				}
+				else {
+					if (ang < 100 || ang > 260)
+						rayCast = false;
 				}
 			}
 
@@ -505,13 +538,65 @@ void CMobEnemy2D::UpdateSmart(float dElapsedTime) {
 					stateTimer = Math::Max(0, stateTimer - 1);
 			}
 
-
-
 			if (intervalTimer == 0 && stateTimer == 0) {
 				//Change to go back
+				EnableGoBack();
 			}
 
 			break;
+		}
+
+		case FSM::RETURNBACK:
+			if (enemySee) {
+				EnableAttack();
+				break;
+			}
+
+			UpdateAttack(dElapsedTime);
+
+			if (stateTimer == 0) {
+				//Code to go back to passive
+				EnableGoBack();
+			}
+
+			break;
+	}
+}
+
+void CMobEnemy2D::RandomisePassive(void) {
+	int randomMax = (int)FSM::ATTACK - 1;
+	sCurrentFSM = FSM(randomMax);
+
+	RandomiseStateTimer();
+	RandomiseIntervalTimer();
+
+	if (nearestFrame.second && savedData[nearestFrame.first].currStatus < FSM::ATTACK) {
+		LoadCurrData(nearestFrame.first);
+	}
+	else {
+		stateTimer = maxStateTimer[(int)sCurrentFSM];
+		dir = RandomiseDir();
+
+		if (recording)
+			SaveCurrData();
+	}
+}
+
+void CMobEnemy2D::EnableGoBack(void) {
+	sCurrentFSM = FSM::RETURNBACK;
+	RandomiseIntervalTimer();
+	RandomiseStateTimer();
+
+	if (nearestFrame.second && savedData[nearestFrame.first].currStatus == FSM::RETURNBACK) {
+		stateTimer = savedData[nearestFrame.first].currTimer;
+		posToChase = spawnPoint;
+	}
+	else {
+		stateTimer = maxStateTimer[(int)FSM::RETURNBACK];
+		posToChase = spawnPoint;
+
+		if (recording)
+			SaveCurrData();
 	}
 }
 
@@ -573,12 +658,14 @@ void CMobEnemy2D::ChaseEnemyY(void) {
 	switch (dir) {
 	case DIRECTION::LEFT: {
 		tileCheck.x--;
-		CObject2D* obj = cMap2D->GetCObject((unsigned int)tileCheck.x, (unsigned int)tileCheck.y);
+		//CObject2D* obj = cMap2D->GetCObject((unsigned int)tileCheck.x, (unsigned int)tileCheck.y);
+		CObject2D* obj = GetObjectInTile((unsigned int)tileCheck.x, (unsigned int)tileCheck.y);
 
 		if (!obj) {
 			for (unsigned i = 0; i < tileCap - 1; i++) {
 				tileCheck.y--;
-				obj = cMap2D->GetCObject((unsigned int)tileCheck.x, (unsigned int)tileCheck.y);
+				//obj = cMap2D->GetCObject((unsigned int)tileCheck.x, (unsigned int)tileCheck.y);
+				obj = GetObjectInTile((unsigned int)tileCheck.x, (unsigned int)tileCheck.y);
 
 				if (obj)
 					break;
@@ -591,12 +678,12 @@ void CMobEnemy2D::ChaseEnemyY(void) {
 		}
 		else {
 			tileCheck.y++;
-			obj = cMap2D->GetCObject((unsigned int)tileCheck.x, (unsigned int)tileCheck.y);
+			obj = GetObjectInTile((unsigned int)tileCheck.x, (unsigned int)tileCheck.y);
 
 			if (obj && obj->GetCollider()->GetbEnabled()) {
 				for (unsigned i = 0; i <= tileCap; i++) {
 					tileCheck.y++;
-					obj = cMap2D->GetCObject((unsigned int)tileCheck.x, (unsigned int)tileCheck.y);
+					obj = GetObjectInTile((unsigned int)tileCheck.x, (unsigned int)tileCheck.y);
 
 					if (!obj) {
 						glm::vec2 vel = cPhysics2D->GetVelocity();
@@ -613,12 +700,12 @@ void CMobEnemy2D::ChaseEnemyY(void) {
 
 	case DIRECTION::RIGHT: {
 		tileCheck.x++;
-		CObject2D* obj = cMap2D->GetCObject((unsigned int)tileCheck.x, (unsigned int)tileCheck.y);
+		CObject2D* obj = GetObjectInTile((unsigned int)tileCheck.x, (unsigned int)tileCheck.y);
 
 		if (!obj) {
 			for (unsigned i = 0; i < tileCap; i++) {
 				tileCheck.y--;
-				obj = cMap2D->GetCObject((unsigned int)tileCheck.x, (unsigned int)tileCheck.y);
+				obj = GetObjectInTile((unsigned int)tileCheck.x, (unsigned int)tileCheck.y);
 
 				if (!obj && i == tileCap - 1)
 					vTransform = glm::vec2(round(vTransform.x), round(vTransform.y));
@@ -628,12 +715,12 @@ void CMobEnemy2D::ChaseEnemyY(void) {
 		}
 		else {
 			tileCheck.y++;
-			obj = cMap2D->GetCObject((unsigned int)tileCheck.x, (unsigned int)tileCheck.y);
+			obj = GetObjectInTile((unsigned int)tileCheck.x, (unsigned int)tileCheck.y);
 
 			if (obj && obj->GetCollider()->GetbEnabled()) {
 				for (unsigned i = 0; i < tileCap; i++) {
 					tileCheck.y++;
-					obj = cMap2D->GetCObject((unsigned int)tileCheck.x, (unsigned int)tileCheck.y);
+					obj = GetObjectInTile((unsigned int)tileCheck.x, (unsigned int)tileCheck.y);
 
 					if (!obj) {
 						glm::vec2 vel = cPhysics2D->GetVelocity();
@@ -816,6 +903,7 @@ void CMobEnemy2D::CollisionUpdate(void) {
 		Collision data = (collider2D->CollideWith(playerCollider));
 
 		if (std::get<0>(data)) {
+			Collision datatemp = (collider2D->CollideWith(playerCollider));
 			arrPlayer[i]->Attacked(1,cPhysics2D);
 
 			return;
