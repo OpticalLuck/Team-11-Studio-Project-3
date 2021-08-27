@@ -101,17 +101,6 @@ bool RayCast2D::RayCheck(float dist, float angCheck) {
 		return cast;
 	else
 		return false;
-
-	//float currDist = glm::length(currentPoint - originPoint);
-	//if (currDist <= dist) { //If within dist, do raychecking
-	//	if (angCheck > 0)
-	//		return RayCheck(angCheck);
-	//	else
-	//		return RayCheck();
-	//}
-	//else { //If not then screw it la bodoh
-	//	return false;
-	//}
 }
 
 bool RayCast2D::RayCheck(void) {
