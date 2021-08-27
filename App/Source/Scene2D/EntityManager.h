@@ -94,6 +94,7 @@ protected:
 
 	//Recorded value
 	std::vector<Projectiles*> m_PrevBulletList;
+	std::vector<glm::vec2> m_SavedObstaclePosList;
 
 	int currRound; //Current round in game. First is 0 and last is 4 (Will be storing enemies prev attacks etc using this)
 

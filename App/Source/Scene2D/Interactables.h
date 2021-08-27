@@ -1,4 +1,4 @@
-#pragma once
+ #pragma once
 
 // Include AnimatedSprites
 #include "Primitives/SpriteAnimation.h"
