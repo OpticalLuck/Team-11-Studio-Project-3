@@ -80,6 +80,17 @@ enum OBJECT_TYPE
 	TILE_RIGHT_GRASS				 = 106,
 	TILE_TOP_RIGHT_GROUND			 = 107,
 	TILE_DARK						 = 108,
+	TILE_FUTURE_1					 = 109,
+	TILE_FUTURE_2						  ,
+	TILE_FUTURE_3						  ,
+	TILE_FUTURE_4						  ,
+	TILE_FUTURE_5						  ,
+	TILE_FUTURE_6						  ,
+	TILE_FUTURE_7						  ,
+	TILE_FUTURE_8						  ,
+	TILE_FUTURE_FENCE_1					  ,
+	TILE_FUTURE_FENCE_2					  ,
+	TILE_FUTURE_FENCE_3					  ,
 	TILE_TOTAL						 = 149,
 									 
 	// MOVING TILES 150 - 200		 

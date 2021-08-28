@@ -11,6 +11,7 @@
 #include "../Scene2D/Object2D.h"
 #include "System/Debug.h"
 #include <iostream>
+#include <sstream>
 
 CTextureManager::CTextureManager()
 {
@@ -253,6 +254,29 @@ bool CTextureManager::Init(void)
     {
         DEBUG_MSG("Failed to load bomb texture");
         return false;
+    }
+
+    for (int i = 1; i <= 8; i++)
+    {
+        stringstream lazy;
+        lazy.str("");
+        lazy << "Image/Futuristic/Tile (" << i << ").png";
+        if (LoadTexture(lazy.str().c_str(), TILE_FUTURE_1 + i - 1) == false)
+        {
+            DEBUG_MSG("Failed to load " << lazy.str());
+            return false;
+        }
+    }
+    for (int i = 1; i <= 3; i++)
+    {
+        stringstream lazy;
+        lazy.str("");
+        lazy << "Image/Futuristic/Fence (" << i << ").png";
+        if (LoadTexture(lazy.str().c_str(), TILE_FUTURE_FENCE_1 + i - 1) == false)
+        {
+            DEBUG_MSG("Failed to load " << lazy.str());
+            return false;
+        }
     }
 
 	return true;
