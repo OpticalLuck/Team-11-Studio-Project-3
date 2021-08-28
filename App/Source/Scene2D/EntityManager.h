@@ -62,6 +62,8 @@ public:
 	std::vector<CEntity2D*> GetAllSolidEntities(void);
 	std::vector<Projectiles*> GetAllBullets(void);
 
+	std::vector<Interactables*> GetInteractablesbyID(int id);
+
 	void Clear(void);
 
 	//For recording purposes
