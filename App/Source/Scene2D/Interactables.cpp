@@ -57,6 +57,7 @@ bool Interactables::Init()
 
 	collider2D->Init(vTransform);
 
+	cEntityManager = CEntityManager::GetInstance();
 	interactableType = static_cast<INTERACTABLE_TYPE>(iTextureID);
 	if (interactableType < DOOR)
 	{
@@ -179,7 +180,7 @@ void Interactables::Update(const double dElapsedTime)
 			if (distance < 0.3)
 			{
 				bInteraction = true;
-				em->GetPlayer()->m_CheckpointState.m_CheckpointHP = em->GetPlayer()->GetHealth();
+				em->GetPlayer()->m_CheckpointState.m_CheckpointHP = em->GetPlayer()->GetMaxHealth();
 				em->GetPlayer()->m_CheckpointState.m_CheckpointInventoryState = new CInventory(*em->GetPlayer()->GetInventory());
 				em->GetPlayer()->m_CheckpointState.m_CheckpointPosition = em->GetPlayer()->vTransform;
 				CSoundController::GetInstance()->PlaySoundByID(SOUND_ID::SOUND_SWITCH);
@@ -299,9 +300,17 @@ void Interactables::SetInteractableID(int id)
 	iInteractableID = id;
 }
 
+int Interactables::GetInteractableID(void) {
+	return iInteractableID;
+}
+
 bool Interactables::GetInteracted()
 {
 	return bInteraction;
+}
+
+void Interactables::SetInteracted(bool interacted) {
+	bInteraction = interacted;
 }
 
 /**
@@ -346,6 +355,22 @@ bool Interactables::LoadTexture(const char* filename, GLuint& iTextureID)
 	return true;
 }
 
+void Interactables::UpdateSound(void) {
+	switch (interactableType) {
+	case DOOR:
+		if (bPreviousFrameInteraction != bInteraction)
+		{
+			if (!bInteraction)
+				CSoundController::GetInstance()->PlaySoundByID(SOUND_ID::SOUND_DOOR_OPEN);
+			else
+				CSoundController::GetInstance()->PlaySoundByID(SOUND_ID::SOUND_DOOR_CLOSE);
+		}
+		break;
+	default:
+		break;
+	}
+}
+
 bool Interactables::Activate(bool interaction, CPlayer2D* player)
 {
 	switch (interactableType) {
@@ -383,40 +408,51 @@ bool Interactables::Activate(bool interaction, CPlayer2D* player)
 			else
 				CSoundController::GetInstance()->PlaySoundByID(SOUND_ID::SOUND_DOOR_CLOSE);
 		}
+		break;
 	default:
 		this->bInteraction = interaction;
 		break;
 	}
 
-	// Change Texture
-	// On and Off Textures are an index apart in the texture manager
-	/*switch (bInteraction) {
-	case true:
-		this->iTextureID = this->interactableType + 1;
-		break;
-	case false:
-		this->iTextureID = this->interactableType;
-		break;
-	}*/
 	// Loop through the interactables to activate the corresponding Interactable IDs
 	if (this->interactableType < DOOR)
 	{
 		CEntityManager* entManager = CEntityManager::GetInstance();
-		for (auto& e : entManager->GetAllInteractables())
-		{
-			if (e->interactableType >= DOOR)
-			{
-				if (this->iInteractableID == e->iInteractableID)
-				{
+		std::vector<Interactables*> intArr = entManager->GetInteractablesbyID(iInteractableID);
+
+		bool activated = false;
+		for (auto& e : intArr) {
+			if (e->interactableType < DOOR && e->bInteraction && e != this) {
+				activated = true;
+				break;
+			}
+		}
+
+		for (auto& e : intArr) {
+			if (e->interactableType >= DOOR) {
+				if (interactableType == LEVER) {
 					e->Activate(this->bInteraction);
 					e->collider2D->SetbEnabled(!this->bInteraction);
-					return true;
+				}
+				else if (interactableType == PRESSURE_PLATE) {
+					if (activated || interaction) {
+						e->Activate(true);
+						e->collider2D->SetbEnabled(false);
+					}
+					else {
+						e->Activate(false);
+						e->collider2D->SetbEnabled(true);
+					}
 				}
 			}
 		}
 	}
 
 	return true;
+}
+
+int Interactables::GetInteractableType(void) {
+	return interactableType;
 }
 
 bool Interactables::OpenChest(CPlayer2D* player, std::string itemName, int itemCount)

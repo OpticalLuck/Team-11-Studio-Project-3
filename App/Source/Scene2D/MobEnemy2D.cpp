@@ -33,6 +33,7 @@ CMobEnemy2D::CMobEnemy2D(void) {
 	maxStateTimer[2] = 0;
 	maxStateTimer[3] = 0;
 
+	BoulderCollide = false;
 	id = 300;
 
 	nearestFrame = std::pair<int, bool>();
@@ -253,6 +254,9 @@ void CMobEnemy2D::Update(const double dElapsedTime) {
 
 		return;
 	}
+
+	//Reset
+	BoulderCollide = false;
 
 	// Store the old position
 	oldVTransform = vTransform;
@@ -649,7 +653,7 @@ void CMobEnemy2D::UpdateAttack(const float dElapsedTime) {
 	collider2D->position = vTransform;
 	CollisionUpdate();
 
-	if (vTransform == oldVTransform) {
+	if (vTransform == oldVTransform || (BoulderCollide && cPhysics2D->GetboolGrounded())) {
 		stateTimer = Math::Max(0, stateTimer - 1);
 	}
 }
@@ -798,7 +802,7 @@ void CMobEnemy2D::UpdateDumb(float dElapsedTime) {
 	collider2D->position = vTransform;
 	CollisionUpdate();
 
-	if (vTransform == oldVTransform && cPhysics2D->GetboolKnockedBacked() == false) {
+	if ((vTransform == oldVTransform || BoulderCollide) && cPhysics2D->GetboolKnockedBacked() == false) {
 		if (dir == DIRECTION::LEFT)
 			dir = DIRECTION::RIGHT;
 		else
@@ -913,7 +917,6 @@ void CMobEnemy2D::CollisionUpdate(void) {
 		}
 	}
 
-
 	//Player collision
 	std::vector<CPlayer2D*> arrPlayer = cEntityManager->GetAllPlayers();
 
@@ -926,6 +929,24 @@ void CMobEnemy2D::CollisionUpdate(void) {
 			arrPlayer[i]->Attacked(1,cPhysics2D);
 
 			return;
+		}
+	}
+
+	//Obstacle collision
+	std::vector<Obstacle2D*> arrObstacle = cEntityManager->GetallObstacles();
+
+	for (unsigned i = 0; i < arrObstacle.size(); ++i) {
+		float dist = glm::length(arrObstacle[i]->vTransform - vTransform);
+		if (dist > 2)
+			continue;
+
+		Collision data = collider2D->CollideWith(arrObstacle[i]->GetCollider());
+
+		if (std::get<0>(data)) {
+			BoulderCollide = true;
+
+			if (std::get<1>(data) == Direction::DOWN)
+				pHealth = 0;
 		}
 	}
 }

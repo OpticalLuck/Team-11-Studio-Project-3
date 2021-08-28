@@ -26,8 +26,9 @@ CScene2D::CScene2D(void)
 	, cameraHandler(NULL)
 	, cInventoryM(NULL)
 	, transform(glm::mat4(1))
-	, dParadoxiumTimer(15.f)
 {
+	dParadoxiumTimer = maxdParadoxiumTimer;
+
 }
 
 /**
@@ -355,6 +356,11 @@ void CScene2D::PostRender(void)
 double CScene2D::GetParadoxiumTimer()
 {
 	return dParadoxiumTimer;
+}
+
+double CScene2D::GetMaxParadoxiumTimer()
+{
+	return maxdParadoxiumTimer;
 }
 
 
