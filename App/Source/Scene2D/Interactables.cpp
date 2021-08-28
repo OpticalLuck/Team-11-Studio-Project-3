@@ -13,6 +13,7 @@
 
 Interactables::Interactables(int iTextureID)
 	: bInteraction(false)
+	, bPreviousFrameInteraction(false)
 	, bCloneInteract(false)
 	, quad(NULL)
 	, iInteractableID(0)
@@ -81,10 +82,11 @@ bool Interactables::Init()
 void Interactables::Update(const double dElapsedTime)
 {
 	bool bCollided = false;
+	bPreviousFrameInteraction = bInteraction;
 
 	CEntityManager* em = CEntityManager::GetInstance();
 
-	if (this->interactableType < PRESSURE_PLATE)
+	if (this->interactableType == LEVER)
 	{
 		for (auto& e : em->GetAllPlayers())
 		{
@@ -154,7 +156,8 @@ void Interactables::Update(const double dElapsedTime)
 		if (distance < 0.3)
 		{
 			CMap2D::GetInstance()->SetCurrentLevel(CMap2D::GetInstance()->GetCurrentLevel() + 1);
-			if (CMap2D::GetInstance()->LoadMap("Maps/Level_2.csv", 1) == false)
+			std::string nextLevelPath = "Maps/Level_" + std::to_string(CMap2D::GetInstance()->GetCurrentLevel()) + ".csv";
+			if (CMap2D::GetInstance()->LoadMap(nextLevelPath, 1) == false)
 			{
 				DEBUG_MSG("Map Loading failed");
 				return;
@@ -180,6 +183,7 @@ void Interactables::Update(const double dElapsedTime)
 				em->GetPlayer()->m_CheckpointState.m_CheckpointHP = em->GetPlayer()->GetMaxHealth();
 				em->GetPlayer()->m_CheckpointState.m_CheckpointInventoryState = new CInventory(*em->GetPlayer()->GetInventory());
 				em->GetPlayer()->m_CheckpointState.m_CheckpointPosition = em->GetPlayer()->vTransform;
+				CSoundController::GetInstance()->PlaySoundByID(SOUND_ID::SOUND_SWITCH);
 			}
 		}
 
@@ -198,6 +202,18 @@ void Interactables::Update(const double dElapsedTime)
 				Activate(true, e);
 			}
 		}
+	}
+	else if (this->interactableType == LIVES)
+	{
+	for (auto& e : em->GetAllPlayers())
+	{
+		float distance = glm::length(e->vTransform - this->vTransform);
+		if (distance < 0.3)
+		{
+			if (e->iLives < e->iMaxLives)
+				++e->iLives;
+		}
+	}
 	}
 
 	if (!em->GetPlayer()->GetRecording())
@@ -343,21 +359,39 @@ bool Interactables::Activate(bool interaction, CPlayer2D* player)
 {
 	switch (interactableType) {
 	case LEVER:
+		CSoundController::GetInstance()->PlaySoundByID(SOUND_ID::SOUND_SWITCH);
 		ActivateSwitch(player);
 		break;
 	case PRESSURE_PLATE:
 		ActivatePressurePlate(interaction);
 		break;
 	case COMMON_CHEST:
+		if (!bInteraction)
+			CSoundController::GetInstance()->PlaySoundByID(SOUND_ID::SOUND_CHEST);
+
+		OpenChest(player, "Bomb", 5);
 		OpenChest(player, "Shuriken", 5);
-		OpenChest(player, "Kunai", 5);
+		OpenChest(player, "Potion", 2);
 		this->bInteraction = interaction;
 		break;
 	case RARE_CHEST:
+		if (!bInteraction)
+			CSoundController::GetInstance()->PlaySoundByID(SOUND_ID::SOUND_CHEST);
+
+		OpenChest(player, "Bomb", 10);
 		OpenChest(player, "Shuriken", 10);
-		OpenChest(player, "Kunai", 10);
+		OpenChest(player, "Potion", 3);
 		this->bInteraction = interaction;
 		break;
+	case DOOR:
+		this->bInteraction = interaction;
+		if (bPreviousFrameInteraction != bInteraction)
+		{
+			if (!bInteraction)
+				CSoundController::GetInstance()->PlaySoundByID(SOUND_ID::SOUND_DOOR_OPEN);
+			else
+				CSoundController::GetInstance()->PlaySoundByID(SOUND_ID::SOUND_DOOR_CLOSE);
+		}
 	default:
 		this->bInteraction = interaction;
 		break;

@@ -26,8 +26,9 @@ CScene2D::CScene2D(void)
 	, cameraHandler(NULL)
 	, cInventoryM(NULL)
 	, transform(glm::mat4(1))
-	, dParadoxiumTimer(10.f)
 {
+	dParadoxiumTimer = maxdParadoxiumTimer;
+
 }
 
 /**
@@ -37,7 +38,7 @@ CScene2D::~CScene2D(void)
 {
 	if (cSoundController)
 	{
-		cSoundController->StopSoundByID(BGM_LEVEL1);
+		cSoundController->StopPlayBack();
 		// We won't delete this since it was created elsewhere
 		cSoundController = NULL;
 	}
@@ -111,7 +112,7 @@ void CScene2D::StopParadoxiumAbility()
 	//Loading prev values of movable entities
 	cEntityManager->LoadPrevious();
 
-	dParadoxiumTimer = 10.f;
+	dParadoxiumTimer = 15.f;
 }
 
 /**
@@ -177,7 +178,8 @@ bool CScene2D::Init(std::string levelPath)
 
 	//cInventoryManager = CInventoryManager::GetInstance();
 	cInventoryM = CInventoryManager::GetInstance();
-		
+	cSoundController->PlaySoundByID(SOUND_ID::BGM_LEVEL1);
+
 	return true;
 }
 
@@ -192,13 +194,13 @@ bool CScene2D::Update(const double dElapsedTime)
 	// Call the Map2D's update method
 	cMap2D->Update(dElapsedTime);
 
-	if (CMouseController::GetInstance()->GetMouseScrollStatus(CMouseController::SCROLL_TYPE_YOFFSET) > 0)
+	if (CKeyboardController::GetInstance()->IsKeyDown(GLFW_KEY_UP))
 	{
-		Camera2D::GetInstance()->UpdateZoom(Camera2D::GetInstance()->getTargetZoom() + 0.1f);
+		Camera2D::GetInstance()->UpdateZoom(Camera2D::GetInstance()->getTargetZoom() + dElapsedTime);
 	}
-	if (CMouseController::GetInstance()->GetMouseScrollStatus(CMouseController::SCROLL_TYPE_YOFFSET) < 0)
+	if (CKeyboardController::GetInstance()->IsKeyDown(GLFW_KEY_DOWN))
 	{
-		Camera2D::GetInstance()->UpdateZoom(Camera2D::GetInstance()->getTargetZoom() - 0.1f);
+		Camera2D::GetInstance()->UpdateZoom(Camera2D::GetInstance()->getTargetZoom() - dElapsedTime);
 	}
 
 	if (fCooldown > 0)
@@ -288,17 +290,19 @@ bool CScene2D::Update(const double dElapsedTime)
 	}
 	if (cPlayer2D->GetHealth() < 3) // change bgm if the health is dying 
 	{
-		if (!cSoundController->isCurrentlyPlaying(cSoundController->GetNamebyID(SOUND_ID::BGM_TROUBLE)))
+		if (cSoundController->isCurrentlyPlaying(cSoundController->GetNamebyID(SOUND_ID::BGM_LEVEL1)))
 		{
-			cSoundController->StopPlayBack();
+			cSoundController->StopSoundByID(SOUND_ID::BGM_LEVEL1);
 			cSoundController->PlaySoundByID(SOUND_ID::BGM_TROUBLE);
 		}
 	}
 	else
 	{
 		if (cSoundController->isCurrentlyPlaying(cSoundController->GetNamebyID(SOUND_ID::BGM_TROUBLE)))
-			cSoundController->StopPlayBack();
-		cSoundController->PlaySoundByID(SOUND_ID::BGM_LEVEL1);
+		{
+			cSoundController->StopSoundByID(SOUND_ID::BGM_TROUBLE);
+			cSoundController->PlaySoundByID(SOUND_ID::BGM_LEVEL1);
+		}
 	}
 	return true;
 }
@@ -352,6 +356,11 @@ void CScene2D::PostRender(void)
 double CScene2D::GetParadoxiumTimer()
 {
 	return dParadoxiumTimer;
+}
+
+double CScene2D::GetMaxParadoxiumTimer()
+{
+	return maxdParadoxiumTimer;
 }
 
 

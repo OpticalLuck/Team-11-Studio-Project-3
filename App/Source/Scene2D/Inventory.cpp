@@ -55,31 +55,26 @@ void CInventory::Update(double dElapsedTime, int iTempFrameCounter, std::vector<
 	{
 		fCooldown -= (float)dElapsedTime;
 	}
-	if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::ARROW_RIGHT].bKeyPressed && fCooldown <= 0)
+	if (m_MouseInputs[iTempFrameCounter][MOUSE_INPUTS::SCROLL].dScrollOffset > 0 && fCooldown <= 0)
 	{
 		cInventoryManager->NavigateIndex("RIGHT");
 		std::cout << "index is : " << iCurrentIndex << std::endl;
 		fCooldown = .5f;
 	}
-	if (m_KeyboardInputs[iTempFrameCounter][KEYBOARD_INPUTS::ARROW_LEFT].bKeyPressed && fCooldown <= 0)
+	if (m_MouseInputs[iTempFrameCounter][MOUSE_INPUTS::SCROLL].dScrollOffset < 0 && fCooldown <= 0)
 	{
 		cInventoryManager->NavigateIndex("LEFT");
 		std::cout << "index is : " << iCurrentIndex << std::endl;
 		fCooldown = .5f;
 	}
-
-	//if (cKeyboardController->IsKeyPressed(GLFW_KEY_G))
-	//{
-	//	//cInventoryM->AddItem("Shuriken", ITEM_SHURIKEN);
-	//}
 }
 
 void CInventory::Init()
 {
 	//m_Items.insert(pair<int, CItem>(0,CItem(2)));
 
-	SetItem(0, "Shuriken", PROJECTILES_SHURIKEN, 0, 100, 10);
-	SetItem(1, "Kunai", BULLETS_KUNAI, 0, 100, 10);
+	SetItem(0, "Bomb", PROJECTILES_BOMB, 0, 100, 10);
+	SetItem(1, "Shuriken", BULLETS_SHURIKEN, 0, 100, 10);
 	SetItem(2, "Potion", CONSUMABLES_POTION, 0, 100, 2);
 }
 

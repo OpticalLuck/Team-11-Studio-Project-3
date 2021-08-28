@@ -76,7 +76,10 @@ public:
 	CheckpointState m_CheckpointState;
 	FrameStorage m_FrameStorage;
 
+	int iLives;
+	const int iMaxLives = 3;
 	bool bJustTeleported;
+
 	enum class STATE
 	{
 		S_IDLE = 0,
@@ -96,6 +99,7 @@ public:
 	{
 		A_JUMP = 0,
 		A_ATTACK,
+		A_DEATH,
 		A_TOTAL,
 	};
 
@@ -209,9 +213,6 @@ protected:
 
 	// Handler to the CSoundController
 	CSoundController* cSoundController;
-
-	// Facing direction for rendering and ease of animation
-	STATE state;
 
 	// Load a texture
 	bool LoadTexture(const char* filename, GLuint& iTextureID);

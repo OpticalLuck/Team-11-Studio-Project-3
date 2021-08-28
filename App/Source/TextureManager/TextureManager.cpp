@@ -74,7 +74,7 @@ bool CTextureManager::Init(void)
         return false;
     }
 
-    if (LoadTexture("Image/Collectibles/shuriken.png", PROJECTILES_SHURIKEN) == false)
+    if (LoadTexture("Image/items/shuriken.png", BULLETS_SHURIKEN) == false)
     {
         DEBUG_MSG("Failed to load shuriken tile texture");
         return false;
@@ -89,13 +89,13 @@ bool CTextureManager::Init(void)
         DEBUG_MSG("Failed to load grappling hook tile texture");
         return false;
     }
-    if (LoadTexture("Image/Collectibles/kunai.png", BULLETS_KUNAI) == false)
+    if (LoadTexture("Image/items/kunai.png", BULLETS_KUNAI) == false)
     {
         DEBUG_MSG("Failed to load kunai tile texture");
         return false;
     }
 
-    if (LoadTexture("Image/Collectibles/Scene2D_Lives.tga", UI_LIVES) == false)
+    if (LoadTexture("Image/items/Scene2D_Lives.tga", UI_LIVES) == false)
     {
         DEBUG_MSG("Failed to load Scene2D_Lives tile texture");
         return false;
@@ -201,6 +201,12 @@ bool CTextureManager::Init(void)
         return false;
     }
 
+    if (LoadTexture("Image/Lives.png", INTERACTABLE_LIVES) == false) 
+    {
+        DEBUG_MSG("Failed to lives texture");
+        return false;
+    }
+
     if (LoadTexture("Image/Enemy/MushroomPreview.png", ENEMY_1) == false)
     {
         DEBUG_MSG("Failed to load Mushroom tile texture");
@@ -231,13 +237,21 @@ bool CTextureManager::Init(void)
         return false;
     }
 
-    if (LoadTexture("Image/Scene2D_EnemyTile.tga", BOSS) == false) {
+    if (LoadTexture("Image/Scene2D_EnemyTile.tga", BOSS) == false) 
+    {
         DEBUG_MSG("Failed to load boss tile texture");
         return false;
     }
 
-    if (LoadTexture("Image/Objects/Bullet.tga", BULLETS_ENEMY) == false) {
-        DEBUG_MSG("Failed to load bullet texture");
+    if (LoadTexture("Image/Objects/Bullet.tga", BULLETS_ENEMY) == false) 
+    {
+        DEBUG_MSG("Failed to load enemy bullet texture");
+        return false;
+    }
+
+    if (LoadTexture("Image/items/bomb.png", PROJECTILES_BOMB) == false) 
+    {
+        DEBUG_MSG("Failed to load bomb texture");
         return false;
     }
 

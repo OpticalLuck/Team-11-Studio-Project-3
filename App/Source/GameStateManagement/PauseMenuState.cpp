@@ -102,8 +102,8 @@ bool PauseMenuState::UpdateMenu(ImGuiWindowFlags window_flags)
 	option_window |= ImGuiWindowFlags_NoCollapse;
 	option_window |= ImGuiWindowFlags_NoNav;
 
-	float buttonWidth = 256;
-	float buttonHeight = 128;
+	float buttonWidth = CSettings::GetInstance()->GetWindowSize().x / 5.2;
+	float buttonHeight = CSettings::GetInstance()->GetWindowSize().x / (2 * 5.2);
 	// 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
 	{
 		static float f = 0.0f;
@@ -172,7 +172,7 @@ void PauseMenuState::UpdateOption(ImGuiWindowFlags window_flags)
 
 	//Resolution
 	static int screenRes = (int)CSettings::GetInstance()->screenSize;
-	const char* resNames[(int)CSettings::SCREENSIZE::SSIZE_TOTAL] = { "800 x 600", "1024 x 768", "1400 x 1050", "1600 x 1200", "1600 x 900" };
+	const char* resNames[(int)CSettings::SCREENSIZE::SSIZE_TOTAL] = { "800 x 600", "1024 x 768", "1400 x 1050"};
 	const char* currName = (screenRes >= 0 && screenRes < (int)CSettings::SCREENSIZE::SSIZE_TOTAL) ? resNames[screenRes] : "Unknown";
 	if (ImGui::SliderInt("Screen Resolution", &screenRes, 0, (int)CSettings::SCREENSIZE::SSIZE_TOTAL - 1, currName, ImGuiSliderFlags_NoInput))
 	{

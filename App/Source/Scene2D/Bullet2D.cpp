@@ -132,7 +132,7 @@ void Bullet2D::Render()
 
 	glm::vec2 objCamPos = vTransform - cameraPos + offset;
 
-	glm::vec2 actualPos = cSettings->ConvertIndexToUVSpace(objCamPos);
+	glm::vec2 actualPos = cSettings->ConvertIndexToUVSpace(objCamPos) * Camera2D::GetInstance()->getZoom();
 
 	float clampOffset = cSettings->ConvertIndexToUVSpace(CSettings::AXIS::x, 1, false) / 2;
 

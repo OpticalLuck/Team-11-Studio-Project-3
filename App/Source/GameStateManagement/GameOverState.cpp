@@ -175,6 +175,7 @@ bool GameOverState::ImGuiRender()
 	window_flags |= ImGuiWindowFlags_NoMove;
 	window_flags |= ImGuiWindowFlags_NoCollapse;
 	window_flags |= ImGuiWindowFlags_NoNav;
+	window_flags |= ImGuiWindowFlags_NoResize;
 
 	float buttonWidth = 256;
 	float buttonHeight = 128;
@@ -204,7 +205,7 @@ bool GameOverState::ImGuiRender()
 		ImGui::SetWindowSize(ImVec2(1200.0f * relativeScale_x, 200.0f * relativeScale_y));
 		ImGui::SetWindowPos(ImVec2(cSettings->iWindowWidth * 0.17f, cSettings->iWindowHeight * 0.4f));
 		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.f, .0f, 0.0f, .0f + fFadeCount2));
-		ImGui::Text("Press SpaceBar to retry");
+		ImGui::Text("Press Spacebar to retry");
 		ImGui::SetWindowFontScale(2 * (relativeScale_x + relativeScale_y));
 		ImGui::PopStyleColor();
 		//ImGui::Image((void*)(intptr_t)gameOverImage.textureID, ImVec2(buttonWidth, buttonWidth));

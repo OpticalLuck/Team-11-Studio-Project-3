@@ -40,6 +40,7 @@ CPlayGameState::CPlayGameState(void)
 	, cCamera(NULL)
 	, cSoundController(NULL)
 	, displayHP(0.f)
+	, displayTimer(0.f)
 	, cFPSCounter(NULL)
 	, cMap2D(NULL)
 	, iTimer2(0)
@@ -149,9 +150,23 @@ bool CPlayGameState::Update(const double dElapsedTime)
 	}
 	if (cPlayer->GetHealth() <= 0)
 	{
-		CGameStateManager::GetInstance()->SetActiveGameState("GameOverState");
-		CSoundController::GetInstance()->StopPlayBack();
-		return true;
+		if (cPlayer->iLives <= 1)
+		{
+			CGameStateManager::GetInstance()->SetActiveGameState("GameOverState");
+			CSoundController::GetInstance()->StopPlayBack();
+			return true;
+		}
+		else
+		{
+			for (int i = 0; i < cPlayer->GetInventory()->GetNumofUniqueItems(); ++i)
+				cPlayer->GetInventory()->GetItem(i).iCount = cPlayer->m_CheckpointState.m_CheckpointInventoryState->GetItem(i).iCount;
+			
+			cPlayer->vTransform = cPlayer->m_CheckpointState.m_CheckpointPosition;
+			cPlayer->SetHealth(cPlayer->m_CheckpointState.m_CheckpointHP);
+			--cPlayer->iLives;
+
+			return true;
+		}
 	}
 	
 
@@ -243,6 +258,7 @@ bool CPlayGameState::ImGuiRender()
 		UI_window |= ImGuiWindowFlags_NoCollapse;
 		UI_window |= ImGuiWindowFlags_NoNav;
 		UI_window |= ImGuiWindowFlags_NoMouseInputs;
+		UI_window |= ImGuiWindowFlags_NoResize;
 
 		// Calculate the relative scale to our default windows width
 		float relativeScale_x = cSettings->iWindowWidth / 800.0f;
@@ -260,6 +276,29 @@ bool CPlayGameState::ImGuiRender()
 
 		fInterval++;
 		iSeconds = int(fInterval / 110.f);
+
+		//FPS 
+		{
+			//render a window
+			ImGui::Begin("FPS", NULL, UI_window);
+			ImGui::TextColored(ImVec4(1, 1, 0, 1), "FPS: %d", cFPSCounter->GetFrameRate());
+			ImGui::SetWindowPos(ImVec2(0, 0));
+			ImGui::End();
+		}
+
+		ImGui::SetNextWindowPos(ImVec2(0, cSettings->iWindowHeight - 100.0f * relativeScale_y));
+		ImGui::SetNextWindowSize(ImVec2(100 * relativeScale_y, 30 * relativeScale_y));
+		ImGui::Begin("LivesWindow", NULL, UI_window);
+		ImGui::Image((void*)(intptr_t)cTextureManager->MapOfTextureIDs.at(OBJECT_TYPE::INTERACTABLE_LIVES),
+			ImVec2(25 * relativeScale_x, 25 * relativeScale_y),
+			ImVec2(0, 1), ImVec2(1, 0));
+		ImGui::SameLine();
+		std::stringstream ss;
+		ss.str("");
+		ss << cPlayer->iLives << " / " << cPlayer->iMaxLives;
+		ImGui::SetWindowFontScale(1.f * relativeScale_y);
+		ImGui::TextColored(ImVec4(1, 1, 0, 1), ss.str().c_str());
+		ImGui::End();
 
 		ImGui::SetNextWindowFocus();
 		//UI bar
@@ -392,7 +431,8 @@ bool CPlayGameState::ImGuiRender()
 			ImGui::Text("Energy: ");
 			ImGui::SameLine();
 			ImGui::SetWindowFontScale(.9f * relativeScale_y);
-			ImGui::ProgressBar(displayTimer / (double)10.0, ImVec2(cSettings->iWindowWidth * 0.4f, cSettings->iWindowHeight * 0.03f));
+			ImGui::ProgressBar(displayTimer / (double)cScene2D->GetMaxParadoxiumTimer(), ImVec2(cSettings->iWindowWidth * 0.4f, cSettings->iWindowHeight * 0.03f));
+
 			ImGui::PopStyleColor();
 			ImGui::PopStyleColor();
 			ImGui::End();

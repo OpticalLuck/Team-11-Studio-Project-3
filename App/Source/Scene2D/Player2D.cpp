@@ -52,6 +52,7 @@ CPlayer2D::CPlayer2D(void)
 	, bJustTeleported(false)
 	, bIsRecording(false)
 	, iCloneIndex(0)
+	, iLives(3)
 {
 	transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
 
@@ -153,7 +154,7 @@ bool CPlayer2D::Init(void)
 		return false;
 	}
 	
-	state = STATE::S_IDLE;
+	m_playerState = STATE::S_IDLE;
 	facing = FACING_DIR::RIGHT;
 	//CS: Create the animated sprite and setup the animation 
 	animatedSprites = CMeshBuilder::GenerateSpriteAnimation(10, 6, cSettings->TILE_WIDTH, cSettings->TILE_HEIGHT);
@@ -200,6 +201,10 @@ bool CPlayer2D::Init(void)
 	CInventoryManager::GetInstance()->Add("Player", this);
 	cInventory = CInventoryManager::GetInstance()->Get("Player");
 
+	m_CheckpointState.m_CheckpointHP = GetHealth();
+	m_CheckpointState.m_CheckpointInventoryState = new CInventory(*GetInventory());
+	m_CheckpointState.m_CheckpointPosition = vTransform;
+
 	return true;
 }
 
@@ -236,7 +241,7 @@ bool CPlayer2D::Init(glm::i32vec2 spawnpoint, int iCloneIndex)
 		return false;
 	}
 
-	state = STATE::S_IDLE;
+	m_playerState = STATE::S_IDLE;
 	facing = FACING_DIR::RIGHT;
 	//CS: Create the animated sprite and setup the animation 
 	animatedSprites = CMeshBuilder::GenerateSpriteAnimation(10, 6, cSettings->TILE_WIDTH, cSettings->TILE_HEIGHT);
@@ -373,9 +378,7 @@ void CPlayer2D::Update(const double dElapsedTime)
 				timerVal.second = 0;
 		}
 	}
-
-	// Get keyboard & Mouse updates
-	InputUpdate(dElapsedTime);
+	
 	cPhysics2D->Update(dElapsedTime);
 	// Update Collider2D Position
 	collider2D->position = vTransform;
@@ -421,22 +424,36 @@ void CPlayer2D::Update(const double dElapsedTime)
 			if (obj->GetCollider()->colliderType == Collider2D::ColliderType::COLLIDER_QUAD)
 			{
 				collider2D->ResolveAABB(obj->GetCollider(), data);
+
+				if (std::get<1>(data) == Direction::UP)
+				{
+					cPhysics2D->SetboolGrounded(true);
+					m_playerState = STATE::S_IDLE;
+				}
 			}
 			else if (obj->GetCollider()->colliderType == Collider2D::ColliderType::COLLIDER_CIRCLE)
 			{
 				if (glm::dot(cPhysics2D->GetVelocity(), obj->vTransform - vTransform) > 0)
 					collider2D->ResolveAABBCircle(obj->GetCollider(), data, Collider2D::ColliderType::COLLIDER_QUAD);
+			
+			
+				if (std::get<1>(data) == Direction::DOWN)
+				{
+					cPhysics2D->SetboolGrounded(true);
+				}
 			}
-
-			if (std::get<1>(data) == Direction::UP)
-				cPhysics2D->SetboolGrounded(true);
 			
 			if (std::get<1>(data) == Direction::LEFT || std::get<1>(data) == Direction::RIGHT)
+			{
 				cPhysics2D->SetVelocity(glm::vec2(0, cPhysics2D->GetVelocity().y));
+			}
 			vTransform = collider2D->position;
 			obj->vTransform = obj->GetCollider()->position;
 		}
 	}
+
+	// Get keyboard & Mouse updates
+	InputUpdate(dElapsedTime);
 
 	//BOUNDARY CHECK
 	LockWithinBoundary();
@@ -453,8 +470,11 @@ void CPlayer2D::Update(const double dElapsedTime)
 	if (cPhysics2D->GetboolKnockedBacked() && cPhysics2D->GetVelocity() == glm::vec2(0, 0))
 		cPhysics2D->SetBoolKnockBacked(false);
 
+	//Health
+	UpdateHealthLives();
+
 	//animation States
-	switch (state)
+	switch (m_playerState)
 	{
 	case STATE::S_IDLE:
 		animatedSprites->PlayAnimation("idle", -1, 1.f);
@@ -482,12 +502,8 @@ void CPlayer2D::Update(const double dElapsedTime)
 		break;
 	}
 
-	//Health
-	UpdateHealthLives();
-
 	//CS: Update the animated sprite
 	animatedSprites->Update(dElapsedTime);
-
 	m_FrameStorage.iCurrentFrame++;
 }
 
@@ -559,7 +575,7 @@ void CPlayer2D::PostRender(void)
 
 CPlayer2D::STATE CPlayer2D::Getstate() const
 {
-	return state;
+	return m_playerState;
 }
 
 /**
@@ -608,13 +624,16 @@ bool CPlayer2D::LoadTexture(const char* filename, GLuint& iTextureID)
 
 void CPlayer2D::InputUpdate(double dt)
 {
-	state = STATE::S_IDLE;
-	
 	if ((unsigned)m_FrameStorage.iCurrentFrame >= m_KeyboardInputs.size())
 		return;
 
 	glm::vec2 velocity = cPhysics2D->GetVelocity();
 	glm::vec2 force = glm::vec2(0.f);
+
+	if (m_KeyboardInputs[m_FrameStorage.iCurrentFrame][KEYBOARD_INPUTS::R].bKeyPressed)
+	{
+		ResetToCheckPoint();
+	}
 
 	if (m_KeyboardInputs[m_FrameStorage.iCurrentFrame][KEYBOARD_INPUTS::W].bKeyDown)
 	{
@@ -634,7 +653,8 @@ void CPlayer2D::InputUpdate(double dt)
 		if (velocity.x < fMovementSpeed && !cPhysics2D->GetboolKnockedBacked())
 			velocity.x = Math::Min(velocity.x + fMovementSpeed, fMovementSpeed);
 
-		state = STATE::S_MOVE;
+		if (m_playerState != STATE::S_JUMP && m_playerState != STATE::S_DOUBLE_JUMP)
+			m_playerState = STATE::S_MOVE;
 		facing = FACING_DIR::RIGHT;
 		//DEBUG_MSG(this << ": Frame:" << iTempFrameCounter << " Move Right");
 	}
@@ -642,7 +662,8 @@ void CPlayer2D::InputUpdate(double dt)
 	{
 		if (velocity.x > -fMovementSpeed && !cPhysics2D->GetboolKnockedBacked())
 			velocity.x = Math::Max(velocity.x - fMovementSpeed, -fMovementSpeed);
-		state = STATE::S_MOVE;
+		if (m_playerState != STATE::S_JUMP && m_playerState != STATE::S_DOUBLE_JUMP)
+			m_playerState = STATE::S_MOVE;
 		facing = FACING_DIR::LEFT;
 		//DEBUG_MSG(this << ": Frame:" << iTempFrameCounter << " Move Left");
 	}
@@ -655,7 +676,17 @@ void CPlayer2D::InputUpdate(double dt)
 			cPhysics2D->SetboolGrounded(false);
 			velocity.y = 6.5f * (jumpCount + (1 - jumpCount * 0.6f));
 			jumpCount++;
-			timerArr[A_JUMP].second = 0.1;
+			timerArr[A_JUMP].second = 0.1 * jumpCount;
+
+			if (jumpCount == 1 || cPhysics2D->GetboolGrounded() == true)
+			{
+				m_playerState = STATE::S_JUMP;
+			}
+			else
+			{
+				m_playerState = STATE::S_DOUBLE_JUMP;
+			}
+
 		}
 
 		if (timerArr[A_JUMP].second < 0.2)
@@ -686,27 +717,14 @@ void CPlayer2D::InputUpdate(double dt)
 			jumpCount = 0;
 		}
 	}
-
 	if (glm::length(velocity) > 0.f)
 		cPhysics2D->SetVelocity(velocity);
 
 	if (glm::length(force) > 0.f)
 		cPhysics2D->SetForce(force);
 
-	if (m_MouseInputs[m_FrameStorage.iCurrentFrame][MOUSE_INPUTS::LMB].bButtonPressed && cInventory->iCurrentIndex == 0) //use shuriken
+	if (m_MouseInputs[m_FrameStorage.iCurrentFrame][MOUSE_INPUTS::LMB].bButtonPressed) 
 	{
-		cSoundController->PlaySoundByID(SOUND_ID::SOUND_SWING);
-		cInventory->UseItem();
-	}
-	if (m_MouseInputs[m_FrameStorage.iCurrentFrame][MOUSE_INPUTS::LMB].bButtonPressed && cInventory->iCurrentIndex == 1) //use bullet
-	{
-		cSoundController->PlaySoundByID(SOUND_ID::SOUND_SWING);
-		cInventory->UseItem();
-	}
-	if (m_MouseInputs[m_FrameStorage.iCurrentFrame][MOUSE_INPUTS::LMB].bButtonPressed && cInventory->iCurrentIndex == 2) //use potion
-	{
-		cSoundController->PlaySoundByID(SOUND_ID::SOUND_POTION);
-		cSoundController->SetVolumeByID(SOUND_ID::SOUND_POTION, 1.f);
 		cInventory->UseItem();
 	}
 

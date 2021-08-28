@@ -16,6 +16,7 @@ Projectiles::Projectiles(int iTextureID)
 	, currentColor(glm::vec4())
 	, bDestroyed(false)
 	, iBounces(0)
+	, fusetimer(5)
 {
 	projectileType = PROJECTILE_TYPE::PROJ_SHURIKEN;
 	this->iTextureID = iTextureID;
@@ -43,10 +44,10 @@ bool Projectiles::Init()
 
 	cPhysics2D->Init(&vTransform);
 	cPhysics2D->MAX_SPEED = 50.f;
-	cPhysics2D->FRICTONAL_COEFFICIENT = 0.8f;
-	cPhysics2D->SetMass(1.5f);
+	cPhysics2D->FRICTONAL_COEFFICIENT = 1.f;
+	cPhysics2D->SetMass(10.f);
 
-	collider2D->Init(vTransform, glm::vec2(0.2f), Collider2D::ColliderType::COLLIDER_CIRCLE);
+	collider2D->Init(vTransform, glm::vec2(0.4f), Collider2D::ColliderType::COLLIDER_CIRCLE);
 
 	cEntityManager = CEntityManager::GetInstance();
 
@@ -55,12 +56,46 @@ bool Projectiles::Init()
 
 void Projectiles::Update(double dElapsedTime)
 {
+	if (iBounces > 0)
+		fusetimer -= dElapsedTime;
+
+	
 	cPhysics2D->Update(dElapsedTime);
+
 	// Update Collider2D Position
 	collider2D->SetPosition(vTransform);
 
 	//Collision between projectile and enemy
-	ResolveEnemyCollision();
+	//ResolveEnemyCollision();
+	if (fusetimer < 0)
+	{
+		bDestroyed = true;
+		CSoundController::GetInstance()->PlaySoundByID(SOUND_ID::SOUND_EXPLOSION);
+
+		CEntityManager* em = CEntityManager::GetInstance();
+		for (auto& e : em->GetAllEnemies())
+		{
+			if (glm::distance(vTransform, e->vTransform) < 3)
+			{
+				CMobEnemy2D* mobEnemy = dynamic_cast<CMobEnemy2D*>(e);
+
+				if (mobEnemy)
+				{
+					mobEnemy->Attacked(1, cPhysics2D);
+				}
+				else
+				{
+					e->Attacked();
+				}
+			}
+		}
+
+		CPlayer2D* player = em->GetPlayer();
+		if (glm::distance(vTransform, player->vTransform) < 2)
+		{
+			player->Attacked(2, cPhysics2D);
+		}
+	}
 
 	//Collision between objects in map space
 	ResolveMapCollision(CheckMapCollision());
@@ -68,11 +103,6 @@ void Projectiles::Update(double dElapsedTime)
 	if (bCollided)
 	{
 		iBounces++;
-	}
-
-	if (iBounces > 3)
-	{
-		bDestroyed = true;
 	}
 }
 

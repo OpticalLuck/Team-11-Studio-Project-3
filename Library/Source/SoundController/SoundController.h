@@ -36,12 +36,16 @@ enum SOUND_ID
 	SOUND_ONCLICK       = 9,
 	SOUND_TELEPORTER    = 10,
 	SOUND_POTION        = 11,
+	SOUND_DOOR_OPEN     = 12,
+	SOUND_DOOR_CLOSE	= 13,
+	SOUND_CHEST			= 14,
 	SOUND_TOTAL			   ,
 
 	BGM_START			= 50,
 	BGM_HENESYS				,
 	BGM_TROUBLE             ,
 	BGM_LEVEL1              ,
+	BGM_WIN                 ,
 	BGM_TOTAL			
 
 };
