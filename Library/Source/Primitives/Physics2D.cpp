@@ -30,6 +30,12 @@ glm::vec2 CPhysics2D::CalculateFriction(float coefficient)
 		//F = MA, A = F/M
 		glm::vec2 friction = oppositedirection * (frictionalforce);
 		return friction;
+
+		//glm::vec2 friction = glm::normalize(velocity * -1.f);
+		//friction *= (coefficient * glm::vec2(0,1));
+		//friction /= mass;
+
+		//return friction;
 	}
 
 	return glm::vec2(0.f, 0.f);
@@ -70,8 +76,11 @@ bool CPhysics2D::Init(glm::vec2* position)
 
 void CPhysics2D::Update(double dElapsedTime)
 {
-	glm::vec2 a = CalculateAcceleration();
+	glm::vec2 a(0.f);
 	
+	a += CalculateAcceleration();
+	a += v2Gravity;
+
 	if (bGrounded)
 	{
 		glm::vec2 friction = CalculateFriction(FRICTONAL_COEFFICIENT);
@@ -81,15 +90,11 @@ void CPhysics2D::Update(double dElapsedTime)
 		else
 			velocity.x = 0; 
 	}
-
-	if(!bGrounded)
-		a += v2Gravity;
-
 	velocity += a * (float)dElapsedTime;
 
 	//Comment out FOR NOW!!!
-	//velocity.x = Math::Clamp(velocity.x, -MAX_SPEED, MAX_SPEED);
-	//velocity.y = Math::Clamp(velocity.y, -MAX_SPEED, MAX_SPEED);
+	velocity.x = Math::Clamp(velocity.x, -MAX_SPEED, MAX_SPEED);
+	velocity.y = Math::Clamp(velocity.y, -MAX_SPEED, MAX_SPEED);
 
 	if (bGrounded && velocity.y <= 0)
 		velocity.y = 0;

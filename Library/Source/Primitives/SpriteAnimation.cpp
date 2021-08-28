@@ -298,3 +298,4 @@ void CSpriteAnimation::Reset()
 	currentFrame = animationList[currentAnimation]->frames[0];
 	playCount = 0;
 }
+

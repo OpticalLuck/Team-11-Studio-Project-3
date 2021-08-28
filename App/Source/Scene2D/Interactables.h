@@ -26,6 +26,7 @@ class Interactables : public CObject2D
 public:
 
 	bool bJustTeleported = false;
+	bool bDoorSoundPlayed = true;
 
 	INTERACTABLE_TYPE interactableType;
 

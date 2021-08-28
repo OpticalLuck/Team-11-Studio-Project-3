@@ -319,9 +319,9 @@ void CSettings::UpdateMasterVolume()
 
 void CSettings::UpdateBGMVolume(float BGM_VOLUME)
 {
-	for (int i = SOUND_ID::BGM_START; i < SOUND_ID::BGM_TOTAL; i++)
+	for (int i = SOUND_ID::BGM_START + 1; i < SOUND_ID::BGM_TOTAL; i++)
 	{
-		CSoundController::GetInstance()->SetVolumeByID(i, BGM_VOLUME * 0.1f);
+		CSoundController::GetInstance()->SetVolumeByID(i, BGM_VOLUME * 0.01f);
 	}
 	CSoundController::GetInstance()->UpdatePlayBackVolume(BGM_VOLUME * 0.01f);
 }

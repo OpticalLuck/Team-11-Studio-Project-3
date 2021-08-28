@@ -55,28 +55,54 @@ void CItem::Use(CPlayer2D* user)
 		switch (iID)
 		{
 		case OBJECT_TYPE::CONSUMABLES_POTION:
-			cout << "You are using potion\n";
-			if (user->GetHealth() == 5)
-				break;
-			user->UpdateHealth(1);
-			cout << "Player health is " << user->GetHealth() << "\n";
-			cout << "iCount is " << iCount << '\n';
+			if (user->GetHealth() < 5)
+				user->UpdateHealth(1);
+
+			CSoundController::GetInstance()->PlaySoundByID(SOUND_ID::SOUND_POTION);
+			DEBUG_MSG("You are using Item potion");
+			DEBUG_MSG("iCount is " << iCount);
 			break;
-		case OBJECT_TYPE::PROJECTILES_SHURIKEN:
+		case OBJECT_TYPE::PROJECTILES_BOMB:
 		{
 			glm::vec2 distance = user->m_MouseInputs[user->m_FrameStorage.iCurrentFrame][MOUSE_INPUTS::LMB].vMousePos - user->vTransform;
 
-			CObject2D* shurikenobj = ObjectFactory::CreateObject(OBJECT_TYPE::PROJECTILES_SHURIKEN);
+			CObject2D* shurikenobj = ObjectFactory::CreateObject(OBJECT_TYPE::PROJECTILES_BOMB);
 			shurikenobj->Init();
 			shurikenobj->vTransform = user->vTransform;
 
-			glm::vec2 force = glm::clamp(distance * 200.f, glm::vec2(-2000.f, -2000.f), glm::vec2(2000.f, 2000.f));
+			glm::vec2 force = glm::clamp(distance * 500.f, glm::vec2(-2000.f, -2000.f), glm::vec2(2000.f, 2000.f));
 			shurikenobj->GetPhysics()->SetForce(force);
 
-			CEntityManager::GetInstance()->PushBullet(static_cast<Projectiles*>(shurikenobj), CMap2D::GetInstance()->GetCurrentLevel());
+			if (force.x > 0)
+				user->facing = CPlayer2D::FACING_DIR::RIGHT;
+			else
+				user->facing = CPlayer2D::FACING_DIR::LEFT;
 
-			cout << "You are using Item shuriken\n";
-			cout << "iCount is " << iCount << '\n';
+			CEntityManager::GetInstance()->PushBullet(static_cast<Projectiles*>(shurikenobj), CMap2D::GetInstance()->GetCurrentLevel());
+			
+			CSoundController::GetInstance()->PlaySoundByID(SOUND_ID::SOUND_SWING);
+			DEBUG_MSG("You are using Item bomb");
+			DEBUG_MSG("iCount is " << iCount);
+			break;
+		}
+		case OBJECT_TYPE::BULLETS_SHURIKEN:
+		{
+			CObject2D* kunaiobj = ObjectFactory::CreateObject(OBJECT_TYPE::BULLETS_SHURIKEN);
+
+			float angle = 0;
+			if (user->facing == CPlayer2D::FACING_DIR::LEFT)
+				angle = 180;
+			else
+				angle = 0;
+
+			kunaiobj->vTransform = user->vTransform;
+			dynamic_cast<Bullet2D*>(kunaiobj)->Init(true, angle, 10);
+
+			CEntityManager::GetInstance()->PushBullet(static_cast<Bullet2D*>(kunaiobj), CMap2D::GetInstance()->GetCurrentLevel());
+			
+			CSoundController::GetInstance()->PlaySoundByID(SOUND_ID::SOUND_SWING);
+			DEBUG_MSG("You are using Item shuriken");
+			DEBUG_MSG("iCount is " << iCount);
 			break;
 		}
 		case OBJECT_TYPE::BULLETS_KUNAI:
@@ -89,12 +115,14 @@ void CItem::Use(CPlayer2D* user)
 			else
 				angle = 0;
 
-			dynamic_cast<Bullet2D*>(kunaiobj)->Init(true, angle, 10);
 			kunaiobj->vTransform = user->vTransform;
+			dynamic_cast<Bullet2D*>(kunaiobj)->Init(true, angle, 10);
 
 			CEntityManager::GetInstance()->PushBullet(static_cast<Bullet2D*>(kunaiobj), CMap2D::GetInstance()->GetCurrentLevel());
-			cout << "You are using Item kunai\n";
-			cout << "iCount is " << iCount << '\n';
+			
+			CSoundController::GetInstance()->PlaySoundByID(SOUND_ID::SOUND_SWING);
+			DEBUG_MSG("You are using Item kunai");
+			DEBUG_MSG("iCount is " << iCount);
 			break;
 		}
 		}

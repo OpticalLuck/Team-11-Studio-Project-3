@@ -14,7 +14,7 @@ public:
 	};
 	PROJECTILE_TYPE projectileType;
 
-	Projectiles(int iTextureID = OBJECT_TYPE::PROJECTILES_SHURIKEN);
+	Projectiles(int iTextureID = OBJECT_TYPE::PROJECTILES_BOMB);
 	virtual ~Projectiles();
 
 	virtual bool Init() override;
@@ -32,8 +32,9 @@ public:
 protected:
 	CSpriteAnimation* animatedSprites;
 
-	// Current color
 	int iBounces;
+	double fusetimer;
+	// Current color
 	glm::vec4 currentColor;
 };
 

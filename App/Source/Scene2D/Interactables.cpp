@@ -83,7 +83,7 @@ void Interactables::Update(const double dElapsedTime)
 
 	CEntityManager* em = CEntityManager::GetInstance();
 
-	if (this->interactableType < PRESSURE_PLATE)
+	if (this->interactableType == LEVER)
 	{
 		for (auto& e : em->GetAllPlayers())
 		{
@@ -334,20 +334,32 @@ bool Interactables::Activate(bool interaction, CPlayer2D* player)
 {
 	switch (interactableType) {
 	case LEVER:
+		CSoundController::GetInstance()->PlaySoundByID(SOUND_ID::SOUND_SWITCH);
 		ActivateSwitch(player);
 		break;
 	case PRESSURE_PLATE:
 		ActivatePressurePlate(interaction);
 		break;
 	case COMMON_CHEST:
+		if (!bInteraction)
+			CSoundController::GetInstance()->PlaySoundByID(SOUND_ID::SOUND_CHEST);
+
+		OpenChest(player, "Bomb", 5);
 		OpenChest(player, "Shuriken", 5);
-		OpenChest(player, "Kunai", 5);
+		OpenChest(player, "Potion", 2);
 		this->bInteraction = interaction;
 		break;
 	case RARE_CHEST:
+		if (!bInteraction)
+			CSoundController::GetInstance()->PlaySoundByID(SOUND_ID::SOUND_CHEST);
+
+		OpenChest(player, "Bomb", 10);
 		OpenChest(player, "Shuriken", 10);
-		OpenChest(player, "Kunai", 10);
+		OpenChest(player, "Potion", 3);
 		this->bInteraction = interaction;
+		break;
+	case CHECKPOINT:
+		CSoundController::GetInstance()->PlaySoundByID(SOUND_ID::SOUND_SWITCH);
 		break;
 	default:
 		this->bInteraction = interaction;
