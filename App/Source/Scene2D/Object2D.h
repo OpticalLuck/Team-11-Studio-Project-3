@@ -28,13 +28,14 @@ enum OBJECT_TYPE
 									 
 	//PROJECTILES - 6 - 10			 
 	PROJECTILES_START				 = 6,
-	PROJECTILES_SHURIKEN			 = 7,
+	PROJECTILES_BOMB				 = 8,
 	PROJECTILES_TOTAL				 = 10,
 									 
 	//BULLETS - 11 -15				 
 	BULLETS_START					 = 11,
 	BULLETS_KUNAI					 = 12,
-	BULLETS_ENEMY					 = 13,
+	BULLETS_SHURIKEN				 = 13,
+	BULLETS_ENEMY					 = 14,
 	BULLETS_TOTAL					 = 15,
 									 
 	EQUIPMENTS_START				 = 16,
