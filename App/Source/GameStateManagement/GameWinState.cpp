@@ -88,7 +88,6 @@ bool GameWinState::Init(void)
 bool GameWinState::Update(const double dElapsedTime)
 {
 	fWaitTime += 0.1f;
-	//cout << "down : " << fDown << endl;
 	if (cSettings->GetWindowSize().x == 800 && cSettings->GetWindowSize().y == 600)
 	{
 		if (fWaitTime >= 35.f)
@@ -254,7 +253,6 @@ bool GameWinState::ImGuiRender()
 		ImGui::Begin("Thanks for playing window", NULL, window_flags);
 		ImGui::SetWindowSize(ImVec2(1200.0f * relativeScale_x, 1200.0f * relativeScale_y));
 		ImGui::SetWindowPos(ImVec2(cSettings->iWindowWidth * 0.37f - 55, (cSettings->iWindowHeight * 0.01) - 150 + fDown));
-		cout << cSettings->iWindowHeight << endl;
 		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.f, 1.0f, 1.0f, 1.0f));
 		ImGui::Text("Thanks for playing!");
 		ImGui::SetWindowFontScale(relativeScale_x + relativeScale_y);
