@@ -110,8 +110,8 @@ bool CEditorSettingsState::Update(const double dElapsedTime)
 		CKeyboardController::GetInstance()->Reset();
 
 		// Load the menu state
-		cout << "Quitting the game from MenuState" << endl;
-		return false;
+		CGameStateManager::GetInstance()->SetActiveGameState("MenuState");
+		return true;
 	}
 
 	return true;

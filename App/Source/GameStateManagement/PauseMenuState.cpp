@@ -172,7 +172,7 @@ void PauseMenuState::UpdateOption(ImGuiWindowFlags window_flags)
 
 	//Resolution
 	static int screenRes = (int)CSettings::GetInstance()->screenSize;
-	const char* resNames[(int)CSettings::SCREENSIZE::SSIZE_TOTAL] = { "800 x 600", "1024 x 768", "1400 x 1050", "1600 x 1200", "1600 x 900" };
+	const char* resNames[(int)CSettings::SCREENSIZE::SSIZE_TOTAL] = { "800 x 600", "1024 x 768", "1400 x 1050"};
 	const char* currName = (screenRes >= 0 && screenRes < (int)CSettings::SCREENSIZE::SSIZE_TOTAL) ? resNames[screenRes] : "Unknown";
 	if (ImGui::SliderInt("Screen Resolution", &screenRes, 0, (int)CSettings::SCREENSIZE::SSIZE_TOTAL - 1, currName, ImGuiSliderFlags_NoInput))
 	{

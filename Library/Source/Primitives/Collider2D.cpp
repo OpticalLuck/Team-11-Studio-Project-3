@@ -211,7 +211,10 @@ Collision Collider2D::CollideWith(Collider2D* object)
 	{
 		if (object->colliderType == ColliderType::COLLIDER_QUAD)
 		{
-			return CheckAABBCollision(this, object);
+			if(colliderType == ColliderType::COLLIDER_CIRCLE)
+				return CheckAABBCircleCollision(object, this);
+			else
+				return CheckAABBCollision(this, object);
 		}
 		else if (object->colliderType == ColliderType::COLLIDER_CIRCLE)
 		{
@@ -266,62 +269,24 @@ void Collider2D::ResolveAABBCircle(Collider2D* object, Collision data, ColliderT
 		// collision resolution
 		Direction dir = std::get<1>(data);
 		glm::vec2 diff_vector = std::get<2>(data);
+
+		glm::vec2 quadTopLeftPos = quad->position - glm::vec2(quad->vec2Dimensions.x, quad->vec2Dimensions.y);
+		glm::vec2 vNearestPoint;
+		vNearestPoint.x = std::max(float(quadTopLeftPos.x), std::min(ball->position.x, float(quadTopLeftPos.x + quad->vec2Dimensions.x * 2.f)));
+		vNearestPoint.y = std::max(float(quadTopLeftPos.y), std::min(ball->position.y, float(quadTopLeftPos.y + quad->vec2Dimensions.y * 2.f)));
+
+		glm::vec2 vRayToNearest = vNearestPoint - ball->position;
+		float fOverlap = ball->vec2Dimensions.x - glm::length(vRayToNearest);
+		if (std::isnan(fOverlap)) fOverlap = 0;
+
 		if (target == ColliderType::COLLIDER_CIRCLE)
 		{
-			if (dir == Direction::LEFT || dir == Direction::RIGHT) // horizontal collision
-			{
-				// relocate
-				float penetration = ball->vec2Dimensions.x - std::abs(diff_vector.x);
-
-				if (dir == Direction::LEFT)
-					ball->position.x += penetration; // move ball to right
-				else
-					ball->position.x -= penetration; // move ball to left;
-			}
-			else // vertical collision
-			{
-				// relocate
-				float penetration = ball->vec2Dimensions.x - std::abs(diff_vector.y);
-
-				if (dir == Direction::UP)
-					ball->position.y -= penetration; // move ball bback up
-				else
-					ball->position.y += penetration; // move ball back down
-
-			}
+			if (fOverlap > 0)
+				ball->position -= glm::normalize(vRayToNearest) * fOverlap;
 		}
 		else if (target == ColliderType::COLLIDER_QUAD)
 		{
-			//if (dir == Direction::LEFT || dir == Direction::RIGHT) // horizontal collision
-			//{
-			//	// relocate
-			//	float penetration = ball->vec2Dimensions.x - std::abs(diff_vector.x);
-
-			//	if (dir == Direction::LEFT)
-			//		quad->position.x -= penetration; // move ball to right
-			//	else
-			//		quad->position.x += penetration; // move ball to left;
-			//}
-			//else // vertical collision
-			//{
-			//	// relocate
-			//	float penetration = ball->vec2Dimensions.x - std::abs(diff_vector.y);
-
-			//	if (dir == Direction::UP)
-			//		quad->position.y += penetration; // move ball bback up
-			//	else
-			//		quad->position.y -= penetration; // move ball back down
-
-			//}
-			glm::vec2 quadTopLeftPos = quad->position - glm::vec2(quad->vec2Dimensions.x, quad->vec2Dimensions.y );
-			glm::vec2 vNearestPoint;
-			vNearestPoint.x = std::max(float(quadTopLeftPos.x), std::min(ball->position.x, float(quadTopLeftPos.x + quad->vec2Dimensions.x * 2.f)));
-			vNearestPoint.y = std::max(float(quadTopLeftPos.y), std::min(ball->position.y, float(quadTopLeftPos.y + quad->vec2Dimensions.y * 2.f)));
-
-			glm::vec2 vRayToNearest = vNearestPoint - ball->position;
-			float fOverlap = ball->vec2Dimensions.x - glm::length(vRayToNearest);
 			if (std::isnan(fOverlap)) fOverlap = 0;
-			cout << fOverlap << endl;
 			if(fOverlap > 0)
 				quad->position += glm::normalize(vRayToNearest) * fOverlap;
 		}

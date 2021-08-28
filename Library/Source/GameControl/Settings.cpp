@@ -45,10 +45,6 @@ CSettings::CSettings(void)
 		iWindowWidth = 1400;
 		iWindowHeight = 1050;
 		break;
-	case SCREENSIZE::SSIZE_1600x1200:
-		iWindowWidth = 1600;
-		iWindowHeight = 1200;
-		break;
 	}
 
 	LoadSettings();
@@ -160,10 +156,6 @@ glm::vec2 CSettings::GetWindowSize()
 		return glm::vec2(1024, 768);
 	case SCREENSIZE::SSIZE_1400x1050:
 		return glm::vec2(1400, 1050);
-	case SCREENSIZE::SSIZE_1600x900:
-		return glm::vec2(1600, 900);
-	case SCREENSIZE::SSIZE_1600x1200:
-		return glm::vec2(1600, 1050);
 	default:
 		DEBUG_MSG("SCREENSIZE TYPE INVALID, REVERTING TO DEFAULT VALUE");
 		screenSize = SCREENSIZE::SSIZE_800x600;
@@ -205,15 +197,6 @@ void CSettings::LoadSettings()
 			else if (horizontal <= 1400)
 			{
 				screenSize = SCREENSIZE::SSIZE_1400x1050;
-			}
-			else if (horizontal <= 1600)
-			{
-				if(vertical <= 900)
-					screenSize = SCREENSIZE::SSIZE_1600x900;
-				else if (vertical <= 1200)
-					screenSize = SCREENSIZE::SSIZE_1600x1200;
-				else
-					screenSize = SCREENSIZE::SSIZE_1600x1200;
 			}
 			else
 			{
@@ -359,14 +342,6 @@ void CSettings::UpdateWindowSize()
 		iWindowWidth = 1400;
 		iWindowHeight = 1050;
 		break;
-	case SCREENSIZE::SSIZE_1600x1200:
-		iWindowWidth = 1600;
-		iWindowHeight = 1200;
-		break;
-	case SCREENSIZE::SSIZE_1600x900:
-		iWindowWidth = 1600;
-		iWindowHeight = 900;
-		break;
 	}
 
 	if (pWindow)
@@ -374,6 +349,12 @@ void CSettings::UpdateWindowSize()
 		glfwSetWindowSize(pWindow, iWindowWidth, iWindowHeight);
 
 		glm::vec2 screensize = CSettings::GetInstance()->GetScreenSize();
+
+		unsigned x_pos = screensize.x / 2 - iWindowWidth / 2;
+		unsigned y_pos = screensize.y / 2 - iWindowHeight / 2;
+
+		if (y_pos > iWindowHeight / 2)
+			y_pos = screensize.y / 2;
 		glm::vec2 windowposition = glm::vec2(screensize.x / 2 -iWindowWidth / 2, screensize.y / 2 - iWindowHeight / 2);
 		// Set OpenGL window position
 		glfwSetWindowPos(pWindow, (int)windowposition.x, (int)windowposition.y);
