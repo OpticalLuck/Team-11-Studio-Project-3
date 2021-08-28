@@ -43,6 +43,7 @@ using namespace std;
 #include "GameStateManagement/PauseMenuState.h"
 #include "GameStateManagement/EditorSettingsState.h"
 #include "GameStateManagement/LevelEditorState.h"
+#include "GameStateManagement/GameWinState.h"
 
 #include "LevelEditor/LevelEditor.h"
 
@@ -262,6 +263,7 @@ bool Application::Init(void)
 	CGameStateManager::GetInstance()->AddGameState("PauseState", new PauseMenuState());
 	CGameStateManager::GetInstance()->AddGameState("EditorSettingsState", new CEditorSettingsState());
 	CGameStateManager::GetInstance()->AddGameState("LevelEditorState", new CLevelEditorState());
+	CGameStateManager::GetInstance()->AddGameState("GameWinState", new GameWinState());
 
 	// Set the active scene
 	CGameStateManager::GetInstance()->SetActiveGameState("IntroState");

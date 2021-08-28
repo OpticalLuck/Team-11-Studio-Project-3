@@ -188,8 +188,8 @@ bool CMenuState::UpdateMenu(ImGuiWindowFlags window_flags)
 	if (CKeyboardController::GetInstance()->IsKeyReleased(GLFW_KEY_F1))
 	{
 		CKeyboardController::GetInstance()->Reset();
-		CGameStateManager::GetInstance()->SetActiveGameState("GameOverState");
-		cout << "Loading Gameover state\n";
+		CGameStateManager::GetInstance()->SetActiveGameState("GameWinState");
+		cout << "Loading GameWinState state\n";
 	}
 	//For keyboard controls
 	if (CKeyboardController::GetInstance()->IsKeyReleased(GLFW_KEY_SPACE))
