@@ -42,6 +42,7 @@ enum SOUND_ID
 	BGM_HENESYS				,
 	BGM_TROUBLE             ,
 	BGM_LEVEL1              ,
+	BGM_WIN                 ,
 	BGM_TOTAL			
 
 };

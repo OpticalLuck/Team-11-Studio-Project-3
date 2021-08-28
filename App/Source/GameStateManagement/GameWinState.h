@@ -40,8 +40,14 @@ protected:
 	CBackgroundEntity* background;
 	CSettings* cSettings;
 	ButtonData exitButtonData;
-	ButtonData gameOverImage;
+	ButtonData menuButtonData;
 
+	float fWaitTime;
 	float fUp;
+	float fDown;
+	float fLeft;
+	float fRight;
+
+	bool bExit;
 
 };

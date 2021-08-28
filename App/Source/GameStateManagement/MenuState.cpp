@@ -74,6 +74,8 @@ bool CMenuState::Init(void)
 	background->SetShader("2DShader");
 	background->Init();
 
+	menuState = STATE_MAIN;
+
 	// Load the images for buttons
 	CImageLoader* il = CImageLoader::GetInstance();
 	startButtonData.fileName = "Image\\Buttons\\play.png";
@@ -133,8 +135,8 @@ void CMenuState::Destroy(void)
 
 bool CMenuState::UpdateMenu(ImGuiWindowFlags window_flags)
 {
-	float buttonWidth = 256;
-	float buttonHeight = 128;
+	float buttonWidth = CSettings::GetInstance()->GetWindowSize().x / 5.2;
+	float buttonHeight = CSettings::GetInstance()->GetWindowSize().x / (2 * 5.2);
 
 	// Create a window called "Hello, world!" and append into it.
 	ImGui::Begin("Main Menu", NULL, window_flags);

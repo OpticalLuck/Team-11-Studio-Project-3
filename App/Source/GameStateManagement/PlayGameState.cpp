@@ -261,6 +261,15 @@ bool CPlayGameState::ImGuiRender()
 		fInterval++;
 		iSeconds = int(fInterval / 110.f);
 
+		//FPS 
+		{
+			//render a window
+			ImGui::Begin("FPS", NULL, UI_window);
+			ImGui::TextColored(ImVec4(1, 1, 0, 1), "FPS: %d", cFPSCounter->GetFrameRate());
+			ImGui::SetWindowPos(ImVec2(0, 0));
+			ImGui::End();
+		}
+
 		ImGui::SetNextWindowFocus();
 		//UI bar
 		{
