@@ -693,7 +693,7 @@ bool CLevelEditorState::ImGuiRender()
 		if (ImGui::Button("Change Background"))
 		{
 			cLevelEditor->backgroundPath = FileDialog::OpenFile();
-
+			cLevelEditor->backgroundPath.erase(0, cLevelEditor->backgroundPath.find("Image"));
 			if (cLevelEditor->backgroundPath != "")
 			{
 				delete cLevelEditor->cBackgroundEntity;
