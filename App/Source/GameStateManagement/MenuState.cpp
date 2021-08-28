@@ -140,7 +140,7 @@ bool CMenuState::UpdateMenu(ImGuiWindowFlags window_flags)
 
 	// Create a window called "Hello, world!" and append into it.
 	ImGui::Begin("Main Menu", NULL, window_flags);
-	ImGui::SetWindowPos(ImVec2(CSettings::GetInstance()->iWindowWidth / 2.0f - buttonWidth / 2.0f, CSettings::GetInstance()->iWindowHeight / 6.0f));				
+	ImGui::SetWindowPos(ImVec2(CSettings::GetInstance()->iWindowWidth / 2.0f - buttonWidth / 2.0f, CSettings::GetInstance()->iWindowHeight / 3.0f));				
 	ImGui::SetWindowSize(ImVec2(buttonWidth + 55, buttonHeight * 3 + 200));
 
 	//Added rounding for nicer effect
