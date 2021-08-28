@@ -12,6 +12,7 @@ Obstacle2D::Obstacle2D(int iTextureID)
 {
 	this->iTextureID = iTextureID;
 	type = ENTITY_TYPE::TILE;
+	force = 300.f;
 }
 
 Obstacle2D::~Obstacle2D()
@@ -70,6 +71,7 @@ void Obstacle2D::Update(const double dElapsedTime)
 
 	CMap2D* cMap2D = CMap2D::GetInstance();
 
+	cPhysics2D->SetboolGrounded(false);
 	ResolvePlayerCollision();
 	ResolveEnemyCollision();
 	ResolveMapCollision(CheckMapCollision());
@@ -184,7 +186,7 @@ void Obstacle2D::ResolvePlayerCollision()
 			playerCollider->ResolveAABBCircle(collider2D, data, Collider2D::ColliderType::COLLIDER_QUAD);
 
 			glm::vec2 direction = glm::normalize(vTransform - cPlayer->vTransform);
-			cPhysics2D->SetForce(glm::vec2(120.f, 0) * direction);
+			cPhysics2D->SetForce(glm::vec2(force, 0) * direction);
 			cPlayer->GetCPhysics()->SetVelocity(glm::vec2(0.f));
 
 			cPlayer->vTransform = cPlayer->GetCollider()->position;

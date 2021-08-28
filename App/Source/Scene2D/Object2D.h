@@ -77,6 +77,7 @@ enum OBJECT_TYPE
 	TILE_LEFT_GRASS					 = 105,
 	TILE_RIGHT_GRASS				 = 106,
 	TILE_TOP_RIGHT_GROUND			 = 107,
+	TILE_DARK						 = 108,
 	TILE_TOTAL						 = 149,
 									 
 	// MOVING TILES 150 - 200		 

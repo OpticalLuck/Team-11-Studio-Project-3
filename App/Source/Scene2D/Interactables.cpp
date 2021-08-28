@@ -56,6 +56,7 @@ bool Interactables::Init()
 
 	collider2D->Init(vTransform);
 
+	cEntityManager = CEntityManager::GetInstance();
 	interactableType = static_cast<INTERACTABLE_TYPE>(iTextureID);
 	if (interactableType < DOOR)
 	{
@@ -153,7 +154,7 @@ void Interactables::Update(const double dElapsedTime)
 		if (distance < 0.3)
 		{
 			CMap2D::GetInstance()->SetCurrentLevel(CMap2D::GetInstance()->GetCurrentLevel() + 1);
-			if (CMap2D::GetInstance()->LoadMap("Maps/test.csv", 1) == false)
+			if (CMap2D::GetInstance()->LoadMap("Maps/Level_2.csv", 1) == false)
 			{
 				DEBUG_MSG("Map Loading failed");
 				return;
@@ -176,7 +177,7 @@ void Interactables::Update(const double dElapsedTime)
 			if (distance < 0.3)
 			{
 				bInteraction = true;
-				em->GetPlayer()->m_CheckpointState.m_CheckpointHP = em->GetPlayer()->GetHealth();
+				em->GetPlayer()->m_CheckpointState.m_CheckpointHP = em->GetPlayer()->GetMaxHealth();
 				em->GetPlayer()->m_CheckpointState.m_CheckpointInventoryState = new CInventory(*em->GetPlayer()->GetInventory());
 				em->GetPlayer()->m_CheckpointState.m_CheckpointPosition = em->GetPlayer()->vTransform;
 			}
@@ -283,9 +284,17 @@ void Interactables::SetInteractableID(int id)
 	iInteractableID = id;
 }
 
+int Interactables::GetInteractableID(void) {
+	return iInteractableID;
+}
+
 bool Interactables::GetInteracted()
 {
 	return bInteraction;
+}
+
+void Interactables::SetInteracted(bool interacted) {
+	bInteraction = interacted;
 }
 
 /**
@@ -368,21 +377,65 @@ bool Interactables::Activate(bool interaction, CPlayer2D* player)
 	if (this->interactableType < DOOR)
 	{
 		CEntityManager* entManager = CEntityManager::GetInstance();
-		for (auto& e : entManager->GetAllInteractables())
-		{
-			if (e->interactableType >= DOOR)
-			{
-				if (this->iInteractableID == e->iInteractableID)
-				{
+		std::vector<Interactables*> intArr = entManager->GetInteractablesbyID(iInteractableID);
+
+		bool activated = false;
+		for (auto& e : intArr) {
+			if (e->interactableType < DOOR && e->bInteraction && e != this) {
+				activated = true;
+				break;
+			}
+		}
+
+		for (auto& e : intArr) {
+			if (e->interactableType >= DOOR) {
+				if (interactableType == LEVER) {
 					e->Activate(this->bInteraction);
 					e->collider2D->SetbEnabled(!this->bInteraction);
-					return true;
+				}
+				else if (interactableType == PRESSURE_PLATE) {
+					if (activated || interaction) {
+						e->Activate(true);
+						e->collider2D->SetbEnabled(false);
+					}
+					else {
+						e->Activate(false);
+						e->collider2D->SetbEnabled(true);
+					}
 				}
 			}
 		}
+
+		//for (auto& e : entManager->GetAllInteractables())
+		//{
+		//	if (e->interactableType >= DOOR)
+		//	{
+		//		if (this->iInteractableID == e->iInteractableID)
+		//		{
+		//			if (this->interactableType == PRESSURE_PLATE) {
+		//				bool checkActivate = (interaction) || (!interaction && !idPlateHist[iInteractableID]);
+		//				if (checkActivate) {
+		//					e->Activate(this->bInteraction);
+		//					e->collider2D->SetbEnabled(!this->bInteraction);
+		//					idPlateHist[iInteractableID] = this->bInteraction;
+		//				}
+		//			}
+		//			else if (this->interactableType == LEVER) {
+		//				e->Activate(this->bInteraction);
+		//				e->collider2D->SetbEnabled(!this->bInteraction);
+		//			}
+
+		//			//return true;
+		//		}
+		//	}
+		//}
 	}
 
 	return true;
+}
+
+int Interactables::GetInteractableType(void) {
+	return interactableType;
 }
 
 bool Interactables::OpenChest(CPlayer2D* player, std::string itemName, int itemCount)

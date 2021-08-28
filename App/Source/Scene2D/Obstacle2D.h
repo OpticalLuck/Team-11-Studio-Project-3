@@ -18,5 +18,6 @@ public:
 	void ResolveEnemyCollision() override;
 
 protected:
+	float force;
 };
 

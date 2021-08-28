@@ -441,6 +441,14 @@ void CPlayer2D::Update(const double dElapsedTime)
 	//BOUNDARY CHECK
 	LockWithinBoundary();
 
+	//set vel to 0 if hitting top of wall
+	if (cPhysics2D->GetVelocity().y > 0 && vOldTransform.y == vTransform.y) {
+		glm::vec2 noJump = cPhysics2D->GetVelocity();
+		noJump.y = 0;
+
+		cPhysics2D->SetVelocity(noJump);
+	}
+
 	//DISABLE KNOCKED BACK STATUS
 	if (cPhysics2D->GetboolKnockedBacked() && cPhysics2D->GetVelocity() == glm::vec2(0, 0))
 		cPhysics2D->SetBoolKnockBacked(false);

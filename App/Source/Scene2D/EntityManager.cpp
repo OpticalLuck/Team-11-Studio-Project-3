@@ -368,9 +368,25 @@ void CEntityManager::RenderPlayer(void)
 	cPlayer2D->RenderCollider();
 }
 
+std::vector<Interactables*> CEntityManager::GetInteractablesbyID(int id)
+{
+	std:vector<Interactables*> idVector;
+	for (auto& obj : m_interactableList[cMap2D->GetCurrentLevel()])
+	{
+		if (obj->GetInteractableID() == id)
+			idVector.push_back(obj);
+	}
+	return idVector;
+}
+
 void CEntityManager::Update(const double dElapsedTime)
 {
-	
+	for (Interactables* i : m_interactableList[cMap2D->GetCurrentLevel()])
+	{
+		if (i->interactableType == INTERACTABLE_TYPE::PRESSURE_PLATE)
+			i->SetInteracted(false);
+	}
+
 	for (Interactables* i : m_interactableList[cMap2D->GetCurrentLevel()])
 	{
 		i->Update(dElapsedTime);
@@ -380,11 +396,9 @@ void CEntityManager::Update(const double dElapsedTime)
 	{
 		if (m_cloneList[i]->m_FrameStorage.iCurrentFrame - m_cloneList[i]->m_FrameStorage.iEndFrame > 180)
 		{
-			// DEBUG_MSG(m_cloneList[i]->m_FrameStorage.iCurrentFrame << " " << m_cloneList[i]->m_FrameStorage.iEndFrame);
 			qclone_ID.push(m_cloneList[i]->GetCloneID());
 			delete m_cloneList[i];
 			m_cloneList[i] = nullptr;
-			/*m_cloneList.erase(std::remove(std::begin(m_cloneList), std::end(m_cloneList), nullptr), std::end(m_cloneList));*/
 			continue;
 		}
 

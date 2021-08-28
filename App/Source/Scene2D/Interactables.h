@@ -54,10 +54,13 @@ public:
 	bool ActivateSwitch(CPlayer2D* player);
 	bool ActivatePressurePlate(bool);
 	void SetInteractableID(int);
+	int GetInteractableID(void);
+
 	bool GetInteracted();
+	void SetInteracted(bool interact);
 
+	int GetInteractableType(void);
 private:
-
 	int iInteractableID;
 
 	CMesh* quad;
@@ -67,6 +70,8 @@ private:
 
 	// Boolean to check if the interactable is currently being interacted with
 	bool bInteraction;
+	bool bOriginalInteraction;
+
 	bool bCloneInteract;
 	bool LoadTexture(const char* filename, GLuint& iTextureID);
 };
