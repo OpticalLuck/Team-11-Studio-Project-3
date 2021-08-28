@@ -430,6 +430,12 @@ void CPlayer2D::Update(const double dElapsedTime)
 					cPhysics2D->SetboolGrounded(true);
 					m_playerState = STATE::S_IDLE;
 				}
+				else if (std::get<1>(data) == Direction::DOWN) {
+					glm::vec2 noJump = cPhysics2D->GetVelocity();
+					noJump.y = 0;
+
+					cPhysics2D->SetVelocity(noJump);
+				}
 			}
 			else if (obj->GetCollider()->colliderType == Collider2D::ColliderType::COLLIDER_CIRCLE)
 			{
@@ -440,6 +446,12 @@ void CPlayer2D::Update(const double dElapsedTime)
 				if (std::get<1>(data) == Direction::DOWN)
 				{
 					cPhysics2D->SetboolGrounded(true);
+				}
+				else if (std::get<1>(data) == Direction::UP) {
+					glm::vec2 noJump = cPhysics2D->GetVelocity();
+					noJump.y = 0;
+
+					cPhysics2D->SetVelocity(noJump);
 				}
 			}
 			
@@ -457,14 +469,6 @@ void CPlayer2D::Update(const double dElapsedTime)
 
 	//BOUNDARY CHECK
 	LockWithinBoundary();
-
-	//set vel to 0 if hitting top of wall
-	if (cPhysics2D->GetVelocity().y > 0 && vOldTransform.y == vTransform.y) {
-		glm::vec2 noJump = cPhysics2D->GetVelocity();
-		noJump.y = 0;
-
-		cPhysics2D->SetVelocity(noJump);
-	}
 
 	//DISABLE KNOCKED BACK STATUS
 	if (cPhysics2D->GetboolKnockedBacked() && cPhysics2D->GetVelocity() == glm::vec2(0, 0))

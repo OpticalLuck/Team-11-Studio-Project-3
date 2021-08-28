@@ -202,8 +202,10 @@ void Obstacle2D::ResolvePlayerCollision()
 			cPlayer->vTransform = cPlayer->GetCollider()->position;
 			vTransform = collider2D->position;
 
-			if (std::get<1>(data) == Direction::UP)
+			if (std::get<1>(data) == Direction::UP) {
 				cPlayer->GetPhysics()->SetboolGrounded(true);
+				cPlayer->m_playerState = CPlayer2D::STATE::S_IDLE;
+			}
 		}
 	}
 }
