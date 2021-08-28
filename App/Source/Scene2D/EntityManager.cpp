@@ -383,12 +383,6 @@ void CEntityManager::Update(const double dElapsedTime)
 {
 	for (Interactables* i : m_interactableList[cMap2D->GetCurrentLevel()])
 	{
-		if (i->interactableType == INTERACTABLE_TYPE::PRESSURE_PLATE)
-			i->SetInteracted(false);
-	}
-
-	for (Interactables* i : m_interactableList[cMap2D->GetCurrentLevel()])
-	{
 		i->Update(dElapsedTime);
 	}
 

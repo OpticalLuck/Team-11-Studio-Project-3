@@ -355,6 +355,22 @@ bool Interactables::LoadTexture(const char* filename, GLuint& iTextureID)
 	return true;
 }
 
+void Interactables::UpdateSound(void) {
+	switch (interactableType) {
+	case DOOR:
+		if (bPreviousFrameInteraction != bInteraction)
+		{
+			if (!bInteraction)
+				CSoundController::GetInstance()->PlaySoundByID(SOUND_ID::SOUND_DOOR_OPEN);
+			else
+				CSoundController::GetInstance()->PlaySoundByID(SOUND_ID::SOUND_DOOR_CLOSE);
+		}
+		break;
+	default:
+		break;
+	}
+}
+
 bool Interactables::Activate(bool interaction, CPlayer2D* player)
 {
 	switch (interactableType) {
@@ -392,21 +408,12 @@ bool Interactables::Activate(bool interaction, CPlayer2D* player)
 			else
 				CSoundController::GetInstance()->PlaySoundByID(SOUND_ID::SOUND_DOOR_CLOSE);
 		}
+		break;
 	default:
 		this->bInteraction = interaction;
 		break;
 	}
 
-	// Change Texture
-	// On and Off Textures are an index apart in the texture manager
-	/*switch (bInteraction) {
-	case true:
-		this->iTextureID = this->interactableType + 1;
-		break;
-	case false:
-		this->iTextureID = this->interactableType;
-		break;
-	}*/
 	// Loop through the interactables to activate the corresponding Interactable IDs
 	if (this->interactableType < DOOR)
 	{
@@ -439,30 +446,6 @@ bool Interactables::Activate(bool interaction, CPlayer2D* player)
 				}
 			}
 		}
-
-		//for (auto& e : entManager->GetAllInteractables())
-		//{
-		//	if (e->interactableType >= DOOR)
-		//	{
-		//		if (this->iInteractableID == e->iInteractableID)
-		//		{
-		//			if (this->interactableType == PRESSURE_PLATE) {
-		//				bool checkActivate = (interaction) || (!interaction && !idPlateHist[iInteractableID]);
-		//				if (checkActivate) {
-		//					e->Activate(this->bInteraction);
-		//					e->collider2D->SetbEnabled(!this->bInteraction);
-		//					idPlateHist[iInteractableID] = this->bInteraction;
-		//				}
-		//			}
-		//			else if (this->interactableType == LEVER) {
-		//				e->Activate(this->bInteraction);
-		//				e->collider2D->SetbEnabled(!this->bInteraction);
-		//			}
-
-		//			//return true;
-		//		}
-		//	}
-		//}
 	}
 
 	return true;
