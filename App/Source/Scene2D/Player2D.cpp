@@ -622,6 +622,11 @@ void CPlayer2D::InputUpdate(double dt)
 	glm::vec2 velocity = cPhysics2D->GetVelocity();
 	glm::vec2 force = glm::vec2(0.f);
 
+	if (m_KeyboardInputs[m_FrameStorage.iCurrentFrame][KEYBOARD_INPUTS::R].bKeyPressed)
+	{
+		ResetToCheckPoint();
+	}
+
 	if (m_KeyboardInputs[m_FrameStorage.iCurrentFrame][KEYBOARD_INPUTS::W].bKeyDown)
 	{
 		velocity.y = fMovementSpeed;
