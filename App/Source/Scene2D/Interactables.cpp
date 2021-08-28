@@ -13,6 +13,7 @@
 
 Interactables::Interactables(int iTextureID)
 	: bInteraction(false)
+	, bPreviousFrameInteraction(false)
 	, bCloneInteract(false)
 	, quad(NULL)
 	, iInteractableID(0)
@@ -80,6 +81,7 @@ bool Interactables::Init()
 void Interactables::Update(const double dElapsedTime)
 {
 	bool bCollided = false;
+	bPreviousFrameInteraction = bInteraction;
 
 	CEntityManager* em = CEntityManager::GetInstance();
 
@@ -153,7 +155,8 @@ void Interactables::Update(const double dElapsedTime)
 		if (distance < 0.3)
 		{
 			CMap2D::GetInstance()->SetCurrentLevel(CMap2D::GetInstance()->GetCurrentLevel() + 1);
-			if (CMap2D::GetInstance()->LoadMap("Maps/test.csv", 1) == false)
+			std::string nextLevelPath = "Maps/Level_" + std::to_string(CMap2D::GetInstance()->GetCurrentLevel()) + ".csv";
+			if (CMap2D::GetInstance()->LoadMap(nextLevelPath, 1) == false)
 			{
 				DEBUG_MSG("Map Loading failed");
 				return;
@@ -179,6 +182,7 @@ void Interactables::Update(const double dElapsedTime)
 				em->GetPlayer()->m_CheckpointState.m_CheckpointHP = em->GetPlayer()->GetHealth();
 				em->GetPlayer()->m_CheckpointState.m_CheckpointInventoryState = new CInventory(*em->GetPlayer()->GetInventory());
 				em->GetPlayer()->m_CheckpointState.m_CheckpointPosition = em->GetPlayer()->vTransform;
+				CSoundController::GetInstance()->PlaySoundByID(SOUND_ID::SOUND_SWITCH);
 			}
 		}
 
@@ -369,9 +373,6 @@ bool Interactables::Activate(bool interaction, CPlayer2D* player)
 		OpenChest(player, "Shuriken", 10);
 		OpenChest(player, "Potion", 3);
 		this->bInteraction = interaction;
-		break;
-	case CHECKPOINT:
-		CSoundController::GetInstance()->PlaySoundByID(SOUND_ID::SOUND_SWITCH);
 		break;
 	default:
 		this->bInteraction = interaction;
