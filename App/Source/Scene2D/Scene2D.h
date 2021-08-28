@@ -63,8 +63,11 @@ public:
 
 	double GetParadoxiumTimer();
 
+	double GetMaxParadoxiumTimer();
+
 protected:
 	double dParadoxiumTimer;
+	const double maxdParadoxiumTimer = 15.f;
 
 	// The handler containing the instance of the 2D Map
 	CMap2D* cMap2D;

@@ -40,6 +40,7 @@ CPlayGameState::CPlayGameState(void)
 	, cCamera(NULL)
 	, cSoundController(NULL)
 	, displayHP(0.f)
+	, displayTimer(0.f)
 	, cFPSCounter(NULL)
 	, cMap2D(NULL)
 	, iTimer2(0)
@@ -430,7 +431,7 @@ bool CPlayGameState::ImGuiRender()
 			ImGui::Text("Energy: ");
 			ImGui::SameLine();
 			ImGui::SetWindowFontScale(.9f * relativeScale_y);
-			ImGui::ProgressBar(displayTimer / (double)10.0, ImVec2(cSettings->iWindowWidth * 0.4f, cSettings->iWindowHeight * 0.03f));
+			ImGui::ProgressBar(displayTimer / (double)cScene2D->GetMaxParadoxiumTimer(), ImVec2(cSettings->iWindowWidth * 0.4f, cSettings->iWindowHeight * 0.03f));
 			ImGui::PopStyleColor();
 			ImGui::PopStyleColor();
 			ImGui::End();
