@@ -89,6 +89,12 @@ void Projectiles::Update(double dElapsedTime)
 				}
 			}
 		}
+
+		CPlayer2D* player = em->GetPlayer();
+		if (glm::distance(vTransform, player->vTransform) < 2)
+		{
+			player->Attacked(2, cPhysics2D);
+		}
 	}
 
 	//Collision between objects in map space
