@@ -149,9 +149,23 @@ bool CPlayGameState::Update(const double dElapsedTime)
 	}
 	if (cPlayer->GetHealth() <= 0)
 	{
-		CGameStateManager::GetInstance()->SetActiveGameState("GameOverState");
-		CSoundController::GetInstance()->StopPlayBack();
-		return true;
+		if (cPlayer->iLives <= 0)
+		{
+			CGameStateManager::GetInstance()->SetActiveGameState("GameOverState");
+			CSoundController::GetInstance()->StopPlayBack();
+			return true;
+		}
+		else
+		{
+			for (int i = 0; i < cPlayer->GetInventory()->GetNumofUniqueItems(); ++i)
+				cPlayer->GetInventory()->GetItem(i).iCount = cPlayer->m_CheckpointState.m_CheckpointInventoryState->GetItem(i).iCount;
+			
+			cPlayer->vTransform = cPlayer->m_CheckpointState.m_CheckpointPosition;
+			cPlayer->SetHealth(cPlayer->m_CheckpointState.m_CheckpointHP);
+			--cPlayer->iLives;
+
+			return true;
+		}
 	}
 	
 

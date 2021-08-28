@@ -291,7 +291,7 @@ bool CScene2D::Update(const double dElapsedTime)
 	{
 		if (cSoundController->isCurrentlyPlaying(cSoundController->GetNamebyID(SOUND_ID::BGM_LEVEL1)))
 		{
-			cSoundController->StopPlayBack();
+			cSoundController->StopSoundByID(SOUND_ID::BGM_LEVEL1);
 			cSoundController->PlaySoundByID(SOUND_ID::BGM_TROUBLE);
 		}
 	}
@@ -299,7 +299,7 @@ bool CScene2D::Update(const double dElapsedTime)
 	{
 		if (cSoundController->isCurrentlyPlaying(cSoundController->GetNamebyID(SOUND_ID::BGM_TROUBLE)))
 		{
-			cSoundController->StopPlayBack();
+			cSoundController->StopSoundByID(SOUND_ID::BGM_TROUBLE);
 			cSoundController->PlaySoundByID(SOUND_ID::BGM_LEVEL1);
 		}
 	}

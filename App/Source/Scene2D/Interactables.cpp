@@ -198,6 +198,18 @@ void Interactables::Update(const double dElapsedTime)
 			}
 		}
 	}
+	else if (this->interactableType == LIVES)
+	{
+	for (auto& e : em->GetAllPlayers())
+	{
+		float distance = glm::length(e->vTransform - this->vTransform);
+		if (distance < 0.3)
+		{
+			if (e->iLives < e->iMaxLives)
+				++e->iLives;
+		}
+	}
+	}
 
 	if (!em->GetPlayer()->GetRecording())
 	{
