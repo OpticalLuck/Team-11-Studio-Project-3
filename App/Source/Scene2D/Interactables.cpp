@@ -375,7 +375,7 @@ bool Interactables::Activate(bool interaction, CPlayer2D* player)
 {
 	switch (interactableType) {
 	case LEVER:
-		CSoundController::GetInstance()->PlaySoundByID(SOUND_ID::SOUND_SWITCH);
+		// CSoundController::GetInstance()->PlaySoundByID(SOUND_ID::SOUND_SWITCH);
 		ActivateSwitch(player);
 		break;
 	case PRESSURE_PLATE:
