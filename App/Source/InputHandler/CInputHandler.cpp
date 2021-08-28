@@ -59,6 +59,8 @@ void CInputHandler::UpdateCurrentFrameInputs(void)
 		if (cMouseController->IsButtonUp(m_Buttons[i]))
 			currentFrameMouseInputs[i].bButtonUp = true;
 
+		currentFrameMouseInputs[i].dScrollOffset = cMouseController->GetMouseScrollStatus(CMouseController::SCROLL_TYPE_YOFFSET);
+
 	}
 
 	m_KeyboardInputs.push_back(currentFrameKeyInputs);

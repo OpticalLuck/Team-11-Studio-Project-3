@@ -27,7 +27,6 @@ class Interactables : public CObject2D
 public:
 
 	bool bJustTeleported = false;
-	bool bDoorSoundPlayed = true;
 
 	INTERACTABLE_TYPE interactableType;
 
@@ -68,6 +67,7 @@ private:
 	glm::vec4 currentColor;
 
 	// Boolean to check if the interactable is currently being interacted with
+	bool bPreviousFrameInteraction;
 	bool bInteraction;
 	bool bCloneInteract;
 	bool LoadTexture(const char* filename, GLuint& iTextureID);

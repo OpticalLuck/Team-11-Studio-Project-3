@@ -32,6 +32,7 @@ enum MOUSE_INPUTS
 	LMB = 0,
 	RMB,
 	MMB,
+	SCROLL,
 	MOUSE_TOTAL,
 };
 
@@ -46,6 +47,8 @@ struct KeyInput
 
 struct MouseInput
 {
+	double dScrollOffset = 0.f;
+
 	uint32_t Button;
 	bool bButtonDown = false;
 	bool bButtonPressed = false;
@@ -83,7 +86,10 @@ protected:
 								   GLFW_KEY_RIGHT,
 								   GLFW_KEY_ENTER,
 								   GLFW_KEY_E };
-	uint32_t m_Buttons[MOUSE_TOTAL] = { CMouseController::LMB, CMouseController::RMB, CMouseController::MMB };
+
+	uint32_t m_Buttons[MOUSE_TOTAL] = { CMouseController::LMB,
+										CMouseController::RMB, 
+										CMouseController::MMB, };
 
 	// Keyboard Inputs stored in a dynamic vector of arrays
 	std::vector<std::array<KeyInput, KEY_TOTAL>> m_KeyboardInputs;
