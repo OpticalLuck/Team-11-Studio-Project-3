@@ -23,7 +23,7 @@ class Camera2D : public CSingletonTemplate<Camera2D>
 
 	public:
 
-		const float CAMERA_SPEED = 0.02f;
+		const float CAMERA_SPEED = 0.06f;
 
 		Camera2D(void);
 		~Camera2D(void);

@@ -107,7 +107,7 @@ void Interactables::Update(const double dElapsedTime)
 		for (auto& e : em->GetAllPlayers())
 		{
 			float distance = glm::length(e->vTransform - this->vTransform);
-			if (distance < 0.4)
+			if (distance < 0.5)
 			{
 				bCollided = true;
 			}
@@ -116,7 +116,7 @@ void Interactables::Update(const double dElapsedTime)
 		for (auto& e : em->GetallObstacles())
 		{
 			float distance = glm::length(e->vTransform - this->vTransform);
-			if (distance < 0.4)
+			if (distance < 0.5)
 			{
 				bCollided = true;
 			}
