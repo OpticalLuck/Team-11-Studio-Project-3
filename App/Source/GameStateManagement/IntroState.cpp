@@ -45,6 +45,7 @@ using namespace std;
 CIntroState::CIntroState(void)
 	: background(NULL)
 	, countdown(0)
+	, currentColor(1, 1, 1, 0)
 {
 
 }
@@ -63,13 +64,14 @@ bool CIntroState::Init(void)
 {
 	cout << "CIntroState::Init()\n" << endl;
 
-	// Include Shader Manager
-	CShaderManager::GetInstance()->Use("2DShader");
-	CShaderManager::GetInstance()->activeShader->setInt("texture1", 0);
-
 	//Create Background Entity
-	background = new CBackgroundEntity("Image/IntroBackground.png");
-	background->SetShader("2DShader");
+	background = new CBackgroundEntity("Image/Backgrounds/Intro.png");
+	background->SetShader("2DColorShader");
+	// Include Shader Manager
+	CShaderManager::GetInstance()->Use("2DColorShader");
+	CShaderManager::GetInstance()->activeShader->setInt("texture1", 0);
+	CShaderManager::GetInstance()->activeShader->setVec4("runtime_color", currentColor);
+
 	background->Init();
 
 	//Sound effects
@@ -103,7 +105,8 @@ bool CIntroState::Init(void)
 bool CIntroState::Update(const double dElapsedTime)
 {
 	countdown += dElapsedTime;
-	if (countdown > 1)
+	// currentColor = glm::vec4(1, 1, 1, countdown * 0.3);
+	if (countdown > 5)
 	{
 		countdown = 0;
 		// Reset the CKeyboardController
@@ -124,7 +127,10 @@ bool CIntroState::Update(const double dElapsedTime)
 void CIntroState::Render()
 {
 	// Clear the screen and buffer
-	glClearColor(0.0f, 0.55f, 1.00f, 1.00f);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+	CShaderManager::GetInstance()->Use("2DColorShader");
+	CShaderManager::GetInstance()->activeShader->setVec4("runtime_color", currentColor);
 
 	//Draw the background
  	background->Render();
