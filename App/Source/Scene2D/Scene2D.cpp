@@ -37,7 +37,7 @@ CScene2D::~CScene2D(void)
 {
 	if (cSoundController)
 	{
-		cSoundController->StopSoundByID(BGM_LEVEL1);
+		cSoundController->StopPlayBack();
 		// We won't delete this since it was created elsewhere
 		cSoundController = NULL;
 	}
@@ -177,7 +177,8 @@ bool CScene2D::Init(std::string levelPath)
 
 	//cInventoryManager = CInventoryManager::GetInstance();
 	cInventoryM = CInventoryManager::GetInstance();
-		
+	cSoundController->PlaySoundByID(SOUND_ID::BGM_LEVEL1);
+
 	return true;
 }
 
@@ -288,7 +289,7 @@ bool CScene2D::Update(const double dElapsedTime)
 	}
 	if (cPlayer2D->GetHealth() < 3) // change bgm if the health is dying 
 	{
-		if (!cSoundController->isCurrentlyPlaying(cSoundController->GetNamebyID(SOUND_ID::BGM_TROUBLE)))
+		if (cSoundController->isCurrentlyPlaying(cSoundController->GetNamebyID(SOUND_ID::BGM_LEVEL1)))
 		{
 			cSoundController->StopPlayBack();
 			cSoundController->PlaySoundByID(SOUND_ID::BGM_TROUBLE);
@@ -297,8 +298,10 @@ bool CScene2D::Update(const double dElapsedTime)
 	else
 	{
 		if (cSoundController->isCurrentlyPlaying(cSoundController->GetNamebyID(SOUND_ID::BGM_TROUBLE)))
+		{
 			cSoundController->StopPlayBack();
-		cSoundController->PlaySoundByID(SOUND_ID::BGM_LEVEL1);
+			cSoundController->PlaySoundByID(SOUND_ID::BGM_LEVEL1);
+		}
 	}
 	return true;
 }

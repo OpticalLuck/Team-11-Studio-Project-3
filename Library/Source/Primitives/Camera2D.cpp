@@ -29,13 +29,11 @@ void Camera2D::Update(float dElapsedTime) {
 		return;
 	}
 
-	float spd = 5 * dElapsedTime;
-
 	//Lerp
-	pos.x = Math::Lerp(pos.x, targetPos.x, spd);
-	pos.y = Math::Lerp(pos.y, targetPos.y, spd);
+	pos.x = Math::Lerp(pos.x, targetPos.x, CAMERA_SPEED);
+	pos.y = Math::Lerp(pos.y, targetPos.y, CAMERA_SPEED);
 
-	fZoom = Math::Lerp(fZoom, fTargetZoom, spd);
+	fZoom = Math::Lerp(fZoom, fTargetZoom, CAMERA_SPEED);
 	fZoom = Math::Clamp(fZoom, 1.f, 2.f);
 	fTargetZoom = Math::Clamp(fTargetZoom, 1.f, 2.f);
 
