@@ -431,7 +431,7 @@ std::vector<CObject2D*> CMap2D::GetObjectArr()
 CObject2D* CMap2D::GetCObject(const unsigned int uiCol, const unsigned int uiRow, const bool bInvert)
 {
 	if(bInvert)
-		return arrGrid[uiCurLevel][GetLevelRow() - uiRow - 1][uiCol];
+ 		return arrGrid[uiCurLevel][GetLevelRow() - uiRow - 1][uiCol];
 	else
 		return arrGrid[uiCurLevel][uiRow][uiCol];
 }
