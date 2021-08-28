@@ -278,6 +278,17 @@ bool CTextureManager::Init(void)
             return false;
         }
     }
+    for (int i = 1; i <= 13; i++)
+    {
+        stringstream thanksJeryl;
+        thanksJeryl.str("");
+        thanksJeryl << "Image/Villege/Villege (" << i << ").png";
+        if (LoadTexture(thanksJeryl.str().c_str(), TILE_VILLEGE_1 + i - 1) == false)
+        {
+            DEBUG_MSG("Failed to load " << thanksJeryl.str());
+            return false;
+        }
+    }
 
 	return true;
 }
