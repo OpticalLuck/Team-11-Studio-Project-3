@@ -81,7 +81,7 @@ class CMobEnemy2D : public CEnemy2D
 		void ChaseEnemyY(void); //Chasing the enemy, in terms of y axis
 		void UpdateAttack(const float dElapsedTime);
 
-		void CollisionUpdate(void);
+		void CollisionUpdate(void); 
 		void ClampPos(void);
 
 		void UpdateDumb(float dElapsedTime);
@@ -114,6 +114,9 @@ class CMobEnemy2D : public CEnemy2D
 		int intervalTimer;
 
 		int id;
+
+		//Boulder collide
+		bool BoulderCollide;
 
 		//int nearestFrame;
 		std::pair<int, bool> nearestFrame;

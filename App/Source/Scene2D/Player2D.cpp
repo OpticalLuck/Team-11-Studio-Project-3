@@ -430,6 +430,12 @@ void CPlayer2D::Update(const double dElapsedTime)
 					cPhysics2D->SetboolGrounded(true);
 					m_playerState = STATE::S_IDLE;
 				}
+				else if (std::get<1>(data) == Direction::DOWN) {
+					glm::vec2 noJump = cPhysics2D->GetVelocity();
+					noJump.y = 0;
+
+					cPhysics2D->SetVelocity(noJump);
+				}
 			}
 			else if (obj->GetCollider()->colliderType == Collider2D::ColliderType::COLLIDER_CIRCLE)
 			{
@@ -440,6 +446,12 @@ void CPlayer2D::Update(const double dElapsedTime)
 				if (std::get<1>(data) == Direction::DOWN)
 				{
 					cPhysics2D->SetboolGrounded(true);
+				}
+				else if (std::get<1>(data) == Direction::UP) {
+					glm::vec2 noJump = cPhysics2D->GetVelocity();
+					noJump.y = 0;
+
+					cPhysics2D->SetVelocity(noJump);
 				}
 			}
 			

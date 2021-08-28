@@ -64,6 +64,10 @@ bool CTextureManager::Init(void)
         DEBUG_MSG("Failed to load wall_2 tile texture");
         return false;
     }
+    if (LoadTexture("Image/Walls/Wall_3.png", TILE_DARK) == false) {
+        DEBUG_MSG("Failed to load Wall_3 tile texture");
+        return false;
+    }
     if (LoadTexture("Image/Boulder.png", OBSTACLE_BOULDER) == false)
     {
         DEBUG_MSG("Failed to load Boulder tile texture");
