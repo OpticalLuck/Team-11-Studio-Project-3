@@ -69,7 +69,7 @@ void Projectiles::Update(double dElapsedTime)
 	//ResolveEnemyCollision();
 	if (fusetimer < 0)
 	{
-		//bDestroyed = true;
+		bDestroyed = true;
 		CSoundController::GetInstance()->PlaySoundByID(SOUND_ID::SOUND_EXPLOSION);
 
 		CEntityManager* em = CEntityManager::GetInstance();
@@ -100,6 +100,10 @@ void Projectiles::Update(double dElapsedTime)
 	//Collision between objects in map space
 	ResolveMapCollision(CheckMapCollision());
 
+	if (bCollided)
+	{
+		iBounces++;
+	}
 }
 
 

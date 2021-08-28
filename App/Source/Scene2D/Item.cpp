@@ -69,8 +69,9 @@ void CItem::Use(CPlayer2D* user)
 			CObject2D* shurikenobj = ObjectFactory::CreateObject(OBJECT_TYPE::PROJECTILES_BOMB);
 			shurikenobj->Init();
 			shurikenobj->vTransform = user->vTransform;
-
-			glm::vec2 force = glm::clamp(distance * 500.f, glm::vec2(-2000.f, -2000.f), glm::vec2(2000.f, 2000.f));
+			
+			float clamp = 5000.f;
+			glm::vec2 force = glm::clamp(distance * 500.f, glm::vec2(-clamp, -clamp), glm::vec2(clamp, clamp));
 			shurikenobj->GetPhysics()->SetForce(force);
 
 			if (force.x > 0)
