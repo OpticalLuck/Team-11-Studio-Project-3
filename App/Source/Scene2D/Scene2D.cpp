@@ -26,7 +26,7 @@ CScene2D::CScene2D(void)
 	, cameraHandler(NULL)
 	, cInventoryM(NULL)
 	, transform(glm::mat4(1))
-	, dParadoxiumTimer(10.f)
+	, dParadoxiumTimer(15.f)
 {
 }
 
@@ -111,7 +111,7 @@ void CScene2D::StopParadoxiumAbility()
 	//Loading prev values of movable entities
 	cEntityManager->LoadPrevious();
 
-	dParadoxiumTimer = 10.f;
+	dParadoxiumTimer = 15.f;
 }
 
 /**
