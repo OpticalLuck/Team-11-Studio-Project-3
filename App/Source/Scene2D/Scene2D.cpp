@@ -193,13 +193,13 @@ bool CScene2D::Update(const double dElapsedTime)
 	// Call the Map2D's update method
 	cMap2D->Update(dElapsedTime);
 
-	if (CMouseController::GetInstance()->GetMouseScrollStatus(CMouseController::SCROLL_TYPE_YOFFSET) > 0)
+	if (CKeyboardController::GetInstance()->IsKeyDown(GLFW_KEY_UP))
 	{
-		Camera2D::GetInstance()->UpdateZoom(Camera2D::GetInstance()->getTargetZoom() + 0.1f);
+		Camera2D::GetInstance()->UpdateZoom(Camera2D::GetInstance()->getTargetZoom() + dElapsedTime);
 	}
-	if (CMouseController::GetInstance()->GetMouseScrollStatus(CMouseController::SCROLL_TYPE_YOFFSET) < 0)
+	if (CKeyboardController::GetInstance()->IsKeyDown(GLFW_KEY_DOWN))
 	{
-		Camera2D::GetInstance()->UpdateZoom(Camera2D::GetInstance()->getTargetZoom() - 0.1f);
+		Camera2D::GetInstance()->UpdateZoom(Camera2D::GetInstance()->getTargetZoom() - dElapsedTime);
 	}
 
 	if (fCooldown > 0)
