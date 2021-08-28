@@ -432,7 +432,9 @@ void CPlayer2D::Update(const double dElapsedTime)
 				cPhysics2D->SetboolGrounded(true);
 			
 			if (std::get<1>(data) == Direction::LEFT || std::get<1>(data) == Direction::RIGHT)
+			{
 				cPhysics2D->SetVelocity(glm::vec2(0, cPhysics2D->GetVelocity().y));
+			}
 			vTransform = collider2D->position;
 			obj->vTransform = obj->GetCollider()->position;
 		}
@@ -479,7 +481,6 @@ void CPlayer2D::Update(const double dElapsedTime)
 
 	//CS: Update the animated sprite
 	animatedSprites->Update(dElapsedTime);
-
 	m_FrameStorage.iCurrentFrame++;
 }
 

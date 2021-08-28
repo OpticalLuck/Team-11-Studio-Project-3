@@ -153,7 +153,7 @@ void CObject2D::ResolveMapCollision(std::vector<pair<CObject2D*, float>> aabbvec
 			{
 				collider2D->ResolveAABB(obj->GetCollider(), data);
 
-				if (std::get<1>(data) == Direction::UP)
+				if (std::get<1>(data) == Direction::UP)//kinda reversed xd
 					cPhysics2D->SetboolGrounded(true);
 			}
 			else if (obj->GetCollider()->colliderType == Collider2D::ColliderType::COLLIDER_CIRCLE)

@@ -78,8 +78,8 @@ void CInventory::Init()
 {
 	//m_Items.insert(pair<int, CItem>(0,CItem(2)));
 
-	SetItem(0, "Shuriken", PROJECTILES_SHURIKEN, 0, 100, 10);
-	SetItem(1, "Kunai", BULLETS_KUNAI, 0, 100, 10);
+	SetItem(0, "Bomb", PROJECTILES_BOMB, 0, 100, 10);
+	SetItem(1, "Shuriken", BULLETS_SHURIKEN, 0, 100, 10);
 	SetItem(2, "Potion", CONSUMABLES_POTION, 0, 100, 2);
 }
 
