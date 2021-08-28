@@ -279,6 +279,24 @@ bool CTextureManager::Init(void)
         }
     }
 
+    if (LoadTexture("Image/Futuristic/Barrel (1).png", OBSTACLE_FUTURE_BARREL1) == false)
+    {
+        DEBUG_MSG("Failed to load Barrel (1) texture");
+        return false;
+    }
+
+    if (LoadTexture("Image/Futuristic/Barrel (2).png", OBSTACLE_FUTURE_BARREL2) == false)
+    {
+        DEBUG_MSG("Failed to load Barrel (2) texture");
+        return false;
+    }
+
+    if (LoadTexture("Image/Futuristic/Box.png", OBSTACLE_FUTURE_BOX) == false)
+    {
+        DEBUG_MSG("Failed to load Box texture");
+        return false;
+    }
+
 	return true;
 }
 
