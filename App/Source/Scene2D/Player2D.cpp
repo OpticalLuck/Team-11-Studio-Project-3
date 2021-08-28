@@ -201,6 +201,10 @@ bool CPlayer2D::Init(void)
 	CInventoryManager::GetInstance()->Add("Player", this);
 	cInventory = CInventoryManager::GetInstance()->Get("Player");
 
+	m_CheckpointState.m_CheckpointHP = GetHealth();
+	m_CheckpointState.m_CheckpointInventoryState = new CInventory(*GetInventory());
+	m_CheckpointState.m_CheckpointPosition = vTransform;
+
 	return true;
 }
 

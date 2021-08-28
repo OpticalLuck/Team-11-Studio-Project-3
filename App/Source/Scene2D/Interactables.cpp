@@ -374,6 +374,15 @@ bool Interactables::Activate(bool interaction, CPlayer2D* player)
 		OpenChest(player, "Potion", 3);
 		this->bInteraction = interaction;
 		break;
+	case DOOR:
+		this->bInteraction = interaction;
+		if (bPreviousFrameInteraction != bInteraction)
+		{
+			if (!bInteraction)
+				CSoundController::GetInstance()->PlaySoundByID(SOUND_ID::SOUND_DOOR_OPEN);
+			else
+				CSoundController::GetInstance()->PlaySoundByID(SOUND_ID::SOUND_DOOR_CLOSE);
+		}
 	default:
 		this->bInteraction = interaction;
 		break;

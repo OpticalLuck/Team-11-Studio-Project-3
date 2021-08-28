@@ -149,7 +149,7 @@ bool CPlayGameState::Update(const double dElapsedTime)
 	}
 	if (cPlayer->GetHealth() <= 0)
 	{
-		if (cPlayer->iLives <= 0)
+		if (cPlayer->iLives <= 1)
 		{
 			CGameStateManager::GetInstance()->SetActiveGameState("GameOverState");
 			CSoundController::GetInstance()->StopPlayBack();
@@ -257,6 +257,7 @@ bool CPlayGameState::ImGuiRender()
 		UI_window |= ImGuiWindowFlags_NoCollapse;
 		UI_window |= ImGuiWindowFlags_NoNav;
 		UI_window |= ImGuiWindowFlags_NoMouseInputs;
+		UI_window |= ImGuiWindowFlags_NoResize;
 
 		// Calculate the relative scale to our default windows width
 		float relativeScale_x = cSettings->iWindowWidth / 800.0f;
@@ -283,6 +284,20 @@ bool CPlayGameState::ImGuiRender()
 			ImGui::SetWindowPos(ImVec2(0, 0));
 			ImGui::End();
 		}
+
+		ImGui::SetNextWindowPos(ImVec2(0, cSettings->iWindowHeight - 100.0f * relativeScale_y));
+		ImGui::SetNextWindowSize(ImVec2(100 * relativeScale_y, 30 * relativeScale_y));
+		ImGui::Begin("LivesWindow", NULL, UI_window);
+		ImGui::Image((void*)(intptr_t)cTextureManager->MapOfTextureIDs.at(OBJECT_TYPE::INTERACTABLE_LIVES),
+			ImVec2(25 * relativeScale_x, 25 * relativeScale_y),
+			ImVec2(0, 1), ImVec2(1, 0));
+		ImGui::SameLine();
+		std::stringstream ss;
+		ss.str("");
+		ss << cPlayer->iLives << " / " << cPlayer->iMaxLives;
+		ImGui::SetWindowFontScale(1.f * relativeScale_y);
+		ImGui::TextColored(ImVec4(1, 1, 0, 1), ss.str().c_str());
+		ImGui::End();
 
 		ImGui::SetNextWindowFocus();
 		//UI bar
