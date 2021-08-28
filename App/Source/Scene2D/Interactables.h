@@ -40,6 +40,7 @@ public:
 
 	// Update
 	void Update(const double dElapsedTime);
+	void UpdateSound(void);
 
 	// PreRender
 	void PreRender(void);
