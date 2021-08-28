@@ -4,6 +4,7 @@
 
 #include "Primitives/Mesh.h"
 #include "../Scene2D/BackgroundEntity.h"
+#include "Math/MyMath.h"
 
 #include <string>
 
@@ -37,8 +38,18 @@ public:
 	virtual bool ImGuiRender();
 protected:
 	CBackgroundEntity* background;
+	CSettings* cSettings;
 	ButtonData exitButtonData;
-
 	ButtonData gameOverImage;
+
+	float fFadeCount;
+	bool bDecrease;
+
+	float fFadeCount2;
+	bool bIncrease2;
+	bool bDecrease2;
+
+	float fWaitTime;
+	bool bWaitTimeIncrease;
 
 };

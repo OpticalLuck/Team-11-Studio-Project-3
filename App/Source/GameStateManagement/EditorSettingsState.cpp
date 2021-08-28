@@ -74,7 +74,7 @@ bool CEditorSettingsState::Init(void)
 	cLevelEditor->Init();
 
 	//Create Background Entity
-	background = new CBackgroundEntity("Image/MenuBackground.png");
+	background = new CBackgroundEntity("Image/Backgrounds/space.png");
 	background->SetShader("2DShader");
 	background->Init();
 

@@ -686,9 +686,20 @@ void CPlayer2D::InputUpdate(double dt)
 	if (glm::length(force) > 0.f)
 		cPhysics2D->SetForce(force);
 
-	if (m_MouseInputs[m_FrameStorage.iCurrentFrame][MOUSE_INPUTS::LMB].bButtonPressed)
+	if (m_MouseInputs[m_FrameStorage.iCurrentFrame][MOUSE_INPUTS::LMB].bButtonPressed && cInventory->iCurrentIndex == 0) //use shuriken
 	{
 		cSoundController->PlaySoundByID(SOUND_ID::SOUND_SWING);
+		cInventory->UseItem();
+	}
+	if (m_MouseInputs[m_FrameStorage.iCurrentFrame][MOUSE_INPUTS::LMB].bButtonPressed && cInventory->iCurrentIndex == 1) //use bullet
+	{
+		cSoundController->PlaySoundByID(SOUND_ID::SOUND_SWING);
+		cInventory->UseItem();
+	}
+	if (m_MouseInputs[m_FrameStorage.iCurrentFrame][MOUSE_INPUTS::LMB].bButtonPressed && cInventory->iCurrentIndex == 2) //use potion
+	{
+		cSoundController->PlaySoundByID(SOUND_ID::SOUND_POTION);
+		cSoundController->SetVolumeByID(SOUND_ID::SOUND_POTION, 1.f);
 		cInventory->UseItem();
 	}
 
@@ -713,6 +724,7 @@ void CPlayer2D::Attacked(int hp, CPhysics2D* bounceObj) {
 	if (pShield > 0) //Return if shield is enabled/ player does not get damaged
 		return;
 
+	cSoundController->PlaySoundByID(SOUND_ID::SOUND_HIT);
 	pHealth = Math::Max(0, pHealth - 1);
 	pShield = pMaxShield + 1; //Offset by 1 frame for better synchronisation (FUTURE JEVON IF YOU KNOW YOU KNOW IF NOT THEN LMAO)
 

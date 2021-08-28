@@ -11,7 +11,7 @@
 
 #include "Primitives/Mesh.h"
 #include "../Scene2D/BackgroundEntity.h"
-
+#include "SoundController/SoundController.h"
 #include <string>
 
  // Include IMGUI
@@ -56,10 +56,12 @@ protected:
 	CBackgroundEntity* background;
 	ButtonData startButtonData;
 	ButtonData exitButtonData;
+	ButtonData editorButtonData;
 
 	ButtonData optionButtonData;
 	ButtonData backButtonData;
 	ButtonData applyButtonData;
+	CSoundController* cSoundController;
 
 	bool pendingChange;
 

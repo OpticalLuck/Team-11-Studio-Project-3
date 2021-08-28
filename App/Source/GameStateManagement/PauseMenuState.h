@@ -2,6 +2,7 @@
 #include "GameStateBase.h"
 
 #include "Primitives/Mesh.h"
+#include "SoundController/SoundController.h"
 #include "../Scene2D/BackgroundEntity.h"
 
 #include <string>
@@ -50,6 +51,7 @@ protected:
 	ButtonData applyButtonData;
 
 	ImGuiWindowFlags option_window;
+	CSoundController* cSoundController;
 
 	bool pendingChange;
 

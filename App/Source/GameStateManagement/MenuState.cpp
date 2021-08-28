@@ -33,7 +33,6 @@
 
 // Include CKeyboardController
 #include "Inputs/KeyboardController.h"
-#include "SoundController/SoundController.h"
 #include "../LevelEditor/LevelEditor.h"
 #include "../GameStateManagement/PlayGameState.h"
 
@@ -47,6 +46,7 @@ CMenuState::CMenuState(void)
 	: background(NULL)
 	, menuState(STATE_MAIN)
 	, pendingChange(false)
+	,cSoundController(NULL)
 {
 
 }
@@ -70,23 +70,27 @@ bool CMenuState::Init(void)
 	CShaderManager::GetInstance()->activeShader->setInt("texture1", 0);
 
 	//Create Background Entity
-	background = new CBackgroundEntity("Image/MenuBackground.png");
+	background = new CBackgroundEntity("Image/Backgrounds/space.png");
 	background->SetShader("2DShader");
 	background->Init();
 
 	// Load the images for buttons
 	CImageLoader* il = CImageLoader::GetInstance();
-	startButtonData.fileName = "Image\\GUI\\PlayButton.png";
+	startButtonData.fileName = "Image\\Buttons\\play.png";
 	startButtonData.textureID = il->LoadTextureGetID(startButtonData.fileName.c_str(), false);
-	exitButtonData.fileName = "Image\\GUI\\ExitButton.png";
+	exitButtonData.fileName = "Image\\Buttons\\quit.png";
 	exitButtonData.textureID = il->LoadTextureGetID(exitButtonData.fileName.c_str(), false);
+	editorButtonData.fileName = "Image\\Buttons\\editor.png";
+	editorButtonData.textureID = il->LoadTextureGetID(editorButtonData.fileName.c_str(), false);
 
-	optionButtonData.fileName = "Image\\GUI\\OptionButton.png";
+	optionButtonData.fileName = "Image\\Buttons\\option.png";
 	optionButtonData.textureID = il->LoadTextureGetID(optionButtonData.fileName.c_str(), false);
-	backButtonData.fileName = "Image\\GUI\\BackButton.png";
+	backButtonData.fileName = "Image\\Buttons\\back.png";
 	backButtonData.textureID = il->LoadTextureGetID(backButtonData.fileName.c_str(), false);
-	applyButtonData.fileName = "Image\\GUI\\ApplyButton.png";
+	applyButtonData.fileName = "Image\\Buttons\\apply.png";
 	applyButtonData.textureID = il->LoadTextureGetID(applyButtonData.fileName.c_str(), false);
+	
+	cSoundController = CSoundController::GetInstance();
 
 	return true;
 }
@@ -135,7 +139,7 @@ bool CMenuState::UpdateMenu(ImGuiWindowFlags window_flags)
 	// Create a window called "Hello, world!" and append into it.
 	ImGui::Begin("Main Menu", NULL, window_flags);
 	ImGui::SetWindowPos(ImVec2(CSettings::GetInstance()->iWindowWidth / 2.0f - buttonWidth / 2.0f, CSettings::GetInstance()->iWindowHeight / 6.0f));				
-	ImGui::SetWindowSize(ImVec2(buttonWidth + 25, buttonHeight * 3 + 50));
+	ImGui::SetWindowSize(ImVec2(buttonWidth + 55, buttonHeight * 3 + 200));
 
 	//Added rounding for nicer effect
 	ImGuiStyle& style = ImGui::GetStyle();
@@ -145,23 +149,32 @@ bool CMenuState::UpdateMenu(ImGuiWindowFlags window_flags)
 	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.f, 0.f, 0.f, 0.f));
 	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.f, 0.f, 0.f, 0.f));
 
-	// Add codes for Start button here
+	//Start button here
 	if (ImGui::ImageButton((ImTextureID)startButtonData.textureID,
 		ImVec2(buttonWidth, buttonHeight), ImVec2(0.0, 0.0), ImVec2(1.0, 1.0)))
 	{
+		cSoundController->PlaySoundByID(SOUND_ID::SOUND_ONCLICK);
 		menuState = STATE_SELECT_LEVEL;
 	}
-
+	//Editor button here
+	if (ImGui::ImageButton((ImTextureID)editorButtonData.textureID,
+		ImVec2(buttonWidth, buttonHeight), ImVec2(0.0, 0.0), ImVec2(1.0, 1.0)))
+	{
+		cSoundController->PlaySoundByID(SOUND_ID::SOUND_ONCLICK);
+		CGameStateManager::GetInstance()->SetActiveGameState("EditorSettingsState");
+	}
+	//Option button here
 	if (ImGui::ImageButton((ImTextureID)optionButtonData.textureID,
 		ImVec2(buttonWidth, buttonHeight), ImVec2(0.0, 0.0), ImVec2(1.0, 1.0)))
 	{
+		cSoundController->PlaySoundByID(SOUND_ID::SOUND_ONCLICK);
 		menuState = STATE_OPTION;
 	}
-
-	// Add codes for Exit button here
+	//Exit button here
 	if (ImGui::ImageButton((ImTextureID)exitButtonData.textureID,
 		ImVec2(buttonWidth, buttonHeight), ImVec2(0.0, 0.0), ImVec2(1.0, 1.0)))
 	{
+		cSoundController->PlaySoundByID(SOUND_ID::SOUND_ONCLICK);
 		// Reset the CKeyboardController
 		CKeyboardController::GetInstance()->Reset();
 
@@ -172,7 +185,12 @@ bool CMenuState::UpdateMenu(ImGuiWindowFlags window_flags)
 	}
 	ImGui::PopStyleColor(3);
 	ImGui::End();
-
+	if (CKeyboardController::GetInstance()->IsKeyReleased(GLFW_KEY_F1))
+	{
+		CKeyboardController::GetInstance()->Reset();
+		CGameStateManager::GetInstance()->SetActiveGameState("GameOverState");
+		cout << "Loading Gameover state\n";
+	}
 	//For keyboard controls
 	if (CKeyboardController::GetInstance()->IsKeyReleased(GLFW_KEY_SPACE))
 	{
@@ -236,6 +254,7 @@ void CMenuState::UpdateOption(ImGuiWindowFlags window_flags)
 
 	if (ImGui::Checkbox("Enable BackGround Music", &CSettings::GetInstance()->bBGM_Sound))
 	{
+		cSoundController->PlaySoundByID(SOUND_ID::SOUND_ONCLICK);
 		bgmChange = true;
 	}
 
@@ -275,6 +294,7 @@ void CMenuState::UpdateOption(ImGuiWindowFlags window_flags)
 	bool sfxChange = false;
 	if (ImGui::Checkbox("Enable Sound Effect", &CSettings::GetInstance()->bSFX_Sound))
 	{
+		cSoundController->PlaySoundByID(SOUND_ID::SOUND_ONCLICK);
 		sfxChange = true;
 	}
 
@@ -305,6 +325,7 @@ void CMenuState::UpdateOption(ImGuiWindowFlags window_flags)
 
 	if (sfxChange)
 	{
+		cSoundController->PlaySoundByID(SOUND_ID::SOUND_ONCLICK);
 		if (CSettings::GetInstance()->bSFX_Sound == true)
 			CSettings::GetInstance()->SFX_VOLUME = sfxVolume;
 
@@ -326,6 +347,7 @@ void CMenuState::UpdateOption(ImGuiWindowFlags window_flags)
 	if (ImGui::ImageButton((ImTextureID)applyButtonData.textureID,
 		ImVec2(buttonWidth, buttonHeight), ImVec2(0.0, 0.0), ImVec2(1.0, 1.0)))
 	{
+		cSoundController->PlaySoundByID(SOUND_ID::SOUND_ONCLICK);
 		if (pendingChange)
 		{
 			pendingChange = false;
@@ -342,6 +364,7 @@ void CMenuState::UpdateOption(ImGuiWindowFlags window_flags)
 	if (ImGui::ImageButton((ImTextureID)backButtonData.textureID,
 		ImVec2(buttonWidth, buttonHeight), ImVec2(0.0, 0.0), ImVec2(1.0, 1.0)))
 	{
+		cSoundController->PlaySoundByID(SOUND_ID::SOUND_ONCLICK);
 		menuState = STATE_MAIN;
 	}
 	ImGui::End();
