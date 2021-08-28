@@ -734,6 +734,11 @@ void CPlayer2D::InputUpdate(double dt)
 
 	cInventory->Update(dt, m_FrameStorage.iCurrentFrame, m_KeyboardInputs, m_MouseInputs);
 }
+
+void CPlayer2D::SetJumpCount(int count) {
+	jumpCount = count;
+}
+
 void CPlayer2D::SetClone(bool bIsClone)
 {
 	this->bIsClone = bIsClone;

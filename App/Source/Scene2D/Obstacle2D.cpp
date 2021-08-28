@@ -205,6 +205,7 @@ void Obstacle2D::ResolvePlayerCollision()
 			if (std::get<1>(data) == Direction::UP) {
 				cPlayer->GetPhysics()->SetboolGrounded(true);
 				cPlayer->m_playerState = CPlayer2D::STATE::S_IDLE;
+				cPlayer->SetJumpCount(0);
 			}
 		}
 	}

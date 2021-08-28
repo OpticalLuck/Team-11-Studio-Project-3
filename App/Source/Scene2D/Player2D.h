@@ -162,7 +162,7 @@ public:
 	int GetMaxHealth(void);
 
 	int UpdateHealth(int iAmount);
-
+	void SetJumpCount(int count);
 
 	//Function to call if player gets hit
 	void Attacked(int hp = 1, CPhysics2D* bounceObj = nullptr);
