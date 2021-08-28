@@ -70,8 +70,8 @@ void Projectiles::Update(double dElapsedTime)
 	if (fusetimer < 0)
 	{
 		bDestroyed = true;
-		cout << "boom" << endl;
-		
+		CSoundController::GetInstance()->PlaySoundByID(SOUND_ID::SOUND_EXPLOSION);
+
 		CEntityManager* em = CEntityManager::GetInstance();
 		for (auto& e : em->GetAllEnemies())
 		{

@@ -96,6 +96,7 @@ public:
 	{
 		A_JUMP = 0,
 		A_ATTACK,
+		A_DEATH,
 		A_TOTAL,
 	};
 
@@ -209,9 +210,6 @@ protected:
 
 	// Handler to the CSoundController
 	CSoundController* cSoundController;
-
-	// Facing direction for rendering and ease of animation
-	STATE state;
 
 	// Load a texture
 	bool LoadTexture(const char* filename, GLuint& iTextureID);
