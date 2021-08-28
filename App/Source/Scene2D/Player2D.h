@@ -179,6 +179,7 @@ public:
 
 	bool GetRecording();
 	void SetRecording(bool bIsRecording);
+
 protected:
 	bool bIsClone;
 	int iCloneIndex;

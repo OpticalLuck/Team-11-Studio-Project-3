@@ -677,7 +677,6 @@ void CPlayer2D::InputUpdate(double dt)
 		if (jumpCount < 2 &&
 			m_KeyboardInputs[m_FrameStorage.iCurrentFrame][KEYBOARD_INPUTS::SPACE].bKeyPressed)
 		{
-			cPhysics2D->SetboolGrounded(false);
 			velocity.y = 6.5f * (jumpCount + (1 - jumpCount * 0.6f));
 			jumpCount++;
 			timerArr[A_JUMP].second = 0.1 * jumpCount;
@@ -691,6 +690,7 @@ void CPlayer2D::InputUpdate(double dt)
 				m_playerState = STATE::S_DOUBLE_JUMP;
 			}
 
+			cPhysics2D->SetboolGrounded(false);
 		}
 
 		if (timerArr[A_JUMP].second < 0.2)
@@ -719,7 +719,7 @@ void CPlayer2D::InputUpdate(double dt)
 		{
 			timerArr[A_JUMP].second = 0;
 			jumpCount = 0;
-		}
+		} 
 	}
 	if (glm::length(velocity) > 0.f)
 		cPhysics2D->SetVelocity(velocity);
