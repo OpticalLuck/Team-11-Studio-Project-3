@@ -80,6 +80,33 @@ enum OBJECT_TYPE
 	TILE_RIGHT_GRASS				 = 106,
 	TILE_TOP_RIGHT_GROUND			 = 107,
 	TILE_DARK						 = 108,
+<<<<<<< Updated upstream
+=======
+	TILE_FUTURE_1					 = 109,
+	TILE_FUTURE_2						  ,
+	TILE_FUTURE_3						  ,
+	TILE_FUTURE_4						  ,
+	TILE_FUTURE_5						  ,
+	TILE_FUTURE_6						  ,
+	TILE_FUTURE_7						  ,
+	TILE_FUTURE_8						  ,
+	TILE_FUTURE_FENCE_1					  ,
+	TILE_FUTURE_FENCE_2					  ,
+	TILE_FUTURE_FENCE_3					  ,
+	TILE_VILLEGE_1                        ,
+	TILE_VILLEGE_2                        ,
+	TILE_VILLEGE_3						  ,
+	TILE_VILLEGE_4						  ,
+	TILE_VILLEGE_5						  ,
+	TILE_VILLEGE_6                        ,
+	TILE_VILLEGE_7                        ,
+	TILE_VILLEGE_8                        ,
+	TILE_VILLEGE_9                        ,
+	TILE_VILLEGE_10                       ,
+	TILE_VILLEGE_11                       ,
+	TILE_VILLEGE_12                       ,
+	TILE_VILLEGE_13                       ,
+>>>>>>> Stashed changes
 	TILE_TOTAL						 = 149,
 									 
 	// MOVING TILES 150 - 200		 

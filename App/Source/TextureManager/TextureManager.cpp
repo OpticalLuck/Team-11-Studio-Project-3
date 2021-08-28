@@ -23,7 +23,7 @@ CTextureManager::~CTextureManager()
 
 bool CTextureManager::Init(void)
 {
-        
+
     if (LoadTexture("Image/Cyborg/Cyborg_Preview.png", PLAYER_TILE) == false)
     {
         DEBUG_MSG("Failed to load player tile texture");
@@ -201,7 +201,7 @@ bool CTextureManager::Init(void)
         return false;
     }
 
-    if (LoadTexture("Image/Lives.png", INTERACTABLE_LIVES) == false) 
+    if (LoadTexture("Image/Lives.png", INTERACTABLE_LIVES) == false)
     {
         DEBUG_MSG("Failed to lives texture");
         return false;
@@ -237,24 +237,62 @@ bool CTextureManager::Init(void)
         return false;
     }
 
-    if (LoadTexture("Image/Scene2D_EnemyTile.tga", BOSS) == false) 
+    if (LoadTexture("Image/Scene2D_EnemyTile.tga", BOSS) == false)
     {
         DEBUG_MSG("Failed to load boss tile texture");
         return false;
     }
 
-    if (LoadTexture("Image/Objects/Bullet.tga", BULLETS_ENEMY) == false) 
+    if (LoadTexture("Image/Objects/Bullet.tga", BULLETS_ENEMY) == false)
     {
         DEBUG_MSG("Failed to load enemy bullet texture");
         return false;
     }
 
-    if (LoadTexture("Image/items/bomb.png", PROJECTILES_BOMB) == false) 
+    if (LoadTexture("Image/items/bomb.png", PROJECTILES_BOMB) == false)
     {
         DEBUG_MSG("Failed to load bomb texture");
         return false;
     }
 
+<<<<<<< Updated upstream
+=======
+    for (int i = 1; i <= 8; i++)
+    {
+        stringstream lazy;
+        lazy.str("");
+        lazy << "Image/Futuristic/Tile (" << i << ").png";
+        if (LoadTexture(lazy.str().c_str(), TILE_FUTURE_1 + i - 1) == false)
+        {
+            DEBUG_MSG("Failed to load " << lazy.str());
+            return false;
+        }
+    }
+    for (int i = 1; i <= 3; i++)
+    {
+        stringstream lazy;
+        lazy.str("");
+        lazy << "Image/Futuristic/Fence (" << i << ").png";
+        if (LoadTexture(lazy.str().c_str(), TILE_FUTURE_FENCE_1 + i - 1) == false)
+        {
+            DEBUG_MSG("Failed to load " << lazy.str());
+            return false;
+        }
+    }
+    //villege tiles
+    for (int i = 1; i < 11; i++)
+    {
+        stringstream thanksJeryl;
+        thanksJeryl.str("");
+        thanksJeryl << "Image/Villege/Villege (" << i << ").png";
+        if (LoadTexture(thanksJeryl.str().c_str(), TILE_VILLEGE_1 + i) == false)
+        {
+            DEBUG_MSG("Failed to load " << thanksJeryl.str());
+            return false;
+        }
+    }
+
+>>>>>>> Stashed changes
 	return true;
 }
 
