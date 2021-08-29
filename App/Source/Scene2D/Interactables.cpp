@@ -198,13 +198,6 @@ void Interactables::Update(const double dElapsedTime)
 				em->GetPlayer()->m_CheckpointState.m_CheckpointInventoryState = new CInventory(*em->GetPlayer()->GetInventory());
 				em->GetPlayer()->m_CheckpointState.m_CheckpointPosition = em->GetPlayer()->vTransform;
 				CMap2D::GetInstance()->SetMapInfo(iRow, iCol, 0);
-
-				em->GetPlayer()->m_FrameStorage.iCurrentFrame = 0;
-				em->GetPlayer()->m_FrameStorage.iStoredFrame = 0;
-				em->GetPlayer()->m_FrameStorage.iEndFrame = 0;
-				em->GetPlayer()->m_FrameStorage.iCounter = 0;
-
-				CInputHandler::GetInstance()->Reset();
 			}
 		}
 	}

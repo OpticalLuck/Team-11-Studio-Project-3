@@ -75,6 +75,7 @@ bool CIntroState::Init(void)
 	background->Init();
 
 	//Sound effects
+	CSoundController::GetInstance()->LoadSound(FileSystem::getPath("Sounds\\Sound_Intro.ogg"), SOUND_ID::SOUND_INTRO, true, false, true);
 	CSoundController::GetInstance()->LoadSound(FileSystem::getPath("Sounds\\Sound_Bell.ogg"), SOUND_ID::SOUND_BELL, true, false, true);
 	CSoundController::GetInstance()->LoadSound(FileSystem::getPath("Sounds\\Sound_Explosion.ogg"), SOUND_ID::SOUND_EXPLOSION, true, false, true);
 	CSoundController::GetInstance()->LoadSound(FileSystem::getPath("Sounds\\Sound_Jump.ogg"), SOUND_ID::SOUND_JUMP, true, false, true);
@@ -96,6 +97,8 @@ bool CIntroState::Init(void)
 	CSoundController::GetInstance()->LoadSound(FileSystem::getPath("Sounds\\Trouble.ogg"), SOUND_ID::BGM_TROUBLE, true);
 	CSoundController::GetInstance()->LoadSound(FileSystem::getPath("Sounds\\Win.ogg"), SOUND_ID::BGM_WIN, true);
 	CSettings::GetInstance()->UpdateSoundSettings();
+
+	CSoundController::GetInstance()->PlaySoundByID(SOUND_ID::SOUND_INTRO);
 	return true;
 }
 
@@ -106,7 +109,7 @@ bool CIntroState::Update(const double dElapsedTime)
 {
 	countdown += dElapsedTime;
 
-	if (countdown >= 3)
+	if (countdown >= 5)
 	{
 		currentColor -= glm::vec4(0, 0, 0,  0.5 * dElapsedTime);
 	}
@@ -117,7 +120,7 @@ bool CIntroState::Update(const double dElapsedTime)
 
 	currentColor = glm::clamp(currentColor, glm::vec4(0, 0, 0, 0), glm::vec4(1, 1, 1, 1));
 
-	if (countdown > 5)
+	if (countdown > 7)
 	{
 		countdown = 0;
 		// Reset the CKeyboardController
