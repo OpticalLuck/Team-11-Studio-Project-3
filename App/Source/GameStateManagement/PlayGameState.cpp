@@ -92,6 +92,7 @@ bool CPlayGameState::Init(void)
 	// Create and initialise the Map 2D
 	cMap2D = CMap2D::GetInstance();
 	cCamera = Camera2D::GetInstance();
+	cCamera->UpdateZoom(1.5f);
 
 	cSoundController = CSoundController::GetInstance();
 	CImageLoader* il = CImageLoader::GetInstance();
