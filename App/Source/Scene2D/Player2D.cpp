@@ -445,7 +445,7 @@ void CPlayer2D::Update(const double dElapsedTime)
 			{
 				if (glm::dot(cPhysics2D->GetVelocity(), obj->vTransform - vTransform) > 0)
 					collider2D->ResolveAABBCircle(obj->GetCollider(), data, Collider2D::ColliderType::COLLIDER_QUAD);
-			
+		
 			
 				if (std::get<1>(data) == Direction::DOWN)
 				{
@@ -479,7 +479,7 @@ void CPlayer2D::Update(const double dElapsedTime)
 	UpdateHealthLives();
 
 	//if (m_playerState != STATE::S_JUMP && m_playerState != STATE::S_DOUBLE_JUMP)
-	if (abs(cPhysics2D->GetVelocity().x) > 0)
+	if (fabs((float)cPhysics2D->GetVelocity().x) > 0)
 	{
 		if (m_playerState != STATE::S_JUMP && m_playerState != STATE::S_DOUBLE_JUMP)
 			m_playerState = STATE::S_MOVE;
