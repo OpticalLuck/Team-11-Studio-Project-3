@@ -8,6 +8,8 @@
 
 #include "Primitives/MeshBuilder.h"
 #include "../Scene2D/EntityManager.h"
+#include "../LevelEditor/LevelEditor.h"
+#include "../GameStateManagement/GameStateManager.h"
 
 #include <iostream>
 
@@ -168,13 +170,24 @@ void Interactables::Update(const double dElapsedTime)
 		float distance = glm::length(em->GetPlayer()->vTransform - this->vTransform);
 		if (distance < 0.3)
 		{
-			CMap2D::GetInstance()->SetCurrentLevel(CMap2D::GetInstance()->GetCurrentLevel() + 1);
-			std::string nextLevelPath = "Maps/Level_" + std::to_string(CMap2D::GetInstance()->GetCurrentLevel() + 1) + ".csv";
-			if (CMap2D::GetInstance()->LoadMap(nextLevelPath, CMap2D::GetInstance()->GetCurrentLevel()) == false)
+			std::string nextLevelPath = "Maps/Level_" + std::to_string(CMap2D::GetInstance()->GetLevelNum() + 1) + ".csv";
+			std::string nextLevelName = "Level_" + std::to_string(CMap2D::GetInstance()->GetLevelNum() + 1);
+			if (CMap2D::GetInstance()->GetLevelNum() == 4)
+			{
+				CGameStateManager::GetInstance()->SetActiveGameState("GameWinState");
+				return;
+			}
+			else if (!(CLevelEditor::GetInstance()->LevelExists(nextLevelName)))
+			{
+				DEBUG_MSG("Map does not exist");
+				return;
+			}
+			else if (CMap2D::GetInstance()->LoadMap(nextLevelPath, CMap2D::GetInstance()->GetCurrentLevel()) == false)
 			{
 				DEBUG_MSG("Map Loading failed");
 				return;
 			}
+			CMap2D::GetInstance()->SetCurrentLevel(CMap2D::GetInstance()->GetCurrentLevel() + 1);
 
 			unsigned int iRow = -1;
 			unsigned int iCol = -1;

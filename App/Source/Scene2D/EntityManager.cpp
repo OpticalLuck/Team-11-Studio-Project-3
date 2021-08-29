@@ -407,6 +407,13 @@ void CEntityManager::Update(const double dElapsedTime)
 			m_cloneList[i] = nullptr;
 			continue;
 		}
+		if (m_cloneList[i]->GetHealth() <= 0)
+		{
+			qclone_ID.push(m_cloneList[i]->GetCloneID());
+			delete m_cloneList[i];
+			m_cloneList[i] = nullptr;
+			continue;
+		}
 
 		m_cloneList[i]->Update(dElapsedTime);
 	}

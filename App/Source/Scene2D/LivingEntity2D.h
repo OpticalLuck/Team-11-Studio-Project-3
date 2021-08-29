@@ -18,6 +18,8 @@ class LivingEntity2D
 		int GetShield(void);
 
 		void SetHealth(int);
+		void SetMaxHealth(int);
+
 	protected:
 		//Health and stuff
 		int pHealth;

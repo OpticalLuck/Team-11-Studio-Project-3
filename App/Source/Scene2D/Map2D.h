@@ -114,10 +114,14 @@ public:
 
 	//Get arrlevellimit
 	glm::i32vec2 GetLevelLimit(void);
+	std::string GetLevelName(void);
+	int GetLevelNum(void);
 
 protected:
 	// The variable containing the rapidcsv::Document
 	// We will load the CSV file's content into this Document
+
+	std::string LevelName;
 	rapidcsv::Document doc;
 
 	ObjectFactory objFactory;
