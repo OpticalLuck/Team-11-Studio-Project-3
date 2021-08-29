@@ -21,12 +21,13 @@ CGameStateManager::CGameStateManager(void)
  */
 CGameStateManager::~CGameStateManager(void)
 {
+	Delete();
 }
 
 /**
  @brief Destroy this class instance
  */
-void CGameStateManager::Destroy(void)
+void CGameStateManager::Delete(void)
 {
 	// Set the handlers to CGameState to nullptr
 	activeGameState = nullptr;
@@ -42,6 +43,7 @@ void CGameStateManager::Destroy(void)
 	}
 	// Clear the map
 	GameStateMap.clear();
+
 }
 
 /**

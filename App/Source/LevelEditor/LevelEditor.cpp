@@ -47,7 +47,16 @@ CLevelEditor::~CLevelEditor()
         cTextureManager = NULL;
 
     if (cBackgroundEntity)
+    {
         delete cBackgroundEntity;
+        cBackgroundEntity = NULL;
+    }
+
+    if (quadMesh)
+    {
+        delete quadMesh;
+        quadMesh = NULL;
+    }
 
     cBackgroundEntity = nullptr;
 }

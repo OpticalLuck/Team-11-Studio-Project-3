@@ -56,7 +56,11 @@ CMenuState::CMenuState(void)
  */
 CMenuState::~CMenuState(void)
 {
-
+	if (background)
+	{
+		delete background;
+		background = nullptr;
+	}
 }
 
 /**

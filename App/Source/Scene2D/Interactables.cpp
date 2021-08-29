@@ -41,6 +41,8 @@ Interactables::~Interactables(void)
 		delete quad;
 		quad = nullptr;
 	}
+
+	
 }
 
 bool Interactables::Init()
@@ -49,7 +51,8 @@ bool Interactables::Init()
 	glBindVertexArray(VAO);
 
 	type = CEntity2D::ENTITY_TYPE::INTERACTABLES;
-	quad = CMeshBuilder::GenerateQuad(glm::vec4(1, 1, 1, 1), cSettings->TILE_WIDTH, cSettings->TILE_HEIGHT);
+	if(!quad)
+		quad = CMeshBuilder::GenerateQuad(glm::vec4(1, 1, 1, 1), cSettings->TILE_WIDTH, cSettings->TILE_HEIGHT);
 
 	if (!cPhysics2D)
 		cPhysics2D = new CPhysics2D;
@@ -242,18 +245,18 @@ void Interactables::Update(const double dElapsedTime)
 		}
 	}
 
-	/*if (!em->GetPlayer()->GetRecording())
+	if (!em->GetPlayer()->GetRecording() || interactableType == PRESSURE_PLATE || interactableType == DOOR)
 	{
 		if (bInteraction != bCloneInteract)
 		{
 			bCloneInteract = bInteraction;
 		}
-	}*/
+	}
 
-	if (bInteraction != bCloneInteract)
+	/*if (bInteraction != bCloneInteract)
 	{
 		bCloneInteract = bInteraction;
-	}
+	}*/
 	
 	// 1,1 || 1,0 || 0,1 
 	if ((bInteraction && bCloneInteract) || (!bInteraction && bCloneInteract))

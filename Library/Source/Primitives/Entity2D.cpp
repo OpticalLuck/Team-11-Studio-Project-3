@@ -60,6 +60,7 @@ CEntity2D::~CEntity2D(void)
 		mesh = nullptr;
 	}
 
+
 	if (collider2D) {
 		delete collider2D;
 		collider2D = nullptr;

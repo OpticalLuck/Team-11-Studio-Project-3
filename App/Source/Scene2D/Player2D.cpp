@@ -91,6 +91,11 @@ CPlayer2D::~CPlayer2D(void)
 		collider2D = nullptr;
 	}
 
+	if (animatedSprites)
+	{
+		delete animatedSprites;
+		animatedSprites = nullptr;
+	}
 	// We won't delete this since it was created elsewhere
 	cSoundController = NULL;
 
@@ -491,18 +496,6 @@ void CPlayer2D::Update(const double dElapsedTime)
 
 	//Health
 	UpdateHealthLives();
-
-	//if (m_playerState != STATE::S_JUMP && m_playerState != STATE::S_DOUBLE_JUMP)
-	if (fabs((float)cPhysics2D->GetVelocity().x) > 0)
-	{
-		if (m_playerState != STATE::S_JUMP && m_playerState != STATE::S_DOUBLE_JUMP)
-			m_playerState = STATE::S_MOVE;
-	}
-	else
-	{
-		if(cPhysics2D->GetboolGrounded())
-			m_playerState = STATE::S_IDLE;
-	}
 
 	//animation States
 	switch (m_playerState)
