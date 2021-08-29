@@ -220,7 +220,12 @@ void CBoss2D::ReplayRecording(void) {
 	std::vector<CPlayer2D*> playerArr = cEntityManager->GetAllPlayers();
 
 	if (beforeTarget != nullptr) {
-		currTarget = playerArr.back();
+		if (beforeTarget == cEntityManager->GetPlayer())
+			currTarget = playerArr.back();
+		else if (std::count(playerArr.begin(), playerArr.end(), beforeTarget))
+			currTarget = beforeTarget;
+		else
+			currTarget = nullptr;
 	}
 	else {
 		currTarget = nullptr;
