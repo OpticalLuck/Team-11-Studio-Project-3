@@ -493,7 +493,7 @@ void CPlayer2D::Update(const double dElapsedTime)
 	UpdateHealthLives();
 
 	//if (m_playerState != STATE::S_JUMP && m_playerState != STATE::S_DOUBLE_JUMP)
-	/*if (fabs((float)cPhysics2D->GetVelocity().x) > 0)
+	if (fabs((float)cPhysics2D->GetVelocity().x) > 0)
 	{
 		if (m_playerState != STATE::S_JUMP && m_playerState != STATE::S_DOUBLE_JUMP)
 			m_playerState = STATE::S_MOVE;
@@ -502,7 +502,7 @@ void CPlayer2D::Update(const double dElapsedTime)
 	{
 		if(cPhysics2D->GetboolGrounded())
 			m_playerState = STATE::S_IDLE;
-	}*/
+	}
 
 
 	//animation States
