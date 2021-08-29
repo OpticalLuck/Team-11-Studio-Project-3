@@ -106,6 +106,11 @@ enum OBJECT_TYPE
 	TILE_VILLEGE_11                       ,
 	TILE_VILLEGE_12                       ,
 	TILE_VILLEGE_13                       ,
+	TILE_VILLEGE_14                       ,
+	TILE_VILLEGE_15                       ,
+	TILE_VILLEGE_16                       ,
+	TILE_VILLEGE_17                       ,
+	TILE_VILLEGE_18                       ,
 	TILE_TOTAL						 = 149,
 									 
 	// MOVING TILES 150 - 200		 

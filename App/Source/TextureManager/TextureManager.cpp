@@ -278,7 +278,7 @@ bool CTextureManager::Init(void)
             return false;
         }
     }
-    for (int i = 1; i <= 13; i++)
+    for (int i = 1; i <= 18; i++)
     {
         stringstream thanksJeryl;
         thanksJeryl.str("");
