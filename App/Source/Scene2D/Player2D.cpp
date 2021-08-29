@@ -389,6 +389,20 @@ void CPlayer2D::Update(const double dElapsedTime)
 	// Get keyboard & Mouse updates
 	InputUpdate(dElapsedTime);
 	
+	if (abs(cPhysics2D->GetVelocity().x) > 0)
+	{
+		if (m_playerState != STATE::S_JUMP && m_playerState != STATE::S_DOUBLE_JUMP)
+			m_playerState = STATE::S_MOVE;
+	}
+	else
+	{
+		if (cPhysics2D->GetboolGrounded())
+		{
+			cout << "set to idle" << endl;
+			m_playerState = STATE::S_IDLE;
+		}
+	}
+
 	//COLLISION RESOLUTION ON Y_AXIS AND X_AXIS
 	int range = 2;
 	cPhysics2D->SetboolGrounded(false);
@@ -479,16 +493,7 @@ void CPlayer2D::Update(const double dElapsedTime)
 	UpdateHealthLives();
 
 	//if (m_playerState != STATE::S_JUMP && m_playerState != STATE::S_DOUBLE_JUMP)
-	if (abs(cPhysics2D->GetVelocity().x) > 0)
-	{
-		if (m_playerState != STATE::S_JUMP && m_playerState != STATE::S_DOUBLE_JUMP)
-			m_playerState = STATE::S_MOVE;
-	}
-	else
-	{
-		if(cPhysics2D->GetboolGrounded())
-			m_playerState = STATE::S_IDLE;
-	}
+	
 
 
 	//animation States
