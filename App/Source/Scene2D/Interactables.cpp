@@ -185,6 +185,13 @@ void Interactables::Update(const double dElapsedTime)
 				em->GetPlayer()->m_CheckpointState.m_CheckpointInventoryState = new CInventory(*em->GetPlayer()->GetInventory());
 				em->GetPlayer()->m_CheckpointState.m_CheckpointPosition = em->GetPlayer()->vTransform;
 				CMap2D::GetInstance()->SetMapInfo(iRow, iCol, 0);
+
+				em->GetPlayer()->m_FrameStorage.iCurrentFrame = 0;
+				em->GetPlayer()->m_FrameStorage.iStoredFrame = 0;
+				em->GetPlayer()->m_FrameStorage.iEndFrame = 0;
+				em->GetPlayer()->m_FrameStorage.iCounter = 0;
+
+				CInputHandler::GetInstance()->Reset();
 			}
 		}
 	}
@@ -238,18 +245,18 @@ void Interactables::Update(const double dElapsedTime)
 		}
 	}
 
-	/*if (!em->GetPlayer()->GetRecording())
+	if (!em->GetPlayer()->GetRecording() || interactableType == PRESSURE_PLATE || interactableType == DOOR)
 	{
 		if (bInteraction != bCloneInteract)
 		{
 			bCloneInteract = bInteraction;
 		}
-	}*/
+	}
 
-	if (bInteraction != bCloneInteract)
+	/*if (bInteraction != bCloneInteract)
 	{
 		bCloneInteract = bInteraction;
-	}
+	}*/
 	
 	// 1,1 || 1,0 || 0,1 
 	if ((bInteraction && bCloneInteract) || (!bInteraction && bCloneInteract))
