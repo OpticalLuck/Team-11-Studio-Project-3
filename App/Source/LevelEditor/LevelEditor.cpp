@@ -363,6 +363,7 @@ bool CLevelEditor::SaveMap()
     }         
 
     doc = rapidcsv::Document(FileSystem::getPath(currentLevel.LevelPath).c_str());
+    doc.Clear();
     for (unsigned int uiRow = 0; uiRow < iWorldHeight; uiRow++)
     {
         for (unsigned int uiCol = 0; uiCol < iWorldWidth; uiCol++)
