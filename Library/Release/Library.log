@@ -1,2 +1,48 @@
-﻿  Entity2D.cpp
+﻿  Settings.cpp
+E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\Library\Source\GameControl\Settings.cpp(353,18): warning C4244: 'initializing': conversion from 'T' to 'unsigned int', possible loss of data
+          with
+          [
+              T=float
+          ]
+E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\Library\Source\GameControl\Settings.cpp(354,18): warning C4244: 'initializing': conversion from 'T' to 'unsigned int', possible loss of data
+          with
+          [
+              T=float
+          ]
+E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\Library\Source\GameControl\Settings.cpp(357,25): warning C4244: '=': conversion from 'T' to 'unsigned int', possible loss of data
+          with
+          [
+              T=float
+          ]
+  imgui_impl_glfw.cpp
+  imgui_impl_opengl3.cpp
+  GUI.cpp
+  imgui.cpp
+  imgui_demo.cpp
+  imgui_draw.cpp
+  imgui_tables.cpp
+  imgui_widgets.cpp
+  ImGuiWindow.cpp
+  KeyboardController.cpp
+  MouseController.cpp
+  Camera2D.cpp
+  Collider2D.cpp
+  Entity2D.cpp
+  Mesh.cpp
+  MeshBuilder.cpp
+  Physics2D.cpp
+  SpriteAnimation.cpp
+  ShaderManager.cpp
+  Compiling...
+  TextRenderer.cpp
+  ScriptManager.cpp
+  SoundController.cpp
+  SoundInfo.cpp
+  CSVReader.cpp
+  CSVWriter.cpp
+  ImageLoader.cpp
+  LoadOBJ.cpp
+  MapLoader.cpp
+  FPSCounter.cpp
+  StopWatch.cpp
   Library.vcxproj -> E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\Release\Library.lib

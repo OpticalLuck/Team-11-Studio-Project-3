@@ -182,7 +182,7 @@ void Interactables::Update(const double dElapsedTime)
 				DEBUG_MSG("Map does not exist");
 				return;
 			}
-			else if (CMap2D::GetInstance()->LoadMap(nextLevelPath, CMap2D::GetInstance()->GetCurrentLevel()) == false)
+			else if (CMap2D::GetInstance()->LoadMap(nextLevelPath, CMap2D::GetInstance()->GetCurrentLevel() + 1) == false)
 			{
 				DEBUG_MSG("Map Loading failed");
 				return;
