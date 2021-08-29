@@ -61,8 +61,8 @@ void CBackgroundEntity::Render(void)
 
 	// Get the texture to be rendered
 	glBindTexture(GL_TEXTURE_2D, iTextureID);
-
 	glBindVertexArray(VAO);
+
 	mesh->Render();
 	glBindVertexArray(0);
 
