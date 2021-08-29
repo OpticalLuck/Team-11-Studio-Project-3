@@ -117,8 +117,6 @@ bool CIntroState::Update(const double dElapsedTime)
 
 	currentColor = glm::clamp(currentColor, glm::vec4(0, 0, 0, 0), glm::vec4(1, 1, 1, 1));
 
-	cout << currentColor.a << endl;
-
 	if (countdown > 5)
 	{
 		countdown = 0;
