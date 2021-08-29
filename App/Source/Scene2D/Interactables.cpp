@@ -40,6 +40,8 @@ Interactables::~Interactables(void)
 		delete quad;
 		quad = nullptr;
 	}
+
+	
 }
 
 bool Interactables::Init()
@@ -48,7 +50,8 @@ bool Interactables::Init()
 	glBindVertexArray(VAO);
 
 	type = CEntity2D::ENTITY_TYPE::INTERACTABLES;
-	quad = CMeshBuilder::GenerateQuad(glm::vec4(1, 1, 1, 1), cSettings->TILE_WIDTH, cSettings->TILE_HEIGHT);
+	if(!quad)
+		quad = CMeshBuilder::GenerateQuad(glm::vec4(1, 1, 1, 1), cSettings->TILE_WIDTH, cSettings->TILE_HEIGHT);
 
 	if (!cPhysics2D)
 		cPhysics2D = new CPhysics2D;

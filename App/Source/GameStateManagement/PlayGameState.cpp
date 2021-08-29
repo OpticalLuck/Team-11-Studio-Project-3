@@ -208,6 +208,7 @@ void CPlayGameState::Destroy(void)
 		cInputHandler->Destroy();
 		cInputHandler = NULL;
 	}
+	CInventoryManager::GetInstance()->Destroy();
 }
 
 bool CPlayGameState::ImGuiRender()

@@ -133,6 +133,7 @@ void MouseScrollCallbacks(GLFWwindow* window, double xoffset, double yoffset)
 */
 Application::~Application(void)
 {
+	Delete();
 	// Destroy the CSoundController singleton
 	CSoundController::GetInstance()->Destroy();
 }
@@ -345,7 +346,7 @@ void Application::Run(void)
 /**
  @brief Destroy this class instance
  */
-void Application::Destroy(void)
+void Application::Delete(void)
 {
 	// Destroy the CGameStateManager
 	CGameStateManager::GetInstance()->Destroy();
@@ -355,8 +356,16 @@ void Application::Destroy(void)
 	CTextureManager::GetInstance()->Destroy();
 	// Destroy the keyboard instance
 	CKeyboardController::GetInstance()->Destroy();
-	// Destroy the settings instance
+	// Destroy Mouse instance
+	CMouseController::GetInstance()->Destroy();
+	// Destroy Camera Instance
+	Camera2D::GetInstance()->Destroy();
+	
+	//Delete level editor instance
+	CLevelEditor::GetInstance()->Destroy();
 
+	//Delete Game Manager
+	CGameStateManager::GetInstance()->Destroy();
 	// Destroy the CFPSCounter instance
 	if (cFPSCounter)
 	{
@@ -364,7 +373,6 @@ void Application::Destroy(void)
 		cFPSCounter = NULL;
 	}
 
-	
 	m_ImGuiWindow->Shutdown();
 	m_ImGuiWindow->Destroy();
 
@@ -373,7 +381,9 @@ void Application::Destroy(void)
 	//Finalize and clean up GLFW
 	glfwTerminate();
 
+	// Destroy the settings instance
 	CSettings::GetInstance()->Destroy();
+
 }
 
 /**

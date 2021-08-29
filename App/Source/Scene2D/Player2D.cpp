@@ -91,6 +91,11 @@ CPlayer2D::~CPlayer2D(void)
 		collider2D = nullptr;
 	}
 
+	if (animatedSprites)
+	{
+		delete animatedSprites;
+		animatedSprites = nullptr;
+	}
 	// We won't delete this since it was created elsewhere
 	cSoundController = NULL;
 

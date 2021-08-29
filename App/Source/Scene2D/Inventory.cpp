@@ -26,6 +26,8 @@ CInventory::CInventory(std::string sName, CPlayer2D* target)
 
 CInventory::~CInventory()
 {
+	linkedPlayer = NULL;
+	m_Items.clear();
 }
 
 void CInventory::AddItem(std::string itemName, int iCount)

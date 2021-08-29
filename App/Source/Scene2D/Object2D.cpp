@@ -34,6 +34,12 @@ bool CObject2D::Init()
 
 	cEntityManager = CEntityManager::GetInstance();
 
+	if (mesh)
+	{
+		delete mesh;
+		mesh = nullptr;
+	}
+
 	return true;
 }
 

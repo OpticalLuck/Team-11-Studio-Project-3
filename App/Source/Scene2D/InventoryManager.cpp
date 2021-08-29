@@ -9,6 +9,7 @@ CInventoryManager::CInventoryManager()
 CInventoryManager::~CInventoryManager()
 {
 	m_Inventory.clear();
+	cActiveInventory = nullptr;
 }
 
 void CInventoryManager::Add(std::string sName, CPlayer2D* target)

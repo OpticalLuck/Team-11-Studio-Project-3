@@ -7,8 +7,7 @@ class CInventoryManager : public CSingletonTemplate<CInventoryManager>
 {
 	friend CSingletonTemplate<CInventoryManager>;
 public:
-	CInventoryManager();
-	~CInventoryManager();
+	
 
 	void Add(std::string sName, CPlayer2D* target);
 
@@ -25,6 +24,9 @@ public:
 	void UseItem(void);
 
 private:
+	CInventoryManager();
+	~CInventoryManager();
+
 	std::map<std::string, CInventory>m_Inventory; //store a list of inventory for clone/player
 	CInventory* cActiveInventory;
 };
