@@ -253,6 +253,11 @@ glm::i32vec2 CMap2D::GetLevelLimit(void) {
 	return glm::vec2(arrLevelLimit[uiCurLevel].x, arrLevelLimit[uiCurLevel].y);
 }
 
+int CMap2D::GetLevelNum(void)
+{
+	return (int)(LevelName[6] - '0');
+}
+
 /**
  @brief Set the value at certain indices in the arrMapInfo
  @param iRow A const int variable containing the row index of the element to set to
@@ -465,6 +470,9 @@ int CMap2D::GetMapInfo(const unsigned int uiRow, const unsigned int uiCol, const
 bool CMap2D::LoadMap(string filename, const unsigned int uiCurLevel)
 {
 	doc = rapidcsv::Document(FileSystem::getPath(filename).c_str());
+	LevelName = filename;
+	LevelName.erase(0, LevelName.find("Level"));
+	LevelName.erase(7, LevelName.length());
 
 	// Check if the sizes of CSV data matches the declared arrMapInfo sizes
 	arrLevelLimit[uiCurLevel] = glm::i32vec2(doc.GetColumnCount() - 1, doc.GetRowCount());

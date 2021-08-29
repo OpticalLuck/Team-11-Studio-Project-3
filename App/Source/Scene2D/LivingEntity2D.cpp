@@ -72,3 +72,7 @@ int LivingEntity2D::GetMaxHealth(void)
 int LivingEntity2D::GetShield(void) {
 	return pShield;
 }
+
+void LivingEntity2D::SetMaxHealth(int hp) {
+	pMaxHealth = hp;
+}

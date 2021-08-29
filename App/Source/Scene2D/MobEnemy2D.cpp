@@ -814,7 +814,7 @@ void CMobEnemy2D::UpdateDumb(float dElapsedTime) {
 		else
 			dir = DIRECTION::LEFT;
 
-		cPhysics2D->SetVelocity(glm::vec2(0, 0));
+		cPhysics2D->SetVelocity(glm::vec2(0, cPhysics2D->GetVelocity().y));
 	}
 }
 

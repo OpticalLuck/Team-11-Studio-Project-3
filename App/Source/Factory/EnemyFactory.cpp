@@ -154,7 +154,10 @@ CEnemy2D* EnemyFactory::CreateEnemy(int type) {
 				boss = nullptr;
 			}
 			else {
-				boss->SetTexture("Image/Scene2D_EnemyTile.tga");
+				boss->SetTexture("Image/Enemy/boss.png");
+
+				boss->SetMaxHealth(20);
+				boss->SetHealth(20);
 			}
 
 			return boss;

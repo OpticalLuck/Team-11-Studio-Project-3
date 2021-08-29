@@ -166,26 +166,26 @@ bool CPlayGameState::Update(const double dElapsedTime)
 		CGameStateManager::GetInstance()->SetActiveGameState("GameOverState");
 		return true;
 	}
+	
+		
 	if (cPlayer->GetHealth() <= 0)
 	{
-		if (cPlayer->iLives <= 1)
-		{
-			CGameStateManager::GetInstance()->SetActiveGameState("GameOverState");
-			CSoundController::GetInstance()->StopPlayBack();
-			return true;
-		}
-		else
-		{
-			for (int i = 0; i < cPlayer->GetInventory()->GetNumofUniqueItems(); ++i)
-				cPlayer->GetInventory()->GetItem(i).iCount = cPlayer->m_CheckpointState.m_CheckpointInventoryState->GetItem(i).iCount;
-			
-			cPlayer->vTransform = cPlayer->m_CheckpointState.m_CheckpointPosition;
-			cPlayer->SetHealth(cPlayer->m_CheckpointState.m_CheckpointHP);
-			--cPlayer->iLives;
+		for (int i = 0; i < cPlayer->GetInventory()->GetNumofUniqueItems(); ++i)
+			cPlayer->GetInventory()->GetItem(i).iCount = cPlayer->m_CheckpointState.m_CheckpointInventoryState->GetItem(i).iCount;
+		
+		cPlayer->vTransform = cPlayer->m_CheckpointState.m_CheckpointPosition;
+		cPlayer->SetHealth(cPlayer->m_CheckpointState.m_CheckpointHP);
+		--cPlayer->iLives;
 
-			return true;
-		}
+		return true;
 	}
+	else if (cPlayer->iLives < 0)
+	{
+		CGameStateManager::GetInstance()->SetActiveGameState("GameOverState");
+		CSoundController::GetInstance()->StopPlayBack();
+		return true;
+	}
+
 
 	if (bInstruction)
 	{
@@ -212,7 +212,7 @@ bool CPlayGameState::Update(const double dElapsedTime)
 			bInstruction = false;
 		}
 	}
-	
+
 
 	return true;
 }
@@ -298,36 +298,6 @@ bool CPlayGameState::ImGuiRender()
 		ImGui::PopStyleColor();
 		ImGui::End();
 	}
-	/*	if (bInstruction)
-	{
-		instruction_window = 0;
-		instruction_window |= ImGuiWindowFlags_NoBackground;
-		instruction_window |= ImGuiWindowFlags_NoTitleBar;
-		instruction_window |= ImGuiWindowFlags_NoMove;
-		instruction_window |= ImGuiWindowFlags_NoResize;
-		instruction_window |= ImGuiWindowFlags_NoCollapse;
-		instruction_window |= ImGuiWindowFlags_NoScrollbar;
-
-		float relativeScale_x = cSettings->iWindowWidth / 800.0f;
-		float relativeScale_y = cSettings->iWindowHeight / 600.0f;
-
-		relativeScale_x = Math::Max(1.f, relativeScale_x);
-		relativeScale_y = Math::Max(1.f, relativeScale_y);
-
-		float fWidth = CSettings::GetInstance()->GetWindowSize().x / 5.2 * 5.2 + 7;
-		float fHeight = CSettings::GetInstance()->GetWindowSize().x / (2 * 5.2) * 6;
-
-		ImGui::SetNextWindowFocus();
-
-		ImGui::Begin("Instuction window", NULL, instruction_window);
-		ImGui::SetWindowPos(ImVec2(CSettings::GetInstance()->iWindowWidth / 2.0f - fWidth/ 2.0f,
-			CSettings::GetInstance()->iWindowHeight / 3.0f + 100));
-		ImGui::SetWindowSize(ImVec2(1200.0f * relativeScale_x, 800.0f * relativeScale_y));
-		ImGui::Image((void*)(intptr_t)instruction.textureID, ImVec2(fWidth, fHeight), ImVec2(0, 0), ImVec2(1, 1));
-		ImGui::End();
-	}*/
-
-
 	else
 	{
 		if (!cGameStateManager->bOption)

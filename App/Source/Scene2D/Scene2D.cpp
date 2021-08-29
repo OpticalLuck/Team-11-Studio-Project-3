@@ -251,7 +251,6 @@ bool CScene2D::Update(const double dElapsedTime)
 		dParadoxiumTimer -= dElapsedTime;
 	}
 
-
 	//Camera work
 	cameraHandler->UpdateTarget(cPlayer2D->vTransform);
 	cameraHandler->Update((float)dElapsedTime);
@@ -265,8 +264,6 @@ bool CScene2D::Update(const double dElapsedTime)
 			cMap2D->SetCurrentLevel(cMap2D->GetCurrentLevel() + 1);
 			cPlayer2D->Reset();
 
-			//300
-			//LoadEnemy<CEnemy2D>();
 		}
 		//Last Level
 		else

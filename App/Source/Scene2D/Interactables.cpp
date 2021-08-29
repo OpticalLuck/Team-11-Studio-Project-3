@@ -169,7 +169,7 @@ void Interactables::Update(const double dElapsedTime)
 		if (distance < 0.3)
 		{
 			CMap2D::GetInstance()->SetCurrentLevel(CMap2D::GetInstance()->GetCurrentLevel() + 1);
-			std::string nextLevelPath = "Maps/Level_" + std::to_string(CMap2D::GetInstance()->GetCurrentLevel() + 1) + ".csv";
+			std::string nextLevelPath = "Maps/Level_" + std::to_string(CMap2D::GetInstance()->GetLevelNum() + 1) + ".csv";
 			if (CMap2D::GetInstance()->LoadMap(nextLevelPath, CMap2D::GetInstance()->GetCurrentLevel()) == false)
 			{
 				DEBUG_MSG("Map Loading failed");
