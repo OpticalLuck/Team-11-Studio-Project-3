@@ -111,26 +111,18 @@ void Obstacle2D::Render()
 
 	if (actualPos.x >= -clampX && actualPos.x <= clampX && actualPos.y >= -clampY && actualPos.y <= clampY)
 	{
-		// get matrix's uniform location and set matrix
-		unsigned int transformLoc = glGetUniformLocation(CShaderManager::GetInstance()->activeShader->ID, "transform");
-		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
-
 		transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
 		transform = glm::translate(transform, glm::vec3(glm::vec2(actualPos.x, actualPos.y),
 			0.0f));
 		transform = glm::rotate(transform, glm::radians(fRotate), glm::vec3(0.f, 0.f, 1.f));
 		transform = glm::scale(transform, glm::vec3(Camera2D::GetInstance()->getZoom()));
-		// Update the shaders with the latest transform
-		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
 
-		// Get the texture to be rendered
+		CShaderManager::GetInstance()->activeShader->setMat4("transform", transform);
+
 		glBindTexture(GL_TEXTURE_2D, CTextureManager::GetInstance()->MapOfTextureIDs.at(iTextureID));
 
 		glBindVertexArray(VAO);
-
-		//CS: Use mesh to render
 		mesh->Render();
-
 		glBindVertexArray(0);
 	}
 }

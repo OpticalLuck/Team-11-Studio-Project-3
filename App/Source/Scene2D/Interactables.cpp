@@ -166,8 +166,8 @@ void Interactables::Update(const double dElapsedTime)
 		if (distance < 0.3)
 		{
 			CMap2D::GetInstance()->SetCurrentLevel(CMap2D::GetInstance()->GetCurrentLevel() + 1);
-			std::string nextLevelPath = "Maps/Level_" + std::to_string(CMap2D::GetInstance()->GetCurrentLevel()) + ".csv";
-			if (CMap2D::GetInstance()->LoadMap(nextLevelPath, 1) == false)
+			std::string nextLevelPath = "Maps/Level_" + std::to_string(CMap2D::GetInstance()->GetCurrentLevel() + 1) + ".csv";
+			if (CMap2D::GetInstance()->LoadMap(nextLevelPath, CMap2D::GetInstance()->GetCurrentLevel()) == false)
 			{
 				DEBUG_MSG("Map Loading failed");
 				return;
@@ -178,6 +178,9 @@ void Interactables::Update(const double dElapsedTime)
 			if (CMap2D::GetInstance()->FindValue(1, iRow, iCol))
 			{
 				em->GetPlayer()->vTransform = glm::vec2(iCol, iRow);
+				em->GetPlayer()->m_CheckpointState.m_CheckpointHP = em->GetPlayer()->GetMaxHealth();
+				em->GetPlayer()->m_CheckpointState.m_CheckpointInventoryState = new CInventory(*em->GetPlayer()->GetInventory());
+				em->GetPlayer()->m_CheckpointState.m_CheckpointPosition = em->GetPlayer()->vTransform;
 				CMap2D::GetInstance()->SetMapInfo(iRow, iCol, 0);
 			}
 		}
@@ -276,7 +279,6 @@ void Interactables::Render(void)
 	glm::vec2 cameraPos = Camera2D::GetInstance()->getCurrPos();
 
 	glm::vec2 objCamPos = vTransform - cameraPos + offset;
-
 	glm::vec2 actualPos = cSettings->ConvertIndexToUVSpace(objCamPos) * Camera2D::GetInstance()->getZoom();
 
 	float clampOffset = cSettings->ConvertIndexToUVSpace(CSettings::AXIS::x, 1, false) / 2;
@@ -286,26 +288,18 @@ void Interactables::Render(void)
 
 	if (actualPos.x >= -clampX && actualPos.x <= clampX && actualPos.y >= -clampY && actualPos.y <= clampY)
 	{
-		// get matrix's uniform location and set matrix
-		unsigned int transformLoc = glGetUniformLocation(CShaderManager::GetInstance()->activeShader->ID, "transform");
-		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
-
-		transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
+		transform = glm::mat4(1.0f);
 		transform = glm::translate(transform, glm::vec3(glm::vec2(actualPos.x, actualPos.y),
 			0.0f));
 		transform = glm::rotate(transform, glm::radians(fRotate), glm::vec3(0.f, 0.f, 1.f));
 		transform = glm::scale(transform, glm::vec3(Camera2D::GetInstance()->getZoom()));
-		// Update the shaders with the latest transform
-		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
 
-		// Get the texture to be rendered
+		CShaderManager::GetInstance()->activeShader->setMat4("transform", transform);
+		CShaderManager::GetInstance()->activeShader->setVec4("runtime_color", currentColor);
+
 		glBindTexture(GL_TEXTURE_2D, CTextureManager::GetInstance()->MapOfTextureIDs.at(iTextureID));
-
 		glBindVertexArray(VAO);
-
-		//CS: Use mesh to render
 		quad->Render();
-
 		glBindVertexArray(0);
 	}
 }

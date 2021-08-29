@@ -560,10 +560,6 @@ void CPlayer2D::PreRender(void)
 void CPlayer2D::Render(void)
 {
 	glBindVertexArray(VAO);
-	// get matrix's uniform location and set matrix
-	unsigned int transformLoc = glGetUniformLocation(CShaderManager::GetInstance()->activeShader->ID, "transform");
-	unsigned int colorLoc = glGetUniformLocation(CShaderManager::GetInstance()->activeShader->ID, "runtime_color");
-	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
 
 	transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
 	
@@ -582,8 +578,8 @@ void CPlayer2D::Render(void)
 	if (facing == FACING_DIR::LEFT)
 		transform = glm::rotate(transform, glm::radians(180.f), glm::vec3(0.f, 1.f, 0.f));
 	// Update the shaders with the latest transform
-	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
-	glUniform4fv(colorLoc, 1, glm::value_ptr(currentColor));
+	CShaderManager::GetInstance()->activeShader->setMat4("transform", transform);
+	CShaderManager::GetInstance()->activeShader->setVec4("runtime_color", currentColor);
 
 	// Get the texture to be rendered
 	glBindTexture(GL_TEXTURE_2D, iTextureID);
@@ -847,7 +843,7 @@ void CPlayer2D::SetMouseInputs(std::vector<std::array<MouseInput, MOUSE_INPUTS::
 
 void CPlayer2D::ResetToCheckPoint()
 {
-	vTransform = m_CheckpointState.m_CheckpointPosition;
+	vTransform = CEntityManager::GetInstance()->GetPlayer()->m_CheckpointState.m_CheckpointPosition;
 	cPhysics2D->SetVelocity(glm::vec2(0.f));
 	cKeyboardController->Reset();
 }
@@ -867,6 +863,12 @@ void CPlayer2D::LockWithinBoundary()
 
 	if (oldTransform != vTransform)
 		cPhysics2D->SetVelocity(glm::vec2(0, 0));
+
+	if (vTransform.y < 1)
+	{
+		ResetToCheckPoint();
+		pHealth--;
+	}
 }
 
 CPlayer2D* const CPlayer2D::Clone()

@@ -122,10 +122,6 @@ void Bullet2D::PreRender()
 
 void Bullet2D::Render()
 {
-	// get matrix's uniform location and set matrix
-	unsigned int transformLoc = glGetUniformLocation(CShaderManager::GetInstance()->activeShader->ID, "transform");
-	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
-
 	//Camera init
 	glm::vec2 offset = glm::vec2(float(cSettings->NUM_TILES_XAXIS / 2.f), float(cSettings->NUM_TILES_YAXIS / 2.f));
 	glm::vec2 cameraPos = Camera2D::GetInstance()->getCurrPos();
@@ -141,20 +137,19 @@ void Bullet2D::Render()
 
 	if (actualPos.x >= -clampX && actualPos.x <= clampX && actualPos.y >= -clampY && actualPos.y <= clampY)
 	{
-		transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
+		transform = glm::mat4(1.0f);
 		transform = glm::translate(transform, glm::vec3(glm::vec2(actualPos.x, actualPos.y),
 			0.0f));
 		transform = glm::rotate(transform, glm::radians(fRotate), glm::vec3(0.f, 0.f, 1.f));
 		transform = glm::scale(transform, glm::vec3(collider2D->vec2Dimensions.x*2, collider2D->vec2Dimensions.y*2,1));
-		// Update the shaders with the latest transform
-		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
+		
+		CShaderManager::GetInstance()->activeShader->setMat4("transform", transform);
+		CShaderManager::GetInstance()->activeShader->setVec4("runtime_color", currentColor);
 
-		// Get the texture to be rendered
 		glBindTexture(GL_TEXTURE_2D, CTextureManager::GetInstance()->MapOfTextureIDs.at(iTextureID));
 
 		glBindVertexArray(VAO);
 		mesh->Render();
-
 		glBindVertexArray(0);
 	}
 }
