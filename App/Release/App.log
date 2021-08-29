@@ -1,10 +1,8 @@
-﻿  Interactables.cpp
-E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\App\Source\Scene2D\Interactables.cpp(171,86): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\App\Source\Scene2D\Interactables.cpp(186,86): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\App\Source\Scene2D\Interactables.cpp(200,40): warning C4018: '>': signed/unsigned mismatch
+﻿  Player2D.cpp
+E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\App\Source\Scene2D\Player2D.cpp(204,46): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
   Generating code
-  1 of 6628 functions (<0.1%) were compiled, the rest were copied from previous compilation.
+  4 of 6628 functions (<0.1%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    54 functions had inline decision re-evaluated but remain unchanged
+    62 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   App.vcxproj -> E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\Release\App.exe

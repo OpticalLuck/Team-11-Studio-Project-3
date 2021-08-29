@@ -85,6 +85,7 @@ CEnemy2D::~CEnemy2D(void)
 		delete quadMesh;
 		quadMesh = nullptr;
 	}
+	
 
 	cMap2D = nullptr;
 	camera = nullptr;

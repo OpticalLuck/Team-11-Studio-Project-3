@@ -19,6 +19,8 @@ CTextureManager::CTextureManager()
 
 CTextureManager::~CTextureManager()
 {
+    // Destroy ImageLoader Instance.
+    CImageLoader::GetInstance()->Destroy();
 }
 
 

@@ -22,6 +22,13 @@ CEntityManager::CEntityManager()
 CEntityManager::~CEntityManager()
 {
 	Clear();
+
+	cInputHandler = NULL;
+	cKeyboardController = NULL;
+	CInventoryManager = NULL;
+	cPlayer2D = NULL;
+	cEnemy2D = NULL;
+	cMap2D = NULL;
 }
 
 bool CEntityManager::EntityManagerInit(const unsigned int totalLevels)
@@ -519,5 +526,6 @@ void CEntityManager::Clear(void)
 		m_ObstacleList[i].clear();
 	}
 	m_ObstacleList.clear();
+
 }
 
