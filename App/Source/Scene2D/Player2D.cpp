@@ -860,7 +860,8 @@ void CPlayer2D::LockWithinBoundary()
 	if (vTransform.y < 1)
 	{
 		ResetToCheckPoint();
-		pHealth--;
+		iLives--;
+		pHealth = pMaxHealth;
 	}
 }
 
