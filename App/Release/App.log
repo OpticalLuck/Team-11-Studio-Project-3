@@ -1,6 +1,9 @@
-﻿  LevelEditor.cpp
+﻿  Interactables.cpp
+E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\App\Source\Scene2D\Interactables.cpp(197,86): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\App\Source\Scene2D\Interactables.cpp(219,86): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\App\Source\Scene2D\Interactables.cpp(233,40): warning C4018: '>': signed/unsigned mismatch
   Generating code
   Previous IPDB and IOBJ mismatch, fall back to full compilation.
-  All 6631 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  All 6640 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
   Finished generating code
   App.vcxproj -> E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\Release\App.exe
