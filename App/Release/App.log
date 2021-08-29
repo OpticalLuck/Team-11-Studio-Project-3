@@ -1,10 +1,7 @@
-﻿  Interactables.cpp
-E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\App\Source\Scene2D\Interactables.cpp(193,86): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\App\Source\Scene2D\Interactables.cpp(208,86): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\App\Source\Scene2D\Interactables.cpp(222,40): warning C4018: '>': signed/unsigned mismatch
+﻿  IntroState.cpp
   Generating code
   1 of 6650 functions (<0.1%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    44 functions had inline decision re-evaluated but remain unchanged
+    45 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   App.vcxproj -> E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\Release\App.exe
