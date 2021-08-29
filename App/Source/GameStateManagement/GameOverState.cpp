@@ -125,20 +125,6 @@ bool GameOverState::Update(const double dElapsedTime)
 			}
 		}
 	}
-	cout << "Wait time = " << fWaitTime << endl;
-	//cout << "Fade count = " << iFadeCount2 << endl;
-	//out << "Fade count = " << iFadeCount << endl;
-	//For keyboard controls
-	//if (CKeyboardController::GetInstance()->IsKeyReleased(GLFW_KEY_SPACE) ||
-	//	CKeyboardController::GetInstance()->IsKeyReleased(GLFW_KEY_ESCAPE))
-	//{
-	//	// Reset the CKeyboardController
-	//	CKeyboardController::GetInstance()->Reset();
-
-	//	// Load the menu state
-	//	cout << "Quitting the game from GameoverState" << endl;
-	//	return false;
-	//}
 
 	return true;
 }
@@ -198,17 +184,15 @@ bool GameOverState::ImGuiRender()
 		ImGui::Text("You Died");
 		ImGui::SetWindowFontScale(2 * (relativeScale_x + relativeScale_y));
 		ImGui::PopStyleColor();
-		//ImGui::Image((void*)(intptr_t)gameOverImage.textureID, ImVec2(buttonWidth, buttonWidth));
 		ImGui::End();
 
 		ImGui::Begin("Retry message", NULL, window_flags);
 		ImGui::SetWindowSize(ImVec2(1200.0f * relativeScale_x, 200.0f * relativeScale_y));
-		ImGui::SetWindowPos(ImVec2(cSettings->iWindowWidth * 0.17f, cSettings->iWindowHeight * 0.4f));
+		ImGui::SetWindowPos(ImVec2(cSettings->iWindowWidth * 0.10f, cSettings->iWindowHeight * 0.4f));
 		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.f, .0f, 0.0f, .0f + fFadeCount2));
 		ImGui::Text("Press Spacebar to retry");
 		ImGui::SetWindowFontScale(2 * (relativeScale_x + relativeScale_y));
 		ImGui::PopStyleColor();
-		//ImGui::Image((void*)(intptr_t)gameOverImage.textureID, ImVec2(buttonWidth, buttonWidth));
 		ImGui::End();
 
 
