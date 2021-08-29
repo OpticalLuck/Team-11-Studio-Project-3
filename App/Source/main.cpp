@@ -20,7 +20,7 @@
 Boolean macro to determine if the program is in 3D or 2D mode
 0=2D mode, 1=3D mode
 */
-#define _3DMODE 1
+#define _3DMODE 0
 
 /**
  @brief This function is the main function which is called by the operating system when you run the executables
