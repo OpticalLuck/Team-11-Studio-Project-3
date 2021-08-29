@@ -398,7 +398,7 @@ void CPlayer2D::Update(const double dElapsedTime)
 	{
 		if (cPhysics2D->GetboolGrounded())
 		{
-			cout << "set to idle" << endl;
+			//cout << "set to idle" << endl;
 			m_playerState = STATE::S_IDLE;
 		}
 	}
@@ -503,7 +503,6 @@ void CPlayer2D::Update(const double dElapsedTime)
 		if(cPhysics2D->GetboolGrounded())
 			m_playerState = STATE::S_IDLE;
 	}
-
 
 	//animation States
 	switch (m_playerState)
