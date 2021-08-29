@@ -238,18 +238,18 @@ void Interactables::Update(const double dElapsedTime)
 		}
 	}
 
-	/*if (!em->GetPlayer()->GetRecording())
+	if (!em->GetPlayer()->GetRecording() || interactableType == PRESSURE_PLATE || interactableType == DOOR)
 	{
 		if (bInteraction != bCloneInteract)
 		{
 			bCloneInteract = bInteraction;
 		}
-	}*/
+	}
 
-	if (bInteraction != bCloneInteract)
+	/*if (bInteraction != bCloneInteract)
 	{
 		bCloneInteract = bInteraction;
-	}
+	}*/
 	
 	// 1,1 || 1,0 || 0,1 
 	if ((bInteraction && bCloneInteract) || (!bInteraction && bCloneInteract))
