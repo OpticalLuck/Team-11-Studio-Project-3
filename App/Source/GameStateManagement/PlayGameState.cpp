@@ -128,13 +128,15 @@ bool CPlayGameState::Update(const double dElapsedTime)
 	cCamera->UpdateTarget(cPlayer->vTransform);
 	cCamera->Update((float)dElapsedTime);
 	cCamera->ClampCamPos(cMap2D->GetLevelLimit());
-	if (CKeyboardController::GetInstance()->IsKeyReleased(GLFW_KEY_ESCAPE))
-	{
-		cGameStateManager->bOption = true;
-		CGameStateManager::GetInstance()->SetPauseGameState("PauseState");
-	}
+
 	if (!bInstruction)
 	{
+		if (CKeyboardController::GetInstance()->IsKeyReleased(GLFW_KEY_ESCAPE))
+		{
+			cGameStateManager->bOption = true;
+			CGameStateManager::GetInstance()->SetPauseGameState("PauseState");
+		}
+
 		if (!cGameStateManager->bOption)
 		{
 			cInputHandler->Update(dElapsedTime);
