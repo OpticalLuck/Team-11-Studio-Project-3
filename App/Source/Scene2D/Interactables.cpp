@@ -117,7 +117,7 @@ void Interactables::Update(const double dElapsedTime)
 		for (auto& e : em->GetAllPlayers())
 		{
 			float distance = glm::length(e->vTransform - this->vTransform);
-			if (distance < 0.4)
+			if (distance < 0.5)
 			{
 				bCollided = true;
 			}
@@ -126,7 +126,7 @@ void Interactables::Update(const double dElapsedTime)
 		for (auto& e : em->GetallObstacles())
 		{
 			float distance = glm::length(e->vTransform - this->vTransform);
-			if (distance < 0.4)
+			if (distance < 0.5)
 			{
 				bCollided = true;
 			}
@@ -215,15 +215,21 @@ void Interactables::Update(const double dElapsedTime)
 	}
 	else if (this->interactableType == LIVES)
 	{
-	for (auto& e : em->GetAllPlayers())
-	{
-		float distance = glm::length(e->vTransform - this->vTransform);
-		if (distance < 0.3)
+		if (!bInteraction)
 		{
-			if (e->iLives < e->iMaxLives)
-				++e->iLives;
+			for (auto& e : em->GetAllPlayers())
+			{
+				float distance = glm::length(e->vTransform - this->vTransform);
+				if (distance < 0.3)
+				{
+					if (e->iLives < e->iMaxLives)
+						++e->iLives;
+
+					this->bInteraction = true;
+					break;
+				}
+			}
 		}
-	}
 	}
 
 	/*if (!em->GetPlayer()->GetRecording())
@@ -390,7 +396,7 @@ bool Interactables::Activate(bool interaction, CPlayer2D* player)
 {
 	switch (interactableType) {
 	case LEVER:
-		CSoundController::GetInstance()->PlaySoundByID(SOUND_ID::SOUND_SWITCH);
+		// CSoundController::GetInstance()->PlaySoundByID(SOUND_ID::SOUND_SWITCH);
 		ActivateSwitch(player);
 		break;
 	case PRESSURE_PLATE:

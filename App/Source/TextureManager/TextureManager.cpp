@@ -11,6 +11,7 @@
 #include "../Scene2D/Object2D.h"
 #include "System/Debug.h"
 #include <iostream>
+#include <sstream>
 
 CTextureManager::CTextureManager()
 {
@@ -207,6 +208,12 @@ bool CTextureManager::Init(void)
         return false;
     }
 
+    if (LoadTexture("Image/Lives_Empty.png", INTERACTABLE_LIVES_EMPTY) == false)
+    {
+        DEBUG_MSG("Failed to lives empty texture");
+        return false;
+    }
+
     if (LoadTexture("Image/Enemy/MushroomPreview.png", ENEMY_1) == false)
     {
         DEBUG_MSG("Failed to load Mushroom tile texture");
@@ -252,6 +259,58 @@ bool CTextureManager::Init(void)
     if (LoadTexture("Image/items/bomb.png", PROJECTILES_BOMB) == false) 
     {
         DEBUG_MSG("Failed to load bomb texture");
+        return false;
+    }
+
+    for (int i = 1; i <= 8; i++)
+    {
+        stringstream lazy;
+        lazy.str("");
+        lazy << "Image/Futuristic/Tile (" << i << ").png";
+        if (LoadTexture(lazy.str().c_str(), TILE_FUTURE_1 + i - 1) == false)
+        {
+            DEBUG_MSG("Failed to load " << lazy.str());
+            return false;
+        }
+    }
+    for (int i = 1; i <= 3; i++)
+    {
+        stringstream lazy;
+        lazy.str("");
+        lazy << "Image/Futuristic/Fence (" << i << ").png";
+        if (LoadTexture(lazy.str().c_str(), TILE_FUTURE_FENCE_1 + i - 1) == false)
+        {
+            DEBUG_MSG("Failed to load " << lazy.str());
+            return false;
+        }
+    }
+    for (int i = 1; i <= 18; i++)
+    {
+        stringstream thanksJeryl;
+        thanksJeryl.str("");
+        thanksJeryl << "Image/Villege/Villege (" << i << ").png";
+        if (LoadTexture(thanksJeryl.str().c_str(), TILE_VILLEGE_1 + i - 1) == false)
+        {
+            DEBUG_MSG("Failed to load " << thanksJeryl.str());
+            return false;
+        }
+    }
+
+    if (LoadTexture("Image/Futuristic/Barrel (1).png", OBSTACLE_FUTURE_BARREL1) == false)
+    {
+        DEBUG_MSG("Failed to load Barrel (1) texture");
+        return false;
+    }
+
+    if (LoadTexture("Image/Futuristic/Barrel (2).png", OBSTACLE_FUTURE_BARREL2) == false)
+    {
+        DEBUG_MSG("Failed to load Barrel (2) texture");
+        return false;
+    }
+
+    if (LoadTexture("Image/Futuristic/Box.png", OBSTACLE_FUTURE_BOX) == false)
+    {
+        DEBUG_MSG("Failed to load Box texture");
         return false;
     }
 

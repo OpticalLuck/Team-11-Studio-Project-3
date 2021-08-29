@@ -33,6 +33,7 @@ public:
 
 
 protected:
+	glm::vec4 currentColor;
 	CBackgroundEntity* background;
 	double countdown;
 };

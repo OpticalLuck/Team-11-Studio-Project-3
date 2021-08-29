@@ -269,6 +269,7 @@ void Obstacle2D::ResolvePlayerCollision()
 			}
 			else {
 				cPlayer->GetCPhysics()->SetVelocity(glm::vec2(0.f));
+				//cout << "grounded" << endl;
 			}
 		}
 	}

@@ -1,5 +1,4 @@
-﻿  GUI.cpp
-  Settings.cpp
+﻿  Settings.cpp
 E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\Library\Source\GameControl\Settings.cpp(353,18): warning C4244: 'initializing': conversion from 'T' to 'unsigned int', possible loss of data
           with
           [
@@ -15,13 +14,4 @@ E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\Library\Source\GameControl\Settin
           [
               T=float
           ]
-  ImGuiWindow.cpp
-  Camera2D.cpp
-  Collider2D.cpp
-  Entity2D.cpp
-  Physics2D.cpp
-  TextRenderer.cpp
-  CSVReader.cpp
-  CSVWriter.cpp
-  ImageLoader.cpp
   Library.vcxproj -> E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\Release\Library.lib

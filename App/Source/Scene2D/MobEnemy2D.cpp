@@ -944,6 +944,9 @@ void CMobEnemy2D::CollisionUpdate(void) {
 
 		if (std::get<0>(data)) {
 			BoulderCollide = true;
+
+			if (std::get<1>(data) == Direction::DOWN)
+				pHealth = 0;
 		}
 	}
 }

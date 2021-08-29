@@ -140,7 +140,7 @@ bool CMenuState::UpdateMenu(ImGuiWindowFlags window_flags)
 
 	// Create a window called "Hello, world!" and append into it.
 	ImGui::Begin("Main Menu", NULL, window_flags);
-	ImGui::SetWindowPos(ImVec2(CSettings::GetInstance()->iWindowWidth / 2.0f - buttonWidth / 2.0f, CSettings::GetInstance()->iWindowHeight / 6.0f));				
+	ImGui::SetWindowPos(ImVec2(CSettings::GetInstance()->iWindowWidth / 2.0f - buttonWidth / 2.0f, CSettings::GetInstance()->iWindowHeight / 3.0f));				
 	ImGui::SetWindowSize(ImVec2(buttonWidth + 55, buttonHeight * 3 + 200));
 
 	//Added rounding for nicer effect
@@ -190,8 +190,8 @@ bool CMenuState::UpdateMenu(ImGuiWindowFlags window_flags)
 	if (CKeyboardController::GetInstance()->IsKeyReleased(GLFW_KEY_F1))
 	{
 		CKeyboardController::GetInstance()->Reset();
-		CGameStateManager::GetInstance()->SetActiveGameState("GameWinState");
-		cout << "Loading GameWinState state\n";
+		CGameStateManager::GetInstance()->SetActiveGameState("GameOverState");
+		cout << "Loading GameOverState state\n";
 	}
 	//For keyboard controls
 	if (CKeyboardController::GetInstance()->IsKeyReleased(GLFW_KEY_SPACE))
@@ -395,7 +395,7 @@ bool CMenuState::UpdateLevelSelect(ImGuiWindowFlags window_flags)
 	ImGuiStyle& style = ImGui::GetStyle();
 	style.FrameRounding = 100.0f;
 
-	ImGui::Begin("Level Editor", NULL, window_flags);
+	ImGui::Begin("Level Select", NULL, window_flags);
 	ImGui::SetWindowPos(ImVec2(CSettings::GetInstance()->iWindowWidth * 0.25f, CSettings::GetInstance()->iWindowHeight * 0.25f));
 	ImGui::SetWindowSize(ImVec2(CSettings::GetInstance()->iWindowWidth * 0.5f, CSettings::GetInstance()->iWindowHeight * 0.5f));
 

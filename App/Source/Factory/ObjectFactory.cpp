@@ -37,10 +37,7 @@ CObject2D* ObjectFactory::CreateObject(int iTextureID)
 	}
 	else if (iTextureID > OBSTACLES_START && iTextureID < OBSTACLES_TOTAL)
 	{
-		if(iTextureID == OBSTACLE_BOULDER)
-			newObj = new Obstacle2D(iTextureID);
-		else
-			newObj = new CObject2D(iTextureID);
+		newObj = new Obstacle2D(iTextureID);
 	}
 	else
 		newObj = new CObject2D(iTextureID);

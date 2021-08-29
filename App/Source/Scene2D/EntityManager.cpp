@@ -386,6 +386,11 @@ void CEntityManager::Update(const double dElapsedTime)
 		i->Update(dElapsedTime);
 	}
 
+	for (Obstacle2D* i : m_ObstacleList[cMap2D->GetCurrentLevel()])
+	{
+		i->Update(dElapsedTime);
+	}
+
 	for (unsigned i = 0; i < m_cloneList.size(); ++i)
 	{
 		if (m_cloneList[i]->m_FrameStorage.iCurrentFrame - m_cloneList[i]->m_FrameStorage.iEndFrame > 180)
@@ -440,11 +445,6 @@ void CEntityManager::Update(const double dElapsedTime)
 
 	//Remove any nullptrs in bullet array
 	m_BulletList[cMap2D->GetCurrentLevel()].erase(std::remove(m_BulletList[cMap2D->GetCurrentLevel()].begin(), m_BulletList[cMap2D->GetCurrentLevel()].end(), nullptr), m_BulletList[cMap2D->GetCurrentLevel()].end());
-
-	for (Obstacle2D* i : m_ObstacleList[cMap2D->GetCurrentLevel()])
-	{
-		i->Update(dElapsedTime);
-	}
 }
 
 void CEntityManager::PushBullet(Projectiles* bullet, const unsigned int currLevel) {
