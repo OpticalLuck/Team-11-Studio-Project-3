@@ -1,4 +1,4 @@
-resolution:1400x1050
+resolution:1024x768
 master-volume:45
 bgm-volume:33
 sfx-volume:51

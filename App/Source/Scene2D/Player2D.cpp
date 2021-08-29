@@ -398,7 +398,7 @@ void CPlayer2D::Update(const double dElapsedTime)
 	{
 		if (cPhysics2D->GetboolGrounded())
 		{
-			cout << "set to idle" << endl;
+			//cout << "set to idle" << endl;
 			m_playerState = STATE::S_IDLE;
 		}
 	}
@@ -459,7 +459,7 @@ void CPlayer2D::Update(const double dElapsedTime)
 			{
 				if (glm::dot(cPhysics2D->GetVelocity(), obj->vTransform - vTransform) > 0)
 					collider2D->ResolveAABBCircle(obj->GetCollider(), data, Collider2D::ColliderType::COLLIDER_QUAD);
-			
+		
 			
 				if (std::get<1>(data) == Direction::DOWN)
 				{
@@ -493,8 +493,16 @@ void CPlayer2D::Update(const double dElapsedTime)
 	UpdateHealthLives();
 
 	//if (m_playerState != STATE::S_JUMP && m_playerState != STATE::S_DOUBLE_JUMP)
-	
-
+	if (fabs((float)cPhysics2D->GetVelocity().x) > 0)
+	{
+		if (m_playerState != STATE::S_JUMP && m_playerState != STATE::S_DOUBLE_JUMP)
+			m_playerState = STATE::S_MOVE;
+	}
+	else
+	{
+		if(cPhysics2D->GetboolGrounded())
+			m_playerState = STATE::S_IDLE;
+	}
 
 	//animation States
 	switch (m_playerState)
@@ -685,7 +693,6 @@ void CPlayer2D::InputUpdate(double dt)
 		if (jumpCount < 2 &&
 			m_KeyboardInputs[m_FrameStorage.iCurrentFrame][KEYBOARD_INPUTS::SPACE].bKeyPressed)
 		{
-			cPhysics2D->SetboolGrounded(false);
 			velocity.y = 6.5f * (jumpCount + (1 - jumpCount * 0.6f));
 			jumpCount++;
 			timerArr[A_JUMP].second = 0.1 * jumpCount;
@@ -699,6 +706,7 @@ void CPlayer2D::InputUpdate(double dt)
 				m_playerState = STATE::S_DOUBLE_JUMP;
 			}
 
+			cPhysics2D->SetboolGrounded(false);
 		}
 
 		if (timerArr[A_JUMP].second < 0.2)
@@ -727,7 +735,7 @@ void CPlayer2D::InputUpdate(double dt)
 		{
 			timerArr[A_JUMP].second = 0;
 			jumpCount = 0;
-		}
+		} 
 	}
 	if (glm::length(velocity) > 0.f)
 		cPhysics2D->SetVelocity(velocity);
@@ -742,6 +750,11 @@ void CPlayer2D::InputUpdate(double dt)
 
 	cInventory->Update(dt, m_FrameStorage.iCurrentFrame, m_KeyboardInputs, m_MouseInputs);
 }
+
+void CPlayer2D::SetJumpCount(int count) {
+	jumpCount = count;
+}
+
 void CPlayer2D::SetClone(bool bIsClone)
 {
 	this->bIsClone = bIsClone;
