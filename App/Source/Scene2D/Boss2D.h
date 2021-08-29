@@ -81,6 +81,8 @@ class CBoss2D : public CEnemy2D
 		//returns transform y
 		float GetTransformY(void);
 
+		void Attacked(int hp = 1) override;
+
 	protected:
 		int id;
 

@@ -246,7 +246,7 @@ bool CTextureManager::Init(void)
         return false;
     }
 
-    if (LoadTexture("Image/Scene2D_EnemyTile.tga", BOSS) == false) 
+    if (LoadTexture("Image/Enemy/boss.png", BOSS) == false) 
     {
         DEBUG_MSG("Failed to load boss tile texture");
         return false;

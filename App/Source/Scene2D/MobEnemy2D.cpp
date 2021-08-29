@@ -682,7 +682,7 @@ void CMobEnemy2D::ChaseEnemyY(void) {
 	//if (xCheck > dist)
 	//	return; //If its not near the edge, dont activate yet
 
-	int tileCap = 2; //How many tiles the enemy can jump over
+	int tileCap = 3; //How many tiles the enemy can jump over
 
 	switch (dir) {
 	case DIRECTION::LEFT: {
