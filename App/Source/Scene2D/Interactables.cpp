@@ -13,6 +13,7 @@
 
 Interactables::Interactables(int iTextureID)
 	: bInteraction(false)
+	, bOriginalInteraction(false)
 	, bPreviousFrameInteraction(false)
 	, bCloneInteract(false)
 	, quad(NULL)
@@ -40,6 +41,8 @@ Interactables::~Interactables(void)
 		delete quad;
 		quad = nullptr;
 	}
+
+	
 }
 
 bool Interactables::Init()
@@ -48,7 +51,8 @@ bool Interactables::Init()
 	glBindVertexArray(VAO);
 
 	type = CEntity2D::ENTITY_TYPE::INTERACTABLES;
-	quad = CMeshBuilder::GenerateQuad(glm::vec4(1, 1, 1, 1), cSettings->TILE_WIDTH, cSettings->TILE_HEIGHT);
+	if(!quad)
+		quad = CMeshBuilder::GenerateQuad(glm::vec4(1, 1, 1, 1), cSettings->TILE_WIDTH, cSettings->TILE_HEIGHT);
 
 	if (!cPhysics2D)
 		cPhysics2D = new CPhysics2D;
@@ -72,10 +76,19 @@ bool Interactables::Init()
 	{
 		// Initialise Doors
 		// Interacted doors are open
-		collider2D->SetbEnabled(true);
+		if (interactableType == INTERACTABLE_DOOR_OPEN) {
+			interactableType = (INTERACTABLE_TYPE)INTERACTABLE_DOOR_CLOSED;
+			bInteraction = true;
+			collider2D->SetbEnabled(false);
+		}
+		else {
+			collider2D->SetbEnabled(true);
+		}
+
 		collider2D->bIsDisplayed = true;
 	}
 
+	bOriginalInteraction = bInteraction;
  	return true;
 }
 
@@ -225,12 +238,17 @@ void Interactables::Update(const double dElapsedTime)
 		}
 	}
 
-	if (!em->GetPlayer()->GetRecording())
+	/*if (!em->GetPlayer()->GetRecording())
 	{
 		if (bInteraction != bCloneInteract)
 		{
 			bCloneInteract = bInteraction;
 		}
+	}*/
+
+	if (bInteraction != bCloneInteract)
+	{
+		bCloneInteract = bInteraction;
 	}
 	
 	// 1,1 || 1,0 || 0,1 
@@ -431,17 +449,25 @@ bool Interactables::Activate(bool interaction, CPlayer2D* player)
 		for (auto& e : intArr) {
 			if (e->interactableType >= DOOR) {
 				if (interactableType == LEVER) {
-					e->Activate(this->bInteraction);
-					e->collider2D->SetbEnabled(!this->bInteraction);
+					bool _switch;
+					if (bInteraction)
+						_switch = !e->bOriginalInteraction;
+					else
+						_switch = e->bOriginalInteraction;
+
+					e->Activate(_switch);
+					e->collider2D->SetbEnabled(!_switch);
 				}
 				else if (interactableType == PRESSURE_PLATE) {
 					if (activated || interaction) {
-						e->Activate(true);
-						e->collider2D->SetbEnabled(false);
+						/*e->Activate(true);
+						e->collider2D->SetbEnabled(false);*/
+						e->Activate(!e->bOriginalInteraction);
+						e->collider2D->SetbEnabled(e->bOriginalInteraction);
 					}
 					else {
-						e->Activate(false);
-						e->collider2D->SetbEnabled(true);
+						e->Activate(e->bOriginalInteraction);
+						e->collider2D->SetbEnabled(!e->bOriginalInteraction);
 					}
 				}
 			}

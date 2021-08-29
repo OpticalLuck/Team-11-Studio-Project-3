@@ -36,7 +36,7 @@ int main(void)
 		pApp->Run();
 
 		// Destroy the Application instance, just to be sure
-		pApp->Destroy();
+		Application::GetInstance()->Destroy();
 
 		// Set the Application handler to NULL
 		pApp = NULL;

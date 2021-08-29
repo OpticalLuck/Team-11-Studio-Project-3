@@ -158,6 +158,7 @@ bool CBoss2D::Init(void) {
 
 	bulletTimer = 0;
 
+	pMaxHealth = 10;
 	pHealth = 10;
 	currTarget = nullptr;
 
@@ -180,6 +181,11 @@ bool CBoss2D::Init(void) {
 	savedAtkTimer = savedPauseTimer = 0;
 
 	return true;
+}
+
+void CBoss2D::Attacked(int hp) {
+	pHealth = Math::Max(0, pHealth - 1);
+	pShield = pMaxShield + 1; //Offset by 1 frame for better synchronisation (FUTURE JEVON IF YOU KNOW YOU KNOW IF NOT THEN LMAO)
 }
 
 void CBoss2D::ResetRecording(void) {
@@ -220,7 +226,12 @@ void CBoss2D::ReplayRecording(void) {
 	std::vector<CPlayer2D*> playerArr = cEntityManager->GetAllPlayers();
 
 	if (beforeTarget != nullptr) {
-		currTarget = playerArr.back();
+		if (beforeTarget == cEntityManager->GetPlayer())
+			currTarget = playerArr.back();
+		else if (std::count(playerArr.begin(), playerArr.end(), beforeTarget))
+			currTarget = beforeTarget;
+		else
+			currTarget = nullptr;
 	}
 	else {
 		currTarget = nullptr;

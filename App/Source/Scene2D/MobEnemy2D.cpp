@@ -46,6 +46,12 @@ CMobEnemy2D::~CMobEnemy2D(void) {
 		rayCast2D = nullptr;
 	}
 
+	if (animatedSprites)
+	{
+		delete animatedSprites;
+		animatedSprites = nullptr;
+	}
+
 	// de-allocate all resources once they've outlived their purpose:
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
@@ -676,7 +682,7 @@ void CMobEnemy2D::ChaseEnemyY(void) {
 	//if (xCheck > dist)
 	//	return; //If its not near the edge, dont activate yet
 
-	int tileCap = 2; //How many tiles the enemy can jump over
+	int tileCap = 3; //How many tiles the enemy can jump over
 
 	switch (dir) {
 	case DIRECTION::LEFT: {

@@ -12,7 +12,7 @@ Obstacle2D::Obstacle2D(int iTextureID)
 {
 	this->iTextureID = iTextureID;
 	type = ENTITY_TYPE::TILE;
-	force = 300.f;
+	force = 1500;
 }
 
 Obstacle2D::~Obstacle2D()
@@ -28,6 +28,8 @@ bool Obstacle2D::Init()
 		cPhysics2D = new CPhysics2D;
 	if (!collider2D)
 		collider2D = new Collider2D;
+
+	cEntityManager = CEntityManager::GetInstance();
 
 	cPhysics2D->Init(&vTransform);
 	cPhysics2D->SetMass(10);
@@ -75,6 +77,7 @@ void Obstacle2D::Update(const double dElapsedTime)
 	ResolvePlayerCollision();
 	ResolveEnemyCollision();
 	ResolveMapCollision(CheckMapCollision());
+	ResolveObstacleCollision();
 }
 
 void Obstacle2D::PreRender()
@@ -130,6 +133,54 @@ void Obstacle2D::PostRender()
 	glDisable(GL_BLEND);
 }
 
+void Obstacle2D::ResolveObstacleCollision(void) {
+	std::vector<Obstacle2D*> arrObj = cEntityManager->GetallObstacles();
+
+	for (unsigned i = 0; i < arrObj.size(); ++i) {
+		float maxDist = 1.f;
+		float dist = glm::length(arrObj[i]->vTransform - vTransform);
+
+		if (dist > maxDist)
+			continue;
+
+		CObject2D* obj = arrObj[i];
+		Collision data = collider2D->CollideWith(arrObj[i]->GetCollider());
+		if (std::get<0>(data)) {
+			if (obj->GetCollider()->colliderType == Collider2D::ColliderType::COLLIDER_QUAD)
+			{
+				if (collider2D->colliderType == Collider2D::ColliderType::COLLIDER_CIRCLE)
+				{
+					obj->GetCollider()->ResolveAABBCircle(collider2D, data, Collider2D::ColliderType::COLLIDER_CIRCLE);
+
+					if (std::get<1>(data) == Direction::DOWN)
+						cPhysics2D->SetboolGrounded(true);
+				}
+				else
+				{
+					collider2D->ResolveAABB(obj->GetCollider(), data);
+
+					if (std::get<1>(data) == Direction::UP)//kinda reversed xd
+						cPhysics2D->SetboolGrounded(true);
+				}
+			}
+			else if (obj->GetCollider()->colliderType == Collider2D::ColliderType::COLLIDER_CIRCLE)
+			{
+				if (glm::dot(cPhysics2D->GetVelocity(), obj->vTransform - vTransform) > 0)
+					collider2D->ResolveAABBCircle(obj->GetCollider(), data, Collider2D::ColliderType::COLLIDER_QUAD);
+
+				if (std::get<1>(data) == Direction::DOWN)
+					cPhysics2D->SetboolGrounded(true);
+			}
+
+			vTransform = collider2D->position;
+			obj->vTransform = obj->GetCollider()->position;
+
+			if (std::get<1>(data) == Direction::LEFT || std::get<1>(data) == Direction::RIGHT)
+				cPhysics2D->SetVelocity(glm::vec2(0, cPhysics2D->GetVelocity().y));
+		}
+	}
+}
+
 void Obstacle2D::ResolveMapCollision(std::vector<pair<CObject2D*, float>> aabbvector)
 {
 	for (auto aabbTuple : aabbvector)
@@ -169,7 +220,6 @@ void Obstacle2D::ResolveMapCollision(std::vector<pair<CObject2D*, float>> aabbve
 
 			if (std::get<1>(data) == Direction::LEFT || std::get<1>(data) == Direction::RIGHT)
 				cPhysics2D->SetVelocity(glm::vec2(0, cPhysics2D->GetVelocity().y));
-
 		}
 	}
 }
@@ -189,15 +239,29 @@ void Obstacle2D::ResolvePlayerCollision()
 
 			glm::vec2 direction = glm::normalize(vTransform - cPlayer->vTransform);
 			cPhysics2D->SetForce(glm::vec2(force, 0) * direction);
-			cPlayer->GetCPhysics()->SetVelocity(glm::vec2(0.f));
+
+			//cPlayer->GetCPhysics()->SetVelocity(glm::vec2(0.f));
 
 			cPlayer->vTransform = cPlayer->GetCollider()->position;
 			vTransform = collider2D->position;
 
+
+			glm::vec2 vel = cPlayer->GetCPhysics()->GetVelocity();
+			vel.x = 0;
+
 			if (std::get<1>(data) == Direction::UP) {
 				cPlayer->GetPhysics()->SetboolGrounded(true);
 				cPlayer->m_playerState = CPlayer2D::STATE::S_IDLE;
-				cout << "grounded" << endl;
+				cPlayer->SetJumpCount(0);
+
+				if (vel.y != 0) 
+					cPlayer->GetPhysics()->SetVelocity(vel);
+				else 
+					cPlayer->GetCPhysics()->SetVelocity(glm::vec2(0.f));
+			}
+			else {
+				cPlayer->GetCPhysics()->SetVelocity(glm::vec2(0.f));
+				//cout << "grounded" << endl;
 			}
 		}
 	}

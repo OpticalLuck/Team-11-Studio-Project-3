@@ -13,7 +13,7 @@ class CGameStateManager : public CSingletonTemplate<CGameStateManager>
 	friend CSingletonTemplate<CGameStateManager>;
 public:
 	// Destroy this CGameStateManager
-	void Destroy();
+	void Delete();
 
 	// System Interface
 	// Update this class instance

@@ -44,6 +44,8 @@ CMap2D::CMap2D(void)
  */
 CMap2D::~CMap2D(void)
 {
+	if (quadMesh)
+		delete quadMesh;
 	for (unsigned i = 0; i < arrObject.size(); i++) {
 		for (unsigned x = 0; x < arrObject[i].size(); x++) {
 			delete arrObject[i][x];

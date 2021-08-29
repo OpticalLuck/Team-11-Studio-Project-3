@@ -14,6 +14,7 @@ public:
 	void PostRender() override;
 
 	void ResolveMapCollision(std::vector<pair<CObject2D*, float>> aabbvector) override;
+	void ResolveObstacleCollision(void); //With other obstacles
 	void ResolvePlayerCollision() override;
 	void ResolveEnemyCollision() override;
 

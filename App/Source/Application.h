@@ -29,7 +29,7 @@ public:
 	// Run this class instance
 	void Run(void);
 	// Destroy this class instance
-	void Destroy(void);
+	void Delete(void);
 
 	// Get window height
 	int GetWindowHeight(void) const;
