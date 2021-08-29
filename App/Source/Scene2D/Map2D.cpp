@@ -253,6 +253,11 @@ glm::i32vec2 CMap2D::GetLevelLimit(void) {
 	return glm::vec2(arrLevelLimit[uiCurLevel].x, arrLevelLimit[uiCurLevel].y);
 }
 
+std::string CMap2D::GetLevelName(void)
+{
+	return LevelName;
+}
+
 int CMap2D::GetLevelNum(void)
 {
 	return (int)(LevelName[6] - '0');

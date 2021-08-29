@@ -114,6 +114,7 @@ public:
 
 	//Get arrlevellimit
 	glm::i32vec2 GetLevelLimit(void);
+	std::string GetLevelName(void);
 	int GetLevelNum(void);
 
 protected:
