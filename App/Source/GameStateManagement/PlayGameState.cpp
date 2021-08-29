@@ -288,12 +288,14 @@ bool CPlayGameState::ImGuiRender()
 		}
 
 		ImGui::SetNextWindowPos(ImVec2(0, cSettings->iWindowHeight - 100.0f * relativeScale_y));
-		ImGui::SetNextWindowSize(ImVec2(100 * relativeScale_y, 30 * relativeScale_y));
+		ImGui::SetNextWindowSize(ImVec2(100 * relativeScale_x, 30 * relativeScale_y));
 		ImGui::Begin("LivesWindow", NULL, UI_window);
+		ImGui::SetCursorPosY(-15 * relativeScale_y);
 		ImGui::Image((void*)(intptr_t)cTextureManager->MapOfTextureIDs.at(OBJECT_TYPE::INTERACTABLE_LIVES),
-			ImVec2(25 * relativeScale_x, 25 * relativeScale_y),
+			ImVec2(40 * relativeScale_x, 40 * relativeScale_y),
 			ImVec2(0, 1), ImVec2(1, 0));
 		ImGui::SameLine();
+		ImGui::SetCursorPosY(10);
 		std::stringstream ss;
 		ss.str("");
 		ss << cPlayer->iLives << " / " << cPlayer->iMaxLives;

@@ -208,6 +208,12 @@ bool CTextureManager::Init(void)
         return false;
     }
 
+    if (LoadTexture("Image/Lives_Empty.png", INTERACTABLE_LIVES_EMPTY) == false)
+    {
+        DEBUG_MSG("Failed to lives empty texture");
+        return false;
+    }
+
     if (LoadTexture("Image/Enemy/MushroomPreview.png", ENEMY_1) == false)
     {
         DEBUG_MSG("Failed to load Mushroom tile texture");
