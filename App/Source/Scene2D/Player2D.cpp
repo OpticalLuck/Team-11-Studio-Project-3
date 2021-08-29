@@ -834,7 +834,7 @@ void CPlayer2D::SetMouseInputs(std::vector<std::array<MouseInput, MOUSE_INPUTS::
 
 void CPlayer2D::ResetToCheckPoint()
 {
-	vTransform = m_CheckpointState.m_CheckpointPosition;
+	vTransform = CEntityManager::GetInstance()->GetPlayer()->m_CheckpointState.m_CheckpointPosition;
 	cPhysics2D->SetVelocity(glm::vec2(0.f));
 	cKeyboardController->Reset();
 }
