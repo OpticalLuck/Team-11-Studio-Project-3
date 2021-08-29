@@ -121,7 +121,7 @@ bool CIntroState::Update(const double dElapsedTime)
 
 	currentColor = glm::clamp(currentColor, glm::vec4(0, 0, 0, 0), glm::vec4(1, 1, 1, 1));
 
-	if (countdown > 7)
+	if (countdown > 8)
 	{
 		countdown = 0;
 		// Reset the CKeyboardController

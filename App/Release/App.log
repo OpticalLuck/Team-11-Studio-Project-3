@@ -1,10 +1,42 @@
-﻿  Interactables.cpp
-E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\App\Source\Scene2D\Interactables.cpp(193,86): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\App\Source\Scene2D\Interactables.cpp(208,86): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\App\Source\Scene2D\Interactables.cpp(222,40): warning C4018: '>': signed/unsigned mismatch
-  Generating code
-  1 of 6650 functions (<0.1%) were compiled, the rest were copied from previous compilation.
+﻿  Generating code
+  71 of 6650 functions ( 1.1%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    44 functions had inline decision re-evaluated but remain unchanged
+    136 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
+Application.obj : warning LNK4099: PDB 'vc142.pdb' was not found with 'Application.obj' or at 'E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\Release\vc142.pdb'; linking object as if no debug info
+EnemyFactory.obj : warning LNK4099: PDB 'vc142.pdb' was not found with 'EnemyFactory.obj' or at 'E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\Release\vc142.pdb'; linking object as if no debug info
+ObjectFactory.obj : warning LNK4099: PDB 'vc142.pdb' was not found with 'ObjectFactory.obj' or at 'E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\Release\vc142.pdb'; linking object as if no debug info
+EditorSettingsState.obj : warning LNK4099: PDB 'vc142.pdb' was not found with 'EditorSettingsState.obj' or at 'E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\Release\vc142.pdb'; linking object as if no debug info
+GameOverState.obj : warning LNK4099: PDB 'vc142.pdb' was not found with 'GameOverState.obj' or at 'E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\Release\vc142.pdb'; linking object as if no debug info
+GameStateManager.obj : warning LNK4099: PDB 'vc142.pdb' was not found with 'GameStateManager.obj' or at 'E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\Release\vc142.pdb'; linking object as if no debug info
+GameWinState.obj : warning LNK4099: PDB 'vc142.pdb' was not found with 'GameWinState.obj' or at 'E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\Release\vc142.pdb'; linking object as if no debug info
+IntroState.obj : warning LNK4099: PDB 'vc142.pdb' was not found with 'IntroState.obj' or at 'E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\Release\vc142.pdb'; linking object as if no debug info
+LevelEditorState.obj : warning LNK4099: PDB 'vc142.pdb' was not found with 'LevelEditorState.obj' or at 'E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\Release\vc142.pdb'; linking object as if no debug info
+MenuState.obj : warning LNK4099: PDB 'vc142.pdb' was not found with 'MenuState.obj' or at 'E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\Release\vc142.pdb'; linking object as if no debug info
+PauseMenuState.obj : warning LNK4099: PDB 'vc142.pdb' was not found with 'PauseMenuState.obj' or at 'E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\Release\vc142.pdb'; linking object as if no debug info
+PlayGameState.obj : warning LNK4099: PDB '' was not found with 'PlayGameState.obj' or at ''; linking object as if no debug info
+CInputHandler.obj : warning LNK4099: PDB 'vc142.pdb' was not found with 'CInputHandler.obj' or at 'E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\Release\vc142.pdb'; linking object as if no debug info
+LevelGrid.obj : warning LNK4099: PDB 'vc142.pdb' was not found with 'LevelGrid.obj' or at 'E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\Release\vc142.pdb'; linking object as if no debug info
+LevelEditor.obj : warning LNK4099: PDB 'vc142.pdb' was not found with 'LevelEditor.obj' or at 'E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\Release\vc142.pdb'; linking object as if no debug info
+main.obj : warning LNK4099: PDB 'vc142.pdb' was not found with 'main.obj' or at 'E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\Release\vc142.pdb'; linking object as if no debug info
+BackgroundEntity.obj : warning LNK4099: PDB 'vc142.pdb' was not found with 'BackgroundEntity.obj' or at 'E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\Release\vc142.pdb'; linking object as if no debug info
+Boss2D.obj : warning LNK4099: PDB 'vc142.pdb' was not found with 'Boss2D.obj' or at 'E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\Release\vc142.pdb'; linking object as if no debug info
+Bullet2D.obj : warning LNK4099: PDB 'vc142.pdb' was not found with 'Bullet2D.obj' or at 'E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\Release\vc142.pdb'; linking object as if no debug info
+Enemy2D.obj : warning LNK4099: PDB 'vc142.pdb' was not found with 'Enemy2D.obj' or at 'E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\Release\vc142.pdb'; linking object as if no debug info
+EntityManager.obj : warning LNK4099: PDB 'vc142.pdb' was not found with 'EntityManager.obj' or at 'E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\Release\vc142.pdb'; linking object as if no debug info
+GameManager.obj : warning LNK4099: PDB '' was not found with 'GameManager.obj' or at ''; linking object as if no debug info
+Interactables.obj : warning LNK4099: PDB 'vc142.pdb' was not found with 'Interactables.obj' or at 'E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\Release\vc142.pdb'; linking object as if no debug info
+Inventory.obj : warning LNK4099: PDB 'vc142.pdb' was not found with 'Inventory.obj' or at 'E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\Release\vc142.pdb'; linking object as if no debug info
+InventoryManager.obj : warning LNK4099: PDB 'vc142.pdb' was not found with 'InventoryManager.obj' or at 'E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\Release\vc142.pdb'; linking object as if no debug info
+Item.obj : warning LNK4099: PDB 'vc142.pdb' was not found with 'Item.obj' or at 'E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\Release\vc142.pdb'; linking object as if no debug info
+LivingEntity2D.obj : warning LNK4099: PDB 'vc142.pdb' was not found with 'LivingEntity2D.obj' or at 'E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\Release\vc142.pdb'; linking object as if no debug info
+Map2D.obj : warning LNK4099: PDB 'vc142.pdb' was not found with 'Map2D.obj' or at 'E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\Release\vc142.pdb'; linking object as if no debug info
+MobEnemy2D.obj : warning LNK4099: PDB '' was not found with 'MobEnemy2D.obj' or at ''; linking object as if no debug info
+Object2D.obj : warning LNK4099: PDB 'vc142.pdb' was not found with 'Object2D.obj' or at 'E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\Release\vc142.pdb'; linking object as if no debug info
+Obstacle2D.obj : warning LNK4099: PDB '' was not found with 'Obstacle2D.obj' or at ''; linking object as if no debug info
+Player2D.obj : warning LNK4099: PDB 'vc142.pdb' was not found with 'Player2D.obj' or at 'E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\Release\vc142.pdb'; linking object as if no debug info
+Projectiles.obj : warning LNK4099: PDB 'vc142.pdb' was not found with 'Projectiles.obj' or at 'E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\Release\vc142.pdb'; linking object as if no debug info
+RayCast2D.obj : warning LNK4099: PDB 'vc142.pdb' was not found with 'RayCast2D.obj' or at 'E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\Release\vc142.pdb'; linking object as if no debug info
+Scene2D.obj : warning LNK4099: PDB 'vc142.pdb' was not found with 'Scene2D.obj' or at 'E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\Release\vc142.pdb'; linking object as if no debug info
+TextureManager.obj : warning LNK4099: PDB 'vc142.pdb' was not found with 'TextureManager.obj' or at 'E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\Release\vc142.pdb'; linking object as if no debug info
   App.vcxproj -> E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\Release\App.exe
