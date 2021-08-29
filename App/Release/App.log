@@ -13,8 +13,8 @@ E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\App\Source\GameStateManagement\Pl
 E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\App\Source\GameStateManagement\PlayGameState.cpp(426,55): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
 E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\App\Source\GameStateManagement\PlayGameState.cpp(437,36): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
   Generating code
-  1 of 6628 functions (<0.1%) were compiled, the rest were copied from previous compilation.
+  0 of 6628 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    44 functions had inline decision re-evaluated but remain unchanged
+    0 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   App.vcxproj -> E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\Release\App.exe
