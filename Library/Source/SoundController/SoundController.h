@@ -93,6 +93,10 @@ public:
 
 	void Playlist(void);
 
+	void FirstSong(void);
+	void SecondSong(void);
+	void ThirdSong(void);
+
 
 	// For 3D sounds only
 	// Set Listener position
@@ -115,6 +119,9 @@ protected:
 	// Get the number of sounds in this map
 	int GetNumOfSounds(void) const;
 
+	bool bFirstSong;
+	bool bSecondSong;
+	bool bThirdSong;
 
 	// The handler to the irrklang Sound Engine
 	ISoundEngine* cSoundEngine;

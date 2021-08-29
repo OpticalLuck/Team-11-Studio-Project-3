@@ -179,6 +179,7 @@ bool CScene2D::Init(std::string levelPath)
 	//cInventoryManager = CInventoryManager::GetInstance();
 	cInventoryM = CInventoryManager::GetInstance();
 	cSoundController->PlaySoundByID(SOUND_ID::BGM_LEVEL1);
+	cSoundController->PlaySoundByID(SOUND_ID::SOUND_ONCLICK);
 
 	return true;
 }
@@ -193,6 +194,8 @@ bool CScene2D::Update(const double dElapsedTime)
 
 	// Call the Map2D's update method
 	cMap2D->Update(dElapsedTime);
+
+	cSoundController->Playlist();
 
 	if (CKeyboardController::GetInstance()->IsKeyDown(GLFW_KEY_UP))
 	{

@@ -60,6 +60,9 @@ bool CSoundController::Init(void)
 		cout << "Unable to initialise the IrrKlang sound engine" << endl;
 		return false;
 	}
+	bFirstSong = true;
+	bSecondSong = true;
+	bThirdSong = true;
 	return true;
 }
 
@@ -156,13 +159,62 @@ void CSoundController::PlaySoundByID(const int ID)
 
 void CSoundController::Playlist(void)
 {
-	if (!isCurrentlyPlaying(GetNamebyID(SOUND_ID::BGM_LEVEL1)) && !isCurrentlyPlaying(GetNamebyID(SOUND_ID::BGM_SECOND)))
+	//if (!isCurrentlyPlaying(GetNamebyID(SOUND_ID::BGM_LEVEL1)))
+	//{
+	//	cout << "Moving over to second BGM\n";
+	//	PlaySoundByID((SOUND_ID::BGM_SECOND));
+	//	if (!isCurrentlyPlaying(GetNamebyID(SOUND_ID::BGM_SECOND)));
+	//}
+	if (!isCurrentlyPlaying(GetNamebyID(SOUND_ID::SOUND_ONCLICK)) && !isCurrentlyPlaying(GetNamebyID(SOUND_ID::SOUND_TELEPORTER)) && !isCurrentlyPlaying(GetNamebyID(SOUND_ID::SOUND_CHEST)))
 	{
 		cout << "Moving over to second BGM\n";
-		PlaySoundByID((SOUND_ID::BGM_SECOND));
-		if (!isCurrentlyPlaying(GetNamebyID(SOUND_ID::BGM_SECOND)));
+		SecondSong();
+		bFirstSong = false;
+		bSecondSong = false;
+		if (!isCurrentlyPlaying(GetNamebyID(SOUND_ID::SOUND_TELEPORTER)) && !isCurrentlyPlaying(GetNamebyID(SOUND_ID::SOUND_CHEST)))
+		{
+			cout << "Moving over to third BGM\n";
+			ThirdSong();
+			bThirdSong = false;
+			if (!isCurrentlyPlaying(GetNamebyID(SOUND_ID::SOUND_CHEST)))
+			{
+				cout << "Moving over to fourth BGM\n";
+				bFirstSong = true;
+				bSecondSong = true;
+				bThirdSong = true;
+				FirstSong();
+				
+			}
+		}
 	}
 
+}
+
+void CSoundController::FirstSong(void)
+{
+	if (bFirstSong)
+	{
+		PlaySoundByID((SOUND_ID::SOUND_ONCLICK));
+	}
+	else {}
+}
+
+void CSoundController::SecondSong(void)
+{
+	if (bSecondSong)
+	{
+		PlaySoundByID((SOUND_ID::SOUND_TELEPORTER));
+	}
+	else {}
+}
+
+void CSoundController::ThirdSong(void)
+{
+	if (bThirdSong)
+	{
+		PlaySoundByID((SOUND_ID::SOUND_CHEST));
+	}
+	else {}
 }
 
 /**
