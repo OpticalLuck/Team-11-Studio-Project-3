@@ -53,6 +53,7 @@ protected:
 	ImGuiWindowFlags option_window;
 	ImGuiWindowFlags UI_window;
 	ImGuiWindowFlags cloneHealth_window;
+	ImGuiWindowFlags instruction_window;
 
 	ButtonData resumeButtonData;
 	ButtonData restartButtonData;
@@ -62,6 +63,7 @@ protected:
 	ButtonData applyButtonData;
 
 	ButtonData background;
+	ButtonData instruction;
 
 
 
@@ -73,8 +75,16 @@ protected:
 	int iInterval2;
 	int iTimer2;
 
+	int iOffsetX;
+	int iOffsetY;
+	bool bIncrease;
+	bool bDecrease;
+	float fFadeCount;
+
 	float transformX;
 	float transformY;
+
+	bool bInstruction;
 
 	CSettings* cSettings;
 	Camera2D* cCamera;
