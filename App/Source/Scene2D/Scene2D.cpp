@@ -130,7 +130,7 @@ bool CScene2D::Init(std::string levelPath)
 	// Set a shader to this class
 	cMap2D->SetShader("2DShader");
 	// Initialise the instance
-	if (cMap2D->Init(3, 24, 32) == false)
+	if (cMap2D->Init(4, 24, 32) == false)
 	{
 		cout << "Failed to load CMap2D" << endl;
 		return false;
