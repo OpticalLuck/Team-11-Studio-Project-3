@@ -70,7 +70,7 @@ bool CIntroState::Init(void)
 	// Include Shader Manager
 	CShaderManager::GetInstance()->Use("2DColorShader");
 	CShaderManager::GetInstance()->activeShader->setInt("texture1", 0);
-	//CShaderManager::GetInstance()->activeShader->setVec4("runtime_color", currentColor);
+	CShaderManager::GetInstance()->activeShader->setVec4("runtime_color", currentColor);
 
 	background->Init();
 
@@ -106,8 +106,16 @@ bool CIntroState::Update(const double dElapsedTime)
 {
 	countdown += dElapsedTime;
 
-	currentColor = glm::vec4(1, 1, 1, countdown * 0.3);
-	//currentColor = glm::vec4(1, 1, 1, 0);
+	if (countdown >= 3)
+	{
+		currentColor -= glm::vec4(0, 0, 0,  0.5 * dElapsedTime);
+	}
+	else if (countdown <= 2)
+	{
+		currentColor += glm::vec4(0, 0, 0,  0.5 * dElapsedTime);
+	}
+
+	currentColor = glm::clamp(currentColor, glm::vec4(0, 0, 0, 0), glm::vec4(1, 1, 1, 1));
 
 	if (countdown > 5)
 	{
