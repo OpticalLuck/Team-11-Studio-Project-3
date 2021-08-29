@@ -128,6 +128,7 @@ bool CPlayGameState::Update(const double dElapsedTime)
 	cCamera->UpdateTarget(cPlayer->vTransform);
 	cCamera->Update((float)dElapsedTime);
 	cCamera->ClampCamPos(cMap2D->GetLevelLimit());
+	//cSoundController->Playlist();
 
 	if (!bInstruction)
 	{

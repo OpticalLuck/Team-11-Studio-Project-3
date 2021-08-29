@@ -46,6 +46,7 @@ enum SOUND_ID
 	BGM_HENESYS				,
 	BGM_TROUBLE             ,
 	BGM_LEVEL1              ,
+	BGM_SECOND              ,
 	BGM_WIN                 ,
 	BGM_TOTAL			
 
@@ -90,6 +91,9 @@ public:
 
 	bool isCurrentlyPlaying(std::string name);
 
+	void Playlist(void);
+
+
 	// For 3D sounds only
 	// Set Listener position
 	void SetListenerPosition(const float x, const float y, const float z);
@@ -123,5 +127,6 @@ protected:
 	vec3df vec3dfListenerPos;
 	// For 3D sound only: Listender view direction
 	vec3df vec3dfListenerDir;
+
 };
 

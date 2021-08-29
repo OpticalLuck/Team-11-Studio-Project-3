@@ -154,6 +154,17 @@ void CSoundController::PlaySoundByID(const int ID)
 	}
 }
 
+void CSoundController::Playlist(void)
+{
+	if (!isCurrentlyPlaying(GetNamebyID(SOUND_ID::BGM_LEVEL1)) && !isCurrentlyPlaying(GetNamebyID(SOUND_ID::BGM_SECOND)))
+	{
+		cout << "Moving over to second BGM\n";
+		PlaySoundByID((SOUND_ID::BGM_SECOND));
+		if (!isCurrentlyPlaying(GetNamebyID(SOUND_ID::BGM_SECOND)));
+	}
+
+}
+
 /**
  @brief Increase Master volume
  @return true if successfully increased volume, else false
