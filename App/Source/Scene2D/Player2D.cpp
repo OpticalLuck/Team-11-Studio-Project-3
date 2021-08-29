@@ -850,6 +850,12 @@ void CPlayer2D::LockWithinBoundary()
 
 	if (oldTransform != vTransform)
 		cPhysics2D->SetVelocity(glm::vec2(0, 0));
+
+	if (vTransform.y < 1)
+	{
+		ResetToCheckPoint();
+		pHealth--;
+	}
 }
 
 CPlayer2D* const CPlayer2D::Clone()
