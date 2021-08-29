@@ -395,7 +395,7 @@ bool CMenuState::UpdateLevelSelect(ImGuiWindowFlags window_flags)
 	ImGuiStyle& style = ImGui::GetStyle();
 	style.FrameRounding = 100.0f;
 
-	ImGui::Begin("Level Editor", NULL, window_flags);
+	ImGui::Begin("Level Select", NULL, window_flags);
 	ImGui::SetWindowPos(ImVec2(CSettings::GetInstance()->iWindowWidth * 0.25f, CSettings::GetInstance()->iWindowHeight * 0.25f));
 	ImGui::SetWindowSize(ImVec2(CSettings::GetInstance()->iWindowWidth * 0.5f, CSettings::GetInstance()->iWindowHeight * 0.5f));
 

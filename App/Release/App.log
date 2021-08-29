@@ -1,7 +1,20 @@
-﻿  IntroState.cpp
+﻿  PlayGameState.cpp
+E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\App\Source\GameStateManagement\PlayGameState.cpp(166,49): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\App\Source\GameStateManagement\PlayGameState.cpp(333,31): warning C4018: '<': signed/unsigned mismatch
+E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\App\Source\GameStateManagement\PlayGameState.cpp(348,56): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\App\Source\GameStateManagement\PlayGameState.cpp(379,58): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\App\Source\GameStateManagement\PlayGameState.cpp(381,90): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\App\Source\GameStateManagement\PlayGameState.cpp(381,57): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\App\Source\GameStateManagement\PlayGameState.cpp(402,57): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\App\Source\GameStateManagement\PlayGameState.cpp(404,89): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\App\Source\GameStateManagement\PlayGameState.cpp(404,56): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\App\Source\GameStateManagement\PlayGameState.cpp(424,72): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\App\Source\GameStateManagement\PlayGameState.cpp(426,88): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\App\Source\GameStateManagement\PlayGameState.cpp(426,55): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\App\Source\GameStateManagement\PlayGameState.cpp(437,36): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
   Generating code
-  1 of 6627 functions (<0.1%) were compiled, the rest were copied from previous compilation.
+  0 of 6628 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    44 functions had inline decision re-evaluated but remain unchanged
+    0 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   App.vcxproj -> E:\School\Y2-SEM1\SP3\Team-11-Studio-Project-3\Release\App.exe

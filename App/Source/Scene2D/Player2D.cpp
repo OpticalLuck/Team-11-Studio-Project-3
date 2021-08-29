@@ -379,14 +379,33 @@ void CPlayer2D::Update(const double dElapsedTime)
 		}
 	}
 	
+	if (cPhysics2D->GetboolGrounded())
+		m_playerState = STATE::S_IDLE;
+
 	cPhysics2D->Update(dElapsedTime);
 	// Update Collider2D Position
 	collider2D->position = vTransform;
 
+	// Get keyboard & Mouse updates
+	InputUpdate(dElapsedTime);
+	
+	if (abs(cPhysics2D->GetVelocity().x) > 0)
+	{
+		if (m_playerState != STATE::S_JUMP && m_playerState != STATE::S_DOUBLE_JUMP)
+			m_playerState = STATE::S_MOVE;
+	}
+	else
+	{
+		if (cPhysics2D->GetboolGrounded())
+		{
+			cout << "set to idle" << endl;
+			m_playerState = STATE::S_IDLE;
+		}
+	}
+
 	//COLLISION RESOLUTION ON Y_AXIS AND X_AXIS
 	int range = 2;
 	cPhysics2D->SetboolGrounded(false);
-
 	//Stores nearby objects and its dist to player into a vector 
 	vector<pair<CObject2D*, float>> aabbVector;
 	for (int row = -range; row <= range; row++) //y
@@ -428,7 +447,6 @@ void CPlayer2D::Update(const double dElapsedTime)
 				if (std::get<1>(data) == Direction::UP)
 				{
 					cPhysics2D->SetboolGrounded(true);
-					m_playerState = STATE::S_IDLE;
 				}
 				else if (std::get<1>(data) == Direction::DOWN) {
 					glm::vec2 noJump = cPhysics2D->GetVelocity();
@@ -464,9 +482,6 @@ void CPlayer2D::Update(const double dElapsedTime)
 		}
 	}
 
-	// Get keyboard & Mouse updates
-	InputUpdate(dElapsedTime);
-
 	//BOUNDARY CHECK
 	LockWithinBoundary();
 
@@ -476,6 +491,10 @@ void CPlayer2D::Update(const double dElapsedTime)
 
 	//Health
 	UpdateHealthLives();
+
+	//if (m_playerState != STATE::S_JUMP && m_playerState != STATE::S_DOUBLE_JUMP)
+	
+
 
 	//animation States
 	switch (m_playerState)
@@ -590,7 +609,7 @@ bool CPlayer2D::LoadTexture(const char* filename, GLuint& iTextureID)
 {
 	// Variables used in loading the texture
 	int width, height, nrChannels;
-	
+
 	// texture 1
 	// ---------
 	glGenTextures(1, &iTextureID);
@@ -605,7 +624,7 @@ bool CPlayer2D::LoadTexture(const char* filename, GLuint& iTextureID)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	CImageLoader* cImageLoader = CImageLoader::GetInstance();
-	unsigned char *data = cImageLoader->Load(filename, width, height, nrChannels, true);
+	unsigned char* data = cImageLoader->Load(filename, width, height, nrChannels, true);
 	if (data)
 	{
 		if (nrChannels == 3)
@@ -639,39 +658,32 @@ void CPlayer2D::InputUpdate(double dt)
 		ResetToCheckPoint();
 	}
 
-	if (m_KeyboardInputs[m_FrameStorage.iCurrentFrame][KEYBOARD_INPUTS::W].bKeyDown)
-	{
-		velocity.y = fMovementSpeed;
-		cPhysics2D->SetboolGrounded(false);
-		//DEBUG_MSG(this << ": Frame:" << iTempFrameCounter << " Move Up");
-	}
-	else if (m_KeyboardInputs[m_FrameStorage.iCurrentFrame][KEYBOARD_INPUTS::S].bKeyDown)
-	{
-		//velocity.y = -fMovementSpeed;
-		//DEBUG_MSG(this << ": Frame:" << iTempFrameCounter << " Move Down");
-	}
+	//if (m_KeyboardInputs[m_FrameStorage.iCurrentFrame][KEYBOARD_INPUTS::W].bKeyDown)
+	//{
+	//	velocity.y = fMovementSpeed;
+	//	cPhysics2D->SetboolGrounded(false);
+	//	//DEBUG_MSG(this << ": Frame:" << iTempFrameCounter << " Move Up");
+	//}
 
 	if (m_KeyboardInputs[m_FrameStorage.iCurrentFrame][KEYBOARD_INPUTS::D].bKeyDown)
 	{
+
 		//velocity.x = fMovementSpeed;
 		if (velocity.x < fMovementSpeed && !cPhysics2D->GetboolKnockedBacked())
 			velocity.x = Math::Min(velocity.x + fMovementSpeed, fMovementSpeed);
 
-		if (m_playerState != STATE::S_JUMP && m_playerState != STATE::S_DOUBLE_JUMP)
-			m_playerState = STATE::S_MOVE;
 		facing = FACING_DIR::RIGHT;
 		//DEBUG_MSG(this << ": Frame:" << iTempFrameCounter << " Move Right");
 	}
-	else if (m_KeyboardInputs[m_FrameStorage.iCurrentFrame][KEYBOARD_INPUTS::A].bKeyDown)
+	if (m_KeyboardInputs[m_FrameStorage.iCurrentFrame][KEYBOARD_INPUTS::A].bKeyDown)
 	{
 		if (velocity.x > -fMovementSpeed && !cPhysics2D->GetboolKnockedBacked())
 			velocity.x = Math::Max(velocity.x - fMovementSpeed, -fMovementSpeed);
-		if (m_playerState != STATE::S_JUMP && m_playerState != STATE::S_DOUBLE_JUMP)
-			m_playerState = STATE::S_MOVE;
+
 		facing = FACING_DIR::LEFT;
 		//DEBUG_MSG(this << ": Frame:" << iTempFrameCounter << " Move Left");
 	}
-
+	
 	if (m_KeyboardInputs[m_FrameStorage.iCurrentFrame][KEYBOARD_INPUTS::SPACE].bKeyDown)
 	{
 		if (jumpCount < 2 &&

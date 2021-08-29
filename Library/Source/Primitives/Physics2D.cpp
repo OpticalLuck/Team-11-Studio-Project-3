@@ -95,7 +95,7 @@ void CPhysics2D::Update(double dElapsedTime)
  	velocity += a * (float)dElapsedTime;
 
 	//Comment out FOR NOW!!!
-	velocity.x = Math::Clamp(velocity.x, -MAX_SPEED, MAX_SPEED);
+ 	velocity.x = Math::Clamp(velocity.x, -MAX_SPEED, MAX_SPEED);
 	velocity.y = Math::Clamp(velocity.y, -MAX_SPEED, MAX_SPEED);
 
 	if (bGrounded && velocity.y <= 0)
