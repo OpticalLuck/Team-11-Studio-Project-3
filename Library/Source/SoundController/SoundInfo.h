@@ -76,5 +76,6 @@ protected:
 
 	// For 3D sound only: Sound position
 	vec3df vec3dfSoundPos;
+
 };
 
