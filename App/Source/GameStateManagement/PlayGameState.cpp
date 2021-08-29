@@ -203,7 +203,6 @@ bool CPlayGameState::Update(const double dElapsedTime)
 			bIncrease = true;
 			bDecrease = false;
 		}
-		cout << "fade count : " << fFadeCount << endl;
 		if (CKeyboardController::GetInstance()->IsKeyReleased(GLFW_KEY_SPACE))
 		{
 			fFadeCount = 0;
