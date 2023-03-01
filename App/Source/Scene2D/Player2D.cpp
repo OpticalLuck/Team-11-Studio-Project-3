@@ -831,6 +831,11 @@ bool CPlayer2D::GetRecording()
 void CPlayer2D::SetRecording(bool bIsRecording)
 {
 	this->bIsRecording = bIsRecording;
+
+	if (bIsRecording)
+		cInventory->BackupInventory();
+	else
+		cInventory->RestoreBackup();
 }
 
 void CPlayer2D::SetKeyInputs(std::vector<std::array<KeyInput, KEYBOARD_INPUTS::KEY_TOTAL>> inputs)

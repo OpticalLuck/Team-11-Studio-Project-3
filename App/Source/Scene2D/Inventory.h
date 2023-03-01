@@ -30,13 +30,23 @@ public:
 
 	void SetPlayer(CPlayer2D* player);
 	
+
+	void BackupInventory() { m_SavedItems = m_Items; iSavedIndex = iCurrentIndex; }
+	void RestoreBackup() { m_Items = m_SavedItems; iCurrentIndex = iSavedIndex; }
+
+	void CloneInventoryData(CPlayer2D* target);
+
+	std::map<int, CItem> GetAllItems() const { return m_Items; }
+
 	float fCooldown;
 
 	int iCurrentIndex;
+	int iSavedIndex;
 
 	std::string sName;
 private:
 	std::map<int, CItem>m_Items;
+	std::map<int, CItem>m_SavedItems;
 	CPlayer2D* linkedPlayer;
 
 	static CItem itemDef;

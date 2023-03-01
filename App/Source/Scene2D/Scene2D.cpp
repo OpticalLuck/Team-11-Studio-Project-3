@@ -88,6 +88,9 @@ void CScene2D::StartParadoxiumAbility()
 
 void CScene2D::StopParadoxiumAbility()
 {
+	//Recording enemy stuff
+	CEntity2D::SetRecording(false);
+
 	std::vector<CEnemy2D*> enemyArr = cEntityManager->GetAllEnemies();
 
 	cPlayer2D->SetRecording(false);
@@ -107,8 +110,7 @@ void CScene2D::StopParadoxiumAbility()
 
 	cPlayer2D->m_FrameStorage.iCounter = 0;
 
-	//Recording enemy stuff
-	CEntity2D::SetRecording(false);
+	
 
 	for (unsigned i = 0; i < enemyArr.size(); i++) {
 		enemyArr[i]->ReplayRecording();

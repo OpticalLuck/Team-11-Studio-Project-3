@@ -193,6 +193,7 @@ CPlayer2D* CEntityManager::Clone(void)
 		clone->SetClone(true);
 		clone->SetKeyInputs(cInputHandler->GetAllKeyboardInputs());
 		clone->SetMouseInputs(cInputHandler->GetAllMouseInputs());
+		clone->GetInventory()->CloneInventoryData(cPlayer2D);
 		m_cloneList.push_back(clone);
 		return clone;
 	}

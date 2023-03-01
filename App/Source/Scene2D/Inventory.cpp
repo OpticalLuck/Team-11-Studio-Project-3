@@ -131,3 +131,9 @@ void CInventory::SetPlayer(CPlayer2D* player)
 {
 	linkedPlayer = player;
 }
+
+void CInventory::CloneInventoryData(CPlayer2D* target)
+{
+	iCurrentIndex = target->GetInventory()->iCurrentIndex;
+	m_Items = target->GetInventory()->GetAllItems();
+}
