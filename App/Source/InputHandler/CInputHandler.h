@@ -5,6 +5,7 @@
 
 #include "Primitives/Camera2D.h"
 #include <vector>
+#include <functional>
 
 // include glm
 #include <includes/glm.hpp>
@@ -63,8 +64,10 @@ class CInputHandler : public CSingletonTemplate<CInputHandler>
 {
 	friend CSingletonTemplate<CInputHandler>;
 public:
+	const static int MAX_STORAGE = 4096;
+	const static int RESET_POINT = MAX_STORAGE * 0.5f;
 
-	void Init(void);
+	void Init();
 	void Reset(void);
 	void Update(double dElapsedTime);
 
@@ -73,7 +76,7 @@ public:
 	std::vector<std::array<KeyInput, KEY_TOTAL>> GetAllKeyboardInputs(void);
 	std::vector<std::array<MouseInput, MOUSE_TOTAL>> GetAllMouseInputs(void);
 
-
+	void SetCallback(std::function<void(int)> ResetFrameStorageCallback) { m_ResetFrameStorageCallback = ResetFrameStorageCallback; }
 protected:
 
 	uint32_t m_Keys[KEY_TOTAL] = { GLFW_KEY_W,
@@ -107,6 +110,9 @@ protected:
 
 	// Camera Instance
 	Camera2D* camera2D;
+
+	
+	std::function<void(int)> m_ResetFrameStorageCallback;
 
 	CInputHandler();
 	~CInputHandler();

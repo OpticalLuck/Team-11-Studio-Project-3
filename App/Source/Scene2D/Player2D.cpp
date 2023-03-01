@@ -125,6 +125,7 @@ bool CPlayer2D::Init(void)
 	camera = Camera2D::GetInstance();
 	cSoundController = CSoundController::GetInstance();
 	cInputHandler = CInputHandler::GetInstance();
+	cInputHandler->SetCallback([=](int frame) {m_FrameStorage.iCurrentFrame = frame; });
 	cSettings = CSettings::GetInstance();
 
 	cMouseController = CMouseController::GetInstance();
@@ -528,7 +529,10 @@ void CPlayer2D::Update(const double dElapsedTime)
 
 	//CS: Update the animated sprite
 	animatedSprites->Update(dElapsedTime);
-	m_FrameStorage.iCurrentFrame++;
+	if (m_FrameStorage.iCurrentFrame >= m_KeyboardInputs.size())
+		m_FrameStorage.iCurrentFrame = 0;
+	else
+		m_FrameStorage.iCurrentFrame++;
 }
 
 /**
@@ -746,6 +750,11 @@ void CPlayer2D::InputUpdate(double dt)
 
 void CPlayer2D::SetJumpCount(int count) {
 	jumpCount = count;
+}
+
+bool CPlayer2D::IsCloneDelete()
+{
+	return m_FrameStorage.iEndFrame - m_FrameStorage.iCurrentFrame <= 0;
 }
 
 void CPlayer2D::SetClone(bool bIsClone)

@@ -94,7 +94,12 @@ void CScene2D::StopParadoxiumAbility()
 	CPlayer2D* clone = CEntityManager::GetInstance()->Clone();
 	//Loading of clone
 	clone->vTransform = cPlayer2D->m_FrameStorage.spawnPos;
-	clone->m_FrameStorage.iCurrentFrame = cPlayer2D->m_FrameStorage.iStoredFrame;
+
+	int start = cPlayer2D->m_FrameStorage.iStoredFrame;
+	if (cPlayer2D->m_FrameStorage.iStoredFrame >= cPlayer2D->m_FrameStorage.iCurrentFrame)
+		start -= CInputHandler::RESET_POINT;
+
+	clone->m_FrameStorage.iCurrentFrame = start;
 	clone->m_FrameStorage.iEndFrame = cPlayer2D->m_FrameStorage.iCurrentFrame;
 	cPlayer2D->m_FrameStorage.iStoredFrame = 0;
 	cPlayer2D->vTransform = cPlayer2D->m_FrameStorage.spawnPos;

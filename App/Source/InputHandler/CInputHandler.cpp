@@ -2,7 +2,7 @@
 #include <array>
 #include <GLFW/glfw3.h>
 
-void CInputHandler::Init(void)
+void CInputHandler::Init()
 {
 	cKeyboardController = CKeyboardController::GetInstance();
 	cMouseController = CMouseController::GetInstance();
@@ -22,6 +22,16 @@ void CInputHandler::Update(double dElapsedTime)
  */
 void CInputHandler::UpdateCurrentFrameInputs(void)
 {
+	if (m_KeyboardInputs.size() > MAX_STORAGE && m_MouseInputs.size() > MAX_STORAGE)
+	{
+		m_KeyboardInputs.erase(m_KeyboardInputs.begin(), m_KeyboardInputs.begin() + RESET_POINT);
+		m_MouseInputs.erase(m_MouseInputs.begin(), m_MouseInputs.begin() + RESET_POINT);
+		if(m_ResetFrameStorageCallback)
+			m_ResetFrameStorageCallback(RESET_POINT);
+
+		printf("RESET\n");
+	}
+	printf("Keyboard: %d\n", m_KeyboardInputs.size());
 	std::array<KeyInput, KEY_TOTAL> currentFrameKeyInputs;
 	for (int i = 0; i < KEY_TOTAL; ++i)
 	{

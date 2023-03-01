@@ -400,7 +400,7 @@ void CEntityManager::Update(const double dElapsedTime)
 
 	for (unsigned i = 0; i < m_cloneList.size(); ++i)
 	{
-		if (m_cloneList[i]->m_FrameStorage.iCurrentFrame - m_cloneList[i]->m_FrameStorage.iEndFrame > 180)
+		if (m_cloneList[i]->IsCloneDelete())
 		{
 			qclone_ID.push(m_cloneList[i]->GetCloneID());
 			delete m_cloneList[i];
